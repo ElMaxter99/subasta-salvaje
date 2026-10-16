@@ -1,6 +1,6 @@
 import sharp from 'sharp';
 import { describe, expect, it } from 'vitest';
-import { compositeOnto, cutOutBackground, slotFor, withComposedEdit } from '@/lib/ai/compose';
+import { compositeOnto, cutOutBackground, slotFor, withComposedEdit, withEditFallback } from '@/lib/ai/compose';
 import { createCloudflareProvider } from '@/lib/ai/cloudflare';
 import { sniffImageMime } from '@/lib/ai/image-validation';
 
@@ -50,5 +50,31 @@ describe('edición gratuita por composición', () => {
     expect(JSON.parse(calls[0]!).prompt).toContain('pure white background');
     expect(out.model).toContain('+compose');
     expect(sniffImageMime(out.bytes)).toBe('image/png');
+  });
+
+  describe('edición real con plan B', () => {
+    const mk = async (status: number, msg: string) => {
+      const jpeg = Buffer.from(await itemOnWhite()).toString('base64');
+      const urls: string[] = [];
+      const fetchImpl = (async (u: string) => {
+        urls.push(u);
+        if (u.includes('klein')) return new Response(JSON.stringify({ success: false, errors: [{ message: msg }] }), { status, headers: { 'content-type': 'application/json' } });
+        return new Response(JSON.stringify({ result: { image: jpeg }, success: true }), { status: 200, headers: { 'content-type': 'application/json' } });
+      }) as unknown as typeof fetch;
+      const cf = createCloudflareProvider({ accountId: 'a', apiToken: 't', model: '@cf/m', steps: 4, editModel: '@cf/black-forest-labs/flux-2-klein-4b', width: 1024, height: 768, fetchImpl, resizeForReference: async () => new Uint8Array([1]) });
+      return { p: withEditFallback(cf), urls };
+    };
+    const input = async () => ({ base: { bytes: new Uint8Array(await solid(640, 480, { r: 90, g: 90, b: 90 }).png().toBuffer()), mime: 'image/png' }, theme: 'h', itemName: 'Sofá', itemDescription: '', itemEmoji: null, previousItems: [] });
+    it('si el modelo de edición rechaza la entrada (400) usa la composición', async () => {
+      const { p, urls } = await mk(400, 'bad input');
+      const out = await p.editScene(await input());
+      expect(out.model).toContain('+compose');
+      expect(urls.some((u) => u.includes('klein'))).toBe(true);
+    });
+    it('la cuota agotada NO activa el plan B', async () => {
+      const { p, urls } = await mk(429, 'you have exceeded your daily free allocation of 10000 neurons');
+      await expect(p.editScene(await input())).rejects.toMatchObject({ retryable: false });
+      expect(urls).toHaveLength(1);
+    });
   });
 });

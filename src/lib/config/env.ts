@@ -38,6 +38,8 @@ export interface CloudflareConfig {
   height: number;
 }
 
+export const DEFAULT_CF_EDIT_MODEL = '@cf/black-forest-labs/flux-2-klein-4b';
+
 export function cloudflareConfig(env: NodeJS.ProcessEnv = process.env): CloudflareConfig | null {
   const accountId = env.CLOUDFLARE_ACCOUNT_ID?.trim();
   const apiToken = env.CLOUDFLARE_API_TOKEN?.trim();
@@ -51,7 +53,9 @@ export function cloudflareConfig(env: NodeJS.ProcessEnv = process.env): Cloudfla
     apiToken,
     model: env.CLOUDFLARE_IMAGE_MODEL?.trim() || '@cf/black-forest-labs/flux-1-schnell',
     steps: int(env.CLOUDFLARE_IMAGE_STEPS, 4, 1, 8),
-    editModel: env.CLOUDFLARE_EDIT_MODEL?.trim() || null,
+    // Edición real con imagen de referencia: FLUX.2 klein por defecto (≈85 neuronas por edición de 1024×768, dentro de la
+    // cuota gratuita diaria). CLOUDFLARE_EDIT_MODEL=off la desactiva (queda la composición).
+    editModel: /^(off|none|false|no)$/i.test(env.CLOUDFLARE_EDIT_MODEL?.trim() ?? '') ? null : env.CLOUDFLARE_EDIT_MODEL?.trim() || DEFAULT_CF_EDIT_MODEL,
     width: int(env.CLOUDFLARE_EDIT_WIDTH, 1024, 256, 2048),
     height: int(env.CLOUDFLARE_EDIT_HEIGHT, 768, 256, 2048),
   };

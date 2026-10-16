@@ -38,7 +38,7 @@ Después de cada migración nueva, vuelve a probar a mano: crear partida, pujar,
 - [ ] Si no usas pegatinas ni la galería, puedes quitar `image/svg+xml` del bucket (ver README, «Bucket con SVG»).
 
 ## 5. IA real (cuando quieras probarla)
-- [ ] Con `flux-1-schnell` solo se **genera**; la «edición» usa por defecto una composición gratuita (collage del objeto sobre la casa; ver README). Prueba una vez con la API real que el recorte del fondo blanco funciona. Solo se **genera** (imagen inicial y de elementos); **no edita** la casa existente. Para editar define `CLOUDFLARE_EDIT_MODEL=@cf/black-forest-labs/flux-2-klein-4b` (implementado según la documentación, **sin probar** contra la API real) u otro proveedor con edición.
+- [ ] La edición real usa FLUX.2 klein por defecto (sin probar contra la API real: confirma el nombre de los campos multipart y el coste). Con `flux-1-schnell` solo se **genera**; el plan B de «edición» usa por defecto una composición gratuita (collage del objeto sobre la casa; ver README). Prueba una vez con la API real que el recorte del fondo blanco funciona. Solo se **genera** (imagen inicial y de elementos); **no edita** la casa existente. Para editar define `CLOUDFLARE_EDIT_MODEL=@cf/black-forest-labs/flux-2-klein-4b` (implementado según la documentación, **sin probar** contra la API real) u otro proveedor con edición.
 - [ ] Contrasta con la documentación vigente de Cloudflare los parámetros del modelo y los precios, y haz una primera generación de prueba con límites bajos.
 
 ## 6. Cron externo (opcional pero recomendado en producción)

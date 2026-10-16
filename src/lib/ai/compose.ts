@@ -115,3 +115,27 @@ export function withComposedEdit(inner: ImageGenerationProvider): ImageGeneratio
     },
   };
 }
+
+/** Rechazos de entrada del modelo de edición (400/404/422): no consumen cuota de Cloudflare y justifican el plan B. */
+const INPUT_REJECTED = /Cloudflare (400|404|422)\b/;
+
+/**
+ * Edición REAL con imagen de referencia (modelo de edición del proveedor). Si el modelo rechaza la petición por
+ * entrada no válida o no existente, se usa la composición como plan B (una generación más del MISMO proveedor).
+ * Errores de red, cuota, credenciales o moderación NO activan el plan B: se propagan y se conserva la imagen anterior.
+ */
+export function withEditFallback(inner: ImageGenerationProvider): ImageGenerationProvider {
+  if (!inner.capabilities.edit) return withComposedEdit(inner);
+  const composed = withComposedEdit({ ...inner, capabilities: { edit: false } });
+  return {
+    ...inner,
+    async editScene(input: EditSceneInput): Promise<GeneratedImage> {
+      try {
+        return await inner.editScene(input);
+      } catch (e) {
+        if (e instanceof ProviderError && !e.retryable && INPUT_REJECTED.test(e.message)) return composed.editScene(input);
+        throw e;
+      }
+    },
+  };
+}

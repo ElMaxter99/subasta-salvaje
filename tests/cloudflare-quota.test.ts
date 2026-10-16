@@ -27,7 +27,8 @@ describe('selección de proveedor de IA: desactivado por defecto, nunca cambia s
   });
   it('configuración de Cloudflare y cuotas con valores por defecto y validación', () => {
     expect(cloudflareConfig({ CLOUDFLARE_ACCOUNT_ID: 'a' } as never)).toBeNull();
-    expect(cloudflareConfig({ ...real, CLOUDFLARE_IMAGE_STEPS: '99' } as never)).toMatchObject({ model: '@cf/black-forest-labs/flux-1-schnell', steps: 4, editModel: null });
+    expect(cloudflareConfig({ ...real, CLOUDFLARE_IMAGE_STEPS: '99' } as never)).toMatchObject({ model: '@cf/black-forest-labs/flux-1-schnell', steps: 4, editModel: '@cf/black-forest-labs/flux-2-klein-4b' });
+    expect(cloudflareConfig({ ...real, CLOUDFLARE_EDIT_MODEL: 'off' } as never)?.editModel).toBeNull();
     expect(quotaConfig({} as never)).toEqual({ perGame: 10, perDay: 50 });
     expect(quotaConfig({ IMAGE_QUOTA_PER_GAME: '5', IMAGE_QUOTA_PER_DAY: 'x' } as never)).toEqual({ perGame: 5, perDay: 50 });
   });
