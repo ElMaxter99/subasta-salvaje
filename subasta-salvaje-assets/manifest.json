@@ -1,0 +1,802 @@
+{
+  "project": "Subasta Salvaje",
+  "generated_by": "scripts/assets/build-assets.mjs",
+  "generator_note": "Assets vectoriales (SVG → PNG con sharp) que aproximan el estilo 3D de la referencia. NO son renders 3D reales y la hoja de referencia no se usa como asset.",
+  "palette": {
+    "midnight": "#080B2B",
+    "deepPurple": "#24105B",
+    "purple": "#6038FF",
+    "gold": "#FFB81C",
+    "yellow": "#FFD83D",
+    "white": "#F6F4FF",
+    "cyan": "#35D5FF",
+    "pink": "#F54DB7"
+  },
+  "padding": "10 % por lado (contenido ≤ 80 % del lienzo); mismo encuadre dentro de cada grupo (expresiones, poses, vistas base)",
+  "export": {
+    "mascot_resolution": "2048x2048",
+    "other_resolution": "1024x1024",
+    "color_profile": "sRGB",
+    "transparent_background": true
+  },
+  "quality_checks": {
+    "failed": []
+  },
+  "assets": [
+    {
+      "id": "mascot_front_neutral",
+      "name": "Mascota · front_neutral",
+      "category": "mascot",
+      "folder": "mascot/base",
+      "usage": "Mascota base, de frente y en reposo (maestro visual).",
+      "files": [
+        {
+          "file": "mascot/base/mascot_front_neutral.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_full_body",
+      "name": "Mascota · full_body",
+      "category": "mascot",
+      "folder": "mascot/base",
+      "usage": "Pose principal de marca: martillo y gesto de señalar.",
+      "files": [
+        {
+          "file": "mascot/base/mascot_full_body.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_back",
+      "name": "Mascota · back",
+      "category": "mascot",
+      "folder": "mascot/base",
+      "usage": "Vista trasera para turnarounds y modelado.",
+      "files": [
+        {
+          "file": "mascot/base/mascot_back.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_side",
+      "name": "Mascota · side",
+      "category": "mascot",
+      "folder": "mascot/base",
+      "usage": "Vista lateral para turnarounds y modelado.",
+      "files": [
+        {
+          "file": "mascot/base/mascot_side.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_half_body",
+      "name": "Mascota · medio cuerpo",
+      "category": "mascot",
+      "folder": "mascot/base",
+      "usage": "Avatares, cabeceras y tarjetas de diálogo.",
+      "files": [
+        {
+          "file": "mascot/base/mascot_half_body.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_head",
+      "name": "Mascota · cabeza",
+      "category": "mascot",
+      "folder": "mascot/base",
+      "usage": "Icono/avatar del anfitrión y reacciones pequeñas.",
+      "files": [
+        {
+          "file": "mascot/base/mascot_head.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_expression_happy",
+      "name": "Mascota · expresión happy",
+      "category": "mascot",
+      "folder": "mascot/expressions",
+      "usage": "Reacción «happy» del anfitrión en la TV y el móvil.",
+      "files": [
+        {
+          "file": "mascot/expressions/mascot_expression_happy.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_expression_surprised",
+      "name": "Mascota · expresión surprised",
+      "category": "mascot",
+      "folder": "mascot/expressions",
+      "usage": "Reacción «surprised» del anfitrión en la TV y el móvil.",
+      "files": [
+        {
+          "file": "mascot/expressions/mascot_expression_surprised.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_expression_wink",
+      "name": "Mascota · expresión wink",
+      "category": "mascot",
+      "folder": "mascot/expressions",
+      "usage": "Reacción «wink» del anfitrión en la TV y el móvil.",
+      "files": [
+        {
+          "file": "mascot/expressions/mascot_expression_wink.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_expression_thinking",
+      "name": "Mascota · expresión thinking",
+      "category": "mascot",
+      "folder": "mascot/expressions",
+      "usage": "Reacción «thinking» del anfitrión en la TV y el móvil.",
+      "files": [
+        {
+          "file": "mascot/expressions/mascot_expression_thinking.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_expression_sad",
+      "name": "Mascota · expresión sad",
+      "category": "mascot",
+      "folder": "mascot/expressions",
+      "usage": "Reacción «sad» del anfitrión en la TV y el móvil.",
+      "files": [
+        {
+          "file": "mascot/expressions/mascot_expression_sad.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_expression_angry",
+      "name": "Mascota · expresión angry",
+      "category": "mascot",
+      "folder": "mascot/expressions",
+      "usage": "Reacción «angry» del anfitrión en la TV y el móvil.",
+      "files": [
+        {
+          "file": "mascot/expressions/mascot_expression_angry.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_expression_celebrating",
+      "name": "Mascota · expresión celebrating",
+      "category": "mascot",
+      "folder": "mascot/expressions",
+      "usage": "Reacción «celebrating» del anfitrión en la TV y el móvil.",
+      "files": [
+        {
+          "file": "mascot/expressions/mascot_expression_celebrating.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_expression_hype",
+      "name": "Mascota · expresión hype",
+      "category": "mascot",
+      "folder": "mascot/expressions",
+      "usage": "Reacción «hype» del anfitrión en la TV y el móvil.",
+      "files": [
+        {
+          "file": "mascot/expressions/mascot_expression_hype.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_pose_presenting_item",
+      "name": "Mascota · pose presenting_item",
+      "category": "mascot",
+      "folder": "mascot/poses",
+      "usage": "Presentar el elemento que sale a subasta.",
+      "files": [
+        {
+          "file": "mascot/poses/mascot_pose_presenting_item.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_pose_announcing_bid",
+      "name": "Mascota · pose announcing_bid",
+      "category": "mascot",
+      "folder": "mascot/poses",
+      "usage": "Anunciar una puja nueva.",
+      "files": [
+        {
+          "file": "mascot/poses/mascot_pose_announcing_bid.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_pose_countdown",
+      "name": "Mascota · pose countdown",
+      "category": "mascot",
+      "folder": "mascot/poses",
+      "usage": "Cuenta atrás de adjudicación automática.",
+      "files": [
+        {
+          "file": "mascot/poses/mascot_pose_countdown.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_pose_hammer_auction",
+      "name": "Mascota · pose hammer_auction",
+      "category": "mascot",
+      "folder": "mascot/poses",
+      "usage": "Martillazo: adjudicado.",
+      "files": [
+        {
+          "file": "mascot/poses/mascot_pose_hammer_auction.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_pose_celebration",
+      "name": "Mascota · pose celebration",
+      "category": "mascot",
+      "folder": "mascot/poses",
+      "usage": "Celebración del ganador.",
+      "files": [
+        {
+          "file": "mascot/poses/mascot_pose_celebration.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "crown",
+      "name": "Corona dorada",
+      "category": "prop",
+      "folder": "props",
+      "usage": "Corona suelta para coronar ganadores o decorar la interfaz.",
+      "files": [
+        {
+          "file": "props/crown.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 1024,
+      "height": 1024,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "1024x1024"
+    },
+    {
+      "id": "auction_hammer",
+      "name": "Martillo de subasta",
+      "category": "prop",
+      "folder": "props",
+      "usage": "Martillo suelto para animaciones de adjudicación.",
+      "files": [
+        {
+          "file": "props/auction_hammer.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 1024,
+      "height": 1024,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "1024x1024"
+    },
+    {
+      "id": "megaphone",
+      "name": "Megáfono",
+      "category": "prop",
+      "folder": "props",
+      "usage": "Megáfono suelto para anuncios de puja.",
+      "files": [
+        {
+          "file": "props/megaphone.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 1024,
+      "height": 1024,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "1024x1024"
+    },
+    {
+      "id": "timer_0010",
+      "name": "Temporizador digital 00:10",
+      "category": "prop",
+      "folder": "props",
+      "usage": "Temporizador (texto editable: parámetro `value`); cuenta atrás de la subasta.",
+      "files": [
+        {
+          "file": "props/timer_0010.png",
+          "format": "PNG"
+        }
+      ],
+      "editable": "value (mm:ss) en scripts/assets/props.mjs",
+      "width": 1024,
+      "height": 1024,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "1024x1024"
+    },
+    {
+      "id": "speech_bubble_subasta_activa",
+      "name": "Bocadillo «¡Subasta activa!»",
+      "category": "prop",
+      "folder": "props",
+      "usage": "Bocadillo del anfitrión cuando hay una subasta en curso. El SVG usa texto (fuente Inter).",
+      "files": [
+        {
+          "file": "props/speech_bubble_subasta_activa.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 1024,
+      "height": 1024,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "1024x1024"
+    },
+    {
+      "id": "coin",
+      "name": "Moneda dorada",
+      "category": "prop",
+      "folder": "props",
+      "usage": "Moneda de subasta para saldos y precios.",
+      "files": [
+        {
+          "file": "props/coin.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 1024,
+      "height": 1024,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "1024x1024"
+    },
+    {
+      "id": "sparkle",
+      "name": "Brillo dorado",
+      "category": "vfx",
+      "folder": "vfx",
+      "usage": "Destello para acentos, adjudicaciones y logros.",
+      "files": [
+        {
+          "file": "vfx/sparkle.png",
+          "format": "PNG"
+        },
+        {
+          "file": "vfx/sparkle.svg",
+          "format": "SVG"
+        }
+      ],
+      "width": 1024,
+      "height": 1024,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "1024x1024"
+    },
+    {
+      "id": "confetti",
+      "name": "Confeti de celebración",
+      "category": "vfx",
+      "folder": "vfx",
+      "usage": "Confeti para celebraciones y resultados finales.",
+      "files": [
+        {
+          "file": "vfx/confetti.png",
+          "format": "PNG"
+        },
+        {
+          "file": "vfx/confetti.svg",
+          "format": "SVG"
+        }
+      ],
+      "width": 1024,
+      "height": 1024,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "1024x1024"
+    },
+    {
+      "id": "primary_button",
+      "name": "Botón principal morado",
+      "category": "ui",
+      "folder": "ui",
+      "usage": "Botón principal sin texto (añade la etiqueta en la interfaz).",
+      "files": [
+        {
+          "file": "ui/primary_button.png",
+          "format": "PNG"
+        },
+        {
+          "file": "ui/primary_button.svg",
+          "format": "SVG"
+        }
+      ],
+      "width": 1024,
+      "height": 1024,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "1024x1024"
+    },
+    {
+      "id": "secondary_button",
+      "name": "Botón secundario",
+      "category": "ui",
+      "folder": "ui",
+      "usage": "Botón secundario sin texto.",
+      "files": [
+        {
+          "file": "ui/secondary_button.png",
+          "format": "PNG"
+        },
+        {
+          "file": "ui/secondary_button.svg",
+          "format": "SVG"
+        }
+      ],
+      "width": 1024,
+      "height": 1024,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "1024x1024"
+    },
+    {
+      "id": "progress_bar",
+      "name": "Barra de progreso dorada y blanca",
+      "category": "ui",
+      "folder": "ui",
+      "usage": "Progreso de rondas (64 % de muestra).",
+      "files": [
+        {
+          "file": "ui/progress_bar.png",
+          "format": "PNG"
+        },
+        {
+          "file": "ui/progress_bar.svg",
+          "format": "SVG"
+        }
+      ],
+      "width": 1024,
+      "height": 1024,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "1024x1024"
+    },
+    {
+      "id": "countdown_bar",
+      "name": "Barra de cuenta atrás",
+      "category": "ui",
+      "folder": "ui",
+      "usage": "Cuenta atrás de la adjudicación automática (55 % de muestra).",
+      "files": [
+        {
+          "file": "ui/countdown_bar.png",
+          "format": "PNG"
+        },
+        {
+          "file": "ui/countdown_bar.svg",
+          "format": "SVG"
+        }
+      ],
+      "width": 1024,
+      "height": 1024,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "1024x1024"
+    },
+    {
+      "id": "back_arrow",
+      "name": "Flecha de volver",
+      "category": "ui",
+      "folder": "ui",
+      "usage": "Botón/icono de volver.",
+      "files": [
+        {
+          "file": "ui/back_arrow.png",
+          "format": "PNG"
+        },
+        {
+          "file": "ui/back_arrow.svg",
+          "format": "SVG"
+        }
+      ],
+      "width": 1024,
+      "height": 1024,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "1024x1024"
+    },
+    {
+      "id": "gold_crown_icon",
+      "name": "Icono de corona dorada",
+      "category": "ui",
+      "folder": "ui",
+      "usage": "Icono de corona para líderes y ganadores.",
+      "files": [
+        {
+          "file": "ui/gold_crown_icon.png",
+          "format": "PNG"
+        },
+        {
+          "file": "ui/gold_crown_icon.svg",
+          "format": "SVG"
+        }
+      ],
+      "width": 1024,
+      "height": 1024,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "1024x1024"
+    },
+    {
+      "id": "purple_speed_lines",
+      "name": "Líneas de velocidad moradas",
+      "category": "ui",
+      "folder": "ui",
+      "usage": "Fondo de energía para anuncios y transiciones.",
+      "files": [
+        {
+          "file": "ui/purple_speed_lines.png",
+          "format": "PNG"
+        },
+        {
+          "file": "ui/purple_speed_lines.svg",
+          "format": "SVG"
+        }
+      ],
+      "width": 1024,
+      "height": 1024,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "1024x1024"
+    },
+    {
+      "id": "yellow_highlight_shapes",
+      "name": "Formas de resalte amarillas",
+      "category": "ui",
+      "folder": "ui",
+      "usage": "Trazos amarillos de resalte tras títulos y precios.",
+      "files": [
+        {
+          "file": "ui/yellow_highlight_shapes.png",
+          "format": "PNG"
+        },
+        {
+          "file": "ui/yellow_highlight_shapes.svg",
+          "format": "SVG"
+        }
+      ],
+      "width": 1024,
+      "height": 1024,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "1024x1024"
+    },
+    {
+      "id": "logo_icon",
+      "name": "Icono de marca (corona)",
+      "category": "brand",
+      "folder": "brand",
+      "usage": "Icono de la aplicación y favicon fuente.",
+      "files": [
+        {
+          "file": "brand/logo_icon.png",
+          "format": "PNG"
+        },
+        {
+          "file": "brand/logo_icon.svg",
+          "format": "SVG"
+        }
+      ],
+      "width": 1024,
+      "height": 1024,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "1024x1024"
+    },
+    {
+      "id": "crown_mark_gold",
+      "name": "Marca de corona dorada",
+      "category": "brand",
+      "folder": "brand",
+      "usage": "Corona aislada para sellos y marcas de agua.",
+      "files": [
+        {
+          "file": "brand/crown_mark_gold.png",
+          "format": "PNG"
+        },
+        {
+          "file": "brand/crown_mark_gold.svg",
+          "format": "SVG"
+        }
+      ],
+      "width": 1024,
+      "height": 1024,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "1024x1024"
+    },
+    {
+      "id": "wordmark_subasta_salvaje",
+      "name": "Logotipo «Subasta Salvaje»",
+      "category": "brand",
+      "folder": "brand",
+      "usage": "Logotipo tipográfico (usa la fuente Inter instalada; no es el logo final del arte de referencia).",
+      "files": [
+        {
+          "file": "brand/wordmark_subasta_salvaje.png",
+          "format": "PNG"
+        },
+        {
+          "file": "brand/wordmark_subasta_salvaje.svg",
+          "format": "SVG"
+        }
+      ],
+      "width": 1024,
+      "height": 1024,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "1024x1024"
+    }
+  ]
+}

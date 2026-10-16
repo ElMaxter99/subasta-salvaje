@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="-508.38 -502.38 1033.75 1033.75"><defs>
+<radialGradient id="gWhite" cx="0.35" cy="0.25" r="0.9"><stop offset="0" stop-color="#FFFFFF"/><stop offset="0.55" stop-color="#F1EEFF"/><stop offset="1" stop-color="#C6BFF0"/></radialGradient>
+<radialGradient id="gWhiteGlove" cx="0.4" cy="0.3" r="0.85"><stop offset="0" stop-color="#FFFFFF"/><stop offset="0.6" stop-color="#F4F1FF"/><stop offset="1" stop-color="#CFC8F2"/></radialGradient>
+<linearGradient id="gNavy" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#343A93"/><stop offset="0.5" stop-color="#1B1F63"/><stop offset="1" stop-color="#0F1242"/></linearGradient>
+<linearGradient id="gNavyDark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1D2170"/><stop offset="1" stop-color="#0A0D33"/></linearGradient>
+<linearGradient id="gGold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF0A0"/><stop offset="0.35" stop-color="#FFD23F"/><stop offset="0.7" stop-color="#FFB81C"/><stop offset="1" stop-color="#C97A00"/></linearGradient>
+<linearGradient id="gGoldH" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#C97A00"/><stop offset="0.3" stop-color="#FFD23F"/><stop offset="0.5" stop-color="#FFF3B0"/><stop offset="0.7" stop-color="#FFC21F"/><stop offset="1" stop-color="#C97A00"/></linearGradient>
+<linearGradient id="gScreen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#171C5C"/><stop offset="0.6" stop-color="#090C31"/><stop offset="1" stop-color="#05071F"/></linearGradient>
+<linearGradient id="gPurple" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9D80FF"/><stop offset="0.45" stop-color="#6038FF"/><stop offset="1" stop-color="#3A1FC4"/></linearGradient>
+<linearGradient id="gPurpleDark" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4A2BD6"/><stop offset="1" stop-color="#24105B"/></linearGradient>
+<linearGradient id="gWood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C98550"/><stop offset="0.5" stop-color="#8A4A22"/><stop offset="1" stop-color="#55290F"/></linearGradient>
+<linearGradient id="gWoodH" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#55290F"/><stop offset="0.35" stop-color="#B8703C"/><stop offset="0.55" stop-color="#D79A62"/><stop offset="0.8" stop-color="#8A4A22"/><stop offset="1" stop-color="#4A230C"/></linearGradient>
+<linearGradient id="gCyan" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9AEBFF"/><stop offset="1" stop-color="#1FA9D6"/></linearGradient>
+<linearGradient id="gPink" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FF8AD6"/><stop offset="1" stop-color="#C4208F"/></linearGradient>
+<linearGradient id="gTimer" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3C57FF"/><stop offset="0.5" stop-color="#6038FF"/><stop offset="1" stop-color="#2A1B9E"/></linearGradient>
+<linearGradient id="gBubble" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1E2273"/><stop offset="1" stop-color="#0E1140"/></linearGradient>
+<filter id="fGlow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="7" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="fGlowBig" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="16" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+<filter id="fSoft" x="-50%" y="-100%" width="200%" height="300%"><feGaussianBlur stdDeviation="14"/></filter>
+<filter id="fSoftS" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter>
+</defs><g font-family="Inter, DejaVu Sans, sans-serif" font-weight="900" font-style="italic">
+  <text x="0" y="-20" text-anchor="middle" font-size="190" fill="#000" opacity=".35" transform="translate(6 8)">Subasta</text>
+  <text x="0" y="-20" text-anchor="middle" font-size="190" fill="#FFFFFF" stroke="#24105B" stroke-width="14" paint-order="stroke">Subasta</text>
+  <text x="60" y="150" text-anchor="middle" font-size="190" fill="#000" opacity=".35" transform="translate(6 8)">Salvaje</text>
+  <text x="60" y="150" text-anchor="middle" font-size="190" fill="url(#gGold)" stroke="#24105B" stroke-width="14" paint-order="stroke">Salvaje</text></g></svg>
