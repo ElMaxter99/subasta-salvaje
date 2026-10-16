@@ -41,3 +41,4 @@ Formato: **decisión** — por qué — alternativas descartadas. Añade aquí c
 30. **Dashboard de auditoría, sin alertas** — solo estadísticas de cuota de IA y peso de Supabase.
 31. **Borrado automático a los 7 días sin actividad, configurable en `/admin`** (antes 12 h): sustituye la retención por versiones; ajustes en BD con prioridad sobre el entorno.
 32. **`image_usage` desvinculada de `games`** — con la FK en cascada, borrar una partida devolvía cuota diaria y borraba el historial.
+33. **Mascota: recortes de la lámina con honestidad sobre la transparencia** — la ropa azul marino no se separa del fondo automáticamente; se conserva el fondo con bordes difuminados y un `tile` del mismo color en vez de simular un PNG transparente. Los objetos de colores vivos sí tienen transparencia real. La mascota contextual de la TV va en la cabecera para no tapar información.

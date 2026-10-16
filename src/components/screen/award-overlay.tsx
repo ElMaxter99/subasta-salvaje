@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import type { LastAward, Player } from '@/lib/domain/types';
 import { formatEuros } from '@/lib/domain/money';
+import { Mascot } from '@/components/mascot/mascot';
 import './screen.css';
 
 /** Instante (ms) hasta el que el overlay de adjudicación tapa la pantalla; lo usan las tarjetas para no animar «Casa actualizada» por debajo. */
@@ -61,11 +62,11 @@ export function AwardOverlay({ award, players }: { award: LastAward | null; play
   const winner = players.find((p) => p.id === active.player_id);
   const color = winner?.color ?? '#fbbf24';
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center" role="alert" aria-live="assertive">
+    <div className="fixed inset-0 z-40 flex items-center justify-center gap-[3rem]" role="alert" aria-live="assertive">
       <div className="ss-award-bg absolute inset-0 bg-night-950/85 backdrop-blur-sm" />
       <Confetti count={60} />
       <div
-        className="ss-award-card relative flex max-w-[70%] flex-col items-center gap-[1.2rem] rounded-[2rem] border-4 bg-night-900/95 px-[4rem] py-[2.5rem] text-center shadow-2xl"
+        className="ss-award-card relative flex max-w-[58%] flex-col items-center gap-[1.2rem] rounded-[2rem] border-4 bg-night-900/95 px-[4rem] py-[2.5rem] text-center shadow-2xl"
         style={{ borderColor: color, boxShadow: `0 0 6rem ${color}66` }}
       >
         <p className="font-display text-[5.5rem] uppercase leading-none tracking-wide text-gold drop-shadow">¡Adjudicado!</p>
@@ -76,6 +77,7 @@ export function AwardOverlay({ award, players }: { award: LastAward | null; play
         </p>
         <p className="font-display text-[4.5rem] leading-none tabular-nums text-gold">{formatEuros(active.price_cents)}</p>
       </div>
+      <Mascot variant="pose-adjudica" size="md" tile motion="pop" className="relative" />
     </div>
   );
 }

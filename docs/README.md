@@ -10,6 +10,7 @@
 | [SEGURIDAD.md](SEGURIDAD.md) | Modelo de amenazas, RLS/permisos, identidad de jugadores, secretos, límites de tasa |
 | [PRUEBAS.md](PRUEBAS.md) | Estrategia de tests (Vitest/PGlite/Postgres real/Playwright), cómo ejecutarlos y trampas conocidas |
 | [OPERACIONES.md](OPERACIONES.md) | Variables de entorno, despliegue en Vercel, migraciones en Supabase, cron, diagnóstico |
+| [MASCOTA.md](MASCOTA.md) | Recortes de la mascota de la lámina de referencia, componentes `Mascot`/`EmptyState`, dónde aparece y qué falta |
 | [ASSETS.md](ASSETS.md) | Asset pack (mascota, props, UI, VFX, marca): pipeline, formato y limitaciones |
 | [DECISIONES.md](DECISIONES.md) | Registro de decisiones (qué, por qué, alternativas) |
 | [HISTORIAL.md](HISTORIAL.md) | Cronología de las peticiones del propietario y lo entregado |

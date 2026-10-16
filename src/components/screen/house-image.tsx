@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Home } from 'lucide-react';
 import type { ImageRef } from '@/lib/domain/types';
 
@@ -28,6 +28,14 @@ export function HouseImage({
   const url = image?.url ?? null;
   const [layers, setLayers] = useState<Layers>({ front: url, back: null, loaded: true });
   if (url !== layers.front) setLayers({ front: url, back: layers.front, loaded: false });
+
+  // Red de seguridad: si por cualquier motivo no llega `load`/`error` (imagen en caché antes de hidratar, pestaña de TV
+  // en segundo plano…), la imagen nueva se muestra igualmente pasados 2 s en lugar de quedarse transparente.
+  useEffect(() => {
+    if (layers.loaded) return;
+    const t = window.setTimeout(() => setLayers((l) => (l.loaded ? l : { ...l, loaded: true })), 2000);
+    return () => window.clearTimeout(t);
+  }, [layers.front, layers.loaded]);
 
   const done = () => {
     setLayers((l) => (l.loaded ? l : { ...l, loaded: true }));

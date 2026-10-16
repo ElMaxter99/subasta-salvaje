@@ -22,6 +22,8 @@ Cronología resumida (de la más antigua a la más reciente) con lo entregado. �
 18. **Plan de superadmin** (usuarios, partidas, accesos de IA y peso de Supabase free tier): documentado en `docs/PLAN-SUPERADMIN.md`, pendiente de decisiones y de implementar.
 19. **Superadmin implementado** según las respuestas del propietario: único superadmin, registro abierto con interruptor e invitaciones, borrado total de usuarios, dashboards de cuota de IA y peso de Supabase sin alertas, auditoría, borrado automático a 7 días configurable; MFA pendiente.
 20. **Pantalla final con «Después» = imagen inicial:** ocurría al finalizar con ediciones pendientes o fallidas. Ahora finalizar dispara el procesado, la pantalla final muestra «Generando la imagen final…», el panel avisa (y permite reintentar las fallidas) y hay tests.
+21. **Mascota de la lámina de referencia integrada:** recortes (transparencia real solo en objetos; mascota/expresiones/poses con fondo difuminado), componentes `Mascot`/`EmptyState`, mascota contextual en la TV, inicio y estados vacíos (`docs/MASCOTA.md`).
+22. **TV «Fin de la subasta» con «Después» roto:** la imagen se estiraba al alto de la tarjeta (`flex-1`) y `object-cover` recortaba la casa. Ahora es siempre 3:2 (como en el móvil), las tarjetas se centran y `HouseImage` muestra la imagen aunque no llegue `load` (red de seguridad de 2 s). Test e2e con medición de proporción y opacidad.
 
 ## Estado actual (resumen)
 Todo lo anterior está implementado y subido a `claude/eager-cerf-lgnq1z` (sin PR). Migraciones hasta `…2300`. Tests: 124 unitarios + 9 de Postgres real + 5 e2e. Pendiente del propietario: rotar claves,

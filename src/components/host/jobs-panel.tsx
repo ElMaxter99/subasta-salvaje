@@ -8,6 +8,7 @@ import { useToast } from '@/components/ui/toast';
 import { kickJobs } from '@/lib/client/api';
 import type { ImageJob, JobKind, JobStatus } from '@/lib/domain/types';
 import { Card, Notice, Pill, fmtDateTime } from './bits';
+import { Mascot } from '@/components/mascot/mascot';
 import { errorMessage, type HostCtx } from './host-context';
 
 const KIND: Record<JobKind, string> = { base: 'Imagen base de la partida (para todos)', initial: 'Imagen inicial', edit: 'Edición por compra', item: 'Imagen de elemento' };
@@ -82,7 +83,10 @@ export function JobsPanel({ ctx, refresh }: { ctx: HostCtx; refresh: () => Promi
 
       {jobs.length === 0 ? (
         <Card>
-          <p className="text-white/70">Todavía no hay trabajos de imagen. Aparecerán al generar imágenes iniciales o al adjudicar un elemento.</p>
+          <div className="flex items-center gap-4">
+            <Mascot variant="expr-pensativo" size="sm" tile />
+            <p className="text-white/70">Todavía no hay trabajos de imagen. Aparecerán al generar imágenes iniciales o al adjudicar un elemento.</p>
+          </div>
         </Card>
       ) : (
         <ul className="space-y-2">

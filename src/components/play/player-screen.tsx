@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Crown, LogOut, Pause, Trophy } from 'lucide-react';
 import { BidPad } from './bid-pad';
 import { GalleryVote } from './gallery-vote';
+import { Mascot } from '@/components/mascot/mascot';
 import { MyHouse } from './house';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { ConnectionBadge } from '@/components/ui/status';
@@ -105,6 +106,7 @@ export function PlayerScreen({
 
         {game.status === 'finished' ? (
           <div className="space-y-3 rounded-3xl border border-white/10 bg-night-800 p-5 text-center">
+            <Mascot variant="expr-celebrando" size="sm" tile motion="pop" className="mx-auto" />
             <h2 className="font-display text-2xl">La partida ha terminado</h2>
             <Link href={`/game/${roomCode}/results`} className="inline-flex min-h-14 items-center justify-center rounded-2xl bg-gold px-6 text-lg font-bold text-night-950">
               Ver resultados

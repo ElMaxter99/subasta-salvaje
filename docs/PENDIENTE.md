@@ -56,3 +56,4 @@ Después de cada migración nueva, vuelve a probar a mano: crear partida, pujar,
 ## 8. Pendiente para más adelante (decidido por el propietario)
 - [ ] **MFA/TOTP obligatorio para el superadmin** (Supabase Auth MFA). Hasta entonces: contraseña larga y única. Al implementarlo, `requireSuperadmin()` debe exigir `aal2`.
 - [ ] Ideas del plan de superadmin no incluidas por ahora: alertas (descartadas: solo dashboard), conversión de imágenes a WebP y retención por versiones, detección de archivos huérfanos en el bucket, cuotas de IA por usuario (hoy: global + permiso por usuario), exportación CSV de la auditoría.
+- [ ] **Mascota:** para una colección completa de poses independientes con transparencia real hacen falta renders por pose (≥ 1024 px, fondo transparente o liso): primero mascota principal, celebrando, sorprendida y triste (`docs/MASCOTA.md`). Los recortes actuales de la lámina son de ≈150 px (bustos/poses).

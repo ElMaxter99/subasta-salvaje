@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { Gavel, Smartphone, Sparkles, Tv, Wand2 } from 'lucide-react';
 import { DemoSeedButton, JoinPlayerForm, JoinScreenForm, SignOutButton } from '@/components/landing/landing-actions';
 import { DemoBanner } from '@/components/ui/status';
+import { Mascot } from '@/components/mascot/mascot';
 import { getHostIdentity } from '@/lib/auth/host';
 import { getRuntimeMode } from '@/lib/config/env';
 import { themeLabel } from '@/lib/domain/themes';
@@ -44,23 +45,28 @@ export default async function Home() {
           )}
         </header>
 
-        <section className="space-y-6 py-6 text-center">
-          <p className="mx-auto inline-flex items-center gap-2 rounded-full bg-violet/20 px-4 py-1.5 text-sm font-bold text-violet-soft">
+        <section className="grid items-center gap-8 py-6 text-center md:grid-cols-[1.25fr_1fr] md:text-left">
+          <div className="space-y-6">
+          <p className="inline-flex items-center gap-2 rounded-full bg-violet/20 px-4 py-1.5 text-sm font-bold text-violet-soft">
             <Sparkles className="size-4" aria-hidden /> Subastas creativas para noches de juegos
           </p>
           <h1 className="font-display text-5xl uppercase leading-[0.95] tracking-tight sm:text-7xl">
             Puja. Construye. <span className="text-gold">Alucina.</span>
           </h1>
-          <p className="mx-auto max-w-2xl text-lg text-white/75">
+          <p className="mx-auto max-w-2xl text-lg text-white/75 md:mx-0">
             Cada jugador parte de una casa vacía y un presupuesto. Tú diriges la subasta desde el móvil; la tele muestra el espectáculo y la IA va transformando cada casa con lo que se compra.
           </p>
-          <div className="flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <div className="flex flex-col items-center justify-center gap-3 sm:flex-row md:justify-start">
             <Link
               href="/new-game"
               className="inline-flex min-h-16 items-center gap-2 rounded-2xl bg-gold px-8 text-xl font-bold text-night-950 shadow-[0_6px_0_#b45309] transition hover:bg-gold-soft"
             >
               <Gavel className="size-6" aria-hidden /> Crear partida
             </Link>
+          </div>
+          </div>
+          <div className="order-first flex justify-center md:order-none">
+            <Mascot variant="mascot-main" size="lg" tile motion="bob" priority className="[--mh:17rem] md:[--mh:28rem]" alt="Subasta Salvaje, la mascota de la app: un personaje con casco blanco, corona dorada y un martillo de subastador" />
           </div>
         </section>
 
@@ -91,7 +97,10 @@ export default async function Home() {
                 para volver al panel de control de tus partidas.
               </p>
             ) : games.length === 0 ? (
-              <p className="text-sm text-white/70">Aún no has creado ninguna partida.</p>
+              <div className="flex items-center gap-4">
+                <Mascot variant="expr-pensativo" size="sm" tile />
+                <p className="text-sm text-white/70">Aún no has creado ninguna partida. ¿Empezamos con la primera?</p>
+              </div>
             ) : (
               <ul className="space-y-2">
                 {games.slice(0, 6).map((g) => (

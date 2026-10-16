@@ -13,7 +13,8 @@
     "test:e2e": "playwright test",
     "worker": "tsx --env-file-if-exists=.env.local scripts/worker.ts",
     "scan:secrets": "node scripts/scan-secrets.mjs",
-    "assets:build": "node scripts/assets/build-assets.mjs"
+    "assets:build": "node scripts/assets/build-assets.mjs",
+    "mascot:extract": "node scripts/mascot/extract.mjs"
   },
   "engines": {
     "node": ">=20"

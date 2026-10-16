@@ -1,10 +1,10 @@
 import Link from 'next/link';
-import { Lock } from 'lucide-react';
+import { Mascot } from '@/components/mascot/mascot';
 
 export function ForbiddenNotice({ roomCode }: { roomCode: string }) {
   return (
     <main className="mx-auto flex min-h-screen max-w-lg flex-col items-center justify-center gap-5 px-6 text-center">
-      <Lock className="size-14 text-gold" aria-hidden />
+      <Mascot variant="expr-enfadado" size="md" tile motion="pop" />
       <h1 className="font-display text-3xl">Esta partida no es tuya</h1>
       <p className="text-white/75">
         El panel de control de <b>{roomCode}</b> solo está disponible para el anfitrión que la creó. Inicia sesión con esa cuenta o abre la pantalla pública.

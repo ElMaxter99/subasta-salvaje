@@ -11,6 +11,7 @@ import { AuctionStage } from './auction-stage';
 import { AwardOverlay } from './award-overlay';
 import { PlayerCard } from './player-card';
 import { WildTaxBanner } from './wild-tax-banner';
+import { MascotCue } from './mascot-cue';
 import { CompactInvite } from './join-invite';
 import { FinalResults } from './results-view';
 import { useFullscreenControls } from './use-fullscreen';
@@ -112,6 +113,8 @@ export function ScreenView({ roomCode, initial, runtime }: { roomCode: string; i
         </div>
 
         {mobile && game.status !== 'lobby' ? <CompactInvite roomCode={roomCode} /> : null}
+
+        <MascotCue snap={snapshot} />
 
         <div className="flex items-center gap-3" aria-live="polite">
           {generating ? (

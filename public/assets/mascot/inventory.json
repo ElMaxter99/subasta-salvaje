@@ -1,0 +1,343 @@
+{
+  "source": "reference-sheet.webp",
+  "note": "Recortes de una lámina plana. transparency=real: fondo quitado; difuminado: conserva el fondo oscuro con bordes a transparente.",
+  "assets": [
+    {
+      "id": "mascot-main",
+      "group": "mascot",
+      "file": "mascot-main.webp",
+      "width": 555,
+      "height": 665,
+      "bytes": 39500,
+      "transparency": "difuminado",
+      "sourceBox": [
+        20,
+        40,
+        555,
+        665
+      ]
+    },
+    {
+      "id": "expr-feliz",
+      "group": "expression",
+      "file": "expr-feliz.webp",
+      "width": 168,
+      "height": 172,
+      "bytes": 6358,
+      "transparency": "difuminado",
+      "sourceBox": [
+        551,
+        96,
+        168,
+        172
+      ]
+    },
+    {
+      "id": "expr-sorprendido",
+      "group": "expression",
+      "file": "expr-sorprendido.webp",
+      "width": 164,
+      "height": 168,
+      "bytes": 5524,
+      "transparency": "difuminado",
+      "sourceBox": [
+        732,
+        100,
+        164,
+        168
+      ]
+    },
+    {
+      "id": "expr-guino",
+      "group": "expression",
+      "file": "expr-guino.webp",
+      "width": 160,
+      "height": 168,
+      "bytes": 5848,
+      "transparency": "difuminado",
+      "sourceBox": [
+        906,
+        100,
+        160,
+        168
+      ]
+    },
+    {
+      "id": "expr-pensativo",
+      "group": "expression",
+      "file": "expr-pensativo.webp",
+      "width": 140,
+      "height": 168,
+      "bytes": 5238,
+      "transparency": "difuminado",
+      "sourceBox": [
+        1072,
+        100,
+        140,
+        168
+      ]
+    },
+    {
+      "id": "expr-triste",
+      "group": "expression",
+      "file": "expr-triste.webp",
+      "width": 132,
+      "height": 182,
+      "bytes": 4812,
+      "transparency": "difuminado",
+      "sourceBox": [
+        572,
+        328,
+        132,
+        182
+      ]
+    },
+    {
+      "id": "expr-enfadado",
+      "group": "expression",
+      "file": "expr-enfadado.webp",
+      "width": 136,
+      "height": 182,
+      "bytes": 5372,
+      "transparency": "difuminado",
+      "sourceBox": [
+        740,
+        328,
+        136,
+        182
+      ]
+    },
+    {
+      "id": "expr-celebrando",
+      "group": "expression",
+      "file": "expr-celebrando.webp",
+      "width": 172,
+      "height": 188,
+      "bytes": 7342,
+      "transparency": "difuminado",
+      "sourceBox": [
+        892,
+        322,
+        172,
+        188
+      ]
+    },
+    {
+      "id": "expr-hype",
+      "group": "expression",
+      "file": "expr-hype.webp",
+      "width": 156,
+      "height": 188,
+      "bytes": 6974,
+      "transparency": "difuminado",
+      "sourceBox": [
+        1062,
+        322,
+        156,
+        188
+      ]
+    },
+    {
+      "id": "pose-presenta",
+      "group": "pose",
+      "file": "pose-presenta.webp",
+      "width": 150,
+      "height": 166,
+      "bytes": 5428,
+      "transparency": "difuminado",
+      "sourceBox": [
+        546,
+        626,
+        150,
+        166
+      ]
+    },
+    {
+      "id": "pose-anuncia",
+      "group": "pose",
+      "file": "pose-anuncia.webp",
+      "width": 125,
+      "height": 152,
+      "bytes": 4704,
+      "transparency": "difuminado",
+      "sourceBox": [
+        696,
+        640,
+        125,
+        152
+      ]
+    },
+    {
+      "id": "pose-cuenta-atras",
+      "group": "pose",
+      "file": "pose-cuenta-atras.webp",
+      "width": 140,
+      "height": 156,
+      "bytes": 5440,
+      "transparency": "difuminado",
+      "sourceBox": [
+        818,
+        638,
+        140,
+        156
+      ]
+    },
+    {
+      "id": "pose-adjudica",
+      "group": "pose",
+      "file": "pose-adjudica.webp",
+      "width": 130,
+      "height": 162,
+      "bytes": 5346,
+      "transparency": "difuminado",
+      "sourceBox": [
+        956,
+        632,
+        130,
+        162
+      ]
+    },
+    {
+      "id": "pose-celebra",
+      "group": "pose",
+      "file": "pose-celebra.webp",
+      "width": 130,
+      "height": 166,
+      "bytes": 5672,
+      "transparency": "difuminado",
+      "sourceBox": [
+        1090,
+        626,
+        130,
+        166
+      ]
+    },
+    {
+      "id": "item-corona",
+      "group": "item",
+      "file": "item-corona.webp",
+      "width": 105,
+      "height": 85,
+      "bytes": 3656,
+      "transparency": "real",
+      "sourceBox": [
+        36,
+        868,
+        108,
+        100
+      ],
+      "keptRatio": 0.5
+    },
+    {
+      "id": "item-martillo",
+      "group": "item",
+      "file": "item-martillo.webp",
+      "width": 121,
+      "height": 112,
+      "bytes": 4158,
+      "transparency": "real",
+      "sourceBox": [
+        180,
+        862,
+        130,
+        124
+      ],
+      "keptRatio": 0.35
+    },
+    {
+      "id": "item-megafono",
+      "group": "item",
+      "file": "item-megafono.webp",
+      "width": 104,
+      "height": 101,
+      "bytes": 3638,
+      "transparency": "real",
+      "sourceBox": [
+        322,
+        868,
+        108,
+        108
+      ],
+      "keptRatio": 0.45
+    },
+    {
+      "id": "item-temporizador",
+      "group": "item",
+      "file": "item-temporizador.webp",
+      "width": 131,
+      "height": 75,
+      "bytes": 3812,
+      "transparency": "real",
+      "sourceBox": [
+        462,
+        884,
+        132,
+        90
+      ],
+      "keptRatio": 0.56
+    },
+    {
+      "id": "item-logo",
+      "group": "item",
+      "file": "item-logo.webp",
+      "width": 108,
+      "height": 96,
+      "bytes": 2684,
+      "transparency": "real",
+      "sourceBox": [
+        626,
+        878,
+        118,
+        118
+      ],
+      "keptRatio": 0.63
+    },
+    {
+      "id": "item-bocadillo",
+      "group": "item",
+      "file": "item-bocadillo.webp",
+      "width": 176,
+      "height": 118,
+      "bytes": 4270,
+      "transparency": "difuminado",
+      "sourceBox": [
+        770,
+        878,
+        176,
+        118
+      ]
+    },
+    {
+      "id": "item-moneda",
+      "group": "item",
+      "file": "item-moneda.webp",
+      "width": 103,
+      "height": 100,
+      "bytes": 3862,
+      "transparency": "real",
+      "sourceBox": [
+        980,
+        876,
+        110,
+        110
+      ],
+      "keptRatio": 0.64
+    },
+    {
+      "id": "item-brillo",
+      "group": "item",
+      "file": "item-brillo.webp",
+      "width": 72,
+      "height": 79,
+      "bytes": 1900,
+      "transparency": "real",
+      "sourceBox": [
+        1126,
+        880,
+        82,
+        92
+      ],
+      "keptRatio": 0.27
+    }
+  ]
+}

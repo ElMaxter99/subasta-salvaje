@@ -11,6 +11,7 @@ import { formatEuros } from '@/lib/domain/money';
 import { computeHighlights, computeRanking, rankingRuleLabel } from '@/lib/domain/ranking';
 import { themeLabel } from '@/lib/domain/themes';
 import { Confetti } from './award-overlay';
+import { Mascot } from '@/components/mascot/mascot';
 import { HouseImage } from './house-image';
 import './screen.css';
 
@@ -66,9 +67,10 @@ function ResultCard({ player, rank, scoreText, tv, dense, votes = null, galleryW
   const spent = player.purchases.reduce((s, x) => s + x.price_cents, 0);
   return (
     <article
-      className={`flex min-h-0 flex-col overflow-hidden rounded-2xl border-2 bg-night-800 ${tv ? 'h-full' : ''} ${rank === 1 || galleryWinner ? 'border-gold shadow-[0_0_3rem_rgb(251_191_36/0.3)]' : 'border-white/10'}`}
+      className={`flex min-h-0 flex-col overflow-hidden rounded-2xl border-2 bg-night-800 ${tv ? 'w-full' : ''} ${rank === 1 || galleryWinner ? 'border-gold shadow-[0_0_3rem_rgb(251_191_36/0.3)]' : 'border-white/10'}`}
     >
-      <div className={`relative flex min-h-0 flex-col ${tv ? 'flex-1' : 'aspect-[3/2]'}`}>
+      {/* Siempre 3:2 (también en la TV): con `flex-1` la imagen se estiraba al alto de la tarjeta y `object-cover` recortaba la casa final. */}
+      <div className="relative flex min-h-0 aspect-[3/2] flex-col">
         <BeforeAfter player={player} tv={tv} />
         {player.generating.some((g) => g.kind === 'edit') ? (
           <span className={`absolute right-2 bottom-2 rounded-full bg-violet px-3 py-1 font-black text-white ${tv ? 'text-[1.2rem]' : 'text-sm'}`} role="status" data-testid="final-generating">
@@ -193,8 +195,11 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
   );
 
   const hero = (
-    <div className="relative text-center">
-      <p className={`font-display uppercase tracking-wide text-gold ${tv ? 'text-[3.4rem] leading-none' : 'text-4xl sm:text-6xl'}`}>¡Fin de la subasta!</p>
+    <div className="relative flex flex-col items-center text-center">
+      <div className="flex items-center justify-center gap-[1.5rem]">
+        <Mascot variant="expr-hype" size={tv ? 'xs' : 'sm'} tile motion="bob" />
+        <p className={`font-display uppercase tracking-wide text-gold ${tv ? 'text-[3.4rem] leading-none' : 'text-4xl sm:text-6xl'}`}>¡Fin de la subasta!</p>
+      </div>
       <p className={`font-semibold text-white/80 ${tv ? 'mt-1 text-[1.4rem]' : 'mt-2 text-base sm:text-xl'}`}>
         {game.name} · {themeLabel(game.theme)}
         {ranking ? <> · Clasificación: <strong className="text-gold-soft">{rankingRuleLabel(rule)}</strong></> : null}
@@ -214,7 +219,7 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
             // Cada fila se centra por separado para que la última (incompleta) no quede pegada a la izquierda.
             <div key={r} className="flex min-h-0 flex-1 justify-center gap-[0.9rem]">
               {row.map(({ player, rank }) => (
-                <div key={player.id} className="min-h-0" style={{ width: `calc((100% - ${(cols - 1) * 0.9}rem) / ${cols})`, maxWidth: rows === 1 ? '28rem' : undefined }}>
+                <div key={player.id} className="flex min-h-0 items-center" style={{ width: `calc((100% - ${(cols - 1) * 0.9}rem) / ${cols})`, maxWidth: rows === 1 ? (n <= 3 ? '40rem' : '28rem') : undefined }}>
                   <ResultCard player={player} rank={rank} scoreText={ranking && rank && rule !== 'balance' ? scoreLabel(rule, player) : null} tv dense={rows > 1} {...cardProps(player.id)} />
                 </div>
               ))}

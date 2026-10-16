@@ -1,10 +1,11 @@
 'use client';
 
-import { Gavel, Hourglass, Users } from 'lucide-react';
+import { Gavel, Hourglass } from 'lucide-react';
 import type { Auction, GameInfo, Player, PublicSnapshot } from '@/lib/domain/types';
 import { useAutoAwardCountdown } from '@/lib/client/auto-award';
 import { formatEuros } from '@/lib/domain/money';
 import { LobbyInvite } from './join-invite';
+import { Mascot } from '@/components/mascot/mascot';
 import './screen.css';
 
 function ItemVisual({ item }: { item: Auction['item'] }) {
@@ -159,7 +160,7 @@ function IdleStage({ snap }: { snap: PublicSnapshot }) {
 function LobbyMessage({ game, count }: { game: GameInfo; count: number }) {
   return (
     <>
-      <Users className="size-[5rem] text-teal" aria-hidden />
+      <Mascot variant="expr-feliz" size="md" tile motion="bob" />
       <p className="font-display text-[4.8rem] leading-tight text-white">Sala de espera</p>
       <p className="text-[2rem] font-semibold text-white/80">
         {count === 0 ? 'Esperando a los jugadores…' : `${count} ${count === 1 ? 'jugador listo' : 'jugadores listos'} para la subasta`}
