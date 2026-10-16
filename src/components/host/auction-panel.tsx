@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Ban, Gavel, Lock, Megaphone, RotateCcw, SkipForward, Undo2 } from 'lucide-react';
+import { AutoAwardCard } from './auto-award-card';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { newIdempotencyKey } from '@/lib/client/api';
@@ -40,6 +41,8 @@ export function AuctionPanel({ ctx }: { ctx: HostCtx }) {
       ) : (
         <NextItem ctx={ctx} />
       )}
+
+      {game.status !== 'lobby' ? <AutoAwardCard ctx={ctx} /> : null}
 
       <AwardDialog ctx={ctx} draft={award} onClose={() => setAward(null)} />
 

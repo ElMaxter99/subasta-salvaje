@@ -67,6 +67,8 @@ function toRpc(action: GameAction): { fn: string; params: Record<string, unknown
   switch (type) {
     case 'game.update':
       return { fn: 'ss_update_game', params: rest };
+    case 'game.set_auto_award':
+      return { fn: 'ss_set_auto_award', params: rest };
     case 'game.set_join_policy':
       return { fn: 'ss_set_join_policy', params: rest };
     case 'game.set_mode':
@@ -196,4 +198,18 @@ export async function uploadInitialImageForAll(ctx: Ctx, roomCode: string, hostI
     throw new DomainError('invalid_input', (e as Error).message);
   }
   return storeAndSetForAll(ctx, room(roomCode), hostId, bytes, mime, 'upload');
+}
+
+/**
+ * Adjudicación automática por tiempo: si la cuenta atrás de la subasta abierta venció, la adjudica y avisa.
+ * Es idempotente y segura de llamar en cada lectura (la BD sólo toma el bloqueo cuando de verdad venció).
+ * Devuelve true si adjudicó (el llamante debe procesar el trabajo de imagen generado).
+ */
+export async function autoAwardTick(ctx: Ctx, roomCode: string): Promise<boolean> {
+  const code = room(roomCode);
+  const r = await ctx.db.rpc<{ awarded?: boolean }>('ss_auto_award', { room_code: code });
+  if (!r.awarded) return false;
+  const snap = await ctx.db.rpc<{ version: number }>('ss_get_state', { room_code: code, view: 'public' });
+  await ctx.publisher.publish(code, snap.version);
+  return true;
 }

@@ -54,12 +54,17 @@ export async function joinGame(ctx: Ctx, roomCode: string, rawBody: unknown, cur
 }
 
 export async function playerBid(ctx: Ctx, roomCode: string, token: string | undefined | null, rawBody: unknown): Promise<PublicSnapshot> {
+  return (await playerBidResult(ctx, roomCode, token, rawBody)).snapshot;
+}
+
+/** Igual que playerBid pero indica si la puja provocó una adjudicación automática instantánea. */
+export async function playerBidResult(ctx: Ctx, roomCode: string, token: string | undefined | null, rawBody: unknown): Promise<{ snapshot: PublicSnapshot; autoAwarded: boolean }> {
   const parsed = playerBidSchema.safeParse(rawBody);
   if (!parsed.success) throw new DomainError('invalid_input');
   if (!token) throw new DomainError('not_player');
   const code = room(roomCode);
-  await ctx.db.rpc('ss_player_bid', { ...parsed.data, room_code: code, token_hash: hashToken(token) });
-  return publishAfter(ctx, code);
+  const res = await ctx.db.rpc<{ auto_awarded?: boolean }>('ss_player_bid', { ...parsed.data, room_code: code, token_hash: hashToken(token) });
+  return { snapshot: await publishAfter(ctx, code), autoAwarded: Boolean(res.auto_awarded) };
 }
 
 export async function leaveGame(ctx: Ctx, roomCode: string, token: string | undefined | null): Promise<void> {

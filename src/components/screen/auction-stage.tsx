@@ -2,6 +2,7 @@
 
 import { Gavel, Hourglass, Users } from 'lucide-react';
 import type { Auction, GameInfo, Player, PublicSnapshot } from '@/lib/domain/types';
+import { useAutoAwardCountdown } from '@/lib/client/auto-award';
 import { formatEuros } from '@/lib/domain/money';
 import { LobbyInvite } from './join-invite';
 import './screen.css';
@@ -23,7 +24,8 @@ function ItemVisual({ item }: { item: Auction['item'] }) {
   );
 }
 
-function ActiveAuction({ auction, players, compact }: { auction: Auction; players: Player[]; compact: boolean }) {
+function ActiveAuction({ snap, auction, players, compact }: { snap: PublicSnapshot; auction: Auction; players: Player[]; compact: boolean }) {
+  const countdown = useAutoAwardCountdown(snap);
   const closed = auction.status === 'closed';
   const awarded = auction.status === 'awarded';
   const price = awarded ? (auction.final_price_cents ?? auction.current_bid_cents) : auction.current_bid_cents;
@@ -58,6 +60,14 @@ function ActiveAuction({ auction, players, compact }: { auction: Auction; player
           {closed ? (
             <p className="mt-2 inline-flex items-center gap-3 rounded-2xl bg-rose px-5 py-2 font-display text-[2rem] text-night-950">
               <Gavel className="size-8" aria-hidden /> ¡Puja cerrada! Última palabra…
+            </p>
+          ) : null}
+          {countdown !== null && !closed && !awarded ? (
+            <p
+              className={`mt-2 inline-flex items-center gap-3 rounded-2xl px-5 py-2 font-display text-[2rem] tabular-nums ${countdown <= 5 ? 'bg-rose text-night-950' : 'bg-night-700 text-gold-soft'}`}
+              data-testid="auto-award-countdown"
+            >
+              <Hourglass className="size-8" aria-hidden /> {countdown > 0 ? `¡A la una… adjudicado en ${countdown} s!` : '¡Adjudicando…!'}
             </p>
           ) : null}
           {awarded ? (
@@ -150,5 +160,5 @@ function LobbyMessage({ game, count }: { game: GameInfo; count: number }) {
 export function AuctionStage({ snap, compact }: { snap: PublicSnapshot; compact: boolean }) {
   const a = snap.auction;
   const live = a && a.status !== 'cancelled';
-  return live ? <ActiveAuction auction={a} players={snap.players} compact={compact} /> : <IdleStage snap={snap} />;
+  return live ? <ActiveAuction snap={snap} auction={a} players={snap.players} compact={compact} /> : <IdleStage snap={snap} />;
 }

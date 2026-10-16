@@ -60,6 +60,16 @@ export function useLiveGame<T extends PublicSnapshot = PublicSnapshot>({ roomCod
     return inflight.current;
   }, [apply, roomCode, view]);
 
+  // Adjudicación automática: al vencer la cuenta atrás se relee el estado (el servidor adjudica en esa lectura).
+  const autoAt = snapshot.auction?.auto_award_at ?? null;
+  useEffect(() => {
+    if (!autoAt) return;
+    const skew = Date.parse(snapshot.server_time) - Date.now();
+    const wait = Date.parse(autoAt) - (Date.now() + skew);
+    const timers = [600, 2500, 6000].map((extra) => setTimeout(() => void refresh(), Math.max(0, wait) + extra));
+    return () => timers.forEach(clearTimeout);
+  }, [autoAt, snapshot.server_time, refresh]);
+
   // Realtime (sólo con Supabase)
   useEffect(() => {
     if (runtime.mode !== 'supabase' || !runtime.supabaseUrl || !runtime.supabaseAnonKey) return;

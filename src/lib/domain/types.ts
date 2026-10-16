@@ -80,6 +80,8 @@ export interface Auction {
   final_price_cents: number | null;
   opened_at: string;
   closed_at: string | null;
+  /** Momento (hora del servidor) en que se adjudicará sola si nadie puja más; null si no aplica. */
+  auto_award_at?: string | null;
   item: Pick<AuctionItem, 'id' | 'name' | 'description' | 'emoji' | 'image_path' | 'image_url'>;
   bids: Bid[];
 }
@@ -104,6 +106,9 @@ export interface GameInfo {
   ranking_rule: RankingRule;
   play_mode: PlayMode;
   join_policy: JoinPolicy;
+  /** Adjudicación automática: por tiempo desde la última puja, o al instante si nadie más puede superar la puja. */
+  auto_award_enabled: boolean;
+  auto_award_seconds: number;
   current_auction_id: string | null;
   created_at: string;
   finished_at: string | null;
@@ -164,6 +169,8 @@ export interface GameEvent {
 /** Instantánea pública (pantalla de TV y resultados). */
 export interface PublicSnapshot {
   version: number;
+  /** Hora del servidor al generar la instantánea (para cuentas atrás sin depender del reloj del cliente). */
+  server_time: string;
   game: GameInfo;
   players: Player[];
   items: AuctionItem[];

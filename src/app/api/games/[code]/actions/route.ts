@@ -21,7 +21,8 @@ export const POST = handle(async (req: Request, { params }: { params: Promise<{ 
 
   // Dispara el procesamiento de trabajos de imagen DESPUÉS de responder. La cola es persistente:
   // si esta ejecución se corta, el cron / worker / botón del anfitrión recogerán el trabajo.
-  if (body?.type && KICK_JOBS.has(body.type) && ctx.provider) {
+  // También si una puja provocó una adjudicación automática instantánea.
+  if (((body?.type && KICK_JOBS.has(body.type)) || out.result.auto_awarded) && ctx.provider) {
     const gameId = out.snapshot.game.id;
     after(async () => {
       try {

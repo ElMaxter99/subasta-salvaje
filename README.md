@@ -101,6 +101,7 @@ npx supabase status          # muestra API URL, anon key y service_role key → 
    5. `supabase/migrations/20260101000400_mobile_players.sql` y `20260101000500_security_mobile_players.sql` (modo móviles).
    6. `supabase/migrations/20260101000600_mobile_hardening.sql` y `20260101000700_security_mobile_hardening.sql` (endurecimiento).
    7. `supabase/migrations/20260101000800_join_policy_quota.sql` y `20260101000900_security_join_policy_quota.sql` (política de altas de los móviles y cuota de generaciones).
+   8. `supabase/migrations/20260101001000_auto_award.sql` y `20260101001100_security_auto_award.sql` (adjudicación automática).
 
    Con la CLI: `npx supabase link --project-ref TU_REF` y `npx supabase db push`. Si ya aplicaste archivos a mano en el SQL Editor, antes marca esas versiones: `npx supabase migration repair --status applied 20260101000000 20260101000100 …`.
 
@@ -230,6 +231,16 @@ PG_TEST_URL=postgres://postgres@localhost:5432/postgres npx vitest run tests/pos
 Con varias conexiones simultáneas comprueba: 16 adjudicaciones a la vez → una compra y un cobro; pujas y reintentos en paralelo; varios workers sobre varias partidas sin deadlocks ni trabajos duplicados. Además aplica **ambas migraciones con los roles `anon`/`authenticated`/`service_role`** (esquemas `auth`/`storage` simulados) y verifica que `anon` no puede leer tablas ni ejecutar funciones `ss_*` (tampoco las futuras) y que el bucket tiene los límites esperados. Lo que NO se ha podido probar sin un proyecto real: el comportamiento exacto de PostgREST/Realtime/Storage de Supabase y la API real de OpenAI.
 
 <a id="seguridad"></a>
+## Adjudicación automática
+
+Para que el anfitrión pueda jugar sin pulsar «Adjudicar» en cada ronda, en el panel (*Subasta → Adjudicación automática*) se puede activar y configurar:
+- **Por tiempo:** la subasta abierta se adjudica sola N segundos (3–300, por defecto 20) después de la **última puja**. Cada puja nueva, deshacer una puja o reabrir la subasta reinician la cuenta atrás.
+- **Instantánea:** en cuanto nadie más puede superar la puja actual (todos los demás tienen un saldo igual o inferior), se adjudica al momento, incluso si la puja viene de un móvil.
+- La TV, el móvil de los jugadores y el panel muestran la cuenta atrás (calculada con la hora del servidor). No se adjudica sola con la subasta cerrada, la partida en pausa o la función desactivada (por defecto está **desactivada**).
+- Usa el mismo núcleo SQL (`ss_award_core`) que la adjudicación manual: se cobra una sola vez, se crea la compra y el trabajo de imagen; un «Adjudicar» manual posterior no vuelve a cobrar.
+
+Cómo se ejecuta sin un proceso en segundo plano (Vercel): cualquier lectura del estado (la TV, los móviles o el panel, que sondean cada pocos segundos) comprueba si la cuenta atrás venció y, en ese caso, adjudica (`ss_auto_award`, idempotente y con bloqueo de la partida). Cada cliente además relee el estado justo al llegar a cero. **Limitación:** si no hay ningún dispositivo con la partida abierta, no se adjudica hasta que alguien la abra; el anfitrión siempre puede adjudicar a mano.
+
 ## Modo móviles: identidad de los jugadores
 
 Los jugadores **no tienen cuenta**. Al unirse (reclamar un nombre libre o entrar con uno nuevo en la sala de espera) el servidor genera un token aleatorio que va en una cookie `httpOnly` del móvil; en la base de datos solo se guarda su hash SHA-256 y la vista pública solo expone si la casilla está ocupada (`claimed`). Las pujas del móvil pasan por `POST /api/play/[código]/bid`, que identifica al jugador por esa cookie y aplica **las mismas reglas SQL** que las del anfitrión (saldo, mínimo, subasta abierta, idempotencia) más una: no puedes pujar contra ti mismo. Quien llega primero reclama la casilla; si alguien se equivoca o cambia de móvil, el anfitrión pulsa «Liberar móvil». El código de sala da acceso de juego: compártelo solo con quien quieras que participe.

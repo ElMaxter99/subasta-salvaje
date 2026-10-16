@@ -8,6 +8,7 @@ import { MyHouse } from './house';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { ConnectionBadge } from '@/components/ui/status';
 import type { ConnectionState } from '@/lib/client/use-live-game';
+import { useAutoAwardCountdown } from '@/lib/client/auto-award';
 import { formatEuros } from '@/lib/domain/money';
 import type { Player, PublicSnapshot, RuntimeInfo } from '@/lib/domain/types';
 
@@ -34,6 +35,7 @@ export function PlayerScreen({
   leaving: boolean;
 }) {
   const { game, auction, last_award, players } = snapshot;
+  const countdown = useAutoAwardCountdown(snapshot);
   const [menu, setMenu] = useState(false);
   const [confirmLeave, setConfirmLeave] = useState(false);
   const nameOf = (id: string | null) => players.find((p) => p.id === id)?.name ?? 'Alguien';
@@ -151,6 +153,12 @@ export function PlayerScreen({
                 )}
               </p>
             </div>
+
+            {countdown !== null ? (
+              <p role="status" className={`rounded-2xl px-4 py-2 text-center text-base font-bold tabular-nums ${countdown <= 5 ? 'bg-rose text-night-950' : 'bg-night-700 text-gold-soft'}`} data-testid="auto-award-countdown">
+                {countdown > 0 ? `Se adjudica en ${countdown} s si nadie puja más` : 'Adjudicando…'}
+              </p>
+            ) : null}
 
             {recent.length > 0 ? (
               <ul className="space-y-1 text-sm" aria-label="Últimas pujas">
