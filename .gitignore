@@ -1,0 +1,16 @@
+node_modules
+.next
+out
+.env
+.env.*
+!.env.example
+.demo-data
+.vercel
+*.tsbuildinfo
+next-env.d.ts
+playwright-report
+test-results
+coverage
+.next-e2e
+.demo-data-e2e
+.next-*

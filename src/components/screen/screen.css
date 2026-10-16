@@ -1,0 +1,80 @@
+/* Animaciones propias de la pantalla de TV y resultados (solo CSS). */
+@keyframes ss-price-pop {
+  0% { transform: scale(0.86); filter: brightness(1.8); }
+  55% { transform: scale(1.09); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+@keyframes ss-bid-in {
+  0% { transform: translateX(-24px); opacity: 0; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+@keyframes ss-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes ss-ring {
+  0% { box-shadow: 0 0 0 0 rgb(45 212 191 / 0.9), inset 0 0 0 0.25rem rgb(45 212 191 / 0.95); }
+  70% { box-shadow: 0 0 0 1.6rem rgb(45 212 191 / 0), inset 0 0 0 0.25rem rgb(45 212 191 / 0.95); }
+  100% { box-shadow: 0 0 0 0 rgb(45 212 191 / 0), inset 0 0 0 0.25rem rgb(45 212 191 / 0.95); }
+}
+@keyframes ss-flash {
+  0% { opacity: 0.95; }
+  100% { opacity: 0; }
+}
+@keyframes ss-ribbon {
+  0% { transform: translateY(-120%) rotate(-3deg); opacity: 0; }
+  12% { transform: translateY(0) rotate(-3deg); opacity: 1; }
+  88% { transform: translateY(0) rotate(-3deg); opacity: 1; }
+  100% { transform: translateY(-120%) rotate(-3deg); opacity: 0; }
+}
+@keyframes ss-award-card {
+  0% { transform: scale(0.4) rotate(-6deg); opacity: 0; }
+  14% { transform: scale(1.06) rotate(1deg); opacity: 1; }
+  22% { transform: scale(1) rotate(0); }
+  100% { transform: scale(1); opacity: 1; }
+}
+@keyframes ss-award-bg {
+  0% { opacity: 0; }
+  8% { opacity: 1; }
+  92% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@keyframes ss-confetti {
+  0% { transform: translate3d(0, -12vh, 0) rotate(0deg); opacity: 1; }
+  100% { transform: translate3d(var(--dx, 0), 112vh, 0) rotate(var(--rot, 720deg)); opacity: 0.9; }
+}
+@keyframes ss-emoji-bounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-0.6rem) scale(1.08); }
+}
+@keyframes ss-sweep {
+  0% { background-position: 150% 0; }
+  100% { background-position: -150% 0; }
+}
+@keyframes ss-leader-glow {
+  0%, 100% { box-shadow: 0 0 0 0.2rem var(--leader, #fbbf24), 0 0 1.4rem 0.2rem color-mix(in srgb, var(--leader, #fbbf24) 55%, transparent); }
+  50% { box-shadow: 0 0 0 0.2rem var(--leader, #fbbf24), 0 0 2.6rem 0.6rem color-mix(in srgb, var(--leader, #fbbf24) 70%, transparent); }
+}
+
+.ss-price-pop { animation: ss-price-pop 0.55s cubic-bezier(0.2, 1.3, 0.4, 1) both; }
+.ss-bid-in { animation: ss-bid-in 0.45s ease-out both; }
+.ss-fade-in { animation: ss-fade-in 0.9s ease-in-out both; }
+.ss-ring { animation: ss-ring 1.2s ease-out 2; }
+.ss-flash { animation: ss-flash 1.1s ease-out both; }
+.ss-ribbon { animation: ss-ribbon 3s ease-in-out both; }
+.ss-award-card { animation: ss-award-card 0.9s cubic-bezier(0.2, 1.2, 0.4, 1) both; }
+.ss-award-bg { animation: ss-award-bg 5.4s ease-in-out both; }
+.ss-confetti { animation: ss-confetti var(--dur, 4s) linear var(--delay, 0s) infinite; }
+.ss-bounce { animation: ss-emoji-bounce 1.4s ease-in-out infinite; }
+.ss-leader { animation: ss-leader-glow 1.8s ease-in-out infinite; }
+.ss-shimmer {
+  background-image: linear-gradient(110deg, transparent 30%, rgb(255 255 255 / 0.22) 50%, transparent 70%);
+  background-size: 200% 100%;
+  animation: ss-sweep 2.2s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ss-confetti { display: none; }
+  .ss-ribbon { animation: none; }
+  .ss-bounce, .ss-leader, .ss-shimmer { animation: none; }
+}
