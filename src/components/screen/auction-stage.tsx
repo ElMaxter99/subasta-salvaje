@@ -37,11 +37,11 @@ function ActiveAuction({ auction, players, compact }: { auction: Auction; player
 
       <div className="flex min-w-0 flex-1 flex-col justify-between py-1">
         <div>
-          <h2 className={`font-display leading-[1.05] text-white ${compact ? 'text-[3rem]' : 'text-[3.6rem]'}`}>
+          <h2 className={`font-display leading-[1.05] text-white ${compact ? 'text-[3.6rem]' : 'text-[4.4rem]'}`}>
             {auction.item.emoji ? <span aria-hidden className="mr-3">{auction.item.emoji}</span> : null}
             {auction.item.name}
           </h2>
-          <p className={`mt-2 line-clamp-2 max-w-[48rem] font-medium text-white/75 ${compact ? 'text-[1.3rem]' : 'text-[1.6rem]'}`}>{auction.item.description}</p>
+          <p className={`mt-2 line-clamp-2 max-w-[56rem] font-medium text-white/75 ${compact ? 'text-[1.6rem]' : 'text-[2rem]'}`}>{auction.item.description}</p>
         </div>
 
         <div aria-live="polite">
@@ -50,7 +50,7 @@ function ActiveAuction({ auction, players, compact }: { auction: Auction; player
           </p>
           <p
             key={price}
-            className={`ss-price-pop font-display leading-none tabular-nums text-gold drop-shadow-[0_0_2rem_rgb(251_191_36/0.45)] ${compact ? 'text-[7.5rem]' : 'text-[9.5rem]'}`}
+            className={`ss-price-pop font-display leading-none tabular-nums text-gold drop-shadow-[0_0_2rem_rgb(251_191_36/0.45)] ${compact ? 'text-[10rem]' : 'text-[13rem]'}`}
           >
             {formatEuros(price)}
           </p>

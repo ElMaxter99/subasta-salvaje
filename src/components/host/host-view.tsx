@@ -70,13 +70,13 @@ function HostInner({ roomCode, initial, runtime, identity }: Props) {
     <div className="min-h-screen pb-24 md:pb-8">
       <DemoBanner runtime={runtime} />
       <header className="sticky top-0 z-30 border-b border-white/10 bg-night-900/95 backdrop-blur">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-1 px-4 py-2.5">
+        <div className="mx-auto flex max-w-6xl items-center gap-x-4 px-4 py-2">
           <div className="min-w-0 flex-1">
             <div className="hidden md:block">
               <Logo className="!text-sm" />
             </div>
-            <h1 className="truncate font-display text-xl leading-tight sm:text-2xl">{game.name}</h1>
-            <p className="flex flex-wrap items-center gap-2 text-sm text-white/70">
+            <h1 className="truncate font-display text-lg leading-tight sm:text-2xl">{game.name}</h1>
+            <p className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-sm text-white/70">
               <span>
                 Sala <b className="font-mono tracking-widest text-gold">{game.room_code}</b>
               </span>
@@ -85,9 +85,14 @@ function HostInner({ roomCode, initial, runtime, identity }: Props) {
               {identity.email ? <span className="hidden text-xs text-white/50 lg:inline">{identity.email}</span> : null}
             </p>
           </div>
-          <TvLinks roomCode={roomCode} />
+          <div className="hidden md:block">
+            <TvLinks roomCode={roomCode} />
+          </div>
         </div>
       </header>
+      <div className="mx-auto max-w-6xl px-4 pt-3 md:hidden">
+        <TvLinks roomCode={roomCode} />
+      </div>
 
       <div className="mx-auto grid max-w-6xl gap-6 px-4 pt-4 md:grid-cols-[13rem_1fr]">
         <nav aria-label="Secciones del panel" className="fixed inset-x-0 bottom-0 z-30 border-t border-white/10 bg-night-900/95 backdrop-blur md:sticky md:inset-x-auto md:bottom-auto md:top-28 md:h-fit md:self-start md:rounded-3xl md:border md:bg-night-800/80 md:p-2">

@@ -62,7 +62,7 @@ export function HouseImage({
         </div>
       )}
       {showDemoBadge && image?.provider === 'demo' && layers.front ? (
-        <span className="absolute right-2 top-2 rounded-md bg-gold px-2 py-0.5 text-[0.9rem] font-black tracking-widest text-night-950 shadow">DEMO</span>
+        <span className="absolute bottom-2 right-2 rounded-md bg-gold px-2 py-0.5 text-[0.9rem] font-black tracking-widest text-night-950 shadow">DEMO</span>
       ) : null}
     </div>
   );

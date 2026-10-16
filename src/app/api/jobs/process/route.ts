@@ -1,4 +1,4 @@
-import { timingSafeEqual } from 'node:crypto';
+import { randomUUID, timingSafeEqual } from 'node:crypto';
 import { handle, json } from '@/lib/api';
 import { DomainError } from '@/lib/domain/errors';
 import { getContext } from '@/lib/services/context';
@@ -23,7 +23,7 @@ function authorized(req: Request): boolean {
 async function run(req: Request) {
   if (!authorized(req)) throw new DomainError('unauthenticated', 'Falta o es incorrecto CRON_SECRET.');
   const ctx = await getContext();
-  const result = await processImageJobs(ctx, { deadlineMs: (maxDuration - 30) * 1000, maxJobs: 20, workerId: 'cron' });
+  const result = await processImageJobs(ctx, { deadlineMs: (maxDuration - 30) * 1000, maxJobs: 20, workerId: `cron-${randomUUID()}` });
   return json(result);
 }
 

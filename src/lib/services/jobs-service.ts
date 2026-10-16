@@ -49,15 +49,20 @@ export async function processImageJobs(
 
   const maxJobs = opts.maxJobs ?? 10;
   const deadline = Date.now() + (opts.deadlineMs ?? 240_000);
-  const workerId = opts.workerId ?? `worker-${randomUUID().slice(0, 8)}`;
+  const workerId = opts.workerId ?? `worker-${randomUUID()}`;
 
+  let empty = 0;
   while (result.processed < maxJobs && Date.now() < deadline) {
-    const job = await ctx.db.rpc<ClaimedJob | null>('ss_claim_image_job', {
+    const job = await ctx.db.rpc<(ClaimedJob & { retry?: boolean }) | null>('ss_claim_image_job', {
       worker_id: workerId,
       lease_seconds: 300,
       ...(opts.gameId ? { game_id: opts.gameId } : {}),
     });
     if (!job) break;
+    if (job.retry) {
+      if (++empty > 20) break;
+      continue;
+    }
     result.processed++;
     const ok = await runJob(ctx, provider, job, workerId);
     if (ok) result.succeeded++;

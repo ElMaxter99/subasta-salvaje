@@ -94,14 +94,13 @@ function LiveAuction({ ctx, auction, onAward, onUndo, onCancel }: { ctx: HostCtx
     <>
       <Card className="border-gold/30">
         <div className="flex items-center gap-4">
-          <Thumb url={auction.item.image_url} alt={auction.item.name} className="size-20" />
+          {auction.item.image_url ? <Thumb url={auction.item.image_url} alt={auction.item.name} className="size-20" /> : <span className="flex size-20 shrink-0 items-center justify-center rounded-2xl bg-night-950 text-5xl" aria-hidden>{auction.item.emoji ?? '🎁'}</span>}
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2 text-sm text-white/70">
               <Pill tone="violet">Ronda {auction.round_number}</Pill>
               <Pill tone={open ? 'teal' : 'gold'}>{open ? 'Pujas abiertas' : 'Pujas cerradas'}</Pill>
             </div>
             <h2 className="mt-1 font-display text-2xl leading-tight sm:text-3xl">
-              <span aria-hidden>{auction.item.emoji} </span>
               {auction.item.name}
             </h2>
             {auction.item.description ? <p className="text-sm text-white/70">{auction.item.description}</p> : null}
@@ -198,7 +197,10 @@ function AwardDialog({ ctx, draft, onClose }: { ctx: HostCtx; draft: AwardDraft 
         if (!draft || changed) return;
         // La clave se reutiliza mientras el diálogo siga abierto: un reintento tras un corte de red nunca cobra dos veces.
         const res = await ctx.run('award', { type: 'auction.award', auction_id: draft.auctionId, expected_winner_id: draft.winnerId, expected_price_cents: draft.price, idempotency_key: draft.key }, 'Adjudicado');
-        if (res) onClose();
+        if (res) {
+          onClose();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
       }}
     >
       {draft && winner ? (
@@ -257,15 +259,15 @@ function NextItem({ ctx }: { ctx: HostCtx }) {
         ) : (
           <ul className="space-y-2">
             {available.map((it, i) => (
-              <li key={it.id} className={`flex items-center gap-3 rounded-2xl p-3 ${i === 0 ? 'border border-gold/50 bg-gold/10' : 'bg-night-900'}`}>
+              <li key={it.id} className={`flex flex-wrap items-center gap-3 rounded-2xl p-3 ${i === 0 ? 'border border-gold/50 bg-gold/10' : 'bg-night-900'}`}>
                 <span className="text-3xl" aria-hidden>
                   {it.emoji ?? '🎁'}
                 </span>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-bold">{it.name}</p>
+                <div className="min-w-0 flex-1 basis-40">
+                  <p className="font-bold">{it.name}</p>
                   {i === 0 ? <Pill tone="gold">Siguiente sugerido</Pill> : <p className="truncate text-xs text-white/60">{it.description}</p>}
                 </div>
-                <Button variant={i === 0 ? 'primary' : 'secondary'} size={i === 0 ? 'lg' : 'md'} disabled={!playing || busy !== null} loading={busy === `announce-${it.id}`} onClick={() => run(`announce-${it.id}`, { type: 'auction.announce', item_id: it.id }, `«${it.name}» anunciado en la TV`)}>
+                <Button variant={i === 0 ? 'primary' : 'secondary'} size={i === 0 ? 'lg' : 'md'} className="w-full sm:w-auto" disabled={!playing || busy !== null} loading={busy === `announce-${it.id}`} onClick={() => run(`announce-${it.id}`, { type: 'auction.announce', item_id: it.id }, `«${it.name}» anunciado en la TV`)}>
                   Anunciar elemento
                 </Button>
               </li>

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { DomainError, toDomainError } from '@/lib/domain/errors';
-import { clientIp, rateLimit } from '@/lib/auth/rate-limit';
+import { rateLimit } from '@/lib/auth/rate-limit';
 
 export const noStore = { 'Cache-Control': 'no-store, max-age=0' };
 
@@ -21,8 +21,8 @@ export function assertSameOrigin(req: Request): void {
   if (!host || new URL(origin).host !== host) throw new DomainError('not_host', 'Origen no permitido.', 403);
 }
 
-export function limit(req: Request, bucket: string, id: string, max: number, windowMs = 60_000): void {
-  if (!rateLimit(`${bucket}:${id}:${clientIp(req.headers)}`, max, windowMs)) throw new DomainError('rate_limited');
+export function limit(_req: Request, bucket: string, id: string, max: number, windowMs = 60_000): void {
+  if (!rateLimit(`${bucket}:${id}`, max, windowMs)) throw new DomainError('rate_limited');
 }
 
 /** Envuelve un handler: traduce errores de dominio a JSON con el código HTTP adecuado. */

@@ -43,7 +43,7 @@ function BeforeAfter({ player, tv }: { player: Player; tv: boolean }) {
               <figcaption className="bg-night-950 py-0.5 text-center text-[0.9rem] font-black uppercase tracking-wider text-white">Antes</figcaption>
             </figure>
           ) : null}
-          <span className="absolute bottom-2 right-2 rounded-md bg-gold px-2 py-0.5 text-[1rem] font-black uppercase tracking-wider text-night-950">Después</span>
+          <span className="absolute right-2 top-2 rounded-md bg-gold px-2 py-0.5 text-[1rem] font-black uppercase tracking-wider text-night-950">Después</span>
           {!tv ? (
             <input
               type="range"
@@ -69,16 +69,16 @@ function ResultCard({ player, rank, scoreText, tv, dense }: { player: Player; ra
     >
       <div className={`relative flex min-h-0 flex-col ${tv ? 'flex-1' : 'aspect-[3/2]'}`}>
         <BeforeAfter player={player} tv={tv} />
-        {rank ? (
-          <span className={`absolute right-2 top-2 flex items-center gap-1.5 rounded-full px-3 py-1 font-display ${rank === 1 ? 'bg-gold text-night-950' : 'bg-night-950/85 text-white'} ${tv ? 'text-[1.4rem]' : 'text-lg'}`}>
-            {rank === 1 ? <Trophy className="size-5" aria-hidden /> : <Medal className="size-5" aria-hidden />} {rank}.º
-          </span>
-        ) : null}
       </div>
       <div className="shrink-0 px-4 py-3" style={{ borderTop: `0.3rem solid ${player.color}` }}>
         <div className="flex items-baseline justify-between gap-3">
-          <h3 className={`min-w-0 truncate font-display ${tv ? (dense ? 'text-[1.6rem]' : 'text-[2.1rem]') : 'text-2xl'}`} style={{ color: player.color }}>
-            {player.name}
+          <h3 className={`flex min-w-0 items-center gap-2 truncate font-display ${tv ? (dense ? 'text-[1.6rem]' : 'text-[2.1rem]') : 'text-2xl'}`} style={{ color: player.color }}>
+            {rank ? (
+              <span className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-0.5 text-[0.7em] text-night-950 ${rank === 1 ? 'bg-gold' : 'bg-white/85'}`}>
+                {rank === 1 ? <Trophy className="size-[0.9em]" aria-hidden /> : <Medal className="size-[0.9em]" aria-hidden />} {rank}.º
+              </span>
+            ) : null}
+            <span className="truncate">{player.name}</span>
           </h3>
           <p className={`shrink-0 font-display tabular-nums ${tv ? (dense ? 'text-[1.6rem]' : 'text-[2.1rem]') : 'text-2xl'}`} aria-label={`Saldo restante de ${player.name}`}>
             {formatEuros(player.balance_cents)}

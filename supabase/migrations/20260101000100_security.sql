@@ -29,7 +29,9 @@ revoke all on all sequences in schema public from anon, authenticated;
 revoke all on all functions in schema public from public, anon, authenticated;
 
 alter default privileges in schema public revoke all on tables    from anon, authenticated;
-alter default privileges in schema public revoke all on functions from public, anon, authenticated;
+-- EXECUTE a PUBLIC es un privilegio por defecto GLOBAL (no por esquema): hay que revocarlo sin `in schema`.
+alter default privileges for role postgres revoke execute on functions from public;
+alter default privileges for role postgres in schema public revoke execute on functions from anon, authenticated;
 
 grant usage on schema public to service_role;
 grant all on all tables    in schema public to service_role;
@@ -58,3 +60,7 @@ on conflict (id) do update
   set public = excluded.public,
       file_size_limit = excluded.file_size_limit,
       allowed_mime_types = excluded.allowed_mime_types;
+
+-- Repite la revocación al final por si se añadieron funciones después de la primera línea.
+revoke execute on all functions in schema public from public, anon, authenticated;
+grant execute on all functions in schema public to service_role;

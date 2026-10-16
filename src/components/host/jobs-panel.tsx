@@ -22,15 +22,15 @@ const pendingJobs = (jobs: ImageJob[]) => jobs.filter((j) => j.status === 'queue
 
 /** Red de seguridad: si hay trabajos pendientes y hay IA, pide al servidor que procese la cola cada ~25 s. */
 export function useAutoKick(ctx: Pick<HostCtx, 'roomCode' | 'snapshot' | 'runtime'>) {
-  const pending = pendingJobs(ctx.snapshot.jobs);
+  const hasPending = pendingJobs(ctx.snapshot.jobs) > 0;
   const { roomCode, runtime } = ctx;
   useEffect(() => {
-    if (!pending || !runtime.aiConfigured) return;
+    if (!hasPending || !runtime.aiConfigured) return;
     const id = setInterval(() => {
       if (document.visibilityState === 'visible') kickJobs(roomCode).catch(() => undefined);
     }, 25_000);
     return () => clearInterval(id);
-  }, [pending > 0, roomCode, runtime.aiConfigured]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [hasPending, roomCode, runtime.aiConfigured]);
 }
 
 export function JobsPanel({ ctx, refresh }: { ctx: HostCtx; refresh: () => Promise<void> }) {

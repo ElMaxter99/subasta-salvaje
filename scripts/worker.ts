@@ -8,6 +8,8 @@
  * Requiere las mismas variables que la app (Supabase + OPENAI_API_KEY). No funciona en modo demo
  * (la base de datos de demo es un fichero local abierto por el servidor de desarrollo).
  */
+import { randomUUID } from 'node:crypto';
+import { hostname } from 'node:os';
 import { getRuntimeMode } from '@/lib/config/env';
 import { getContext } from '@/lib/services/context';
 import { processImageJobs } from '@/lib/services/jobs-service';
@@ -30,7 +32,7 @@ async function main() {
   for (const sig of ['SIGINT', 'SIGTERM'] as const) process.on(sig, () => (stop = true));
   do {
     try {
-      const r = await processImageJobs(ctx, { maxJobs: 20, workerId: `worker-${process.pid}` });
+      const r = await processImageJobs(ctx, { maxJobs: 20, workerId: `worker-${hostname()}-${process.pid}-${randomUUID().slice(0, 8)}` });
       if (r.processed) console.log(`[worker] procesados=${r.processed} ok=${r.succeeded} fallos=${r.failed}`);
     } catch (e) {
       console.error('[worker] error', e);

@@ -224,9 +224,16 @@ returns void language sql as $$
   insert into game_events (game_id, actor_id, event_type, payload) values (p_game, p_actor, p_type, coalesce(p_payload, '{}'::jsonb));
 $$;
 
-create or replace function ss_idem_get(p_game uuid, p_key text) returns jsonb language sql as $$
-  select result from idempotency_keys where game_id = p_game and key = p_key;
-$$;
+create or replace function ss_idem_get(p_game uuid, p_key text, p_action text) returns jsonb language plpgsql as $$
+declare r idempotency_keys;
+begin
+  if p_key is null then return null; end if;
+  select * into r from idempotency_keys where game_id = p_game and key = p_key;
+  if not found then return null; end if;
+  -- La misma clave no puede reutilizarse para otra operación.
+  if r.action <> p_action then perform ss_err('idempotency_conflict'); end if;
+  return r.result;
+end $$;
 
 create or replace function ss_idem_put(p_game uuid, p_key text, p_action text, p_result jsonb) returns void language plpgsql as $$
 begin
@@ -250,6 +257,8 @@ declare
 begin
   if (p->>'host_id') is null then perform ss_err('not_host'); end if;
   if jsonb_array_length(coalesce(p->'players', '[]'::jsonb)) > 12 then perform ss_err('too_many_players'); end if;
+  if (select count(distinct lower(e->>'name')) from jsonb_array_elements(coalesce(p->'players','[]'::jsonb)) e)
+     <> jsonb_array_length(coalesce(p->'players','[]'::jsonb)) then perform ss_err('duplicate_name'); end if;
   code := ss_gen_room_code();
   insert into games (room_code, host_id, name, theme, initial_budget_cents, min_bid_cents, ranking_rule)
   values (code, (p->>'host_id')::uuid, p->>'name', coalesce(p->>'theme', 'house'), v_budget,
@@ -358,6 +367,12 @@ declare
 begin
   g := ss_lock_game(p->>'room_code', (p->>'host_id')::uuid);
 
+  if (v_op = 'add' or v_op = 'update') and p->>'name' is not null
+     and exists (select 1 from players where game_id = g.id and lower(name) = lower(p->>'name')
+                 and id is distinct from (p->>'player_id')::uuid) then
+    perform ss_err('duplicate_name');
+  end if;
+
   if v_op = 'add' then
     if g.status <> 'lobby' then perform ss_err('game_already_started'); end if;
     if (select count(*) from players where game_id = g.id) >= 12 then perform ss_err('too_many_players'); end if;
@@ -424,6 +439,7 @@ begin
     select status into v_status from auction_items where id = v_id and game_id = g.id for update;
     if not found then perform ss_err('item_not_found'); end if;
     if v_status <> 'available' then perform ss_err('item_locked'); end if;
+    if v_op = 'remove' and exists (select 1 from auctions where auction_item_id = v_id) then perform ss_err('item_locked'); end if;
     if v_op = 'update' then
       update auction_items set
         name = coalesce(p->>'name', name),
@@ -479,7 +495,7 @@ declare
 begin
   g := ss_lock_game(p->>'room_code', (p->>'host_id')::uuid);
   v_key := p->>'idempotency_key';
-  replay := ss_idem_get(g.id, v_key);
+  replay := ss_idem_get(g.id, v_key, 'place_bid');
   if replay is not null then return replay || jsonb_build_object('replay', true); end if;
 
   v_amount := (p->>'amount_cents')::int;
@@ -523,11 +539,11 @@ begin
   if target.voided_at is not null then return jsonb_build_object('ok', true, 'replay', true); end if;
 
   if a.status <> 'open' then perform ss_err('auction_closed'); end if;
-  select * into last_bid from bids where auction_id = a.id and voided_at is null order by created_at desc, id desc limit 1;
+  select * into last_bid from bids where auction_id = a.id and voided_at is null order by amount_cents desc, created_at desc, id desc limit 1;
   if last_bid.id is distinct from target.id then perform ss_err('stale_state'); end if;
 
   update bids set voided_at = now() where id = target.id;
-  select * into prev from bids where auction_id = a.id and voided_at is null order by created_at desc, id desc limit 1;
+  select * into prev from bids where auction_id = a.id and voided_at is null order by amount_cents desc, id desc limit 1;
   if found then
     update auctions set current_bid_cents = prev.amount_cents, current_bidder_id = prev.player_id where id = a.id;
   else
@@ -591,10 +607,11 @@ declare
   v_exp_price int := (p->>'expected_price_cents')::int;
   v_job uuid;
 begin
+  if v_exp_winner is null or v_exp_price is null then perform ss_err('invalid_input'); end if;
   -- 1. Serializa todo lo que ocurra en esta partida.
   g := ss_lock_game(p->>'room_code', (p->>'host_id')::uuid);
   v_key := p->>'idempotency_key';
-  replay := ss_idem_get(g.id, v_key);
+  replay := ss_idem_get(g.id, v_key, 'award');
   if replay is not null then return replay || jsonb_build_object('replay', true); end if;
 
   select * into a from auctions where id = (p->>'auction_id')::uuid and game_id = g.id for update;
@@ -616,7 +633,7 @@ begin
   if a.current_bidder_id is null then perform ss_err('no_bids'); end if;
 
   -- La confirmación debe corresponder con lo que el anfitrión vio.
-  if a.current_bidder_id is distinct from v_exp_winner or a.current_bid_cents <> v_exp_price then
+  if a.current_bidder_id is distinct from v_exp_winner or a.current_bid_cents is distinct from v_exp_price then
     perform ss_err('stale_state');
   end if;
 
@@ -740,11 +757,13 @@ end $$;
 -- Cola de trabajos de imagen (worker)
 -- ---------------------------------------------------------------------------
 
--- Reclama atómicamente el siguiente trabajo elegible. Devuelve null si no hay.
+-- Reclama atómicamente el siguiente trabajo elegible. Devuelve null si no hay y
+-- {"retry": true} si el candidato desapareció mientras se bloqueaba la partida.
 -- Reglas:
+--   · Como máximo UN bloqueo de partida por llamada (evita deadlocks entre workers).
 --   · Sólo un trabajo en curso por jugador (cada edición parte de la imagen anterior).
 --   · Las ediciones de un jugador se procesan en orden de compra.
---   · Un trabajo "running" con lease caducado se recupera (el worker murió).
+--   · Un trabajo "running" con lease caducado se recupera; si agotó los intentos se marca fallido.
 create or replace function ss_claim_image_job(p jsonb) returns jsonb language plpgsql as $$
 declare
   v_worker text := coalesce(p->>'worker_id', 'worker');
@@ -755,77 +774,80 @@ declare
   v_base image_versions;
   v_player players;
   v_item auction_items;
-  v_attempt int := 0;
+  v_msg text := 'El worker no terminó el trabajo';
 begin
-  -- Trabajos agotados cuyo worker murió: se marcan como fallidos.
-  update image_jobs set status = 'failed', error_message = coalesce(error_message, 'El worker no terminó el trabajo'),
-         finished_at = now(), locked_by = null, locked_until = null, updated_at = now()
-  where status = 'running' and locked_until < now() and attempts >= max_attempts;
+  select c.id, c.game_id into v_candidate
+  from image_jobs c
+  where ((c.status = 'queued' and c.run_after <= now()) or (c.status = 'running' and c.locked_until < now()))
+    and (p->>'game_id' is null or c.game_id = (p->>'game_id')::uuid)
+    and not exists (
+      select 1 from image_jobs r
+      where r.player_id = c.player_id and r.id <> c.id and r.status = 'running' and r.locked_until >= now())
+    and not exists (
+      select 1 from image_jobs o
+      where c.kind = 'edit' and o.kind = 'edit' and o.player_id = c.player_id and o.id <> c.id
+        and o.status in ('queued','running') and o.created_at < c.created_at)
+  order by c.created_at, c.id
+  limit 1;
+  if not found then return null; end if;
 
-  loop
-    v_attempt := v_attempt + 1;
-    exit when v_attempt > 5;
+  -- Orden de bloqueo coherente con el resto: primero la partida, luego el trabajo.
+  select * into g from games where id = v_candidate.game_id for update;
+  select * into j from image_jobs where id = v_candidate.id
+    and ((status = 'queued' and run_after <= now()) or (status = 'running' and locked_until < now()))
+    for update skip locked;
+  if not found then return jsonb_build_object('retry', true); end if;
 
-    select c.id, c.game_id into v_candidate
-    from image_jobs c
-    where ((c.status = 'queued' and c.run_after <= now()) or (c.status = 'running' and c.locked_until < now()))
-      and (p->>'game_id' is null or c.game_id = (p->>'game_id')::uuid)
-      and not exists (
-        select 1 from image_jobs r
-        where r.player_id = c.player_id and r.id <> c.id and r.status = 'running' and r.locked_until >= now())
-      and not exists (
-        select 1 from image_jobs o
-        where c.kind = 'edit' and o.kind = 'edit' and o.player_id = c.player_id and o.id <> c.id
-          and o.status in ('queued','running') and o.created_at < c.created_at)
-    order by c.created_at, c.id
-    limit 1;
-
-    if not found then return null; end if;
-
-    -- Orden de bloqueo coherente con el resto: primero la partida, luego el trabajo.
-    select * into g from games where id = v_candidate.game_id for update;
-    select * into j from image_jobs where id = v_candidate.id
-      and ((status = 'queued' and run_after <= now()) or (status = 'running' and locked_until < now()))
-      for update skip locked;
-    if not found then continue; end if;
-
-    select * into v_base from image_versions where false;
-    select * into v_player from players where false;
-    update image_jobs set status = 'running', attempts = attempts + 1, locked_by = v_worker,
-           locked_until = now() + make_interval(secs => v_lease),
-           started_at = coalesce(started_at, now()), error_message = null, updated_at = now()
-    where id = j.id returning * into j;
-
-    -- La base de una edición es SIEMPRE la imagen actual del jugador en este momento.
-    if j.kind in ('edit','initial') then
-      select * into v_player from players where id = j.player_id;
-      if j.kind = 'edit' then
-        if v_player.current_image_version_id is null then
-          update image_jobs set status = 'failed', error_message = 'El jugador no tiene imagen base para editar',
-                 finished_at = now(), locked_by = null, locked_until = null, updated_at = now() where id = j.id;
-          perform ss_touch(g.id);
-          continue;
-        end if;
-        update image_jobs set base_image_version_id = v_player.current_image_version_id where id = j.id
-        returning * into j;
-        select * into v_base from image_versions where id = j.base_image_version_id;
-      end if;
+  -- Lease caducado con todos los intentos gastados: fallo terminal (con versión fallida y evento).
+  if j.status = 'running' and j.attempts >= j.max_attempts then
+    update image_jobs set status = 'failed', error_message = v_msg, finished_at = now(),
+           locked_by = null, locked_until = null, updated_at = now() where id = j.id;
+    if j.kind in ('initial','edit') then
+      insert into image_versions (game_id, player_id, parent_version_id, source_purchase_id, origin, provider,
+                                  generation_status, is_approved, error_message)
+      values (j.game_id, j.player_id, case when j.kind = 'edit' then j.base_image_version_id else null end,
+              j.purchase_id, case when j.kind = 'initial' then 'initial' else 'edit' end, 'unknown', 'failed', false, v_msg);
     end if;
-
+    perform ss_log(g.id, null, 'image_failed', jsonb_build_object('job_id', j.id, 'terminal', true, 'error', v_msg));
     perform ss_touch(g.id);
-    select * into v_item from auction_items
-      where id = coalesce(j.item_id, (select auction_item_id from purchases where id = j.purchase_id));
+    return jsonb_build_object('retry', true);
+  end if;
 
-    return jsonb_build_object(
-      'job_id', j.id, 'kind', j.kind, 'attempts', j.attempts, 'max_attempts', j.max_attempts,
-      'game_id', g.id, 'room_code', g.room_code, 'theme', g.theme,
-      'player_id', j.player_id, 'player_name', v_player.name,
-      'item_id', v_item.id, 'item_name', v_item.name, 'item_description', v_item.description,
-      'purchase_id', j.purchase_id,
-      'base_version_id', j.base_image_version_id, 'base_storage_path', v_base.storage_path,
-      'base_mime_type', v_base.mime_type);
-  end loop;
-  return null;
+  select * into v_base from image_versions where false;
+  select * into v_player from players where false;
+  update image_jobs set status = 'running', attempts = attempts + 1, locked_by = v_worker,
+         locked_until = now() + make_interval(secs => v_lease),
+         started_at = coalesce(started_at, now()), error_message = null, updated_at = now()
+  where id = j.id returning * into j;
+
+  if j.kind in ('edit','initial') then
+    select * into v_player from players where id = j.player_id;
+    -- La base es SIEMPRE la imagen actual del jugador en este momento.
+    update image_jobs set base_image_version_id = v_player.current_image_version_id where id = j.id
+    returning * into j;
+    if j.kind = 'edit' then
+      if v_player.current_image_version_id is null then
+        update image_jobs set status = 'failed', error_message = 'El jugador no tiene imagen base para editar',
+               finished_at = now(), locked_by = null, locked_until = null, updated_at = now() where id = j.id;
+        perform ss_touch(g.id);
+        return jsonb_build_object('retry', true);
+      end if;
+      select * into v_base from image_versions where id = j.base_image_version_id;
+    end if;
+  end if;
+
+  perform ss_touch(g.id);
+  select * into v_item from auction_items
+    where id = coalesce(j.item_id, (select auction_item_id from purchases where id = j.purchase_id));
+
+  return jsonb_build_object(
+    'job_id', j.id, 'kind', j.kind, 'attempts', j.attempts, 'max_attempts', j.max_attempts,
+    'game_id', g.id, 'room_code', g.room_code, 'theme', g.theme,
+    'player_id', j.player_id, 'player_name', v_player.name,
+    'item_id', v_item.id, 'item_name', v_item.name, 'item_description', v_item.description,
+    'purchase_id', j.purchase_id,
+    'base_version_id', j.base_image_version_id, 'base_storage_path', v_base.storage_path,
+    'base_mime_type', v_base.mime_type);
 end $$;
 
 create or replace function ss_complete_image_job(p jsonb) returns jsonb language plpgsql as $$
@@ -858,13 +880,16 @@ begin
 
     -- Sólo se promociona a "actual" si nadie ha cambiado la imagen actual mientras tanto
     -- (p. ej. una restauración): una actualización atrasada nunca pisa una más reciente.
+    v_is_current := pl.current_image_version_id is not distinct from j.base_image_version_id;
     if j.kind = 'initial' then
-      v_is_current := g.status = 'lobby';
-    else
-      v_is_current := pl.current_image_version_id is not distinct from j.base_image_version_id;
+      v_is_current := v_is_current and (g.status = 'lobby' or pl.current_image_version_id is null);
     end if;
     if v_is_current then
-      update players set current_image_version_id = v_id where id = pl.id;
+      update players set current_image_version_id = v_id,
+             -- Si la partida ya empezó sin imagen inicial, esta pasa a ser el punto de partida.
+             initial_image_version_id = case when j.kind = 'initial' and g.status <> 'lobby'
+                                              then coalesce(initial_image_version_id, v_id) else initial_image_version_id end
+      where id = pl.id;
     end if;
   end if;
 
