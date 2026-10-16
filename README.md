@@ -124,6 +124,9 @@ Cada **partida** elige su modo de imágenes al crearla (y puede cambiarlo en *Aj
 
 **Ninguna credencial activa la IA por sí sola**: hay que pedirla con `IMAGE_PROVIDER`. Si la pides y faltan credenciales, la IA aparece como «no disponible» (las partidas en modo IA dejan sus trabajos en cola) y **nunca se cambia automáticamente a otro proveedor ni se activa un plan de pago**. Si el proveedor falla, la compra, el saldo y la imagen anterior se conservan y se puede seguir jugando; el trabajo se puede reintentar sin volver a cobrar.
 
+### Edición gratuita por composición (sin modelo de edición)
+`flux-1-schnell` (dentro de la cuota gratuita de Cloudflare) solo genera. Para que el modo IA pueda «editar» igualmente la casa **sin pagar nada más**, si no defines `CLOUDFLARE_EDIT_MODEL` la app usa una **edición por composición** (`src/lib/ai/compose.ts`): genera con IA solo el objeto nuevo sobre fondo blanco liso (1 generación, cuenta en la misma cuota), recorta el fondo y lo pega con sombra en un hueco libre de la imagen actual. La escena anterior se conserva píxel a píxel. **Limitación honesta:** es un collage, no una edición real; el objeto no adapta luz ni perspectiva a la casa, y si el modelo no devuelve un fondo liso el recorte falla (se reintenta y, si sigue fallando, se conserva la imagen anterior). Desactívalo con `IMAGE_EDIT_COMPOSE=false`. Probado con respuestas simuladas; **no probado contra la API real de Cloudflare**.
+
 ### Cloudflare Workers AI (primera opción real)
 
 Verificado en la documentación oficial de Cloudflare (consulta de las páginas de modelos y precios; en el entorno de desarrollo no pude abrir las páginas completas, solo sus extractos, así que **contrasta los detalles críticos con la doc vigente y prueba con una llamada real antes de confiar en ellos**):

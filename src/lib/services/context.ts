@@ -1,6 +1,7 @@
 import path from 'node:path';
 import { cloudflareConfig, getImageProviderId, getRuntimeMode, getSupabaseConfig, openAiKey } from '@/lib/config/env';
 import { createCloudflareProvider } from '@/lib/ai/cloudflare';
+import { withComposedEdit } from '@/lib/ai/compose';
 import { createDemoProvider } from '@/lib/ai/demo';
 import { createOpenAiProvider } from '@/lib/ai/openai';
 import type { ImageGenerationProvider } from '@/lib/ai/types';
@@ -42,7 +43,11 @@ function buildProvider(): ImageGenerationProvider | null {
       inputFidelity: (e.OPENAI_IMAGE_INPUT_FIDELITY as 'high' | 'low' | 'off' | undefined) || undefined,
     });
   }
-  if (id === 'cloudflare') return createCloudflareProvider(cloudflareConfig()!);
+  if (id === 'cloudflare') {
+    const cf = createCloudflareProvider(cloudflareConfig()!);
+    // Sin modelo de edición propio, la edición se hace por composición (gratis, misma cuota). IMAGE_EDIT_COMPOSE=false la desactiva.
+    return /^(0|false|no)$/i.test(process.env.IMAGE_EDIT_COMPOSE?.trim() ?? '') ? cf : withComposedEdit(cf);
+  }
   return null;
 }
 

@@ -35,7 +35,9 @@ export function buildEditPrompt(input: EditSceneInput): string {
 export function buildItemImagePrompt(input: ItemImageInput): string {
   return [
     `A single centered ${input.itemName} (${input.itemDescription || 'no further description'}) for a "${input.theme}" themed game.`,
-    'Isolated object on a simple soft gradient background, stylized 3D render, vivid colors, lots of personality.',
+    input.isolated
+      ? 'Isolated object on a perfectly plain, flat, pure white background with no floor, no ground, no shadow and no gradient, stylized 3D render, vivid colors, lots of personality, whole object fully visible with margin around it.'
+      : 'Isolated object on a simple soft gradient background, stylized 3D render, vivid colors, lots of personality.',
     NO_TEXT,
   ].join(' ');
 }

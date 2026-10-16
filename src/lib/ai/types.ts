@@ -41,6 +41,8 @@ export interface ItemImageInput {
   itemName: string;
   itemDescription: string;
   itemEmoji: string | null;
+  /** true: objeto aislado sobre fondo blanco liso (para recortarlo y componerlo sobre otra imagen). */
+  isolated?: boolean;
 }
 
 /** Abstracción del proveedor de imágenes. Todas las llamadas se ejecutan en el servidor. */
