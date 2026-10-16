@@ -25,3 +25,4 @@ Los navegadores bloquean el audio hasta el primer gesto del usuario. Mientras ta
 - La sincronía depende del sondeo/Realtime actual de cada dispositivo (no hay reloj de audio compartido).
 - Los interruptores de la partida solo mandan sobre la **TV**; los móviles son personales.
 La TV muestra «Silenciado por el anfitrión» cuando este apaga el sonido (e2e `sound.spec.ts`).
+Con «Sonido» de la TV apagado también se silencia la música (la música solo suena si Sonido Y Música están en «sí»).

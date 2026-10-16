@@ -21,7 +21,7 @@ export function useGameAudio(snap: PublicSnapshot, role: Extract<AudioRole, 'tv'
   useEffect(() => { initAudio(role); }, [role]);
   // Interruptores de la partida: solo mandan sobre la TV.
   useEffect(() => {
-    setGate(role === 'tv' ? { effects: game.sound_enabled !== false, music: game.music_enabled !== false } : { effects: true, music: false });
+    setGate(role === 'tv' ? { effects: game.sound_enabled !== false, music: game.sound_enabled !== false && game.music_enabled !== false } : { effects: true, music: false });
   }, [role, game.sound_enabled, game.music_enabled]);
 
   const awardId = last_award ? String(last_award.purchase_id) : null;

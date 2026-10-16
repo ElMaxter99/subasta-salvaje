@@ -65,6 +65,7 @@ export const ERROR_MESSAGES: Record<string, string> = {
   idempotency_conflict: 'La clave de operación ya se usó para otra acción.',
   lease_lost: 'El trabajo fue reasignado a otro worker.',
   provider_not_configured: 'El proveedor de IA no está configurado.',
+  migration_pending: 'Falta aplicar una migración de la base de datos (ejecuta «npx supabase db push»).',
   internal: 'Error interno. Inténtalo de nuevo.',
 };
 
