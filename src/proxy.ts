@@ -5,6 +5,8 @@ import { getRuntimeMode, getSupabaseConfig } from '@/lib/config/env';
 /** Refresca la sesión de Supabase Auth (cookies) en cada navegación. En modo demo no hace nada. */
 export async function proxy(request: NextRequest) {
   if (getRuntimeMode() !== 'supabase') return NextResponse.next();
+  // Sin cookie de sesión (p. ej. la TV pública) no hay nada que refrescar.
+  if (!request.cookies.getAll().some((c) => c.name.startsWith('sb-'))) return NextResponse.next();
   let response = NextResponse.next({ request });
   const cfg = getSupabaseConfig();
   const supabase = createServerClient(cfg.url, cfg.anonKey, {

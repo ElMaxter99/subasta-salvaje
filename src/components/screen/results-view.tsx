@@ -107,7 +107,7 @@ function StatTile({ icon, label, value, tv }: { icon: React.ReactNode; label: st
       <span className="text-gold">{icon}</span>
       <div className="min-w-0">
         <p className={`font-display leading-tight tabular-nums text-white ${tv ? 'text-[1.6rem]' : 'text-xl'}`}>{value}</p>
-        <p className={`truncate font-semibold text-white/65 ${tv ? 'text-[1rem]' : 'text-xs'}`}>{label}</p>
+        <p className={`font-semibold leading-tight text-white/65 ${tv ? 'line-clamp-2 text-[1rem]' : 'text-xs'}`}>{label}</p>
       </div>
     </div>
   );
@@ -157,14 +157,14 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
     return (
       <div className="relative flex h-full flex-col gap-[0.8rem] px-[2rem] py-[1rem]">
         <Confetti count={36} />
-        {hero}
-        <div className="grid shrink-0 grid-cols-7 gap-[0.6rem]">{tiles}</div>
+        <div className="relative z-10">{hero}</div>
+        <div className="relative z-10 grid shrink-0 grid-cols-7 gap-[0.6rem]">{tiles}</div>
         <div
-          className="mx-auto grid min-h-0 w-full flex-1 gap-[0.9rem]"
+          className="relative z-10 mx-auto grid min-h-0 w-full flex-1 gap-[0.9rem]"
           style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, ${rows === 1 ? '28rem' : '1fr'}))`, gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`, justifyContent: 'center' }}
         >
           {ordered.map(({ player, rank }) => (
-            <ResultCard key={player.id} player={player} rank={rank} scoreText={ranking && rank ? scoreLabel(rule, player) : null} tv dense={rows > 1} />
+            <ResultCard key={player.id} player={player} rank={rank} scoreText={ranking && rank && rule !== 'balance' ? scoreLabel(rule, player) : null} tv dense={rows > 1} />
           ))}
         </div>
       </div>
@@ -174,10 +174,10 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
   return (
     <div className="relative mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-8 sm:px-6">
       <Confetti count={30} />
-      {hero}
+      <div className="relative z-10">{hero}</div>
 
       {ranking ? (
-        <section aria-labelledby="clasificacion" className="rounded-3xl border border-gold/30 bg-night-800/80 p-4 sm:p-6">
+        <section aria-labelledby="clasificacion" className="relative z-10 rounded-3xl border border-gold/30 bg-night-800/80 p-4 sm:p-6">
           <h2 id="clasificacion" className="flex items-center gap-2 font-display text-2xl text-gold">
             <Trophy className="size-6" aria-hidden /> Clasificación
           </h2>
@@ -195,11 +195,11 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
         </section>
       ) : null}
 
-      <section aria-label="Estadísticas" className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">{tiles}</section>
+      <section aria-label="Estadísticas" className="relative z-10 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">{tiles}</section>
 
-      <section aria-label="Casas finales" className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+      <section aria-label="Casas finales" className="relative z-10 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
         {ordered.map(({ player, rank }) => (
-          <ResultCard key={player.id} player={player} rank={rank} scoreText={ranking && rank ? scoreLabel(rule, player) : null} tv={false} dense={false} />
+          <ResultCard key={player.id} player={player} rank={rank} scoreText={ranking && rank && rule !== 'balance' ? scoreLabel(rule, player) : null} tv={false} dense={false} />
         ))}
       </section>
     </div>

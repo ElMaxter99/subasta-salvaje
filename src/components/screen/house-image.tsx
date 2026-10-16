@@ -37,7 +37,7 @@ export function HouseImage({
   };
 
   return (
-    <div className={`relative overflow-hidden bg-night-800 ${className}`}>
+    <div className={`overflow-hidden bg-night-800 ${className}`}>
       {layers.back ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img src={layers.back} alt="" aria-hidden className="absolute inset-0 size-full object-cover" />
