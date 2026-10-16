@@ -1,15 +1,12 @@
 import { expect, test } from '@playwright/test';
+import { createGameViaWizard } from './new-game-helper';
 
 test('modo móviles: unirse con el código, pujar desde el móvil, adjudicar y seguridad', async ({ page, context, browser }) => {
   // Anfitrión crea la partida en modo móviles desde la UI
   await page.goto('/login');
   await page.getByRole('button', { name: /Entrar como anfitrión/ }).click();
   await page.waitForURL('**/');
-  await page.goto('/new-game');
-  await page.getByLabel('Nombre de la partida').fill('Noche móviles');
-  await page.getByRole('radio', { name: /Cada jugador desde su móvil/ }).check();
-  for (const [i, n] of ['Ana', 'Beto', 'Carla', 'Dani'].entries()) await page.getByLabel(`Nombre del jugador ${i + 1}`).fill(n);
-  await page.getByRole('button', { name: /Crear partida/ }).click();
+  await createGameViaWizard(page, { name: 'Noche móviles', mobile: true, players: ['Ana', 'Beto', 'Carla', 'Dani'] });
   await page.waitForURL(/\/game\/[A-Z0-9]{6}\/host/);
   const code = page.url().match(/game\/([A-Z0-9]{6})\//)![1]!;
   const host = context.request;

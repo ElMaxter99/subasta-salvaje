@@ -1,4 +1,5 @@
 import { expect, test, type APIRequestContext } from '@playwright/test';
+import { createGameViaWizard } from './new-game-helper';
 
 type Snap = { version: number; players: { id: string; name: string; balance_cents: number; current_image: { url: string } | null; purchases: unknown[] }[]; auction: { status: string; current_bid_cents: number } | null; jobs: { status: string }[] };
 
@@ -15,11 +16,8 @@ test('flujo completo: crear, pujar, adjudicar, IA, sincronización y permisos', 
   await page.goto('/login');
   await page.getByRole('button', { name: /Entrar como anfitrión/ }).click();
   await page.waitForURL('**/');
-  await page.goto('/new-game');
-  await page.getByLabel('Nombre de la partida').fill('Noche E2E');
   const names = ['Ana', 'Beto', 'Carla', 'Dani'];
-  for (const [i, n] of names.entries()) await page.getByLabel(`Nombre del jugador ${i + 1}`).fill(n);
-  await page.getByRole('button', { name: /Crear partida/ }).click();
+  await createGameViaWizard(page, { name: 'Noche E2E', players: names });
   await page.waitForURL(/\/game\/[A-Z0-9]{6}\/host/);
   const code = page.url().match(/game\/([A-Z0-9]{6})\//)![1]!;
 

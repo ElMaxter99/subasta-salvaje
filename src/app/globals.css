@@ -55,6 +55,12 @@ body {
 
 :focus-visible { outline: 3px solid var(--color-gold); outline-offset: 2px; border-radius: 6px; }
 
+/* Asistente por pasos: el contenido entra deslizándose desde el lado del que se avanza */
+@keyframes ss-step-in-right { from { transform: translateX(1.5rem); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes ss-step-in-left { from { transform: translateX(-1.5rem); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.ss-step-in-right { animation: ss-step-in-right 0.35s ease-out both; }
+.ss-step-in-left { animation: ss-step-in-left 0.35s ease-out both; }
+
 /* Mascota y elementos decorativos (todo se desactiva con prefers-reduced-motion) */
 @keyframes ss-mascot-wiggle {
   0%, 100% { transform: rotate(0); }
@@ -103,5 +109,6 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .ss-mascot-bob, .ss-mascot-pop, .ss-mascot-wiggle, .ss-hover-wiggle:hover, .ss-coin-spin, .ss-twinkle, .ss-crown-drop, .ss-bubble-in { animation: none; }
   .ss-twinkle { opacity: 0.8; transform: none; }
+  .ss-step-in-right, .ss-step-in-left { animation: none; }
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }

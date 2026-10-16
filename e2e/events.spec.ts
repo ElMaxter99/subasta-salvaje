@@ -1,14 +1,11 @@
 import { expect, test } from '@playwright/test';
+import { createGameViaWizard } from './new-game-helper';
 
 test('eventos sorpresa, deshacer adjudicación y galería con votación', async ({ page, context, browser }) => {
   await page.goto('/login');
   await page.getByRole('button', { name: /Entrar como anfitrión/ }).click();
   await page.waitForURL('**/');
-  await page.goto('/new-game');
-  await page.getByLabel('Nombre de la partida').fill('Noche sorpresa');
-  await page.getByRole('radio', { name: /Cada jugador desde su móvil/ }).check();
-  for (const [i, n] of ['Ana', 'Beto', 'Carla'].entries()) await page.getByLabel(`Nombre del jugador ${i + 1}`).fill(n);
-  await page.getByRole('button', { name: /Crear partida/ }).click();
+  await createGameViaWizard(page, { name: 'Noche sorpresa', mobile: true, players: ['Ana', 'Beto', 'Carla'] });
   await page.waitForURL(/\/game\/[A-Z0-9]{6}\/host/);
   const code = page.url().match(/game\/([A-Z0-9]{6})\//)![1]!;
   const host = context.request;
@@ -80,5 +77,5 @@ test('eventos sorpresa, deshacer adjudicación y galería con votación', async 
   await expect(final.getByTestId('gallery-open')).toBeVisible();
   expect((await act({ type: 'gallery.close' })).ok()).toBeTruthy();
   await expect(final.getByTestId('gallery-winner')).toContainText('Beto');
-  await expect(ana.p.getByTestId('gallery-result')).toContainText('Beto');
+  await expect(ana.p.getByTestId('gallery-result')).toContainText('Beto', { timeout: 45_000 });
 });

@@ -25,6 +25,7 @@ Cronología resumida (de la más antigua a la más reciente) con lo entregado. �
 21. **Mascota de la lámina de referencia integrada:** recortes (transparencia real solo en objetos; mascota/expresiones/poses con fondo difuminado), componentes `Mascot`/`EmptyState`, mascota contextual en la TV, inicio y estados vacíos (`docs/MASCOTA.md`).
 22. **TV «Fin de la subasta» con «Después» roto:** la imagen se estiraba al alto de la tarjeta (`flex-1`) y `object-cover` recortaba la casa. Ahora es siempre 3:2 (como en el móvil), las tarjetas se centran y `HouseImage` muestra la imagen aunque no llegue `load` (red de seguridad de 2 s). Test e2e con medición de proporción y opacidad.
 23. **Más mascota y animaciones:** títulos con mascota y bocadillo, iconos de objeto con transparencia real, destellos, corona del ganador, moneda que gira, mascota reactiva en el móvil y el panel (`docs/MASCOTA.md`).
+24. **«Nueva partida» como asistente por pasos** (Cómo jugáis → Partida → Reglas → Jugadores → Resumen): validación por paso, resumen editable, barra de navegación fija, mascota guía y diseño responsive móvil/escritorio/TV (`new-game-form.tsx`, `new-game-stepper.tsx`).
 
 ## Estado actual (resumen)
 Todo lo anterior está implementado y subido a `claude/eager-cerf-lgnq1z` (sin PR). Migraciones hasta `…2300`. Tests: 124 unitarios + 9 de Postgres real + 5 e2e. Pendiente del propietario: rotar claves,
