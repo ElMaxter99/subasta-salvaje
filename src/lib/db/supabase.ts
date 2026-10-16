@@ -19,7 +19,12 @@ export function createSupabaseDb(client: SupabaseClient = getSupabaseAdmin()): D
     async rpc<T>(fn: string, params: Record<string, unknown>): Promise<T> {
       assertFnName(fn);
       const { data, error } = await client.rpc(fn, { p: params });
-      if (error) throw toDomainError(error);
+      if (error) {
+        const d = toDomainError(error);
+        // Códigos típicos: PGRST202 (función inexistente: faltan migraciones), 42501 (permisos), 401/JWT (clave).
+        if (d.code === 'internal') console.error('[supabase-rpc]', fn, error.code, error.message);
+        throw d;
+      }
       return data as T;
     },
   };
