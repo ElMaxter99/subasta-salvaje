@@ -10,7 +10,7 @@ export type PlayMode = 'host' | 'mobile';
 /** stickers = pegatinas con emojis sin IA (gratis); ai = generación/edición con IA real (con cuotas). */
 export type ImageMode = 'stickers' | 'ai';
 export type JoinPolicy = 'open' | 'slots' | 'closed';
-export type JobKind = 'initial' | 'edit' | 'item';
+export type JobKind = 'initial' | 'edit' | 'item' | 'base';
 export type JobStatus = 'queued' | 'running' | 'completed' | 'failed';
 
 export interface ImageRef {

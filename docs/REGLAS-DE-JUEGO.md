@@ -44,6 +44,6 @@ el recuento (`gallery.results`) solo lo ve el anfitrión hasta `gallery.close` (
 de móvil **se conservan** tras finalizar (solo sirven para votar/ver); en partidas `host` se borran al finalizar. Independiente de `ranking_rule = votes`.
 
 ## Imágenes por partida
-`image_mode`: `stickers` (por defecto, local, sin IA) | `ai` (proveedor real, con cuotas). Imagen inicial: subida, galería (`catalog`), generada, o ninguna;
+`image_mode`: `stickers` (por defecto, local, sin IA) | `ai` (proveedor real, con cuotas). Imagen inicial: subida, galería (`catalog`), generada, o ninguna. **La generada es UNA sola imagen base compartida** (job `base`, `ss_complete_image_job` asigna el mismo archivo a todos los jugadores del lobby y a los nuevos vía `new_player_image`); la generación por jugador (`image.request_initial`) es opcional y da casas distintas;
 aplicable a jugadores **actuales y/o nuevos** (`scope_current`, `scope_new`; `games.new_player_image`) y solo en `lobby`. Cada compra encadena una versión
 nueva (`image_versions.parent_version_id`); el anfitrión puede restaurar versiones (sin tocar saldos). Detalle en `IMAGENES-IA.md`.

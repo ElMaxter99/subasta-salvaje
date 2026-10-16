@@ -27,6 +27,7 @@ Los proveedores implementan `ImageGenerationProvider` (`ai/types.ts`): `generate
    `IMAGE_EDIT_COMPOSE=false` lo desactiva. El proveedor conserva su `id` (no cambia de proveedor ni de cuota).
 
 ## Flujo de la «casa» de cada jugador
+**Imagen base compartida:** «generar para todos» encola UN job `base` (migración 2000: kind `base`, `image_jobs.scope`, índice único de uno activo por partida); al completarse se crea una `image_version` por jugador apuntando al MISMO archivo y, si `scope.new`, `games.new_player_image` pasa a `file`. Una sola cuota. Solo aplica en `lobby`.
 Imagen inicial (subida / galería / generada, para actuales y/o nuevos) → cada compra crea un job `edit` con `base_image_version_id` = imagen actual → al completarse se
 crea una `image_version` aprobada y pasa a ser la actual del jugador; **la siguiente edición parte de ella** (cadena por jugador, verificado en `tests/base-photo-evolution.test.ts`).
 Si falla tras los reintentos se conserva la última imagen válida, la subasta sigue y el job se puede reintentar (`image.retry`) sin volver a cobrar.

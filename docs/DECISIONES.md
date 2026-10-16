@@ -34,3 +34,4 @@ Formato: **decisión** — por qué — alternativas descartadas. Añade aquí c
 23. **No desplegar ni activar pagos sin autorización.** Las migraciones nuevas las lanza el propietario cuando junte varias («lanzarlo todo de golpe»).
 24. **Asset pack vectorial** (no 3D) porque no hay generador de imágenes; documentado como limitación.
 25. **Documentación en español** y viva: README (usuario), `docs/` (memoria técnica), `CLAUDE.md`/`AGENTS.md` (agentes).
+26. **La imagen inicial «generada para todos» es una sola imagen compartida** (job `base`) — el propietario quiere la misma casa base para todos, vengan cuando vengan; además cuesta una sola generación. Generación individual por jugador se mantiene como opción.

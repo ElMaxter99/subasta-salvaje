@@ -30,6 +30,7 @@ export function InitialImageCard({ ctx }: { ctx: HostCtx }) {
   const theme = snapshot.game.theme;
   const aiMode = snapshot.game.image_mode === 'ai';
   const newKind = snapshot.game.new_player_image_kind ?? null;
+  const baseJob = snapshot.jobs.find((j) => j.kind === 'base' && (j.status === 'queued' || j.status === 'running' || j.status === 'failed'));
   const canGenerate = !aiMode || runtime.aiConfigured;
   const scopeOk = forCurrent || forNew;
   const disabled = busy !== null || !scopeOk;
@@ -49,15 +50,15 @@ export function InitialImageCard({ ctx }: { ctx: HostCtx }) {
       : pending?.kind === 'catalog'
         ? `«${INITIAL_CATALOG.find((e) => e.id === pending.id)?.label ?? ''}»`
         : aiMode
-          ? 'una imagen generada con IA para cada jugador'
-          : 'una escena vacía generada (pegatinas) para cada jugador';
+          ? 'UNA imagen generada con IA, la misma para todos'
+          : 'UNA escena vacía generada (pegatinas), la misma para todos';
   const who = forCurrent && forNew ? `los ${n} jugadores actuales y los que se unan después` : forCurrent ? `los ${n} jugadores actuales` : 'los jugadores que se unan después';
 
   async function apply() {
     const scope = { current: forCurrent, new: forNew };
     if (pending?.kind === 'file') await exec('initial-all-upload', () => uploadInitialImage(roomCode, 'all', pending.file, scope), 'Imagen de partida aplicada');
     else if (pending?.kind === 'catalog') await run('initial-all-catalog', { type: 'image.set_initial_all', catalog_id: pending.id, scope_current: scope.current, scope_new: scope.new }, 'Imagen de partida aplicada');
-    else if (pending?.kind === 'generate') await run('initial-all-generate', { type: 'image.generate_initial_all', scope_current: scope.current, scope_new: scope.new }, 'Generación de imágenes iniciales solicitada');
+    else if (pending?.kind === 'generate') await run('initial-all-generate', { type: 'image.generate_initial_all', scope_current: scope.current, scope_new: scope.new }, 'Generando la imagen base compartida…');
     setPending(null);
   }
 
@@ -80,10 +81,18 @@ export function InitialImageCard({ ctx }: { ctx: HostCtx }) {
         {!scopeOk ? <p className="text-sm text-rose">Marca al menos una opción.</p> : null}
       </fieldset>
 
+      {baseJob ? (
+        <p role="status" className={`mb-3 rounded-2xl px-3 py-2 text-sm font-semibold ${baseJob.status === 'failed' ? 'bg-rose/20 text-rose' : 'bg-violet/20 text-violet-soft'}`} data-testid="base-job-status">
+          {baseJob.status === 'failed'
+            ? `La imagen base no se pudo generar: ${baseJob.error_message ?? 'error desconocido'}. Reintenta desde la pestaña Imágenes o elige otra opción.`
+            : 'Generando la imagen base compartida… Cuando termine, todos los jugadores tendrán exactamente la misma.'}
+        </p>
+      ) : null}
+
       {newKind ? (
         <div className="mb-3 flex items-center justify-between gap-2 rounded-2xl bg-teal/15 px-3 py-2 text-sm">
           <span>
-            Los jugadores nuevos recibirán: <b>{newKind === 'generate' ? (aiMode ? 'una imagen generada con IA' : 'una escena generada (pegatinas)') : 'la imagen que elegiste'}</b>.
+            Los jugadores nuevos recibirán: <b>{newKind === 'generate' ? (aiMode ? 'la imagen base generada con IA (la misma para todos)' : 'la escena base generada (la misma para todos)') : 'la imagen que elegiste'}</b>.
           </span>
           <Button size="sm" variant="ghost" disabled={busy !== null} loading={busy === 'clear-new'} onClick={() => run('clear-new', { type: 'image.clear_new_player_image' }, 'Los jugadores nuevos ya no recibirán imagen por defecto')} aria-label="Quitar la imagen por defecto de los jugadores nuevos">
             <X className="size-4" aria-hidden /> Quitar
@@ -97,11 +106,11 @@ export function InitialImageCard({ ctx }: { ctx: HostCtx }) {
           <Upload className="size-5" aria-hidden /> Subir una foto para todos
         </Button>
         <Button size="lg" variant="secondary" disabled={disabled || !canGenerate} loading={busy === 'initial-all-generate'} onClick={() => setPending({ kind: 'generate' })}>
-          <Sparkles className="size-5" aria-hidden /> {aiMode ? 'Generar con IA para todos' : 'Generar escena para todos'}
+          <Sparkles className="size-5" aria-hidden /> {aiMode ? 'Generar con IA una imagen base para todos' : 'Generar una escena base para todos'}
         </Button>
       </div>
       {!canGenerate ? <p className="mt-2 text-xs text-white/55">La IA no está configurada en este despliegue: elige otra opción o cambia al modo pegatinas en Ajustes.</p> : null}
-      {aiMode && canGenerate ? <p className="mt-2 text-xs text-white/55">Cada imagen generada cuenta para el límite de generaciones de IA de la partida.</p> : null}
+      {aiMode && canGenerate ? <p className="mt-2 text-xs text-white/55">Se genera UNA sola imagen para toda la partida (cuenta como una sola generación) y se asigna a todos, incluso a quien se una mientras se genera.</p> : null}
 
       <h3 className="mt-4 mb-2 flex items-center gap-2 text-sm font-bold text-white/80">
         <ImagePlus className="size-4" aria-hidden /> Galería de imágenes de partida

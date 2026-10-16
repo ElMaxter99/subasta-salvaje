@@ -18,7 +18,8 @@ Cronología resumida (de la más antigua a la más reciente) con lo entregado. �
 14. **IA gratuita que supla la edición** ⇒ edición por composición; luego **edición real con foto** (FLUX.2 klein por defecto) + plan B. Objetivo: el anfitrión sube una foto base y cada jugador la evoluciona (verificado con test).
 15. **Ideas extra** y elegidas **5, 1, 2:** deshacer adjudicación, galería final con votación, eventos sorpresa. (Propuestas aún sin hacer: pausa de emergencia/reparto manual de saldo, registro exportable CSV, plantillas de partida, catálogos CSV, tiempo extra, sonido, accesibilidad móvil, efectos y mascota en la TV.)
 16. **Documentación para futuras sesiones** (este conjunto: `CLAUDE.md`, `AGENTS.md`, `docs/*`).
+17. **Imagen base única:** al generar la imagen inicial con IA debe ser la misma para todos los jugadores, se unan cuando se unan (job `base`, migraciones 2000/2100).
 
 ## Estado actual (resumen)
-Todo lo anterior está implementado y subido a `claude/eager-cerf-lgnq1z` (sin PR). Migraciones hasta `…1900`. Tests: 124 unitarios + 9 de Postgres real + 5 e2e. Pendiente del propietario: rotar claves,
+Todo lo anterior está implementado y subido a `claude/eager-cerf-lgnq1z` (sin PR). Migraciones hasta `…2100`. Tests: 124 unitarios + 9 de Postgres real + 5 e2e. Pendiente del propietario: rotar claves,
 aplicar migraciones 1000–1900, variables en Vercel, probar IA y Realtime/Storage reales (ver `PENDIENTE.md`).

@@ -10,7 +10,7 @@ import type { ImageJob, JobKind, JobStatus } from '@/lib/domain/types';
 import { Card, Notice, Pill, fmtDateTime } from './bits';
 import { errorMessage, type HostCtx } from './host-context';
 
-const KIND: Record<JobKind, string> = { initial: 'Imagen inicial', edit: 'Edición por compra', item: 'Imagen de elemento' };
+const KIND: Record<JobKind, string> = { base: 'Imagen base de la partida (para todos)', initial: 'Imagen inicial', edit: 'Edición por compra', item: 'Imagen de elemento' };
 const STATUS: Record<JobStatus, [string, 'neutral' | 'gold' | 'teal' | 'rose']> = {
   queued: ['En cola', 'neutral'],
   running: ['En curso', 'gold'],

@@ -240,26 +240,55 @@ describe('imagen inicial para jugadores actuales y/o nuevos', () => {
     expect(snap.players).toHaveLength(3);
   });
 
-  it('«generar» encola la imagen inicial para los actuales y/o los nuevos (sin duplicar trabajos) y la procesa el worker', async () => {
+  it('«generar» crea UNA sola imagen base compartida: la misma para actuales y para los que se unan antes de terminar la generación y después', async () => {
     const { processImageJobs } = await import('@/lib/services/jobs-service');
     const host = newHost();
     const { room, snap } = await mobileGame(host);
     await act(ctx, room, host, { type: 'image.generate_initial_all', scope_current: true, scope_new: true });
     await act(ctx, room, host, { type: 'image.generate_initial_all', scope_current: true, scope_new: true }); // doble clic
     let s = await getHostState(ctx, room, host);
-    expect(s.jobs.filter((j) => j.kind === 'initial')).toHaveLength(3);
+    expect(s.jobs.filter((j) => j.kind === 'base')).toHaveLength(1);
+    expect(s.jobs.filter((j) => j.kind === 'initial')).toHaveLength(0);
     expect(s.game.new_player_image_kind).toBe('generate');
-    await joinGame(ctx, room, { name: 'Despues' });
+    await joinGame(ctx, room, { name: 'Antes' }); // se une con la generación aún en cola
+    const calls = { n: 0 };
+    const counting = { ...ctx.provider!, generateInitialScene: async (i: Parameters<NonNullable<typeof ctx.provider>['generateInitialScene']>[0]) => { calls.n++; return ctx.provider!.generateInitialScene(i); } };
+    const run = await processImageJobs({ ...ctx, provider: counting }, { gameId: snap.game.id, maxJobs: 20 });
+    expect(run.succeeded).toBe(1);
+    expect(calls.n).toBe(1); // una sola generación (y una sola unidad de cuota) para toda la partida
     s = await getHostState(ctx, room, host);
-    expect(s.jobs.filter((j) => j.kind === 'initial' && j.status === 'queued')).toHaveLength(4);
-    const run = await processImageJobs(ctx, { gameId: snap.game.id, maxJobs: 20 });
-    expect(run.succeeded).toBe(4);
+    expect(s.players).toHaveLength(4);
+    const paths = new Set(s.players.map((p) => p.current_image!.storage_path));
+    expect(paths.size).toBe(1); // exactamente el mismo archivo para todos
+    expect(s.game.new_player_image_kind).toBe('file'); // los nuevos heredan ese mismo archivo
+    const late = await joinGame(ctx, room, { name: 'Despues' });
     s = await getHostState(ctx, room, host);
-    expect(s.players.every((p) => p.current_image !== null)).toBe(true);
+    expect(s.players.find((p) => p.id === late.player_id)!.current_image!.storage_path).toBe([...paths][0]);
     // Sólo se puede en la sala de espera y sólo el anfitrión
     await expect(act(ctx, room, newHost(), { type: 'image.generate_initial_all', scope_current: true, scope_new: false })).rejects.toMatchObject({ code: 'not_host' });
     await act(ctx, room, host, { type: 'game.start' });
     await expect(act(ctx, room, host, { type: 'image.generate_initial_all', scope_current: true, scope_new: true })).rejects.toMatchObject({ code: 'game_already_started' });
+  });
+
+  it('imagen base solo para los jugadores nuevos: los actuales no cambian y regenerar sustituye la imagen de todos', async () => {
+    const { processImageJobs } = await import('@/lib/services/jobs-service');
+    const host = newHost();
+    const { room, snap } = await mobileGame(host);
+    await act(ctx, room, host, { type: 'image.set_initial_all', catalog_id: 'house', scope_current: true, scope_new: false });
+    const before = (await getHostState(ctx, room, host)).players.map((p) => p.current_image!.storage_path);
+    await act(ctx, room, host, { type: 'image.generate_initial_all', scope_current: false, scope_new: true });
+    await processImageJobs(ctx, { gameId: snap.game.id });
+    let s = await getHostState(ctx, room, host);
+    expect(s.players.map((p) => p.current_image!.storage_path)).toEqual(before); // los actuales no se tocan
+    const j = await joinGame(ctx, room, { name: 'Nuevo' });
+    s = await getHostState(ctx, room, host);
+    const nuevo = s.players.find((p) => p.id === j.player_id)!.current_image!.storage_path;
+    expect(nuevo).not.toBe(before[0]);
+    // Regenerar para todos: nueva imagen única, también para los actuales
+    await act(ctx, room, host, { type: 'image.generate_initial_all', scope_current: true, scope_new: true });
+    await processImageJobs(ctx, { gameId: snap.game.id });
+    s = await getHostState(ctx, room, host);
+    expect(new Set(s.players.map((p) => p.current_image!.storage_path)).size).toBe(1);
   });
 
   it('una subida a «actuales y nuevos» guarda un solo archivo compartido', async () => {

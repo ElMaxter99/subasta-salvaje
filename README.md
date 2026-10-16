@@ -77,7 +77,7 @@ npm run dev            # http://localhost:3000  → modo demo si no hay .env.loc
 ```
 
 1. Abre `http://localhost:3000`, pulsa **Crear partida** → **Entrar como anfitrión (demo)**.
-2. Crea la partida con 4 o más jugadores. En el panel, genera la imagen inicial de cada casa y pulsa **Empezar partida**.
+2. Crea la partida con 4 o más jugadores. En el panel, genera la imagen base (única para todos) y pulsa **Empezar partida**.
 3. Abre la **pantalla de TV** (botón «Abrir en pestaña nueva») en otra pestaña/ventana o dispositivo de la misma red (`http://IP-DE-TU-PC:3000/game/CÓDIGO/screen`).
 
 Para usar Supabase en local ve a [Configurar Supabase](#configurar-supabase) y copia `.env.example` a `.env.local`.
@@ -249,7 +249,7 @@ Con varias conexiones simultáneas comprueba: 16 adjudicaciones a la vez → una
 <a id="seguridad"></a>
 ## Imagen de partida para jugadores actuales y nuevos
 
-En el panel (*Jugadores → Imagen de partida para todos*, solo en la sala de espera) puedes subir una foto, elegir una de la galería o **generar** la imagen inicial (con IA o como pegatinas, según el modo de la partida) y decidir a quién se aplica: **jugadores actuales**, **jugadores nuevos** (los que se unan después desde el móvil o que añadas en el panel) o ambos. Para los nuevos se guarda como imagen por defecto de la partida (se puede quitar). Si es una generación, el trabajo se encola al unirse cada jugador y cuenta para el límite de generaciones de IA.
+En el panel (*Jugadores → Imagen de partida para todos*, solo en la sala de espera) puedes subir una foto, elegir una de la galería o **generar** la imagen inicial (con IA o como pegatinas, según el modo de la partida) y decidir a quién se aplica: **jugadores actuales**, **jugadores nuevos** (los que se unan después desde el móvil o que añadas en el panel) o ambos. Para los nuevos se guarda como imagen por defecto de la partida (se puede quitar). Si es una generación, se hace **UNA sola** (trabajo `base`, una unidad de cuota): la misma imagen, el mismo archivo, para todos los jugadores, también para quien se una mientras se genera o después (mientras la partida siga en la sala de espera). Volver a pulsar «generar» sustituye la imagen de todos; la generación individual por jugador (pestaña Jugadores) sigue disponible si quieres casas distintas.
 
 ## Finalizar y borrar partidas
 

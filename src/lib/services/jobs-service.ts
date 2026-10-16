@@ -11,7 +11,7 @@ type Ctx = Pick<AppContext, 'db' | 'storage' | 'publisher'> & { provider: ImageG
 
 interface ClaimedJob {
   job_id: string;
-  kind: 'initial' | 'edit' | 'item';
+  kind: 'initial' | 'edit' | 'item' | 'base';
   attempts: number;
   max_attempts: number;
   game_id: string;
@@ -85,11 +85,12 @@ async function providerFor(ctx: Ctx, job: ClaimedJob): Promise<ImageGenerationPr
 }
 
 async function generate(ctx: Ctx, provider: ImageGenerationProvider, job: ClaimedJob): Promise<GeneratedImage> {
-  if (job.kind === 'initial') {
+  if (job.kind === 'initial' || job.kind === 'base') {
+    // `base` = la imagen de partida COMPARTIDA: una sola generación que se asigna a todos los jugadores.
     return provider.generateInitialScene({
       theme: job.theme,
       sceneDescription: emptySceneFor(job.theme),
-      playerName: job.player_name ?? 'Jugador',
+      playerName: job.kind === 'base' ? 'la partida' : (job.player_name ?? 'Jugador'),
     });
   }
   const { itemEmoji, previousItems } = await jobContext(ctx, job);
@@ -137,7 +138,7 @@ async function runJob(ctx: Ctx, provider: ImageGenerationProvider, job: ClaimedJ
     await reserveQuota(ctx, provider, job);
     const image = await generate(ctx, provider, job);
     const mime = validateProviderOutput(image, provider.id === 'demo');
-    const folder = job.kind === 'item' ? `items/${job.item_id}` : `players/${job.player_id}`;
+    const folder = job.kind === 'item' ? `items/${job.item_id}` : job.kind === 'base' ? 'shared' : `players/${job.player_id}`;
     const storagePath = `games/${job.game_id}/${folder}/${randomUUID()}.${extensionForMime(mime)}`;
     await ctx.storage.put(storagePath, image.bytes, mime);
     const done = await ctx.db.rpc<{ room_code: string }>('ss_complete_image_job', {
