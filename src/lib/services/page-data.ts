@@ -1,7 +1,7 @@
 import { notFound, redirect } from 'next/navigation';
 import { getHostIdentity, type HostIdentity } from '@/lib/auth/host';
 import { getRuntimeMode } from '@/lib/config/env';
-import { DomainError } from '@/lib/domain/errors';
+import { isDomainError } from '@/lib/domain/errors';
 import type { HostSnapshot, PublicSnapshot, RuntimeInfo } from '@/lib/domain/types';
 import { getContext, getRuntimeInfo } from './context';
 import { getHostState, getPublicState } from './game-service';
@@ -13,7 +13,7 @@ export async function loadPublicPage(code: string): Promise<{ snapshot: PublicSn
   try {
     return { snapshot: await getPublicState(ctx, code), runtime: getRuntimeInfo(ctx) };
   } catch (e) {
-    if (e instanceof DomainError && e.code === 'game_not_found') notFound();
+    if (isDomainError(e) && e.code === 'game_not_found') notFound();
     throw e;
   }
 }
@@ -31,8 +31,8 @@ export async function loadHostPage(code: string, nextPath: string): Promise<Host
   try {
     return { kind: 'ok', snapshot: await getHostState(ctx, code, identity.id), runtime: getRuntimeInfo(ctx), identity };
   } catch (e) {
-    if (e instanceof DomainError && e.code === 'game_not_found') notFound();
-    if (e instanceof DomainError && e.code === 'not_host') return { kind: 'forbidden', runtime: getRuntimeInfo(ctx) };
+    if (isDomainError(e) && e.code === 'game_not_found') notFound();
+    if (isDomainError(e) && e.code === 'not_host') return { kind: 'forbidden', runtime: getRuntimeInfo(ctx) };
     throw e;
   }
 }

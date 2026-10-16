@@ -9,7 +9,13 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   reporter: [['list']],
-  use: { baseURL: `http://localhost:${PORT}`, trace: 'retain-on-failure', ...devices['Desktop Chrome'] },
+  use: {
+    baseURL: `http://localhost:${PORT}`,
+    trace: 'retain-on-failure',
+    ...devices['Desktop Chrome'],
+    // Si tu Chromium no coincide con la versión de Playwright: PW_CHROMIUM_PATH=/ruta/a/chrome
+    launchOptions: process.env.PW_CHROMIUM_PATH ? { executablePath: process.env.PW_CHROMIUM_PATH } : {},
+  },
   webServer: {
     // Servidor en modo DEMO con datos y .next aislados (no toca tu entorno de desarrollo).
     command: `npx next dev -p ${PORT}`,

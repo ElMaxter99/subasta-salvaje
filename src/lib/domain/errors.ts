@@ -82,8 +82,13 @@ function statusFor(code: string): number {
 }
 
 /** Convierte un error de base de datos (`ERR:codigo`) en DomainError. */
+/** Reconoce DomainError aunque el módulo se haya cargado dos veces (chunks distintos del bundler). */
+export function isDomainError(err: unknown): err is DomainError {
+  return err instanceof DomainError || (typeof err === 'object' && err !== null && (err as { name?: unknown }).name === 'DomainError' && typeof (err as { code?: unknown }).code === 'string');
+}
+
 export function toDomainError(err: unknown): DomainError {
-  if (err instanceof DomainError) return err;
+  if (isDomainError(err)) return err;
   const message = typeof err === 'object' && err && 'message' in err ? String((err as { message: unknown }).message) : String(err);
   const match = /ERR:([a-z_]+)/.exec(message);
   if (match?.[1]) return new DomainError(match[1]);

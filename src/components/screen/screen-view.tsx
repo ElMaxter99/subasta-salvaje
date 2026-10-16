@@ -14,7 +14,7 @@ import { useFullscreenControls } from './use-fullscreen';
 import './screen.css';
 
 function gridFor(n: number) {
-  const cols = n <= 4 ? Math.max(n, 1) : n <= 8 ? 4 : n <= 10 ? 5 : 6;
+  const cols = n <= 6 ? Math.max(n, 1) : n <= 8 ? 4 : n <= 10 ? 5 : 6;
   return { cols, rows: Math.max(1, Math.ceil(n / cols)) };
 }
 

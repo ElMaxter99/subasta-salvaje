@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { DomainError, toDomainError } from '@/lib/domain/errors';
+import { DomainError, isDomainError, toDomainError } from '@/lib/domain/errors';
 import { rateLimit } from '@/lib/auth/rate-limit';
 
 export const noStore = { 'Cache-Control': 'no-store, max-age=0' };
@@ -9,7 +9,7 @@ export function json(data: unknown, init: ResponseInit = {}): NextResponse {
 }
 
 export function errorResponse(err: unknown): NextResponse {
-  const e = err instanceof DomainError ? err : toDomainError(err);
+  const e = toDomainError(err);
   return json({ error: { code: e.code, message: e.message } }, { status: e.status });
 }
 
@@ -31,7 +31,7 @@ export function handle<A extends unknown[]>(fn: (...args: A) => Promise<Response
     try {
       return await fn(...args);
     } catch (err) {
-      if (!(err instanceof DomainError)) console.error('[api]', err);
+      if (!isDomainError(err)) console.error('[api]', err);
       return errorResponse(err);
     }
   };
