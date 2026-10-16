@@ -10,6 +10,8 @@ Subasta creativa multijugador para noches de juegos. Cada jugador parte de una c
   - **Pujas del anfitrión:** los jugadores pujan en voz alta y el anfitrión las registra. No necesitan cuenta ni móvil.
   - **Cada jugador desde su móvil:** los jugadores entran con el código de sala (o escaneando el QR que muestran la TV y el panel) en `/join` o `/game/[código]/play`, eligen su nombre y pujan ellos mismos. El anfitrión sigue anunciando, cerrando y adjudicando (y puede seguir pujando por voz).
 
+> Memoria técnica del proyecto para personas y agentes: [`CLAUDE.md`](CLAUDE.md), [`AGENTS.md`](AGENTS.md) y [`docs/`](docs/README.md).
+
 ## Índice
 
 1. [Arquitectura](#arquitectura)

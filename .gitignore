@@ -14,3 +14,4 @@ coverage
 .next-e2e
 .demo-data-e2e
 .next-*
+*.jar
