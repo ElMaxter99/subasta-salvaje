@@ -6,7 +6,7 @@ import { getRuntimeMode } from '@/lib/config/env';
 import { getRuntimeInfo } from '@/lib/services/context';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Nueva partida' };
+export const metadata = { title: 'Nueva partida', robots: { index: false, follow: false } };
 
 export default async function NewGamePage() {
   if (getRuntimeMode() === 'unconfigured') redirect('/setup');

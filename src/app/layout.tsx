@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from 'next';
+import { siteUrl } from '@/lib/seo/site';
 import './globals.css';
 
 const DESCRIPTION = 'Subasta creativa multijugador: puja, construye tu casa y mira cómo la IA la transforma.';
 
 export const metadata: Metadata = {
+  metadataBase: siteUrl(),
   title: { default: 'Subasta Salvaje', template: '%s · Subasta Salvaje' },
   description: DESCRIPTION,
   applicationName: 'Subasta Salvaje',

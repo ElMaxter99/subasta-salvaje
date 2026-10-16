@@ -31,6 +31,7 @@ Después de cada migración nueva, vuelve a probar a mano: crear partida, pujar,
 
 ## 3. Vercel: variables de entorno (Production y Preview) y redespliegue
 - [ ] `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (públicas) y `SUPABASE_SERVICE_ROLE_KEY` (**solo servidor**).
+- [ ] `NEXT_PUBLIC_SITE_URL=https://tu-dominio` (URL pública para Open Graph; ver `docs/OPEN-GRAPH.md`).
 - [ ] `ALLOWED_HOST_EMAILS=tu@correo.com` (recomendado: el registro de Supabase Auth es abierto).
 - [ ] `CRON_SECRET` (cadena larga aleatoria) para `/api/jobs/process` y `/api/jobs/purge`.
 - [ ] IA (opcional): `IMAGE_PROVIDER=cloudflare`, `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`. Sin ellas solo existe el modo pegatinas.

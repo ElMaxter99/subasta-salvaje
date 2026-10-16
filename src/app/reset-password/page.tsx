@@ -6,7 +6,7 @@ import { resolveHost } from '@/lib/auth/host';
 import { getRuntimeMode } from '@/lib/config/env';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Nueva contraseña' };
+export const metadata = { title: 'Nueva contraseña', robots: { index: false, follow: false } };
 
 export default async function ResetPasswordPage() {
   if (getRuntimeMode() !== 'supabase') redirect('/login');

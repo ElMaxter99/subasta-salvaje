@@ -2,11 +2,14 @@ import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
 import { PlayView } from '@/components/play/play-view';
 import { getContext } from '@/lib/services/context';
+import { gameMetadata } from '@/lib/seo/site';
 import { loadPublicPage } from '@/lib/services/page-data';
 import { identifyPlayer, playerCookieName } from '@/lib/services/play-service';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'Jugar desde el móvil' };
+export async function generateMetadata({ params }: { params: Promise<{ code: string }> }): Promise<Metadata> {
+  return gameMetadata((await params).code, 'invite');
+}
 
 export default async function PlayPage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;

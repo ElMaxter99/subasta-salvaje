@@ -4,7 +4,7 @@ import { ForbiddenNotice } from '@/components/ui/forbidden';
 import { loadHostPage } from '@/lib/services/page-data';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'Historial de imágenes' };
+export const metadata: Metadata = { title: 'Historial de imágenes', robots: { index: false, follow: false } };
 
 export default async function HistoryPage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;

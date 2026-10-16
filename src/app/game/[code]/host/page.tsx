@@ -4,7 +4,7 @@ import { ForbiddenNotice } from '@/components/ui/forbidden';
 import { loadHostPage } from '@/lib/services/page-data';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'Panel del anfitrión' };
+export const metadata: Metadata = { title: 'Panel del anfitrión', robots: { index: false, follow: false } };
 
 export default async function HostPage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;

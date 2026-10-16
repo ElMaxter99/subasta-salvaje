@@ -1,9 +1,12 @@
 import type { Metadata } from 'next';
 import { ScreenView } from '@/components/screen/screen-view';
+import { gameMetadata } from '@/lib/seo/site';
 import { loadPublicPage } from '@/lib/services/page-data';
 
 export const dynamic = 'force-dynamic';
-export const metadata: Metadata = { title: 'Pantalla de TV' };
+export async function generateMetadata({ params }: { params: Promise<{ code: string }> }): Promise<Metadata> {
+  return gameMetadata((await params).code, 'tv');
+}
 
 export default async function ScreenPage({ params }: { params: Promise<{ code: string }> }) {
   const { code } = await params;

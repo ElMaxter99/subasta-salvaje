@@ -23,7 +23,7 @@ Referencia oficial: el logo de **Subasta Salvaje** (personaje 3D con corona y ma
 - Los objetos `item-*` (corona, martillo, megáfono, moneda, temporizador, brillo) siguen siendo los recortes de la lámina antigua (`public/assets/mascot/`, ≈100 px); su estilo no es idéntico al del logo nuevo. Pendiente: reemplazarlos por recortes del mismo estilo.
 
 ## Tipografía
-- Títulos y cifras destacadas (precios, saldos): **Baloo 2** (700/800, OFL) con `@font-face` en `globals.css` (woff2 propios en `public/assets/fonts/`, subconjunto latino, `font-display: swap`, precarga de la de títulos). No se usa `next/font` (ni google ni local): en el servidor de desarrollo provocaba recargas de página en bucle. Token `font-display`.
+- Títulos y cifras destacadas (precios, saldos): **Baloo 2** (700/800, OFL) con `@font-face` en `globals.css` (woff2 propios en `public/assets/fonts/`, subconjunto latino, `font-display: swap`, precarga de la de títulos). No se usa `next/font` (ni google ni local): en el servidor de desarrollo coincidió con un bucle de recargas (causa no aislada; ver DECISIONES #42). Token `font-display`.
 - Texto funcional (formularios, listas, instrucciones): **Nunito** (variable, OFL). Token `font-sans`.
 - El logotipo es **imagen** (`Logo`); los títulos funcionales son texto accesible.
 

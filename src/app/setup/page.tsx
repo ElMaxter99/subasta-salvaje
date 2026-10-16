@@ -5,7 +5,7 @@ import { Logo } from '@/components/ui/logo';
 import { SUPABASE_REQUIRED_VARS, getRuntimeMode, missingSupabaseVars, openAiKey } from '@/lib/config/env';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Configuración' };
+export const metadata = { title: 'Configuración', robots: { index: false, follow: false } };
 
 export default function SetupPage() {
   const mode = getRuntimeMode();

@@ -23,3 +23,4 @@ una regla, una migración o una decisión, actualiza el documento correspondient
 - [`EMAILS-Y-CONTRASENA.md`](EMAILS-Y-CONTRASENA.md): recuperar contraseña y plantillas de correo de Supabase Auth.
 - [`SONIDO.md`](SONIDO.md): sonidos y música sintetizados, control del anfitrión y límites.
 - [`MARCA.md`](MARCA.md): identidad visual (logo, mascota oficial, tipografía, tokens, componentes y limitaciones).
+- [`OPEN-GRAPH.md`](OPEN-GRAPH.md): miniaturas al compartir enlaces (invitación con código, TV, resultados).

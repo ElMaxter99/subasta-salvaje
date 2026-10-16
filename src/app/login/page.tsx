@@ -10,7 +10,7 @@ import { getRuntimeMode } from '@/lib/config/env';
 import { getContext, getRuntimeInfo } from '@/lib/services/context';
 
 export const dynamic = 'force-dynamic';
-export const metadata = { title: 'Acceso del anfitrión' };
+export const metadata = { title: 'Acceso del anfitrión', robots: { index: false, follow: false } };
 
 /** Sólo rutas internas: evita redirecciones abiertas. */
 function safeNext(next: string | undefined): string {

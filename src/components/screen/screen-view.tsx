@@ -1,7 +1,7 @@
 'use client';
 
 import { SoundToggle } from '@/components/ui/sound-toggle';
-import { useGameAudio } from '@/lib/audio/use-audio';
+import { useAudioState, useGameAudio } from '@/lib/audio/use-audio';
 import { useEffect } from 'react';
 import { Maximize2, Minimize2, Pause, Loader2 } from 'lucide-react';
 import type { PublicSnapshot, RuntimeInfo } from '@/lib/domain/types';
@@ -72,8 +72,11 @@ export function ScreenView({ roomCode, initial, runtime }: { roomCode: string; i
   const presence = mobile ? (game.status === 'lobby' ? 'lobby' : 'game') : null;
   const maxChips = cols >= 5 ? 5 : cols === 4 ? 6 : 8;
 
+  const audio = useAudioState();
+  const needsSound = audio.enabled && !audio.armed; // «Activar sonido» siempre visible hasta que el navegador lo permita
   const controls = (
-    <div className={`absolute right-4 top-3 z-30 flex items-center gap-3 transition-opacity duration-500 ${fs.visible ? 'opacity-100' : 'pointer-events-none opacity-0'}`}>
+    <div className={`absolute right-4 top-[5.9rem] z-30 flex items-center gap-3 transition-opacity duration-500 ${fs.visible || needsSound ? 'opacity-100' : 'pointer-events-none opacity-0'}`}>
+      <SoundToggle music className="rounded-xl bg-night-950/80 p-1" />
       <button
         type="button"
         onClick={fs.toggle}
@@ -129,7 +132,6 @@ export function ScreenView({ roomCode, initial, runtime }: { roomCode: string; i
           ) : null}
           <span className={`rounded-full px-5 py-1.5 font-display text-[1.4rem] uppercase tracking-wide ${pill.tone}`}>{pill.label}</span>
           <ConnectionBadge state={connection} runtime={runtime} className="opacity-70" />
-          <SoundToggle music big />
         </div>
       </header>
 
