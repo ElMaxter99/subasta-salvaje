@@ -29,8 +29,8 @@ export function DemoBanner({ runtime }: { runtime: RuntimeInfo }) {
     <div className="flex items-center justify-center gap-2 bg-gold px-3 py-1.5 text-center text-sm font-bold text-night-950">
       <FlaskConical className="size-4 shrink-0" aria-hidden />
       {runtime.mode === 'demo' ? 'MODO DEMO · datos locales · ' : 'PRUEBAS · '}
-      {runtime.aiProvider === 'openai' && runtime.aiConfigured
-        ? 'IA real activa (OPENAI_API_KEY)'
+      {runtime.aiProvider !== 'demo' && runtime.aiConfigured
+        ? `IA real activa (${runtime.aiProvider === 'cloudflare' ? 'Cloudflare Workers AI' : 'OpenAI'})`
         : 'las imágenes son de muestra y NO están generadas por IA'}
     </div>
   );

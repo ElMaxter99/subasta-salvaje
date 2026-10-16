@@ -58,6 +58,12 @@ export function JobsPanel({ ctx, refresh }: { ctx: HostCtx; refresh: () => Promi
   return (
     <div className="space-y-4">
       {!runtime.aiConfigured ? <Notice tone="warn">IA no configurada: las imágenes quedan en cola hasta que se configure el proveedor.</Notice> : null}
+      <UsageCard ctx={ctx} />
+      {runtime.aiConfigured && !runtime.aiCanEdit ? (
+        <Notice tone="warn">
+          El modelo de IA configurado solo genera imágenes nuevas: <b>no puede editar la casa existente</b>. Las compras se registran igual y la imagen anterior se conserva, pero la edición saldrá como fallida hasta que configures un modelo con edición (<code>CLOUDFLARE_EDIT_MODEL</code>) u otro proveedor.
+        </Notice>
+      ) : null}
       {runtime.mode === 'demo' ? <Notice tone="info">Modo demo: el proveedor de muestra completa los trabajos al instante con imágenes de ejemplo, no generadas por IA.</Notice> : null}
       {failed.length > 0 ? (
         <Notice tone="warn">
@@ -113,5 +119,54 @@ export function JobsPanel({ ctx, refresh }: { ctx: HostCtx; refresh: () => Promi
         </ul>
       )}
     </div>
+  );
+}
+
+/** Contador visible de generaciones reales (el proveedor demo no consume ni tiene límite). */
+function UsageCard({ ctx }: { ctx: HostCtx }) {
+  const u = ctx.snapshot.usage;
+  if (!u) return null;
+  if (!u.limited) {
+    return (
+      <Card title="Generaciones de imagen">
+        <p className="text-sm text-white/70">
+          Proveedor de muestra (<b>demo</b>): no consume cuota ni genera con IA real.
+        </p>
+      </Card>
+    );
+  }
+  const bar = (used: number, limit: number | null) => {
+    const pct = limit ? Math.min(100, Math.round((used / limit) * 100)) : 0;
+    const tone = pct >= 100 ? 'bg-rose' : pct >= 80 ? 'bg-gold' : 'bg-teal';
+    return (
+      <div className="mt-1 h-2 overflow-hidden rounded-full bg-night-900" role="presentation">
+        <div className={`h-full ${tone}`} style={{ width: `${pct}%` }} />
+      </div>
+    );
+  };
+  const full = (u.game_limit !== null && u.game_used >= u.game_limit) || (u.day_limit !== null && u.day_used >= u.day_limit);
+  return (
+    <Card title="Cuota de generaciones reales">
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <p className="text-sm text-white/70">Esta partida</p>
+          <p className="font-display text-2xl tabular-nums" aria-label={`${u.game_used} de ${u.game_limit} generaciones en esta partida`}>
+            {u.game_used} / {u.game_limit}
+          </p>
+          {bar(u.game_used, u.game_limit)}
+        </div>
+        <div>
+          <p className="text-sm text-white/70">Hoy (todas las partidas, UTC)</p>
+          <p className="font-display text-2xl tabular-nums" aria-label={`${u.day_used} de ${u.day_limit} generaciones hoy`}>
+            {u.day_used} / {u.day_limit}
+          </p>
+          {bar(u.day_used, u.day_limit)}
+        </div>
+      </div>
+      <p className="mt-2 text-xs text-white/55">
+        Proveedor: {u.provider === 'cloudflare' ? 'Cloudflare Workers AI' : 'OpenAI'}. Cuenta cada llamada al proveedor (también las que fallan). Límites: <code>IMAGE_QUOTA_PER_GAME</code> / <code>IMAGE_QUOTA_PER_DAY</code>.
+      </p>
+      {full ? <Notice tone="warn">Cuota alcanzada: los trabajos nuevos fallarán con un aviso claro y la partida sigue con las imágenes actuales. Se renueva a las 00:00 UTC (diaria).</Notice> : null}
+    </Card>
   );
 }

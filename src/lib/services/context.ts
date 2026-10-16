@@ -1,5 +1,6 @@
 import path from 'node:path';
-import { getImageProviderId, getRuntimeMode, getSupabaseConfig, openAiKey } from '@/lib/config/env';
+import { cloudflareConfig, getImageProviderId, getRuntimeMode, getSupabaseConfig, openAiKey } from '@/lib/config/env';
+import { createCloudflareProvider } from '@/lib/ai/cloudflare';
 import { createDemoProvider } from '@/lib/ai/demo';
 import { createOpenAiProvider } from '@/lib/ai/openai';
 import type { ImageGenerationProvider } from '@/lib/ai/types';
@@ -39,6 +40,7 @@ function buildProvider(): ImageGenerationProvider | null {
       inputFidelity: (e.OPENAI_IMAGE_INPUT_FIDELITY as 'high' | 'low' | 'off' | undefined) || undefined,
     });
   }
+  if (id === 'cloudflare') return createCloudflareProvider(cloudflareConfig()!);
   if (id === 'demo') return createDemoProvider();
   return null;
 }
@@ -70,6 +72,7 @@ export function getRuntimeInfo(ctx?: Pick<AppContext, 'mode' | 'provider'>): Run
     mode: m,
     aiConfigured: provider !== null,
     aiProvider: provider?.id ?? 'demo',
+    aiCanEdit: provider?.capabilities.edit ?? false,
     ...(m === 'supabase' ? { supabaseUrl: getSupabaseConfig().url, supabaseAnonKey: getSupabaseConfig().anonKey } : {}),
   };
 }

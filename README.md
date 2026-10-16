@@ -59,8 +59,8 @@ Si **no** defines las variables de Supabase y `NODE_ENV !== 'production'`, la ap
 
 - Base de datos local PGlite (`./.demo-data/pgdata`), imágenes en disco (`./.demo-data/images`).
 - Acceso de anfitrión con un botón (sin cuenta).
-- Si no hay `OPENAI_API_KEY`: proveedor de **muestra** (escenas SVG y «pegatinas» de los elementos). Toda imagen lleva la marca visible **«DEMO · imagen de muestra, no generada por IA»**, se guarda con `provider = 'demo'` y la interfaz muestra un banner amarillo permanente. **No es IA**.
-- Con `OPENAI_API_KEY` en modo demo se usa la IA real (la BD y el almacenamiento siguen siendo locales).
+- Con el proveedor por defecto (`demo`): proveedor de **muestra** (escenas SVG y «pegatinas» de los elementos). Toda imagen lleva la marca visible **«DEMO · imagen de muestra, no generada por IA»**, se guarda con `provider = 'demo'` y la interfaz muestra un banner amarillo permanente. **No es IA**.
+- Con `IMAGE_PROVIDER=cloudflare` (u `openai`) y sus credenciales en modo demo se usa la IA real (la BD y el almacenamiento siguen siendo locales). Solo `IMAGE_PROVIDER` activa un proveedor real: tener credenciales en el entorno no basta.
 - En producción sin credenciales la app **no** cae a modo demo: muestra `/setup` con lo que falta (salvo que fuerces `ALLOW_DEMO_MODE=true`, no recomendado).
 - El botón «Cargar partida de ejemplo (demo)» de la landing crea una partida con jugadores, compras e imágenes para probar la interfaz.
 
@@ -100,6 +100,7 @@ npx supabase status          # muestra API URL, anon key y service_role key → 
    4. `supabase/migrations/20260101000300_security_initial_all.sql` (permisos de esa función y bucket con SVG).
    5. `supabase/migrations/20260101000400_mobile_players.sql` y `20260101000500_security_mobile_players.sql` (modo móviles).
    6. `supabase/migrations/20260101000600_mobile_hardening.sql` y `20260101000700_security_mobile_hardening.sql` (endurecimiento).
+   7. `supabase/migrations/20260101000800_join_policy_quota.sql` y `20260101000900_security_join_policy_quota.sql` (política de altas de los móviles y cuota de generaciones).
 
    Con la CLI: `npx supabase link --project-ref TU_REF` y `npx supabase db push`. Si ya aplicaste archivos a mano en el SQL Editor, antes marca esas versiones: `npx supabase migration repair --status applied 20260101000000 20260101000100 …`.
 
@@ -111,20 +112,43 @@ npx supabase status          # muestra API URL, anon key y service_role key → 
 7. **RLS.** Verifica en *Database → Tables* que todas las tablas muestran RLS activado y que *Database → Functions* no es ejecutable por `anon` (la migración ya revoca `EXECUTE`).
 
 <a id="configurar-la-ia"></a>
-## Configurar el proveedor de IA
+## Configurar el proveedor de imágenes
 
-El proveedor real incluido es **OpenAI Images** (`gpt-image-1`), que admite *edición con imagen de referencia*:
+Por defecto la app usa el proveedor **`demo`** (`IMAGE_PROVIDER=demo` o sin definir): ilustraciones SVG de muestra, **no es IA**, sin coste, marcadas «DEMO» y con un banner permanente. **Ninguna credencial activa un proveedor real por sí sola**: hay que pedirlo con `IMAGE_PROVIDER=cloudflare` (primera opción) u `openai`. Si pides uno real y faltan sus credenciales, la IA aparece como «no configurada» y los trabajos quedan en cola: **nunca se cambia automáticamente a otro proveedor ni se activa un plan de pago**. Si el proveedor falla, la compra, el saldo y la imagen anterior se conservan y se puede seguir jugando; el trabajo se puede reintentar sin volver a cobrar.
 
-1. Crea una API key en <https://platform.openai.com/api-keys> (la organización puede requerir verificación para usar `gpt-image-1`).
-2. Define `OPENAI_API_KEY` (y opcionalmente `OPENAI_IMAGE_MODEL`, `OPENAI_IMAGE_SIZE`, `OPENAI_IMAGE_QUALITY`, `OPENAI_IMAGE_INPUT_FIDELITY`, ver `.env.example`).
-3. Para probar el flujo completo sin gastar IA, define `IMAGE_PROVIDER=demo` (con Supabase real): usa el proveedor de **muestra** (SVG marcados «DEMO», no es IA) y la interfaz lo avisa con un banner. Requiere que el bucket admita `image/svg+xml` (ya incluido en la migración de seguridad).
-4. La clave solo se usa en el servidor. Sin ella los trabajos quedan **en cola** (nunca se simulan) y la interfaz del anfitrión lo indica.
+### Cloudflare Workers AI (primera opción real)
 
-Control de costes: máximo 150 trabajos de imagen por partida y 5 reintentos manuales por trabajo. Como el registro de Supabase Auth es abierto, define `ALLOWED_HOST_EMAILS` (lista de correos separados por comas) para que solo esas cuentas puedan ser anfitrión.
+Verificado en la documentación oficial de Cloudflare (consulta de las páginas de modelos y precios; en el entorno de desarrollo no pude abrir las páginas completas, solo sus extractos, así que **contrasta los detalles críticos con la doc vigente y prueba con una llamada real antes de confiar en ellos**):
 
-Cómo se edita una casa: la imagen actual del jugador + un prompt (`src/lib/ai/prompts.ts`) que exige conservar composición, perspectiva y objetos previos, añadir **solo** el nuevo elemento e integrar luz/escala/sombras, sin texto ni marcas de agua. Los modelos no garantizan una conservación perfecta: por eso cada edición crea una **versión nueva** (la anterior se conserva), puedes **reintentar** y **restaurar** versiones desde el historial.
+| Modelo | Uso | Entrada | Salida |
+|---|---|---|---|
+| `@cf/black-forest-labs/flux-1-schnell` (**por defecto**, el más económico) | Generación texto→imagen: imagen inicial de la casa e imágenes de elementos | JSON `prompt` (1–2048 caracteres), `steps` (1–8, por defecto 4) | `image`: base64 (JPEG) |
+| `@cf/black-forest-labs/flux-2-klein-4b` (opcional) | **Edición** multi-referencia | `multipart/form-data`: `prompt`, `width`, `height`, `input_image_0..3` (cada una < 512×512); 4 pasos fijos | `image`: base64 |
 
-Para usar otro proveedor implementa `ImageGenerationProvider` (`src/lib/ai/types.ts`) y regístralo en `src/lib/services/context.ts`.
+Endpoint REST: `POST https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/{modelo}` con `Authorization: Bearer {CLOUDFLARE_API_TOKEN}`. La respuesta se interpreta como `{ result: { image } }` (también se admite `{ image }` o una imagen binaria).
+
+**Limitación importante:** `flux-1-schnell` **no admite imagen de referencia, así que no puede editar la casa existente**. Con él, la imagen inicial y las imágenes de elementos se generan, pero las ediciones por compra salen como *fallidas* con un mensaje claro (la compra, el saldo y la imagen anterior se conservan; el panel avisa y no gasta cuota). Opciones:
+- Definir `CLOUDFLARE_EDIT_MODEL=@cf/black-forest-labs/flux-2-klein-4b`: la app redimensiona la casa actual a < 512 px (con `sharp`) y la envía como `input_image_0`. **Esta ruta está implementada según la documentación y probada solo con respuestas simuladas, no contra la API real**; la calidad de conservación de detalles con referencias tan pequeñas puede ser limitada y el coste por imagen es mayor que el de schnell.
+- Usar otro proveedor con edición real (`IMAGE_PROVIDER=openai`) o integrar uno nuevo implementando `ImageGenerationProvider` (`src/lib/ai/types.ts`, ver `capabilities.edit`) y registrándolo en `src/lib/services/context.ts`.
+
+Cuota y coste (según la documentación en el momento de escribir esto, sujeta a cambios): Workers AI incluye **10 000 *neurons* al día gratis**; más allá solo se factura en el plan *Workers Paid* (desde 5 USD/mes), que **no se activa solo**. Algunos modelos exigen el plan de pago (las peticiones del plan gratuito devuelven 403). flux-1-schnell se factura por *tile* de 512×512 (4,80 neurons) y por paso (9,60 neurons); una imagen de 1024×1024 con 4 pasos serían ≈ 58 neurons, es decir, del orden de 170 imágenes/día gratis (estimación mía a partir de esas cifras). Comprueba los precios vigentes en la página oficial de precios de Workers AI.
+
+**Cómo obtener y configurar las credenciales (sin exponerlas en el frontend):**
+1. Crea una cuenta en <https://dash.cloudflare.com> (el plan gratuito basta para empezar; **no añadas método de pago** si no quieres cobros).
+2. **Account ID:** en el panel, *Workers & Pages* (barra lateral derecha, «Account ID») o en la URL `dash.cloudflare.com/<ACCOUNT_ID>/…`.
+3. **API token:** *My Profile → API Tokens → Create Token* → plantilla **«Workers AI»** (o un token personalizado con el permiso *Account · Workers AI*). Cópialo una sola vez.
+4. En `.env.local` (local) o *Settings → Environment Variables* de Vercel (Production y Preview) define `IMAGE_PROVIDER=cloudflare`, `CLOUDFLARE_ACCOUNT_ID` y `CLOUDFLARE_API_TOKEN`. Son variables **solo de servidor** (sin prefijo `NEXT_PUBLIC_`): las llamadas a Cloudflare se hacen únicamente en el backend (`/api/…`, worker y `after()`); el navegador nunca ve el token. Los mensajes de error guardados no incluyen el token.
+5. Redespliega y comprueba en el panel (pestaña *Imágenes*) el proveedor y el contador de cuota.
+
+### Límites de generaciones reales
+`IMAGE_QUOTA_PER_GAME` (por defecto 30) e `IMAGE_QUOTA_PER_DAY` (por defecto 100, global a todas las partidas del despliegue, día UTC) limitan las llamadas a proveedores **reales** (`demo` no cuenta). La reserva es atómica en la base de datos (`ss_reserve_image_quota`) y cuenta cada llamada al proveedor, incluidas las que fallan. El panel del anfitrión muestra el contador (`usada / límite`) en la pestaña *Imágenes*. Al alcanzar el límite, el trabajo falla con un mensaje claro («Cuota diaria de generaciones alcanzada (100/100)…»), la imagen anterior se conserva, la partida sigue y el trabajo se puede reintentar al día siguiente o tras subir el límite (el reintento no cobra ni vuelve a adjudicar nada). Si el contador diario está por debajo del límite de Cloudflare (10 000 neurons), no deberías llegar a un cobro; si pones un límite mayor del que cubre tu cuota gratuita, Cloudflare devolverá un error de cuota agotada y el trabajo fallará sin reintentos.
+
+### OpenAI (alternativa de pago)
+1. Crea una API key en <https://platform.openai.com/api-keys> (puede requerir verificación de organización para `gpt-image-1`).
+2. `IMAGE_PROVIDER=openai` y `OPENAI_API_KEY` (opcionales: `OPENAI_IMAGE_MODEL`, `OPENAI_IMAGE_SIZE`, `OPENAI_IMAGE_QUALITY`, `OPENAI_IMAGE_INPUT_FIDELITY`, ver `.env.example`). Admite edición con imagen de referencia (`input_fidelity=high`).
+
+### Cómo se edita una casa
+La imagen actual del jugador + un prompt (`src/lib/ai/prompts.ts`) que exige conservar composición, perspectiva y objetos previos, añadir **solo** el nuevo elemento e integrar luz/escala/sombras, sin texto ni marcas de agua. Los modelos no garantizan una conservación perfecta: por eso cada edición crea una **versión nueva** (la anterior se conserva), puedes **reintentar** y **restaurar** versiones desde el historial. Control de costes adicional: máximo 150 trabajos de imagen por partida y 5 reintentos manuales por trabajo. Como el registro de Supabase Auth es abierto, define `ALLOWED_HOST_EMAILS` para que solo esas cuentas sean anfitrión.
 
 <a id="trabajos-de-ia"></a>
 ## Trabajos de generación de imágenes (cola / worker)
@@ -174,7 +198,11 @@ Notas: las rutas que generan imágenes declaran `maxDuration = 300`. Si tu proye
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Sí (modo real) | cliente+servidor | Clave pública (sin permisos sobre tablas por RLS). |
 | `SUPABASE_SERVICE_ROLE_KEY` | Sí (modo real) | **solo servidor** | Clave de servicio. Nunca en el navegador. |
 | `SUPABASE_STORAGE_BUCKET` | No | servidor | Bucket de imágenes (por defecto `game-images`). |
-| `OPENAI_API_KEY` | Para IA real | **solo servidor** | Sin ella: trabajos en cola (o imágenes DEMO en modo demo). |
+| `IMAGE_PROVIDER` | No (por defecto `demo`) | servidor | `demo` \| `cloudflare` \| `openai`. Ninguna credencial activa un proveedor real sin esto. |
+| `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN` | Con `cloudflare` | **solo servidor** | Credenciales de Workers AI. |
+| `CLOUDFLARE_IMAGE_MODEL`, `_IMAGE_STEPS`, `CLOUDFLARE_EDIT_MODEL`, `_EDIT_WIDTH`, `_EDIT_HEIGHT` | No | servidor | Modelos y parámetros (ver arriba). |
+| `IMAGE_QUOTA_PER_GAME`, `IMAGE_QUOTA_PER_DAY` | No (30 / 100) | servidor | Límite de generaciones reales por partida y por día. |
+| `OPENAI_API_KEY` | Con `openai` | **solo servidor** | Alternativa de pago. |
 | `OPENAI_IMAGE_MODEL` / `_SIZE` / `_QUALITY` / `_INPUT_FIDELITY` / `OPENAI_BASE_URL` | No | servidor | Ajustes del proveedor. |
 | `ALLOWED_HOST_EMAILS` | Recomendada | servidor | Correos autorizados como anfitrión (evita gasto de IA por terceros). |
 | `CRON_SECRET` | Recomendada | servidor | Protege `/api/jobs/process`. |
@@ -206,6 +234,9 @@ Con varias conexiones simultáneas comprueba: 16 adjudicaciones a la vez → una
 
 Los jugadores **no tienen cuenta**. Al unirse (reclamar un nombre libre o entrar con uno nuevo en la sala de espera) el servidor genera un token aleatorio que va en una cookie `httpOnly` del móvil; en la base de datos solo se guarda su hash SHA-256 y la vista pública solo expone si la casilla está ocupada (`claimed`). Las pujas del móvil pasan por `POST /api/play/[código]/bid`, que identifica al jugador por esa cookie y aplica **las mismas reglas SQL** que las del anfitrión (saldo, mínimo, subasta abierta, idempotencia) más una: no puedes pujar contra ti mismo. Quien llega primero reclama la casilla; si alguien se equivoca o cambia de móvil, el anfitrión pulsa «Liberar móvil». El código de sala da acceso de juego: compártelo solo con quien quieras que participe.
 
+## Bucket con SVG (opcional)
+El bucket `game-images` admite `image/svg+xml` solo para el proveedor `demo` y la galería de imágenes iniciales (los escribe únicamente el servidor, con texto escapado). Si usas solo un proveedor real y subes tus propias imágenes, puedes quitarlo: `update storage.buckets set allowed_mime_types = array['image/png','image/jpeg','image/webp'] where id = 'game-images';`
+
 ## Seguridad
 
 - Sin secretos en el cliente; `service_role` y `OPENAI_API_KEY` solo en servidor.
@@ -234,6 +265,8 @@ Los jugadores **no tienen cuenta**. Al unirse (reclamar un nombre libre o entrar
 | `permission denied` al llamar a `ss_*` | La `service_role` no tiene `EXECUTE`: ejecuta `…_security.sql` (incluye los `GRANT`). |
 | Las imágenes no se generan («en cola») | Falta `OPENAI_API_KEY`, la cuenta no tiene acceso a `gpt-image-1`, o no hay worker: pulsa «Procesar cola ahora» o configura el cron. Mira el error en la sección *Imágenes* del panel. |
 | Error 400 de OpenAI sobre `input_fidelity` | Tu modelo no lo admite: `OPENAI_IMAGE_INPUT_FIDELITY=off`. |
+| «El modelo configurado solo genera imágenes nuevas…» | `flux-1-schnell` no edita. Define `CLOUDFLARE_EDIT_MODEL` o usa otro proveedor con edición (ver *Configurar el proveedor de imágenes*). |
+| «Cuota … alcanzada» | Se llegó a `IMAGE_QUOTA_PER_GAME`/`PER_DAY` (o a la cuota gratuita de Cloudflare). La partida sigue; reintenta más tarde o sube el límite. |
 | La imagen cambia demasiado la casa | Normal en modelos generativos: usa **Restaurar** en el historial y reintenta; sube `OPENAI_IMAGE_QUALITY` a `high`. |
 | La TV no se actualiza al instante | Realtime no conectado → la TV sigue por *polling* (≤ 8 s). Comprueba que Broadcast está permitido en Supabase. |
 | La TV se ve cortada | Pulsa el botón de pantalla completa (aparece al mover el ratón) y usa una ventana 16:9. |

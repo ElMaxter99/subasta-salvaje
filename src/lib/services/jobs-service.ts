@@ -1,6 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { validateProviderOutput } from '@/lib/ai/image-validation';
 import { ProviderError, type GeneratedImage, type ImageGenerationProvider } from '@/lib/ai/types';
+import { quotaConfig } from '@/lib/config/env';
 import { emptySceneFor } from '@/lib/domain/themes';
 import { extensionForMime } from '@/lib/storage/types';
 import type { AppContext } from './context';
@@ -117,6 +118,11 @@ async function jobContext(ctx: Ctx, job: ClaimedJob): Promise<{ itemEmoji: strin
 
 async function runJob(ctx: Ctx, provider: ImageGenerationProvider, job: ClaimedJob, workerId: string): Promise<boolean> {
   try {
+    // Sin capacidad de edición no se gasta cuota: se falla con un mensaje claro y la imagen anterior se conserva.
+    if (job.kind === 'edit' && !provider.capabilities.edit) {
+      throw new ProviderError('El proveedor configurado sólo genera imágenes nuevas y no puede editar la casa existente. Se conserva la imagen anterior.', false);
+    }
+    await reserveQuota(ctx, provider, job);
     const image = await generate(ctx, provider, job);
     const mime = validateProviderOutput(image, provider.id === 'demo');
     const folder = job.kind === 'item' ? `items/${job.item_id}` : `players/${job.player_id}`;
@@ -150,6 +156,25 @@ async function runJob(ctx: Ctx, provider: ImageGenerationProvider, job: ClaimedJ
     }
     return false;
   }
+}
+
+/** Reserva atómica de UNA llamada al proveedor real. El proveedor `demo` no consume ni tiene límite. */
+async function reserveQuota(ctx: Ctx, provider: ImageGenerationProvider, job: ClaimedJob): Promise<void> {
+  if (provider.id === 'demo') return;
+  const q = quotaConfig();
+  const r = await ctx.db.rpc<{ ok: boolean; reason?: 'game' | 'day'; used?: number; limit?: number }>('ss_reserve_image_quota', {
+    job_id: job.job_id,
+    provider: provider.id,
+    game_limit: q.perGame,
+    day_limit: q.perDay,
+  });
+  if (r.ok) return;
+  throw new ProviderError(
+    r.reason === 'game'
+      ? `Cuota de generaciones de esta partida alcanzada (${r.used}/${r.limit}). La partida sigue con la imagen anterior. Sube IMAGE_QUOTA_PER_GAME o reintenta el trabajo más tarde.`
+      : `Cuota diaria de generaciones alcanzada (${r.used}/${r.limit}). La partida sigue con la imagen anterior; se renueva a las 00:00 UTC. Sube IMAGE_QUOTA_PER_DAY si quieres más.`,
+    false,
+  );
 }
 
 function toDomainErrorMessage(message: string): string {

@@ -81,6 +81,7 @@ export function createOpenAiProvider(cfg: OpenAiProviderConfig): ImageGeneration
 
   return {
     id: 'openai',
+    capabilities: { edit: true },
     generateInitialScene: (input: InitialSceneInput) => generate(buildInitialScenePrompt(input)),
     generateItemImage: (input: ItemImageInput) => generate(buildItemImagePrompt(input)),
     async editScene(input: EditSceneInput): Promise<GeneratedImage> {

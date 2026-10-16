@@ -168,3 +168,31 @@ describe('proveedor demo', () => {
     expect(svg.length).toBeLessThan(base.bytes.length + 2000);
   });
 });
+
+describe('política de altas e imagen para quien entra tarde', () => {
+  it('«slots» no admite nombres nuevos y «closed» no admite a nadie nuevo, pero los ya conectados siguen', async () => {
+    const host = newHost();
+    const { room, snap } = await mobileGame(host);
+    const ana = await joinGame(ctx, room, { player_id: playerByName(snap, 'Ana').id });
+    await act(ctx, room, host, { type: 'game.set_join_policy', join_policy: 'slots' });
+    await expect(joinGame(ctx, room, { name: 'Nuevo' })).rejects.toMatchObject({ code: 'new_names_disabled' });
+    await expect(joinGame(ctx, room, { player_id: playerByName(snap, 'Beto').id })).resolves.toBeTruthy();
+    await act(ctx, room, host, { type: 'game.set_join_policy', join_policy: 'closed' });
+    await expect(joinGame(ctx, room, { player_id: playerByName(snap, 'Carla').id })).rejects.toMatchObject({ code: 'room_closed' });
+    expect(await identifyPlayer(ctx, room, ana.token)).toBe(ana.player_id);
+    await expect(act(ctx, room, newHost(), { type: 'game.set_join_policy', join_policy: 'open' })).rejects.toMatchObject({ code: 'not_host' });
+    await act(ctx, room, host, { type: 'game.set_join_policy', join_policy: 'open' });
+    expect((await getPublicState(ctx, room)).game.join_policy).toBe('open');
+  });
+
+  it('quien entra con nombre nuevo hereda la imagen de partida común', async () => {
+    const host = newHost();
+    const { room } = await mobileGame(host);
+    await act(ctx, room, host, { type: 'image.set_initial_all', catalog_id: 'island' });
+    await joinGame(ctx, room, { name: 'Tarde' });
+    const s = await getHostState(ctx, room, host);
+    const late = s.players.find((p) => p.name === 'Tarde')!;
+    expect(late.current_image?.storage_path).toBe(s.players[0]!.current_image!.storage_path);
+    expect(new Set(s.players.map((p) => p.current_image!.storage_path)).size).toBe(1);
+  });
+});

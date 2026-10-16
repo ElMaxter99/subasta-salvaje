@@ -98,7 +98,11 @@ export function Picker({
         ))}
       </ul>
 
-      {game.status === 'lobby' ? (
+      {game.join_policy === 'closed' ? (
+        <p role="status" className="rounded-2xl bg-night-800 px-4 py-3 text-base text-white/80">La sala está cerrada: el anfitrión no admite más jugadores. Si eres uno de los jugadores, pídele que te libere la casilla.</p>
+      ) : null}
+
+      {game.status === 'lobby' && game.join_policy === 'open' ? (
         showName ? (
           <form
             className="space-y-3 rounded-2xl border border-white/10 bg-night-800 p-4"

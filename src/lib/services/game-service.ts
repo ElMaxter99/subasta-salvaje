@@ -2,7 +2,8 @@ import { randomUUID } from 'node:crypto';
 import { DomainError } from '@/lib/domain/errors';
 import { PLAYER_COLORS, actionSchema, createGameSchema, roomCodeSchema, type CreateGameInput, type GameAction } from '@/lib/domain/schemas';
 import { getThemePreset } from '@/lib/domain/themes';
-import type { GameSummary, HostSnapshot, PublicSnapshot } from '@/lib/domain/types';
+import { getImageProviderId, quotaConfig } from '@/lib/config/env';
+import type { GameSummary, HostSnapshot, ImageUsage, PublicSnapshot } from '@/lib/domain/types';
 import { validateImage } from '@/lib/ai/image-validation';
 import { extensionForMime } from '@/lib/storage/types';
 import type { AppContext } from './context';
@@ -41,7 +42,19 @@ export async function getPublicState(ctx: Ctx, roomCode: string): Promise<Public
 
 export async function getHostState(ctx: Ctx, roomCode: string, hostId: string): Promise<HostSnapshot> {
   const snap = await ctx.db.rpc<HostSnapshot>('ss_get_state', { room_code: room(roomCode), view: 'host', host_id: hostId });
-  return attachUrls(snap, ctx.storage);
+  const used = await ctx.db.rpc<{ game_used: number; day_used: number }>('ss_image_usage', { room_code: room(roomCode) });
+  const provider = getImageProviderId();
+  const q = quotaConfig();
+  const limited = provider !== null && provider !== 'demo';
+  const usage: ImageUsage = {
+    provider: provider ?? 'demo',
+    limited,
+    game_used: limited ? used.game_used : 0,
+    game_limit: limited ? q.perGame : null,
+    day_used: limited ? used.day_used : 0,
+    day_limit: limited ? q.perDay : null,
+  };
+  return { ...attachUrls(snap, ctx.storage), usage };
 }
 
 export async function listGames(ctx: Ctx, hostId: string): Promise<GameSummary[]> {
@@ -54,6 +67,8 @@ function toRpc(action: GameAction): { fn: string; params: Record<string, unknown
   switch (type) {
     case 'game.update':
       return { fn: 'ss_update_game', params: rest };
+    case 'game.set_join_policy':
+      return { fn: 'ss_set_join_policy', params: rest };
     case 'game.set_mode':
       return { fn: 'ss_set_play_mode', params: rest };
     case 'player.release':

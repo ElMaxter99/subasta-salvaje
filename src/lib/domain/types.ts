@@ -6,6 +6,8 @@ export type ItemStatus = 'available' | 'in_auction' | 'sold';
 export type RankingRule = 'none' | 'balance' | 'items' | 'votes';
 /** host = el anfitrión registra todas las pujas; mobile = cada jugador se une con el código y puja desde su móvil. */
 export type PlayMode = 'host' | 'mobile';
+/** Quién puede unirse en modo móviles: open = casillas + nombres nuevos, slots = sólo casillas existentes, closed = nadie nuevo. */
+export type JoinPolicy = 'open' | 'slots' | 'closed';
 export type JobKind = 'initial' | 'edit' | 'item';
 export type JobStatus = 'queued' | 'running' | 'completed' | 'failed';
 
@@ -101,6 +103,7 @@ export interface GameInfo {
   min_bid_cents: number;
   ranking_rule: RankingRule;
   play_mode: PlayMode;
+  join_policy: JoinPolicy;
   current_auction_id: string | null;
   created_at: string;
   finished_at: string | null;
@@ -170,7 +173,18 @@ export interface PublicSnapshot {
 }
 
 /** Instantánea del anfitrión: añade trabajos, versiones y eventos. */
+/** Contador de generaciones REALES de imagen (el proveedor demo no cuenta ni tiene límite). */
+export interface ImageUsage {
+  provider: 'openai' | 'cloudflare' | 'demo';
+  limited: boolean;
+  game_used: number;
+  game_limit: number | null;
+  day_used: number;
+  day_limit: number | null;
+}
+
 export interface HostSnapshot extends PublicSnapshot {
+  usage?: ImageUsage;
   host_id: string;
   jobs: ImageJob[];
   versions: ImageVersion[];
@@ -181,7 +195,9 @@ export interface HostSnapshot extends PublicSnapshot {
 export interface RuntimeInfo {
   mode: 'supabase' | 'demo';
   aiConfigured: boolean;
-  aiProvider: 'openai' | 'demo';
+  aiProvider: 'openai' | 'cloudflare' | 'demo';
+  /** El proveedor configurado puede EDITAR la imagen existente de una casa (si no, sólo genera imágenes nuevas). */
+  aiCanEdit: boolean;
   /** Sólo en Supabase: permite que el navegador se suscriba a Realtime. */
   supabaseUrl?: string;
   supabaseAnonKey?: string;

@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useToast } from '@/components/ui/toast';
 import { formatEuros, parseEurosToCents } from '@/lib/domain/money';
-import type { PlayMode, RankingRule } from '@/lib/domain/types';
+import type { JoinPolicy, PlayMode, RankingRule } from '@/lib/domain/types';
 import { Card, Dot, Notice, inputCls } from './bits';
 import type { HostCtx } from './host-context';
 
@@ -21,6 +21,12 @@ const RULES: { id: RankingRule; label: string; hint: string }[] = [
 const MODES: { id: PlayMode; label: string; hint: string }[] = [
   { id: 'host', label: 'Pujas del anfitrión', hint: 'Los jugadores pujan en voz alta y tú registras cada puja desde tu panel. No necesitan móvil ni cuenta.' },
   { id: 'mobile', label: 'Cada jugador desde su móvil', hint: 'Los jugadores se unen con el código de sala (o un QR), eligen su nombre y pujan ellos mismos. Tú sigues anunciando, cerrando y adjudicando.' },
+];
+
+const POLICIES: { id: JoinPolicy; label: string; hint: string }[] = [
+  { id: 'open', label: 'Abierta', hint: 'Se puede reclamar una casilla libre o entrar con un nombre nuevo (solo en la sala de espera).' },
+  { id: 'slots', label: 'Solo mis jugadores', hint: 'Solo se pueden reclamar las casillas que ya creaste; no se admiten nombres nuevos.' },
+  { id: 'closed', label: 'Cerrada', hint: 'Nadie nuevo puede unirse (ni casillas libres). Los móviles ya conectados siguen jugando.' },
 ];
 
 export function SettingsPanel({ ctx }: { ctx: HostCtx }) {
@@ -95,6 +101,28 @@ export function SettingsPanel({ ctx }: { ctx: HostCtx }) {
           Puedes cambiarla en cualquier momento. En modo móviles aparece el código/QR para unirse y puedes seguir registrando pujas a mano; al volver al modo anfitrión, los móviles ya no pueden pujar.
         </p>
       </Card>
+
+      {game.play_mode === 'mobile' ? (
+        <Card title="Quién puede unirse desde el móvil" icon={<Smartphone className="size-5 text-gold" aria-hidden />}>
+          <div role="radiogroup" aria-label="Política de altas" className="grid gap-2 sm:grid-cols-3">
+            {POLICIES.map((m) => (
+              <button
+                key={m.id}
+                type="button"
+                role="radio"
+                aria-checked={game.join_policy === m.id}
+                disabled={finished || busy !== null}
+                onClick={() => game.join_policy !== m.id && run(`policy-${m.id}`, { type: 'game.set_join_policy', join_policy: m.id }, `Altas: ${m.label}`)}
+                className={`rounded-2xl border-2 p-3 text-left transition disabled:opacity-60 ${game.join_policy === m.id ? 'border-gold bg-gold/10' : 'border-white/10 bg-night-700 hover:bg-night-600'}`}
+              >
+                <b className="block">{m.label}</b>
+                <span className="text-sm text-white/65">{m.hint}</span>
+              </button>
+            ))}
+          </div>
+          <p className="mt-3 text-sm text-white/70">Cualquiera con el código de sala puede intentar unirse: cierra la sala cuando estén todos dentro. Si liberas una casilla, ábrela solo el tiempo necesario.</p>
+        </Card>
+      ) : null}
 
       <Card title="Clasificación" icon={<Trophy className="size-5 text-gold" aria-hidden />}>
         <div role="radiogroup" aria-label="Regla de clasificación" className="grid gap-2 sm:grid-cols-2">

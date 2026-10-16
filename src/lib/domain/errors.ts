@@ -37,6 +37,8 @@ export const ERROR_MESSAGES: Record<string, string> = {
   invalid_action: 'Acción no válida.',
   image_quota_exceeded: 'Se alcanzó el máximo de imágenes de esta partida.',
   retry_limit: 'Este trabajo ya se reintentó demasiadas veces.',
+  room_closed: 'La sala está cerrada: el anfitrión no admite más jugadores.',
+  new_names_disabled: 'El anfitrión no admite nombres nuevos: elige uno de la lista.',
   already_joined: 'Este móvil ya está identificado en la partida. Sal primero si quieres cambiar de jugador.',
   player_taken: 'Ese jugador ya está conectado desde otro móvil.',
   not_player: 'Tu móvil no está identificado en esta partida. Vuelve a unirte.',

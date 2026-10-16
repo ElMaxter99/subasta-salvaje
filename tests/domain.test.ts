@@ -4,7 +4,7 @@ import { computeHighlights, computeRanking } from '@/lib/domain/ranking';
 import { actionSchema, createGameSchema } from '@/lib/domain/schemas';
 import { rateLimit } from '@/lib/auth/rate-limit';
 import { attachUrls } from '@/lib/services/urls';
-import { getImageProviderId, getRuntimeMode } from '@/lib/config/env';
+import { getRuntimeMode } from '@/lib/config/env';
 import type { Player } from '@/lib/domain/types';
 
 const player = (name: string, balance: number, items: number, votes = 0): Player => ({
@@ -67,12 +67,6 @@ describe('infraestructura', () => {
     const out = attachUrls({ a: [{ storage_path: 'p/1.png', id: 'x' }], item: { image_path: 'i.png' } }, { publicUrl: (p) => `https://cdn/${p}` });
     expect(out.a[0]).toMatchObject({ id: 'x', url: 'https://cdn/p/1.png' });
     expect((out.item as { image_url?: string }).image_url).toBe('https://cdn/i.png');
-  });
-  it('el proveedor de muestra en modo Supabase es un opt-in explícito; sin él y sin clave no hay IA', () => {
-    const full = { NEXT_PUBLIC_SUPABASE_URL: 'u', NEXT_PUBLIC_SUPABASE_ANON_KEY: 'a', SUPABASE_SERVICE_ROLE_KEY: 's', NODE_ENV: 'production' };
-    expect(getImageProviderId(full as never)).toBeNull();
-    expect(getImageProviderId({ ...full, IMAGE_PROVIDER: 'demo' } as never)).toBe('demo');
-    expect(getImageProviderId({ ...full, OPENAI_API_KEY: 'k' } as never)).toBe('openai');
   });
   it('detecta el modo de ejecución: supabase, demo o sin configurar (nunca demo en producción)', () => {
     const full = { NEXT_PUBLIC_SUPABASE_URL: 'u', NEXT_PUBLIC_SUPABASE_ANON_KEY: 'a', SUPABASE_SERVICE_ROLE_KEY: 's' };

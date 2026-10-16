@@ -97,6 +97,7 @@ const enc = (s: string) => new TextEncoder().encode(s);
 export function createDemoProvider(): ImageGenerationProvider {
   return {
     id: 'demo',
+    capabilities: { edit: true },
     async generateInitialScene(input: InitialSceneInput): Promise<GeneratedImage> {
       return {
         bytes: enc(renderScene(input.theme, `Escena inicial de ${input.playerName}`)),
