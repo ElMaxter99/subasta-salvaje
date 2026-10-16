@@ -9,8 +9,9 @@ import type { MascotId } from '@/components/mascot/assets';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/ui/logo';
 import { createGameRequest, importPhotosRequest } from '@/lib/client/api';
-import { TemplateImport } from './template-import';
-import { CUSTOM_THEME, type TemplateFormValues } from '@/lib/domain/template';
+import { TemplateImport, type LoadedCatalog, type LoadedTemplate } from './template-import';
+import { CUSTOM_THEME } from '@/lib/domain/template';
+import { ApiError, uploadItemImage } from '@/lib/client/api';
 import { formatEuros, parseEurosToCents } from '@/lib/domain/money';
 import { PLAYER_COLORS } from '@/lib/domain/schemas';
 import { THEME_PRESETS, getThemePreset } from '@/lib/domain/themes';
@@ -65,7 +66,7 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
   // Sin jugadores de partida: se pueden crear luego en el panel o, en modo móviles, darse de alta ellos mismos.
   const [players, setPlayers] = useState<string[]>([]);
   // Catálogo propio cargado desde una plantilla (null = el de la temática)
-  const [items, setItems] = useState<TemplateFormValues['items']>(null);
+  const [items, setItems] = useState<LoadedCatalog | null>(null);
   const [busy, setBusy] = useState(false);
   const [busyLabel, setBusyLabel] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -77,7 +78,7 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
   /** Rondas por defecto = elementos del catálogo de la temática (las temáticas libres usan el catálogo base). */
   const defaultRounds = items?.length ?? (preset ?? getThemePreset('free'))?.items.length ?? 12;
   const roundsValue = maxRounds.trim() === '' ? defaultRounds : Number(maxRounds);
-  function applyTemplate(v: TemplateFormValues) {
+  function applyTemplate(v: LoadedTemplate) {
     setName(v.name);
     setThemeChoice(v.themeChoice);
     setCustomTheme(v.customTheme);
@@ -168,6 +169,45 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
           window.sessionStorage.setItem('ss_import_notice', JSON.stringify({ code: room_code, imported: 0, failed: photos.map((p) => ({ name: p.name, reason: 'no se pudo descargar' })) }));
         }
       }
+      // Fotos incrustadas en un ZIP: se suben desde el navegador con la misma ruta que la subida manual.
+      const embedded = (items ?? []).filter((i) => i.photoFile);
+      if (embedded.length > 0) {
+        const failedEmbedded: { name: string; reason: string }[] = [];
+        try {
+          const snap = (await (await fetch(`/api/games/${room_code}`)).json()) as { snapshot: { items: { id: string; name: string }[] } };
+          const ids = new Map<string, string[]>();
+          for (const it of snap.snapshot.items) ids.set(it.name.toLowerCase(), [...(ids.get(it.name.toLowerCase()) ?? []), it.id]);
+          const used = new Map<string, number>();
+          let done = 0;
+          for (const it of items ?? []) {
+            const k = it.name.toLowerCase();
+            const n = used.get(k) ?? 0;
+            used.set(k, n + 1);
+            if (!it.photoFile) continue;
+            setBusyLabel(`Subiendo fotos ${++done}/${embedded.length}…`);
+            const id = ids.get(k)?.[n];
+            if (!id) { failedEmbedded.push({ name: it.name, reason: 'el elemento no existe' }); continue; }
+            const file = new File([it.photoFile.data as BlobPart], it.photoFile.name.split('/').pop() ?? 'foto', { type: it.photoFile.type });
+            for (let attempt = 0; ; attempt++) {
+              try {
+                await uploadItemImage(room_code, id, file);
+                break;
+              } catch (e) {
+                if (e instanceof ApiError && e.code === 'rate_limited' && attempt < 2) { await new Promise((r) => setTimeout(r, 6000)); continue; }
+                failedEmbedded.push({ name: it.name, reason: e instanceof ApiError ? e.message : 'no se pudo subir' });
+                break;
+              }
+            }
+          }
+        } catch {
+          for (const it of embedded) failedEmbedded.push({ name: it.name, reason: 'no se pudo subir' });
+        }
+        if (failedEmbedded.length > 0) {
+          const prev = window.sessionStorage.getItem('ss_import_notice');
+          const base = prev ? (JSON.parse(prev) as { failed: { name: string; reason: string }[] }) : { failed: [] };
+          window.sessionStorage.setItem('ss_import_notice', JSON.stringify({ code: room_code, imported: 0, failed: [...base.failed, ...failedEmbedded] }));
+        }
+      }
       router.push(`/game/${room_code}/host`);
     } catch (err) {
       setError((err as Error).message);
@@ -222,7 +262,7 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
         <div key={step} className={`${dir === 1 ? 'ss-step-in-right' : 'ss-step-in-left'} space-y-4`} data-testid={`wizard-step-${step + 1}`}>
           {step === 0 ? (
             <>
-              <TemplateImport onLoaded={applyTemplate} />
+              <TemplateImport onTemplate={applyTemplate} onCatalog={setItems} />
               <fieldset className={card}>
                 <legend className="px-2 font-display text-xl 2xl:text-3xl">Quién puja</legend>
                 <Choice name="play_mode" value="host" checked={playMode === 'host'} onChange={() => setPlayMode('host')} title="Pujas del anfitrión" desc="Los jugadores pujan en voz alta y tú registras cada puja desde tu panel. No necesitan móvil ni cuenta." />
@@ -378,12 +418,12 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
                     </Button>
                   </div>
                   <p className="text-base 2xl:text-xl">
-                    <b>{items.length}</b> {items.length === 1 ? 'elemento' : 'elementos'} · {items.filter((i) => i.photoUrl).length} con foto (se descargan al crear la partida)
+                    <b>{items.length}</b> {items.length === 1 ? 'elemento' : 'elementos'} · {items.filter((i) => i.photoUrl || i.photoFile).length} con foto (se suben o descargan al crear la partida)
                   </p>
                   <ul className="mt-2 flex flex-wrap gap-2">
                     {items.slice(0, 12).map((i, n) => (
                       <li key={i.name + n} className="flex items-center gap-1.5 rounded-full bg-night-800 px-3 py-1 text-sm 2xl:text-lg">
-                        <span aria-hidden>{i.emoji ?? '📦'}</span> {i.name}{i.photoUrl ? <span aria-label="con foto"> 🖼️</span> : null}
+                        <span aria-hidden>{i.emoji ?? '📦'}</span> {i.name}{i.photoUrl || i.photoFile ? <span aria-label="con foto"> 🖼️</span> : null}
                       </li>
                     ))}
                     {items.length > 12 ? <li className="px-2 py-1 text-sm text-white/60">… y {items.length - 12} más</li> : null}

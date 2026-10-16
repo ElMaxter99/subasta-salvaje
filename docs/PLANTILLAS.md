@@ -45,8 +45,13 @@ Una plantilla es un archivo **JSON** que el anfitrión rellena fuera de la app (
 Tras crear la partida, el servidor descarga cada `foto` y la guarda como foto del elemento (la misma que la subida manual: se usa de referencia cuando alguien gana el elemento). Un fallo de una foto **nunca bloquea la partida**: el panel avisa de cuáles fallaron y puedes subirlas a mano en Catálogo.
 Defensas (`src/lib/security/safe-fetch.ts`, con tests): solo `https`, sin credenciales ni puertos raros, sin IP literales ni nombres internos (`localhost`, `.local`, `.internal`); conexión **anclada a la IP ya comprobada** (anti DNS rebinding); se rechazan IP privadas, de bucle, enlace local, CGNAT y metadatos de nube (IPv4 e IPv6); máx. 3 redirecciones, cada una revalidada; 8 s por descarga, 7 MB y comprobación del tipo real de imagen; 3 descargas a la vez, 45 s en total y 6 importaciones cada 10 min por anfitrión; solo el anfitrión propietario.
 
-## Límites / pendiente (fases siguientes)
-- **Fase 1 hecha:** JSON + importar al asistente + exportar + plantilla vacía + fotos por URL.
-- **Pendiente:** CSV y ZIP con fotos incrustadas (fase 3), plantillas guardadas en la cuenta del anfitrión (fase 4), editar el catálogo importado dentro del asistente (hoy se edita después en el panel → Catálogo).
+## CSV y ZIP (fase 3)
+- **CSV de catálogo** (`.csv`): cabecera `titulo;descripcion;emoji;foto` (acepta también `,` o tabulador y alias como `nombre`, `imagen`). Excel en español lo abre y guarda con `;`. Solo trae el catálogo: el resto del asistente no cambia. Errores por fila de la hoja («Fila 3: falta el título»). Ajustes → «Catálogo en CSV» exporta el de una partida (`src/lib/domain/template-csv.ts`).
+- **ZIP** (`.zip`): `plantilla.json` en la raíz + carpeta `fotos/` con PNG/JPG/WebP. En el JSON/CSV, `foto` puede ser una URL https **o una ruta del ZIP** (`fotos/sofa.jpg`, o solo `sofa.jpg`). Las fotos incrustadas se suben desde el navegador con la misma ruta que la subida manual (`/api/games/[code]/item-image`), con reintento si hay límite de ritmo; las que falten o fallen se avisan sin bloquear la partida.
+- **Seguridad del ZIP** (`template-zip.ts`, lector propio sin dependencias; entrada no confiable): sin contraseña ni ZIP64, solo «stored» y «deflate», máx. 300 entradas, 7 MB por foto y 40 MB en total, y el tamaño se controla sobre lo **realmente descomprimido** (contra «zip bombs»); se ignoran carpetas, `__MACOSX` y ocultos; rutas con `..`, absolutas o con esquema se descartan; nada se escribe en disco.
+
+## Límites / pendiente
+- **Hecho:** fase 1 (JSON, importar, exportar, plantilla vacía, fotos por URL) y fase 3 (CSV y ZIP).
+- **Pendiente:** plantillas guardadas en la cuenta del anfitrión (fase 4); editar el catálogo importado dentro del asistente (hoy se edita después en el panel → Catálogo); exportar un ZIP con las fotos.
 - Las fotos por URL no se han probado contra Internet real desde este entorno (sin salida de red para ello): el flujo se prueba con transporte simulado y con un rechazo real de IP interna en el e2e.
 - La importación en la nube (Vercel) hace la descarga desde el servidor: respeta `maxDuration = 60` de la ruta.

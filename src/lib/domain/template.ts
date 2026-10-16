@@ -12,7 +12,7 @@ export const TEMPLATE_FORMAT = 'subasta-salvaje/plantilla@1';
 export const TEMPLATE_LIMITS = { items: 100, players: 12, fileBytes: 512 * 1024 } as const;
 
 const text = (msg: string) => z.string({ error: msg });
-const clean = (s: string) => s.normalize('NFKC').replace(/[\p{Cc}\p{Cf}]/gu, '').replace(/\s+/g, ' ').trim();
+const clean = (s: string) => s.normalize('NFKC').replace(/\s+/g, ' ').replace(/[\p{Cc}\p{Cf}]/gu, '').trim();
 
 const itemSchema = z.object({
   titulo: text('el título debe ser un texto').transform(clean).pipe(z.string().min(1, 'falta el título').max(80, 'el título supera los 80 caracteres')),
@@ -57,7 +57,7 @@ export interface TemplateFormValues {
   playMode: 'host' | 'mobile';
   imageMode: 'stickers' | 'ai';
   players: string[];
-  items: { name: string; description: string; emoji: string | null; photoUrl: string | null }[] | null;
+  items: { name: string; description: string; emoji: string | null; photoUrl: string | null; /** Ruta de una foto DENTRO de un ZIP (p. ej. fotos/sofa.jpg) */ photoPath: string | null }[] | null;
 }
 
 export const CUSTOM_THEME = '__custom__';
@@ -76,7 +76,7 @@ function pathText(path: PropertyKey[]): string {
 }
 
 /** Lee y valida el texto de una plantilla. Devuelve la plantilla, o una lista de errores legibles (máx. 12). */
-export function parseTemplate(raw: string): TemplateParse {
+export function parseTemplate(raw: string, opts: { zip?: boolean } = {}): TemplateParse {
   if (raw.length > TEMPLATE_LIMITS.fileBytes) return { ok: false, errors: [`El archivo es demasiado grande (máximo ${TEMPLATE_LIMITS.fileBytes / 1024} KB).`] };
   let data: unknown;
   try {
@@ -109,10 +109,17 @@ export function parseTemplate(raw: string): TemplateParse {
     const titles = t.catalogo.map((i) => i.titulo.toLowerCase());
     if (new Set(titles).size !== titles.length) warnings.push('Hay elementos del catálogo con el mismo título.');
     t.catalogo.forEach((it, i) => {
-      if (it.foto && !/^https:\/\//i.test(it.foto)) warnings.push(`Elemento ${i + 1} («${it.titulo}»): la foto debe ser una URL https:// (se ignorará).`);
+      if (it.foto && !/^https:\/\//i.test(it.foto) && !(opts.zip && isLocalPhotoPath(it.foto))) {
+        warnings.push(`Elemento ${i + 1} («${it.titulo}»): la foto debe ser una URL https://${opts.zip ? ' o una ruta dentro del ZIP (fotos/archivo.jpg)' : ' (las rutas de archivo solo funcionan dentro de un ZIP)'}; se ignorará.`);
+      }
     });
   }
   return { ok: true, template: t, warnings };
+}
+
+/** Ruta relativa segura dentro de un ZIP: sin esquema, sin «..» ni rutas absolutas. */
+export function isLocalPhotoPath(s: string): boolean {
+  return !/^[a-z][a-z0-9+.-]*:/i.test(s) && !s.startsWith('/') && !s.startsWith('\\') && !s.split(/[\\/]/).includes('..') && /\.(png|jpe?g|webp)$/i.test(s);
 }
 
 /** Valores que carga el asistente a partir de una plantilla ya validada. */
@@ -131,7 +138,7 @@ export function templateToForm(t: Template): TemplateFormValues {
     playMode: t.reglas.modo_juego === 'movil' ? 'mobile' : 'host',
     imageMode: t.reglas.modo_imagenes === 'ia' ? 'ai' : 'stickers',
     players: t.jugadores,
-    items: t.catalogo ? t.catalogo.map((i) => ({ name: i.titulo, description: i.descripcion, emoji: i.emoji ?? null, photoUrl: i.foto && /^https:\/\//i.test(i.foto) ? i.foto : null })) : null,
+    items: t.catalogo ? t.catalogo.map((i) => ({ name: i.titulo, description: i.descripcion, emoji: i.emoji ?? null, photoUrl: i.foto && /^https:\/\//i.test(i.foto) ? i.foto : null, photoPath: i.foto && isLocalPhotoPath(i.foto) ? i.foto.replace(/\\/g, '/') : null })) : null,
   };
 }
 

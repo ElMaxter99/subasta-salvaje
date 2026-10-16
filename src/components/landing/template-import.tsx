@@ -4,13 +4,19 @@ import { useRef, useState } from 'react';
 import { Download, FileUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { downloadText } from '@/lib/client/download';
-import { blankTemplate, parseTemplate, templateSummary, templateToForm, type TemplateFormValues } from '@/lib/domain/template';
+import { blankTemplate, parseTemplate, templateSummary, templateToForm } from '@/lib/domain/template';
+import { parseCatalogCsv } from '@/lib/domain/template-csv';
+import { parseTemplateZip, type ZipFormValues } from '@/lib/domain/template-zip';
+
+export type LoadedTemplate = ZipFormValues;
+export type LoadedCatalog = NonNullable<ZipFormValues['items']>;
 
 /**
- * «¿Tienes una plantilla?»: sube un JSON (o descarga uno vacío con ejemplos) para rellenar el asistente. Todo se valida en el
- * navegador antes de usarlo y se vuelve a validar en el servidor al crear la partida. Nada se crea hasta pulsar «Crear partida».
+ * «¿Tienes una plantilla?»: sube un JSON, un ZIP (plantilla.json + fotos/) o un CSV de catálogo para rellenar el asistente.
+ * Todo se valida en el navegador antes de usarlo y el servidor vuelve a validar al crear la partida. Nada se crea hasta pulsar
+ * «Crear partida». Un CSV solo trae el catálogo: el resto del asistente se queda como está.
  */
-export function TemplateImport({ onLoaded }: { onLoaded: (values: TemplateFormValues, summary: string) => void }) {
+export function TemplateImport({ onTemplate, onCatalog }: { onTemplate: (values: LoadedTemplate) => void; onCatalog: (items: LoadedCatalog) => void }) {
   const input = useRef<HTMLInputElement>(null);
   const [errors, setErrors] = useState<string[]>([]);
   const [warnings, setWarnings] = useState<string[]>([]);
@@ -21,13 +27,34 @@ export function TemplateImport({ onLoaded }: { onLoaded: (values: TemplateFormVa
     setWarnings([]);
     setLoaded(null);
     if (!file) return;
-    const parsed = parseTemplate(await file.text().catch(() => ''));
-    if (input.current) input.current.value = ''; // permite volver a elegir el mismo archivo
-    if (!parsed.ok) return setErrors(parsed.errors);
-    setWarnings(parsed.warnings);
-    const summary = templateSummary(parsed.template);
-    setLoaded(`«${parsed.template.nombre}» cargada: ${summary}.`);
-    onLoaded(templateToForm(parsed.template), summary);
+    const ext = file.name.toLowerCase().split('.').pop();
+    try {
+      if (ext === 'zip') {
+        const r = await parseTemplateZip(new Uint8Array(await file.arrayBuffer()));
+        if (!r.ok) return setErrors(r.errors);
+        setWarnings(r.warnings);
+        const photos = r.values.items?.filter((i) => i.photoFile).length ?? 0;
+        setLoaded(`«${r.summary.nombre}» cargada: ${templateSummary(r.summary)}${photos ? ` (${photos} fotos incluidas en el ZIP)` : ''}.`);
+        onTemplate(r.values as LoadedTemplate);
+      } else if (ext === 'csv') {
+        const r = parseCatalogCsv(await file.text());
+        if (!r.ok) return setErrors(r.errors);
+        setWarnings(r.warnings);
+        setLoaded(`Catálogo cargado: ${r.items.length} ${r.items.length === 1 ? 'elemento' : 'elementos'}.`);
+        onCatalog(r.items.map((i) => ({ ...i, photoFile: null })));
+      } else {
+        const r = parseTemplate(await file.text());
+        if (!r.ok) return setErrors(r.errors);
+        setWarnings(r.warnings);
+        setLoaded(`«${r.template.nombre}» cargada: ${templateSummary(r.template)}.`);
+        const v = templateToForm(r.template);
+        onTemplate({ ...v, items: v.items ? v.items.map((i) => ({ ...i, photoFile: null })) : null });
+      }
+    } catch {
+      setErrors(['No se pudo leer el archivo.']);
+    } finally {
+      if (input.current) input.current.value = ''; // permite volver a elegir el mismo archivo
+    }
   }
 
   return (
@@ -35,11 +62,11 @@ export function TemplateImport({ onLoaded }: { onLoaded: (values: TemplateFormVa
       <div>
         <h3 className="font-display text-xl 2xl:text-3xl">¿Tienes una plantilla?</h3>
         <p className="text-sm text-white/70 2xl:text-lg">
-          Un archivo con el nombre, la temática, las reglas, los jugadores y el catálogo (título, descripción, emoji y foto por URL). Se carga aquí, lo revisas en el resumen y creas la partida.
+          Sube un <b>.json</b> con todo (nombre, temática, reglas, jugadores y catálogo), un <b>.zip</b> (plantilla.json + carpeta fotos/) o un <b>.csv</b> solo con el catálogo (título, descripción, emoji y foto). Lo revisas en el resumen y creas la partida.
         </p>
       </div>
       <div className="flex flex-wrap gap-2">
-        <input ref={input} type="file" accept=".json,application/json" className="sr-only" data-testid="template-input" aria-label="Archivo de plantilla (.json)" onChange={(e) => void onFile(e.target.files?.[0])} />
+        <input ref={input} type="file" accept=".json,.zip,.csv,application/json,application/zip,text/csv" className="sr-only" data-testid="template-input" aria-label="Archivo de plantilla (.json, .zip o .csv)" onChange={(e) => void onFile(e.target.files?.[0])} />
         <Button type="button" variant="secondary" size="lg" onClick={() => input.current?.click()}>
           <FileUp className="size-5" aria-hidden /> Importar plantilla
         </Button>
@@ -55,7 +82,7 @@ export function TemplateImport({ onLoaded }: { onLoaded: (values: TemplateFormVa
       ) : null}
       {errors.length > 0 ? (
         <div role="alert" className="space-y-1 rounded-xl bg-rose/15 px-4 py-3 text-sm text-rose" data-testid="template-errors">
-          <p className="font-bold">No se pudo cargar la plantilla:</p>
+          <p className="font-bold">No se pudo cargar el archivo:</p>
           <ul className="list-disc pl-5">{errors.map((e) => <li key={e}>{e}</li>)}</ul>
         </div>
       ) : null}

@@ -63,3 +63,37 @@ test('plantillas: descargar la vacía, importar con errores y bien, crear la par
   expect(exported.catalogo.map((i: { titulo: string }) => i.titulo)).toEqual(['Cráter', 'Rover', 'Bandera']);
   expect(exported.reglas).toMatchObject({ presupuesto: 30, puja_minima: 2, clasificacion: 'saldo', modo_juego: 'movil' });
 });
+
+test('plantillas: CSV de catálogo (con ;) y ZIP con fotos incrustadas que se suben al crear la partida', async ({ browser }) => {
+  const sharp = (await import('sharp')).default;
+  const { makeZip } = await import('../tests/helpers-zip');
+  const png = new Uint8Array(await sharp({ create: { width: 32, height: 32, channels: 3, background: '#2255cc' } }).png().toBuffer());
+
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  expect((await ctx.request.post('/api/auth/demo')).ok()).toBeTruthy();
+  const page = await ctx.newPage();
+  await page.goto('/new-game');
+  await expect(page.getByTestId('template-import')).toBeVisible({ timeout: 60_000 });
+  await page.waitForTimeout(2500);
+
+  // CSV: solo el catálogo; el asistente no salta de paso
+  await page.getByTestId('template-input').setInputFiles({ name: 'catalogo.csv', mimeType: 'text/csv', buffer: Buffer.from('titulo;descripcion;emoji\r\nCohete;"Con ; punto";🚀\r\nSatélite;;🛰️\r\n') });
+  await expect(page.getByTestId('template-loaded')).toContainText('2 elementos');
+  await expect(page.getByTestId('wizard-step-1')).toBeVisible();
+  await page.getByTestId('template-input').setInputFiles({ name: 'mala.csv', mimeType: 'text/csv', buffer: Buffer.from('descripcion\nsin titulo\n') });
+  await expect(page.getByTestId('template-errors')).toContainText('titulo');
+
+  // ZIP con foto incrustada
+  const t = { formato: 'subasta-salvaje/plantilla@1', nombre: 'Partida ZIP', tematica: 'Espacio', reglas: { modo_juego: 'movil' }, jugadores: ['Ana', 'Beto'], catalogo: [{ titulo: 'Cohete', descripcion: 'Rojo', emoji: '🚀', foto: 'fotos/cohete.png' }, { titulo: 'Satélite', descripcion: '', emoji: '🛰️', foto: 'fotos/falta.png' }] };
+  await page.getByTestId('template-input').setInputFiles({ name: 'plantilla.zip', mimeType: 'application/zip', buffer: Buffer.from(makeZip({ 'plantilla.json': JSON.stringify(t), 'fotos/cohete.png': png }, { deflate: true })) });
+  await expect(page.getByTestId('wizard-step-6')).toBeVisible();
+  await expect(page.getByTestId('summary-catalog')).toContainText('1 con foto');
+  await page.getByRole('button', { name: /Crear partida/ }).click();
+  await page.waitForURL(/\/game\/[A-Z0-9]{6}\/host/, { timeout: 60_000 });
+  const code = page.url().match(/game\/([A-Z0-9]{6})\//)![1]!;
+  await expect.poll(async () => {
+    const s = (await (await ctx.request.get(`/api/games/${code}`)).json()).snapshot;
+    return s.items.map((i: { name: string; image_path?: string | null; image_url?: string | null }) => `${i.name}:${i.image_path || i.image_url ? 'foto' : 'sin'}`);
+  }, { timeout: 30_000 }).toEqual(['Cohete:foto', 'Satélite:sin']);
+  // Y la que falta en el ZIP se avisó al importar (aviso en el asistente) sin bloquear nada
+});
