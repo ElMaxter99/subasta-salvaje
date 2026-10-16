@@ -46,6 +46,7 @@ valida (Zod), autentica, llama a `ctx.db.rpc('ss_*', …)` y presenta. **No dupl
 - **La subasta nunca se bloquea por la IA:** si falla, se conserva la última imagen válida y se sigue.
 - **Cliente vs servidor:** nada de `service_role`/`getContext` en componentes cliente (hay un test que lo vigila).
 - No hagas commit de `node_modules`, `.env*`, `*.jar`, `.demo-data`, `test-results`. Commits con los trailers de atribución indicados por la sesión; rama de trabajo `claude/eager-cerf-lgnq1z`; **no crees PR si no te lo piden**.
+- **README y legal siempre al día:** el `README.md` (con sus capturas de `docs/img/`, regenerables con `node scripts/docs/screenshots.mjs`) forma parte de «terminado»: al cambiar funcionalidades, scripts npm, variables de entorno, migraciones o la interfaz, actualízalo (hay un test que comprueba enlaces e imágenes). Si añades una dependencia, cookie/almacenamiento local o proveedor externo, actualiza también créditos, cookies y privacidad (`docs/LEGAL.md`). Nunca inventes datos del titular ni una licencia.
 - Con varios subagentes: reparte solo archivos que no se solapan; modelo fuerte para arquitectura/seguridad/revisión, equilibrado para implementar, rápido para tareas simples.
 
 ## Mapa del repositorio
@@ -60,5 +61,6 @@ src/app/               páginas y /api/*      src/components/{host,screen,play,u
 public/assets/brand/   logo, mascota nueva (solo inicio y Loader), iconos (ver docs/MARCA.md; `npm run brand:build`)
 public/assets/mascot/  expresiones, poses y objetos de la mascota de uso general (docs/MASCOTA.md; `npm run mascot:extract`)
 tests/ e2e/ scripts/   scripts/assets/ = generador del asset pack (vectorial, no 3D)
-docs/                  documentación de proyecto (índice en docs/README.md)
+docs/                  documentación de proyecto (índice en docs/README.md); docs/img/ = capturas del README
+src/app/{legal,privacidad,cookies,creditos,licencia}/  páginas legales (footer solo en la vista inicial, nunca en /game/*)
 ```
