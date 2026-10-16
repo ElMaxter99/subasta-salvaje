@@ -89,7 +89,8 @@ create table bids (
   auction_id           uuid not null references auctions(id) on delete cascade,
   player_id            uuid not null references players(id),
   amount_cents         integer not null check (amount_cents > 0),
-  created_at           timestamptz not null default now(),
+  -- clock_timestamp(): hora real de inserción (dentro del bloqueo), no el inicio de la transacción.
+  created_at           timestamptz not null default clock_timestamp(),
   created_by_host_id   uuid not null,
   voided_at            timestamptz
 );
@@ -671,6 +672,8 @@ declare g games; v_kind text := p->>'kind'; v_job uuid; v_player uuid; v_item uu
 begin
   g := ss_lock_game(p->>'room_code', (p->>'host_id')::uuid);
   if g.status = 'finished' then perform ss_err('game_finished'); end if;
+  -- Tope de seguridad de coste: máximo de trabajos de imagen por partida.
+  if (select count(*) from image_jobs where game_id = g.id) >= 150 then perform ss_err('image_quota_exceeded'); end if;
 
   if v_kind = 'initial' then
     if g.status <> 'lobby' then perform ss_err('game_already_started'); end if;
@@ -706,6 +709,11 @@ begin
   if not found then perform ss_err('job_not_found'); end if;
   if j.status in ('queued','running') then return jsonb_build_object('ok', true, 'replay', true); end if;
   if j.status = 'completed' then perform ss_err('job_already_completed'); end if;
+  -- Tope de reintentos manuales por trabajo (evita gasto ilimitado de IA).
+  if (select count(*) from game_events where game_id = g.id and event_type = 'image_retry'
+        and payload->>'job_id' = j.id::text) >= 5 then
+    perform ss_err('retry_limit');
+  end if;
   update image_jobs set status = 'queued', attempts = 0, error_message = null, run_after = now(),
          locked_by = null, locked_until = null, finished_at = null, updated_at = now()
   where id = j.id;
@@ -1010,9 +1018,9 @@ begin
         'bids', coalesce((
           select jsonb_agg(jsonb_build_object('id', b.id, 'player_id', b.player_id,
                                               'amount_cents', b.amount_cents, 'created_at', b.created_at)
-                           order by b.created_at desc, b.id desc)
+                           order by b.amount_cents desc, b.id desc)
           from (select * from bids where auction_id = a.id and voided_at is null
-                order by created_at desc, id desc limit 15) b), '[]'::jsonb))
+                order by amount_cents desc, id desc limit 15) b), '[]'::jsonb))
       from auctions a join auction_items it on it.id = a.auction_item_id where a.id = g.current_auction_id),
     'last_award', (
       select jsonb_build_object('purchase_id', pu.id, 'player_id', pu.player_id, 'item_name', it.name,

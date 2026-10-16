@@ -111,6 +111,8 @@ El proveedor real incluido es **OpenAI Images** (`gpt-image-1`), que admite *edi
 2. Define `OPENAI_API_KEY` (y opcionalmente `OPENAI_IMAGE_MODEL`, `OPENAI_IMAGE_SIZE`, `OPENAI_IMAGE_QUALITY`, `OPENAI_IMAGE_INPUT_FIDELITY`, ver `.env.example`).
 3. La clave solo se usa en el servidor. Sin ella los trabajos quedan **en cola** (nunca se simulan) y la interfaz del anfitrión lo indica.
 
+Control de costes: máximo 150 trabajos de imagen por partida y 5 reintentos manuales por trabajo. Como el registro de Supabase Auth es abierto, define `ALLOWED_HOST_EMAILS` (lista de correos separados por comas) para que solo esas cuentas puedan ser anfitrión.
+
 Cómo se edita una casa: la imagen actual del jugador + un prompt (`src/lib/ai/prompts.ts`) que exige conservar composición, perspectiva y objetos previos, añadir **solo** el nuevo elemento e integrar luz/escala/sombras, sin texto ni marcas de agua. Los modelos no garantizan una conservación perfecta: por eso cada edición crea una **versión nueva** (la anterior se conserva), puedes **reintentar** y **restaurar** versiones desde el historial.
 
 Para usar otro proveedor implementa `ImageGenerationProvider` (`src/lib/ai/types.ts`) y regístralo en `src/lib/services/context.ts`.
@@ -143,7 +145,7 @@ Define `CRON_SECRET` (cadena larga aleatoria): Vercel la envía automáticamente
 4. Despliega. Abre `https://TU-APP.vercel.app/setup` para comprobar qué variables detecta la app (no muestra valores).
 5. Crea tu usuario en `/login` → *Crear cuenta* y empieza una partida.
 
-Notas: las funciones que generan imágenes declaran `maxDuration = 300` (requiere un plan que lo permita; en *Hobby* el máximo es menor y Vercel lo recorta, pero la cola persistente cubre el resto). El modo demo está desactivado en producción.
+Notas: las rutas que generan imágenes declaran `maxDuration = 300`. Si tu proyecto/plan de Vercel no admite ese valor el despliegue o la función pueden fallar: bájalo en `api/games/[code]/actions`, `api/games/[code]/jobs` y `api/jobs/process` (no lo he podido comprobar sin desplegar). La cola persistente cubre las ejecuciones cortadas. El modo demo está desactivado en producción.
 
 <a id="comprobar-la-sincronizacion"></a>
 ## Comprobar que TV y panel se sincronizan
@@ -165,6 +167,7 @@ Notas: las funciones que generan imágenes declaran `maxDuration = 300` (requier
 | `SUPABASE_STORAGE_BUCKET` | No | servidor | Bucket de imágenes (por defecto `game-images`). |
 | `OPENAI_API_KEY` | Para IA real | **solo servidor** | Sin ella: trabajos en cola (o imágenes DEMO en modo demo). |
 | `OPENAI_IMAGE_MODEL` / `_SIZE` / `_QUALITY` / `_INPUT_FIDELITY` / `OPENAI_BASE_URL` | No | servidor | Ajustes del proveedor. |
+| `ALLOWED_HOST_EMAILS` | Recomendada | servidor | Correos autorizados como anfitrión (evita gasto de IA por terceros). |
 | `CRON_SECRET` | Recomendada | servidor | Protege `/api/jobs/process`. |
 | `FORCE_DEMO_MODE`, `ALLOW_DEMO_MODE`, `DEMO_DATA_DIR`, `WORKER_INTERVAL_MS` | No | servidor | Desarrollo / worker. |
 
@@ -181,7 +184,13 @@ npm run build        # build de producción
 
 Las pruebas de Vitest ejecutan las **mismas funciones SQL** que producción (PGlite = PostgreSQL real). Cubren: crear partida y jugadores con presupuesto; pujas válidas; rechazo por saldo, por importe y tras el cierre; adjudicación, cobro único y adjudicaciones concurrentes/duplicadas; creación del trabajo de IA, compra intacta tras fallos, reintento sin recobro; versiones y restauración; autorización de anfitrión; estado público tras cambios; final de partida y clasificación.
 
-Limitación conocida: PGlite es de una sola conexión, así que la concurrencia *entre conexiones* de Postgres real se garantiza por diseño (bloqueo `FOR UPDATE` de la partida en cada función) y no por la prueba. La migración `…_security.sql` (RLS/Storage) requiere los esquemas de Supabase y no se ejecuta en los tests.
+**Pruebas contra PostgreSQL real (opcionales, recomendadas antes de producción).** PGlite es de una sola conexión, así que además hay `tests/postgres-real.test.ts`, que se omite salvo que definas `PG_TEST_URL` (superusuario; crea y borra una base temporal propia):
+
+```bash
+PG_TEST_URL=postgres://postgres@localhost:5432/postgres npx vitest run tests/postgres-real.test.ts
+```
+
+Con varias conexiones simultáneas comprueba: 16 adjudicaciones a la vez → una compra y un cobro; pujas y reintentos en paralelo; varios workers sobre varias partidas sin deadlocks ni trabajos duplicados. Además aplica **ambas migraciones con los roles `anon`/`authenticated`/`service_role`** (esquemas `auth`/`storage` simulados) y verifica que `anon` no puede leer tablas ni ejecutar funciones `ss_*` (tampoco las futuras) y que el bucket tiene los límites esperados. Lo que NO se ha podido probar sin un proyecto real: el comportamiento exacto de PostgREST/Realtime/Storage de Supabase y la API real de OpenAI.
 
 <a id="seguridad"></a>
 ## Seguridad

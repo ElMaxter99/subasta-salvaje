@@ -35,6 +35,8 @@ export const ERROR_MESSAGES: Record<string, string> = {
   version_not_restorable: 'Esa versión no se puede restaurar.',
   voting_disabled: 'La votación no está activada en esta partida.',
   invalid_action: 'Acción no válida.',
+  image_quota_exceeded: 'Se alcanzó el máximo de imágenes de esta partida.',
+  retry_limit: 'Este trabajo ya se reintentó demasiadas veces.',
   duplicate_name: 'Ya existe un jugador con ese nombre.',
   idempotency_conflict: 'La clave de operación ya se usó para otra acción.',
   lease_lost: 'El trabajo fue reasignado a otro worker.',

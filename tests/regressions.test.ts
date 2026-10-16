@@ -74,3 +74,19 @@ describe('regresiones de la revisión independiente', () => {
     expect(s.versions.some((v) => v.generation_status === 'failed')).toBe(true);
   });
 });
+
+describe('topes de coste de IA', () => {
+  it('limita los reintentos manuales de un mismo trabajo', async () => {
+    const host = newHost();
+    const { room, snap } = await lobby(host);
+    const ana = playerByName(snap, 'Ana').id;
+    await act(ctx, room, host, { type: 'image.request_initial', player_id: ana });
+    const jobId = (await getHostState(ctx, room, host)).jobs[0]!.id;
+    for (let i = 0; i < 5; i++) {
+      await ctx.db.pg.query("update image_jobs set status='failed' where id=$1", [jobId]);
+      await act(ctx, room, host, { type: 'image.retry', job_id: jobId });
+    }
+    await ctx.db.pg.query("update image_jobs set status='failed' where id=$1", [jobId]);
+    await expect(act(ctx, room, host, { type: 'image.retry', job_id: jobId })).rejects.toMatchObject({ code: 'retry_limit' });
+  });
+});

@@ -33,6 +33,9 @@ export async function getHostIdentity(): Promise<HostIdentity | null> {
     });
     const { data, error } = await supabase.auth.getUser();
     if (error || !data.user) return null;
+    // Opcional: restringe quién puede ser anfitrión (evita que cualquiera con la URL gaste créditos de IA).
+    const allowed = process.env.ALLOWED_HOST_EMAILS?.split(',').map((e) => e.trim().toLowerCase()).filter(Boolean);
+    if (allowed?.length && !allowed.includes((data.user.email ?? '').toLowerCase())) return null;
     return { id: data.user.id, email: data.user.email ?? null, demo: false };
   }
   if (mode === 'demo') {

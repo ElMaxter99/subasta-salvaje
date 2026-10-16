@@ -9,7 +9,7 @@ import { getContext } from '@/lib/services/context';
 import { seedDemoGame, type SeedStage } from '@/lib/services/seed';
 
 export const maxDuration = 60;
-const STAGES: SeedStage[] = ['lobby', 'bidding', 'midgame', 'finished'];
+const STAGES: SeedStage[] = ['lobby', 'bidding', 'midgame', 'finished', 'failedjob'];
 
 /** Sólo modo demo: crea una partida de ejemplo y deja la sesión de anfitrión demo iniciada. */
 export const POST = handle(async (req: Request) => {

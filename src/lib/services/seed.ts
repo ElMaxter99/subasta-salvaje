@@ -2,11 +2,12 @@ import { randomUUID } from 'node:crypto';
 import { PLAYER_COLORS } from '@/lib/domain/schemas';
 import type { AppContext } from './context';
 import { createGame, getHostState, performAction } from './game-service';
+import { ProviderError } from '@/lib/ai/types';
 import { processImageJobs } from './jobs-service';
 
 type Ctx = Pick<AppContext, 'db' | 'storage' | 'publisher' | 'provider'>;
 
-export type SeedStage = 'lobby' | 'bidding' | 'midgame' | 'finished';
+export type SeedStage = 'lobby' | 'bidding' | 'midgame' | 'finished' | 'failedjob';
 
 /**
  * SOLO MODO DEMO (la ruta que lo expone está desactivada en producción): crea una partida de ejemplo
@@ -27,6 +28,19 @@ export async function seedDemoGame(ctx: Ctx, hostId: string, stage: SeedStage = 
   if (stage === 'lobby') return room_code;
   await performAction(ctx, room_code, hostId, { type: 'game.start' });
   snap = await getHostState(ctx, room_code, hostId);
+  if (stage === 'failedjob') {
+    // Escenario de pruebas de UI: una compra cuya edición de imagen falla de forma definitiva.
+    const s = await getHostState(ctx, room_code, hostId);
+    const item = s.items[0]!;
+    const a = await performAction(ctx, room_code, hostId, { type: 'auction.announce', item_id: item.id });
+    const id = a.snapshot.auction!.id;
+    const player = s.players[0]!;
+    await performAction(ctx, room_code, hostId, { type: 'auction.bid', auction_id: id, player_id: player.id, amount_cents: 400, idempotency_key: randomUUID() });
+    await performAction(ctx, room_code, hostId, { type: 'auction.award', auction_id: id, expected_winner_id: player.id, expected_price_cents: 400, idempotency_key: randomUUID() });
+    const failing = { ...ctx, provider: ctx.provider && { ...ctx.provider, editScene: async () => { throw new ProviderError('Simulado: proveedor no disponible', false); } } };
+    await processImageJobs(failing, { gameId: snap.game.id });
+    return room_code;
+  }
   if (stage === 'midgame' || stage === 'finished') {
     const buys: [number, number][] = [[0, 450], [1, 600], [0, 300], [2, 250]];
     for (const [pi, price] of buys) {

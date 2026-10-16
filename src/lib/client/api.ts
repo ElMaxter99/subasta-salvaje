@@ -61,7 +61,7 @@ export const newIdempotencyKey = (): string =>
   typeof crypto !== 'undefined' && 'randomUUID' in crypto ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
 /** Sólo demo: crea una partida de ejemplo. */
-export async function seedDemo(stage: 'lobby' | 'bidding' | 'midgame' | 'finished' = 'midgame'): Promise<{ room_code: string }> {
+export async function seedDemo(stage: 'lobby' | 'bidding' | 'midgame' | 'finished' | 'failedjob' = 'midgame'): Promise<{ room_code: string }> {
   const res = await fetch('/api/dev/seed', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ stage }) });
   return parse<{ room_code: string }>(res);
 }
