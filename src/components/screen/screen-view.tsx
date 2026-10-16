@@ -128,16 +128,20 @@ export function ScreenView({ roomCode, initial, runtime }: { roomCode: string; i
         {players.length === 0 ? (
           <p className="flex h-full items-center justify-center rounded-2xl border border-dashed border-white/20 text-[1.6rem] text-white/60">Aún no hay jugadores en la sala.</p>
         ) : (
-          <div
-            className="mx-auto grid h-full gap-[1rem]"
-            style={{
-              gridTemplateColumns: `repeat(${cols}, minmax(0, ${rows === 1 ? '28rem' : '1fr'}))`,
-              gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`,
-              justifyContent: 'center',
-            }}
-          >
-            {players.map((p) => (
-              <PlayerCard key={p.id} player={p} leading={p.id === leaderId} maxChips={maxChips} dense={dense} />
+          <div className="mx-auto flex h-full flex-col gap-[1rem]">
+            {Array.from({ length: rows }, (_, r) => players.slice(r * cols, (r + 1) * cols)).map((row, r) => (
+              // Cada fila se centra por separado: la última (incompleta) queda centrada, no pegada a la izquierda.
+              <div key={r} className="flex min-h-0 flex-1 justify-center gap-[1rem]">
+                {row.map((p) => (
+                  <div
+                    key={p.id}
+                    className="min-h-0"
+                    style={{ width: `calc((100% - ${(cols - 1) * 1}rem) / ${cols})`, maxWidth: rows === 1 ? '28rem' : undefined }}
+                  >
+                    <PlayerCard player={p} leading={p.id === leaderId} maxChips={maxChips} dense={dense} />
+                  </div>
+                ))}
+              </div>
             ))}
           </div>
         )}

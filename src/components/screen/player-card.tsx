@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Crown, Hammer } from 'lucide-react';
 import type { Player } from '@/lib/domain/types';
 import { formatEuros } from '@/lib/domain/money';
+import { awardOverlay } from './award-overlay';
 import { HouseImage } from './house-image';
 import './screen.css';
 
@@ -11,11 +12,26 @@ export function PlayerCard({ player, leading, maxChips, dense }: { player: Playe
   const imageId = player.current_image?.id ?? null;
   const [seenId, setSeenId] = useState(imageId);
   const [updatedKey, setUpdatedKey] = useState(0);
+  const [pendingKey, setPendingKey] = useState(0);
   // Nueva versión de la casa (no en la carga inicial): ajuste de estado durante el render.
   if (imageId !== seenId) {
     setSeenId(imageId);
-    if (imageId) setUpdatedKey((k) => k + 1);
+    if (imageId) setPendingKey((k) => k + 1);
   }
+  // Si el overlay «¡Adjudicado!» cubre la pantalla, la cinta espera a que termine para que se vea.
+  useEffect(() => {
+    if (!pendingKey) return;
+    let t2: ReturnType<typeof setTimeout> | undefined;
+    const t1 = setTimeout(() => {
+      const wait = awardOverlay.until - Date.now();
+      if (wait > 0) t2 = setTimeout(() => setUpdatedKey(pendingKey), wait + 200);
+      else setUpdatedKey(pendingKey);
+    }, 60);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [pendingKey]);
   useEffect(() => {
     if (!updatedKey) return;
     const t = setTimeout(() => setUpdatedKey(0), 3200);

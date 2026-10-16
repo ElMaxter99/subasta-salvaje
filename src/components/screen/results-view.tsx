@@ -159,12 +159,16 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
         <Confetti count={36} />
         <div className="relative z-10">{hero}</div>
         <div className="relative z-10 grid shrink-0 grid-cols-7 gap-[0.6rem]">{tiles}</div>
-        <div
-          className="relative z-10 mx-auto grid min-h-0 w-full flex-1 gap-[0.9rem]"
-          style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, ${rows === 1 ? '28rem' : '1fr'}))`, gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`, justifyContent: 'center' }}
-        >
-          {ordered.map(({ player, rank }) => (
-            <ResultCard key={player.id} player={player} rank={rank} scoreText={ranking && rank && rule !== 'balance' ? scoreLabel(rule, player) : null} tv dense={rows > 1} />
+        <div className="relative z-10 mx-auto flex min-h-0 w-full flex-1 flex-col gap-[0.9rem]">
+          {Array.from({ length: rows }, (_, r) => ordered.slice(r * cols, (r + 1) * cols)).map((row, r) => (
+            // Cada fila se centra por separado para que la última (incompleta) no quede pegada a la izquierda.
+            <div key={r} className="flex min-h-0 flex-1 justify-center gap-[0.9rem]">
+              {row.map(({ player, rank }) => (
+                <div key={player.id} className="min-h-0" style={{ width: `calc((100% - ${(cols - 1) * 0.9}rem) / ${cols})`, maxWidth: rows === 1 ? '28rem' : undefined }}>
+                  <ResultCard player={player} rank={rank} scoreText={ranking && rank && rule !== 'balance' ? scoreLabel(rule, player) : null} tv dense={rows > 1} />
+                </div>
+              ))}
+            </div>
           ))}
         </div>
       </div>

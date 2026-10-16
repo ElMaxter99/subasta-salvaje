@@ -5,6 +5,9 @@ import type { LastAward, Player } from '@/lib/domain/types';
 import { formatEuros } from '@/lib/domain/money';
 import './screen.css';
 
+/** Instante (ms) hasta el que el overlay de adjudicación tapa la pantalla; lo usan las tarjetas para no animar «Casa actualizada» por debajo. */
+export const awardOverlay = { until: 0 };
+
 const COLORS = ['#fbbf24', '#8b5cf6', '#2dd4bf', '#fb7185', '#f8fafc', '#60a5fa'];
 
 /** Confeti CSS determinista (sin aleatoriedad en el render). */
@@ -49,6 +52,7 @@ export function AwardOverlay({ award, players }: { award: LastAward | null; play
   }
   useEffect(() => {
     if (!active) return;
+    awardOverlay.until = Date.now() + 5400;
     const t = setTimeout(() => setActive(null), 5400);
     return () => clearTimeout(t);
   }, [active]);
