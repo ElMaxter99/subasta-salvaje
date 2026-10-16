@@ -38,8 +38,10 @@ async function migrate(pg: PGlite): Promise<void> {
   const done = new Set((await pg.query<{ name: string }>('select name from ss_migrations')).rows.map((r) => r.name));
   for (const m of migrations) {
     if (done.has(m.name)) continue;
-    await pg.exec(m.sql);
-    await pg.query('insert into ss_migrations (name) values ($1)', [m.name]);
+    await pg.transaction(async (tx) => {
+      await tx.exec(m.sql);
+      await tx.query('insert into ss_migrations (name) values ($1)', [m.name]);
+    });
   }
 }
 

@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import { assertSameOrigin, handle, limit, noStore } from '@/lib/api';
+import { clientIp } from '@/lib/auth/rate-limit';
 import { getContext } from '@/lib/services/context';
 import { joinGame, playerCookieName } from '@/lib/services/play-service';
 
@@ -7,9 +9,12 @@ import { joinGame, playerCookieName } from '@/lib/services/play-service';
 export const POST = handle(async (req: Request, { params }: { params: Promise<{ code: string }> }) => {
   assertSameOrigin(req);
   const { code } = await params;
-  limit(req, 'join', req.headers.get('x-forwarded-for') ?? 'ip', 30);
+  // Límite por IP (primer salto: en Vercel la plataforma fija la IP real) y por sala.
+  limit(req, 'join-ip', clientIp(req.headers), 20);
+  limit(req, 'join-room', code.toUpperCase(), 40);
   const ctx = await getContext();
-  const out = await joinGame(ctx, code, await req.json().catch(() => null));
+  const current = (await cookies()).get(playerCookieName(code))?.value;
+  const out = await joinGame(ctx, code, await req.json().catch(() => null), current);
   const res = NextResponse.json({ player_id: out.player_id, snapshot: out.snapshot }, { headers: noStore });
   res.cookies.set(playerCookieName(code), out.token, {
     httpOnly: true,

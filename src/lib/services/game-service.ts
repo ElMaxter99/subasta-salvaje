@@ -11,6 +11,9 @@ import { attachUrls } from './urls';
 
 type Ctx = Pick<AppContext, 'db' | 'storage' | 'publisher'>;
 
+/** 7 MB: el proveedor de muestra incrusta la imagen en base64 y el resultado debe caber en 10 MB. */
+export const UPLOAD_MAX_BYTES = 7 * 1024 * 1024;
+
 function room(code: string): string {
   const parsed = roomCodeSchema.safeParse(code);
   if (!parsed.success) throw new DomainError('game_not_found');
@@ -126,7 +129,7 @@ export async function uploadInitialImage(
   const code = room(roomCode);
   const mime = (() => {
     try {
-      return validateImage(bytes, { maxBytes: 8 * 1024 * 1024 });
+      return validateImage(bytes, { maxBytes: UPLOAD_MAX_BYTES });
     } catch (e) {
       throw new DomainError('invalid_input', (e as Error).message);
     }
@@ -173,7 +176,7 @@ export async function setInitialFromCatalog(ctx: Ctx, code: string, hostId: stri
 export async function uploadInitialImageForAll(ctx: Ctx, roomCode: string, hostId: string, bytes: Uint8Array): Promise<ActionResult> {
   let mime: string;
   try {
-    mime = validateImage(bytes, { maxBytes: 8 * 1024 * 1024 });
+    mime = validateImage(bytes, { maxBytes: UPLOAD_MAX_BYTES });
   } catch (e) {
     throw new DomainError('invalid_input', (e as Error).message);
   }

@@ -114,7 +114,9 @@ export function createDemoProvider(): ImageGenerationProvider {
       }
       if (!svg.includes('</svg>')) throw new ProviderError('La imagen base del modo demo no es válida', false);
       const count = (svg.match(new RegExp(DEMO_MARKER, 'g')) ?? []).length;
-      const next = svg.replace('<g id="stickers">', `<g id="stickers">${sticker(count, input.itemEmoji ?? '🎁', input.itemName)}`);
+      const stickerSvg = sticker(count, input.itemEmoji ?? '🎁', input.itemName);
+      // Función de reemplazo: evita que patrones `$&`/`$\`` del nombre se interpreten.
+      const next = svg.replace('<g id="stickers">', () => `<g id="stickers">${stickerSvg}`);
       return {
         bytes: enc(next),
         mime: 'image/svg+xml',

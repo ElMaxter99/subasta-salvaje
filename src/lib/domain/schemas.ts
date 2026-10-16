@@ -3,7 +3,11 @@ import { THEME_PRESETS } from './themes';
 
 const uuid = z.string().uuid();
 const color = z.string().regex(/^#[0-9a-fA-F]{6}$/);
-const name = z.string().trim().min(1).max(40);
+/** Normaliza (NFKC), quita caracteres de control/formato invisibles y recorta: evita nombres «idénticos» con caracteres ocultos. */
+const name = z
+  .string()
+  .transform((s) => s.normalize('NFKC').replace(/[\p{Cc}\p{Cf}]/gu, '').replace(/\s+/g, ' ').trim())
+  .pipe(z.string().min(1).max(40));
 const idempotencyKey = z.string().min(8).max(100);
 const cents = z.number().int().min(1).max(100_000_000);
 

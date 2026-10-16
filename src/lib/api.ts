@@ -18,7 +18,13 @@ export function assertSameOrigin(req: Request): void {
   const origin = req.headers.get('origin');
   if (!origin) return; // llamadas de servidor a servidor / curl sin navegador (siguen necesitando credenciales)
   const host = req.headers.get('x-forwarded-host') ?? req.headers.get('host');
-  if (!host || new URL(origin).host !== host) throw new DomainError('not_host', 'Origen no permitido.', 403);
+  let originHost: string | null = null;
+  try {
+    originHost = new URL(origin).host;
+  } catch {
+    /* Origin: null u otro valor no válido */
+  }
+  if (!host || originHost !== host) throw new DomainError('not_host', 'Origen no permitido.', 403);
 }
 
 export function limit(_req: Request, bucket: string, id: string, max: number, windowMs = 60_000): void {

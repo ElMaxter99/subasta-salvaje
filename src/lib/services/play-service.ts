@@ -34,10 +34,12 @@ export async function identifyPlayer(ctx: Ctx, roomCode: string, token: string |
 }
 
 /** Unirse: reclamar una casilla libre (`player_id`) o crear un jugador nuevo (`name`, sólo en la sala de espera). */
-export async function joinGame(ctx: Ctx, roomCode: string, rawBody: unknown): Promise<{ token: string; player_id: string; snapshot: PublicSnapshot }> {
+export async function joinGame(ctx: Ctx, roomCode: string, rawBody: unknown, currentToken?: string | null): Promise<{ token: string; player_id: string; snapshot: PublicSnapshot }> {
   const parsed = joinSchema.safeParse(rawBody);
   if (!parsed.success) throw new DomainError('invalid_input');
   const code = room(roomCode);
+  // Un mismo móvil no puede acaparar casillas: si ya está identificado en esta sala debe salir antes.
+  if (await identifyPlayer(ctx, code, currentToken)) throw new DomainError('already_joined');
   const token = newPlayerToken();
   const token_hash = hashToken(token);
   let res: { player_id: string };
@@ -61,8 +63,9 @@ export async function playerBid(ctx: Ctx, roomCode: string, token: string | unde
 }
 
 export async function leaveGame(ctx: Ctx, roomCode: string, token: string | undefined | null): Promise<void> {
-  if (!token) return;
+  // Sin identidad válida no se toca la BD con bloqueos ni se publica nada (evita amplificación anónima).
+  if (!(await identifyPlayer(ctx, roomCode, token))) return;
   const code = room(roomCode);
-  await ctx.db.rpc('ss_release_player', { room_code: code, token_hash: hashToken(token) });
-  await publishAfter(ctx, code);
+  const res = await ctx.db.rpc<{ replay?: boolean }>('ss_release_player', { room_code: code, token_hash: hashToken(token!) });
+  if (!res.replay) await publishAfter(ctx, code);
 }

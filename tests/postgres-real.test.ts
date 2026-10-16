@@ -51,6 +51,8 @@ describe.skipIf(!URL_)('PostgreSQL real', () => {
     await pool.query(mig('20260101000300_security_initial_all.sql'));
     await pool.query(mig('20260101000400_mobile_players.sql'));
     await pool.query(mig('20260101000500_security_mobile_players.sql'));
+    await pool.query(mig('20260101000600_mobile_hardening.sql'));
+    await pool.query(mig('20260101000700_security_mobile_hardening.sql'));
     const db: Db = {
       async rpc<T>(fn: string, params: Record<string, unknown>) {
         try {
@@ -106,6 +108,20 @@ describe.skipIf(!URL_)('PostgreSQL real', () => {
       await pool.query('create function ss_futura() returns int language sql as $$ select 1 $$');
       const r = await pool.query(`select has_function_privilege('anon', 'ss_futura()', 'execute') as a, has_function_privilege('authenticated', 'ss_futura()', 'execute') as b`);
       expect(r.rows[0]).toEqual({ a: false, b: false });
+      await pool.query('drop function ss_futura()');
+    });
+
+    it('NINGUNA función del esquema public es ejecutable por anon/authenticated y todas lo son por service_role', async () => {
+      const r = await pool.query(`
+        select p.oid::regprocedure::text as sig,
+               has_function_privilege('anon', p.oid, 'execute') as anon,
+               has_function_privilege('authenticated', p.oid, 'execute') as auth,
+               has_function_privilege('service_role', p.oid, 'execute') as svc
+        from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+        where n.nspname = 'public' and p.proname like 'ss\\_%'`);
+      expect(r.rows.length).toBeGreaterThan(30);
+      expect(r.rows.filter((x) => x.anon || x.auth)).toEqual([]);
+      expect(r.rows.filter((x) => !x.svc)).toEqual([]);
     });
 
     it('el bucket de imágenes es público de lectura con límites de tamaño y tipo', async () => {

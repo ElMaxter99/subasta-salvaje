@@ -15,7 +15,7 @@ import type { HostCtx } from './host-context';
 import { InitialImageCard } from './initial-image-card';
 import { JoinCard } from './join-card';
 
-const MAX_BYTES = 8 * 1024 * 1024;
+const MAX_BYTES = 7 * 1024 * 1024;
 const TYPES = ['image/png', 'image/jpeg', 'image/webp'];
 
 function ColorPicker({ value, onChange, label }: { value: string; onChange: (c: string) => void; label: string }) {
@@ -175,7 +175,7 @@ function PlayerRow({ ctx, player: p, index, total, onMove, onRemove, onRelease }
   async function onFile(file: File | undefined) {
     if (!file) return;
     if (!TYPES.includes(file.type)) return toast.error('Formato no válido. Usa PNG, JPEG o WebP.');
-    if (file.size > MAX_BYTES) return toast.error('La imagen supera los 8 MB.');
+    if (file.size > MAX_BYTES) return toast.error('La imagen supera los 7 MB.');
     await exec(`upload-${p.id}`, () => uploadInitialImage(roomCode, p.id, file), `Imagen de ${p.name} subida`);
     if (fileRef.current) fileRef.current.value = '';
   }

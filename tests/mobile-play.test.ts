@@ -119,3 +119,52 @@ describe('modo móviles', () => {
     await expect(playerBid(ctx, b.room, ana.token, { auction_id: auctionId, amount_cents: 200, idempotency_key: key() })).rejects.toMatchObject({ code: 'not_player' });
   });
 });
+
+describe('endurecimiento del modo móviles', () => {
+  it('un móvil ya identificado no puede reclamar más casillas', async () => {
+    const host = newHost();
+    const { room, snap } = await mobileGame(host);
+    const first = await joinGame(ctx, room, { player_id: playerByName(snap, 'Ana').id });
+    await expect(joinGame(ctx, room, { player_id: playerByName(snap, 'Beto').id }, first.token)).rejects.toMatchObject({ code: 'already_joined' });
+    await leaveGame(ctx, room, first.token);
+    await expect(joinGame(ctx, room, { player_id: playerByName(snap, 'Beto').id }, first.token)).resolves.toBeTruthy();
+  });
+
+  it('los nombres se normalizan: caracteres invisibles no permiten duplicar un nombre', async () => {
+    const host = newHost();
+    const { room } = await mobileGame(host);
+    // «Ana» ya existe: la versión con un carácter invisible (U+200B) debe contar como duplicada
+    await expect(joinGame(ctx, room, { name: 'An\u200Ba' })).rejects.toMatchObject({ code: 'duplicate_name' });
+    await expect(joinGame(ctx, room, { name: 'Dani\u200B' })).resolves.toBeTruthy();
+    await expect(joinGame(ctx, room, { name: 'dani' })).rejects.toMatchObject({ code: 'duplicate_name' });
+  });
+
+  it('al finalizar la partida los tokens de los móviles dejan de valer', async () => {
+    const host = newHost();
+    const { room, snap } = await mobileGame(host);
+    const j = await joinGame(ctx, room, { player_id: playerByName(snap, 'Ana').id });
+    await act(ctx, room, host, { type: 'game.start' });
+    await act(ctx, room, host, { type: 'game.finish' });
+    expect(await identifyPlayer(ctx, room, j.token)).toBeNull();
+  });
+
+  it('salir con un token inventado no toca la BD ni publica nada', async () => {
+    const host = newHost();
+    const { room } = await mobileGame(host);
+    const before = ctx.publisher.calls.length;
+    await leaveGame(ctx, room, 'token-inventado-que-no-existe-123456');
+    expect(ctx.publisher.calls.length).toBe(before);
+  });
+});
+
+describe('proveedor demo', () => {
+  it('un nombre de elemento con patrones `$` no corrompe el SVG', async () => {
+    const { createDemoProvider } = await import('@/lib/ai/demo');
+    const p = createDemoProvider();
+    const base = await p.generateInitialScene({ theme: 'house', sceneDescription: '', playerName: 'A' });
+    const out = await p.editScene({ base: { bytes: base.bytes, mime: base.mime }, theme: 'house', itemName: "$` $' $& $$", itemDescription: '', itemEmoji: '🎁', previousItems: [] });
+    const svg = new TextDecoder().decode(out.bytes);
+    expect((svg.match(/<svg/g) ?? []).length).toBe(1);
+    expect(svg.length).toBeLessThan(base.bytes.length + 2000);
+  });
+});

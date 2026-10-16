@@ -10,7 +10,7 @@ import { INITIAL_CATALOG } from '@/lib/domain/initial-catalog';
 import { Card } from './bits';
 import type { HostCtx } from './host-context';
 
-const MAX_BYTES = 8 * 1024 * 1024;
+const MAX_BYTES = 7 * 1024 * 1024;
 const TYPES = ['image/png', 'image/jpeg', 'image/webp'];
 
 /** Imagen de partida común para TODOS los jugadores: subir una propia o elegir de la galería incluida (sin IA). */
@@ -27,7 +27,7 @@ export function InitialImageCard({ ctx }: { ctx: HostCtx }) {
     if (fileRef.current) fileRef.current.value = '';
     if (!file) return;
     if (!TYPES.includes(file.type)) return toast.error('Formato no válido. Usa PNG, JPEG o WebP.');
-    if (file.size > MAX_BYTES) return toast.error('La imagen supera los 8 MB.');
+    if (file.size > MAX_BYTES) return toast.error('La imagen supera los 7 MB.');
     setPickedFile(file);
   }
 

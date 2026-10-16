@@ -37,6 +37,7 @@ export const ERROR_MESSAGES: Record<string, string> = {
   invalid_action: 'Acción no válida.',
   image_quota_exceeded: 'Se alcanzó el máximo de imágenes de esta partida.',
   retry_limit: 'Este trabajo ya se reintentó demasiadas veces.',
+  already_joined: 'Este móvil ya está identificado en la partida. Sal primero si quieres cambiar de jugador.',
   player_taken: 'Ese jugador ya está conectado desde otro móvil.',
   not_player: 'Tu móvil no está identificado en esta partida. Vuelve a unirte.',
   already_leading: 'Ya vas ganando esta puja.',
