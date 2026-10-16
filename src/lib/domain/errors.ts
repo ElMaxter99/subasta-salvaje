@@ -65,6 +65,9 @@ export const ERROR_MESSAGES: Record<string, string> = {
   idempotency_conflict: 'La clave de operación ya se usó para otra acción.',
   lease_lost: 'El trabajo fue reasignado a otro worker.',
   provider_not_configured: 'El proveedor de IA no está configurado.',
+  template_not_found: 'No existe esa plantilla.',
+  template_limit: 'Ya tienes 20 plantillas guardadas: borra alguna para guardar otra.',
+  template_too_large: 'La plantilla es demasiado grande (máximo 256 KB).',
   migration_pending: 'Falta aplicar una migración de la base de datos (ejecuta «npx supabase db push»).',
   internal: 'Error interno. Inténtalo de nuevo.',
 };
@@ -93,6 +96,7 @@ function statusFor(code: string): number {
     case 'bid_not_found':
     case 'job_not_found':
     case 'version_not_found':
+    case 'template_not_found':
       return 404;
     case 'rate_limited':
       return 429;
@@ -100,6 +104,8 @@ function statusFor(code: string): number {
     case 'invalid_amount':
     case 'invalid_action':
       return 400;
+    case 'template_too_large':
+      return 413;
     case 'internal':
     case 'provider_not_configured':
       return 500;

@@ -72,6 +72,20 @@ export async function importPhotosRequest(roomCode: string, photos: { name: stri
   return parse<PhotoImportResult>(res);
 }
 
+export interface SavedTemplateSummary { id: string; name: string; updated_at: string; items: number; players: number }
+export async function listTemplatesRequest(): Promise<SavedTemplateSummary[]> {
+  return (await parse<{ templates: SavedTemplateSummary[] }>(await fetch('/api/templates'))).templates;
+}
+export async function saveTemplateRequest(name: string, template: unknown): Promise<{ id: string; name: string; replaced: boolean }> {
+  return parse(await fetch('/api/templates', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name, template }) }));
+}
+export async function getTemplateRequest(id: string): Promise<{ id: string; name: string; data: unknown }> {
+  return parse(await fetch(`/api/templates/${id}`));
+}
+export async function deleteTemplateRequest(id: string): Promise<void> {
+  await parse(await fetch(`/api/templates/${id}`, { method: 'DELETE' }));
+}
+
 export async function demoLogin(): Promise<void> {
   await parse(await fetch('/api/auth/demo', { method: 'POST' }));
 }

@@ -8,9 +8,9 @@ import { Bubble, Mascot } from '@/components/mascot/mascot';
 import type { MascotId } from '@/components/mascot/assets';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/ui/logo';
-import { createGameRequest, importPhotosRequest } from '@/lib/client/api';
+import { createGameRequest, importPhotosRequest, saveTemplateRequest } from '@/lib/client/api';
 import { TemplateImport, type LoadedCatalog, type LoadedTemplate } from './template-import';
-import { CUSTOM_THEME } from '@/lib/domain/template';
+import { CUSTOM_THEME, formToTemplate } from '@/lib/domain/template';
 import { ApiError, uploadItemImage } from '@/lib/client/api';
 import { formatEuros, parseEurosToCents } from '@/lib/domain/money';
 import { PLAYER_COLORS } from '@/lib/domain/schemas';
@@ -69,6 +69,8 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
   const [items, setItems] = useState<LoadedCatalog | null>(null);
   const [busy, setBusy] = useState(false);
   const [busyLabel, setBusyLabel] = useState<string | null>(null);
+  const [tplName, setTplName] = useState('');
+  const [tplMsg, setTplMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
 
@@ -78,6 +80,19 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
   /** Rondas por defecto = elementos del catálogo de la temática (las temáticas libres usan el catálogo base). */
   const defaultRounds = items?.length ?? (preset ?? getThemePreset('free'))?.items.length ?? 12;
   const roundsValue = maxRounds.trim() === '' ? defaultRounds : Number(maxRounds);
+  async function saveAsTemplate() {
+    const title = (tplName.trim() || name.trim()).slice(0, 80);
+    setTplMsg(null);
+    const err = [2, 3, 4].map((i) => validate(i)).find(Boolean);
+    if (err) return setTplMsg({ ok: false, text: `Corrige antes: ${err}` });
+    try {
+      const r = await saveTemplateRequest(title, formToTemplate({ name, themeValue, budget, minBid, maxRounds: roundsValue, integerBids, ranking, playMode, imageMode, players: names, items }));
+      setTplMsg({ ok: true, text: `${r.replaced ? 'Plantilla actualizada' : 'Plantilla guardada'}: «${r.name}». La verás en «Mis plantillas» al crear otra partida.${items?.some((i) => i.photoFile) ? ' Las fotos incluidas en un ZIP no se guardan (solo las URL).' : ''}` });
+    } catch (e) {
+      setTplMsg({ ok: false, text: (e as Error).message });
+    }
+  }
+
   function applyTemplate(v: LoadedTemplate) {
     setName(v.name);
     setThemeChoice(v.themeChoice);
@@ -430,6 +445,17 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
                   </ul>
                 </div>
               ) : null}
+              <div className="rounded-2xl border border-white/10 bg-night-900 p-4 md:col-span-2" data-testid="save-template">
+                <h3 className="mb-2 text-sm font-bold uppercase tracking-wide text-white/60 2xl:text-base">Guardar como plantilla</h3>
+                <div className="flex flex-wrap items-end gap-2">
+                  <div className="min-w-0 flex-1">
+                    <label htmlFor="tplname" className={label}>Nombre de la plantilla</label>
+                    <input id="tplname" onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), void saveAsTemplate())} maxLength={80} placeholder={name.trim() || 'Mi plantilla'} value={tplName} onChange={(e) => setTplName(e.target.value)} className={field} />
+                  </div>
+                  <Button type="button" variant="secondary" size="lg" onClick={() => void saveAsTemplate()}>Guardar plantilla</Button>
+                </div>
+                {tplMsg ? <p role={tplMsg.ok ? 'status' : 'alert'} data-testid="save-template-msg" className={`mt-2 text-sm font-semibold ${tplMsg.ok ? 'text-teal' : 'text-rose'}`}>{tplMsg.text}</p> : null}
+              </div>
               {summaryRow('Jugadores', 4, (
                 names.length === 0 ? (
                   <p className="text-white/70">Sin jugadores todavía: {playMode === 'mobile' ? 'podrás añadirlos en el panel o se darán de alta ellos mismos desde el móvil.' : 'podrás añadirlos en el panel (pestaña Jugadores).'}</p>

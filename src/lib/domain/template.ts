@@ -142,6 +142,23 @@ export function templateToForm(t: Template): TemplateFormValues {
   };
 }
 
+/** Plantilla a partir de los valores del asistente (para «Guardar como plantilla»). Las fotos incrustadas en un ZIP no se guardan (solo URLs). */
+export function formToTemplate(v: { name: string; themeValue: string; budget: string; minBid: string; maxRounds: number; integerBids: boolean; ranking: TemplateFormValues['ranking']; playMode: TemplateFormValues['playMode']; imageMode: TemplateFormValues['imageMode']; players: string[]; items: { name: string; description: string; emoji: string | null; photoUrl: string | null }[] | null }): Template {
+  const euros = (s: string, d: number) => {
+    const n = Number(s.trim().replace(',', '.'));
+    return Number.isFinite(n) && n >= 0 ? n : d;
+  };
+  const preset = THEME_PRESETS.find((p) => p.id === v.themeValue);
+  return {
+    formato: TEMPLATE_FORMAT,
+    nombre: v.name.trim() || 'Mi partida',
+    tematica: preset ? preset.label : v.themeValue || 'Casa',
+    reglas: { presupuesto: euros(v.budget, 20), puja_minima: Math.max(euros(v.minBid, 1), 0.01), rondas_maximas: v.maxRounds, pujas_enteras: v.integerBids, clasificacion: RANKING_BACK[v.ranking], modo_juego: v.playMode === 'mobile' ? 'movil' : 'anfitrion', modo_imagenes: v.imageMode === 'ai' ? 'ia' : 'pegatinas' },
+    jugadores: v.players,
+    catalogo: v.items ? v.items.map((i) => ({ titulo: i.name, descripcion: i.description, emoji: i.emoji, foto: i.photoUrl })) : undefined,
+  };
+}
+
 /** Plantilla vacía con ejemplos para que el anfitrión la edite a mano. */
 export function blankTemplate(): Template {
   return {

@@ -97,3 +97,50 @@ test('plantillas: CSV de catálogo (con ;) y ZIP con fotos incrustadas que se su
   }, { timeout: 30_000 }).toEqual(['Cohete:foto', 'Satélite:sin']);
   // Y la que falta en el ZIP se avisó al importar (aviso en el asistente) sin bloquear nada
 });
+
+test('plantillas guardadas: guardar desde el resumen, aparecer en «Mis plantillas», cargar, guardar desde Ajustes y borrar', async ({ browser }) => {
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  expect((await ctx.request.post('/api/auth/demo')).ok()).toBeTruthy();
+  const page = await ctx.newPage();
+  await page.goto('/new-game');
+  await expect(page.getByTestId('template-import')).toBeVisible({ timeout: 60_000 });
+  await page.waitForTimeout(2500);
+  await expect(page.getByTestId('saved-templates')).toHaveCount(0); // sin plantillas guardadas no se muestra
+
+  await page.getByTestId('template-input').setInputFiles({ name: 'p.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(template)) });
+  await expect(page.getByTestId('wizard-step-6')).toBeVisible();
+  await page.getByLabel('Nombre de la plantilla').fill('Mi base lunar');
+  await page.getByRole('button', { name: 'Guardar plantilla' }).click();
+  await expect(page.getByTestId('save-template-msg')).toContainText('Plantilla guardada');
+  await page.getByRole('button', { name: 'Guardar plantilla' }).click(); // mismo nombre: la sustituye
+  await expect(page.getByTestId('save-template-msg')).toContainText('actualizada');
+  expect((await (await ctx.request.get('/api/templates')).json()).templates).toHaveLength(1);
+
+  // Otra sesión de «Nueva partida»: aparece en «Mis plantillas» y se carga
+  await page.goto('/new-game');
+  await expect(page.getByTestId('saved-templates')).toContainText('Mi base lunar', { timeout: 30_000 });
+  await expect(page.getByTestId('saved-templates')).toContainText('3 elementos · 2 jugadores');
+  await page.getByRole('button', { name: 'Cargar la plantilla Mi base lunar' }).click();
+  await expect(page.getByTestId('wizard-step-6')).toBeVisible();
+  await expect(page.getByTestId('summary-catalog')).toContainText('3 elementos');
+  await expect(page.getByText(/2 rondas máximo/)).toBeVisible();
+
+  // Guardar una partida existente desde Ajustes
+  const created = await ctx.request.post('/api/games', { data: { name: 'Desde ajustes', initial_budget_cents: 2000, players: [{ name: 'Ana' }, { name: 'Beto' }] } });
+  const code = (await created.json()).room_code as string;
+  await page.goto(`/game/${code}/host`);
+  await page.getByRole('tab', { name: /Ajustes/ }).click();
+  await page.getByTestId('template-save').click();
+  await expect(page.getByText(/guardada en tus plantillas/)).toBeVisible({ timeout: 15_000 });
+  expect((await (await ctx.request.get('/api/templates')).json()).templates.map((t: { name: string }) => t.name).sort()).toEqual(['Desde ajustes', 'Mi base lunar']);
+
+  // Aislamiento: otro anfitrión no ve nada; y borrar con confirmación
+  const other = await browser.newContext();
+  expect((await other.request.post('/api/auth/demo')).ok()).toBeTruthy();
+  expect((await (await other.request.get('/api/templates')).json()).templates).toHaveLength(0);
+  await page.goto('/new-game');
+  await page.getByRole('button', { name: 'Borrar la plantilla Mi base lunar' }).click();
+  await page.getByRole('button', { name: 'Confirmar el borrado de Mi base lunar' }).click();
+  await expect(page.getByTestId('saved-templates')).not.toContainText('Mi base lunar');
+  expect((await (await ctx.request.get('/api/templates')).json()).templates).toHaveLength(1);
+});

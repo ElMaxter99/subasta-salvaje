@@ -50,8 +50,15 @@ Defensas (`src/lib/security/safe-fetch.ts`, con tests): solo `https`, sin creden
 - **ZIP** (`.zip`): `plantilla.json` en la raíz + carpeta `fotos/` con PNG/JPG/WebP. En el JSON/CSV, `foto` puede ser una URL https **o una ruta del ZIP** (`fotos/sofa.jpg`, o solo `sofa.jpg`). Las fotos incrustadas se suben desde el navegador con la misma ruta que la subida manual (`/api/games/[code]/item-image`), con reintento si hay límite de ritmo; las que falten o fallen se avisan sin bloquear la partida.
 - **Seguridad del ZIP** (`template-zip.ts`, lector propio sin dependencias; entrada no confiable): sin contraseña ni ZIP64, solo «stored» y «deflate», máx. 300 entradas, 7 MB por foto y 40 MB en total, y el tamaño se controla sobre lo **realmente descomprimido** (contra «zip bombs»); se ignoran carpetas, `__MACOSX` y ocultos; rutas con `..`, absolutas o con esquema se descartan; nada se escribe en disco.
 
+## Mis plantillas (fase 4)
+- **Guardar:** en el Resumen del asistente («Guardar como plantilla») o en Ajustes de una partida («Guardar en mis plantillas»). Guardar con un nombre ya existente (sin distinguir mayúsculas) **la sustituye**.
+- **Usar:** en «Nueva partida», la tarjeta de plantillas muestra «Mis plantillas» con Cargar y Borrar (con confirmación). Cargar rellena el asistente y salta al Resumen, igual que importar un archivo.
+- **Dónde y límites:** tabla `host_templates` (migraciones `3400`/`3500`, RLS cerrada: solo se accede por el servidor con `service_role`); guarda el mismo JSON del formato `@1`. Máx. **20 por anfitrión** y 256 KB cada una; el servidor revalida la plantilla entera al guardar (`template-store.ts`). Cada anfitrión solo ve y toca las suyas (probado). Rutas: `GET/POST /api/templates`, `GET/DELETE /api/templates/[id]`.
+- **Fotos:** solo se guardan las **URL**; las fotos incrustadas de un ZIP no (se avisa).
+- **Privacidad:** al borrar a un usuario desde el superadmin se borran también sus plantillas (`ss_admin_delete_user` envuelta).
+
 ## Límites / pendiente
-- **Hecho:** fase 1 (JSON, importar, exportar, plantilla vacía, fotos por URL) y fase 3 (CSV y ZIP).
-- **Pendiente:** plantillas guardadas en la cuenta del anfitrión (fase 4); editar el catálogo importado dentro del asistente (hoy se edita después en el panel → Catálogo); exportar un ZIP con las fotos.
+- **Hecho:** fases 1 (JSON, importar, exportar, plantilla vacía, fotos por URL), 3 (CSV y ZIP) y 4 (plantillas guardadas).
+- **Pendiente:** compartir plantillas entre anfitriones (no se ha hecho a propósito: exigiría moderación); editar el catálogo importado dentro del asistente (hoy se edita después en el panel → Catálogo); exportar un ZIP con las fotos.
 - Las fotos por URL no se han probado contra Internet real desde este entorno (sin salida de red para ello): el flujo se prueba con transporte simulado y con un rechazo real de IP interna en el e2e.
 - La importación en la nube (Vercel) hace la descarga desde el servidor: respeta `maxDuration = 60` de la ruta.

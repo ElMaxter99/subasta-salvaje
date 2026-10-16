@@ -1,7 +1,8 @@
 'use client';
 
-import { useRef, useState } from 'react';
-import { Download, FileUp } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Download, FileUp, Trash2 } from 'lucide-react';
+import { ApiError, deleteTemplateRequest, getTemplateRequest, listTemplatesRequest, type SavedTemplateSummary } from '@/lib/client/api';
 import { Button } from '@/components/ui/button';
 import { downloadText } from '@/lib/client/download';
 import { blankTemplate, parseTemplate, templateSummary, templateToForm } from '@/lib/domain/template';
@@ -21,6 +22,40 @@ export function TemplateImport({ onTemplate, onCatalog }: { onTemplate: (values:
   const [errors, setErrors] = useState<string[]>([]);
   const [warnings, setWarnings] = useState<string[]>([]);
   const [loaded, setLoaded] = useState<string | null>(null);
+  const [saved, setSaved] = useState<SavedTemplateSummary[]>([]);
+  const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    listTemplatesRequest().then((l) => alive && setSaved(l)).catch(() => undefined); // sin sesión o sin plantillas: no se muestra nada
+    return () => { alive = false; };
+  }, []);
+
+  async function loadSaved(t: SavedTemplateSummary) {
+    setErrors([]);
+    setWarnings([]);
+    try {
+      const r = parseTemplate(JSON.stringify((await getTemplateRequest(t.id)).data));
+      if (!r.ok) return setErrors(r.errors);
+      setWarnings(r.warnings);
+      setLoaded(`Plantilla «${t.name}» cargada: ${templateSummary(r.template)}.`);
+      const v = templateToForm(r.template);
+      onTemplate({ ...v, items: v.items ? v.items.map((i) => ({ ...i, photoFile: null })) : null });
+    } catch (e) {
+      setErrors([e instanceof ApiError ? e.message : 'No se pudo cargar la plantilla.']);
+    }
+  }
+
+  async function removeSaved(t: SavedTemplateSummary) {
+    if (confirmDelete !== t.id) return setConfirmDelete(t.id);
+    setConfirmDelete(null);
+    try {
+      await deleteTemplateRequest(t.id);
+      setSaved((l) => l.filter((x) => x.id !== t.id));
+    } catch (e) {
+      setErrors([e instanceof ApiError ? e.message : 'No se pudo borrar la plantilla.']);
+    }
+  }
 
   async function onFile(file: File | undefined) {
     setErrors([]);
@@ -74,6 +109,27 @@ export function TemplateImport({ onTemplate, onCatalog }: { onTemplate: (values:
           <Download className="size-5" aria-hidden /> Descargar plantilla vacía
         </Button>
       </div>
+      {saved.length > 0 ? (
+        <div className="space-y-2" data-testid="saved-templates">
+          <h4 className="text-sm font-bold uppercase tracking-wide text-white/60 2xl:text-base">Mis plantillas</h4>
+          <ul className="space-y-2">
+            {saved.map((t) => (
+              <li key={t.id} className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-white/10 bg-night-900 px-4 py-2">
+                <span className="min-w-0">
+                  <span className="block truncate font-bold">{t.name}</span>
+                  <span className="text-xs text-white/60">{t.items} elementos · {t.players} jugadores</span>
+                </span>
+                <span className="flex gap-2">
+                  <Button type="button" size="sm" variant="secondary" onClick={() => void loadSaved(t)} aria-label={`Cargar la plantilla ${t.name}`}>Cargar</Button>
+                  <Button type="button" size="sm" variant="ghost" onClick={() => void removeSaved(t)} aria-label={confirmDelete === t.id ? `Confirmar el borrado de ${t.name}` : `Borrar la plantilla ${t.name}`}>
+                    <Trash2 className="size-4" aria-hidden /> {confirmDelete === t.id ? '¿Seguro?' : 'Borrar'}
+                  </Button>
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
       {loaded ? <p role="status" className="rounded-xl bg-teal/15 px-4 py-2 text-sm font-semibold text-teal" data-testid="template-loaded">{loaded} Revisa el resumen y pulsa «Crear partida».</p> : null}
       {warnings.length > 0 ? (
         <ul className="list-disc space-y-1 pl-5 text-sm text-gold-soft" data-testid="template-warnings">
