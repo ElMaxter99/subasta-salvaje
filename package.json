@@ -18,7 +18,8 @@
     "brand:build": "node scripts/brand/build-brand.mjs",
     "brand:mini": "node scripts/brand/build-mini-hero.mjs",
     "emails:build": "node scripts/emails/build-emails.mjs",
-    "legal:credits": "node scripts/legal/build-credits.mjs"
+    "legal:credits": "node scripts/legal/build-credits.mjs",
+    "docs:screens": "node scripts/docs/screenshots.mjs"
   },
   "engines": {
     "node": ">=20"
