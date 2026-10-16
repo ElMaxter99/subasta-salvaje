@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { validateProviderOutput } from '@/lib/ai/image-validation';
 import { ProviderError, type GeneratedImage, type ImageGenerationProvider } from '@/lib/ai/types';
 import { quotaConfig } from '@/lib/config/env';
+import { redactSecrets } from '@/lib/security/redact';
 import { emptySceneFor } from '@/lib/domain/themes';
 import { extensionForMime } from '@/lib/storage/types';
 import type { AppContext } from './context';
@@ -163,7 +164,7 @@ async function runJob(ctx: Ctx, provider: ImageGenerationProvider, job: ClaimedJ
       });
       await publish(ctx, failed.room_code);
     } catch (e) {
-      console.error('[jobs] no se pudo registrar el fallo del trabajo', job.job_id, e);
+      console.error('[jobs] no se pudo registrar el fallo del trabajo', job.job_id, redactSecrets(String(e)));
     }
     return false;
   }
@@ -189,7 +190,7 @@ async function reserveQuota(ctx: Ctx, provider: ImageGenerationProvider, job: Cl
 }
 
 function toDomainErrorMessage(message: string): string {
-  return message.replace(/(sk-[A-Za-z0-9_-]{8,})/g, '[redactado]').slice(0, 800);
+  return redactSecrets(message).slice(0, 800);
 }
 
 async function publish(ctx: Ctx, roomCode: string): Promise<void> {

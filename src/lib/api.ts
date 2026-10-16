@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { DomainError, isDomainError, toDomainError } from '@/lib/domain/errors';
+import { redactSecrets } from '@/lib/security/redact';
 import { rateLimit } from '@/lib/auth/rate-limit';
 
 export const noStore = { 'Cache-Control': 'no-store, max-age=0' };
@@ -37,7 +38,7 @@ export function handle<A extends unknown[]>(fn: (...args: A) => Promise<Response
     try {
       return await fn(...args);
     } catch (err) {
-      if (!isDomainError(err)) console.error('[api]', err);
+      if (!isDomainError(err)) console.error('[api]', redactSecrets(err instanceof Error ? `${err.name}: ${err.message}` : String(err)));
       return errorResponse(err);
     }
   };

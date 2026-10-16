@@ -2,7 +2,7 @@
   "name": "subasta-salvaje",
   "version": "1.0.0",
   "private": true,
-  "description": "Subasta Salvaje: subastas creativas multijugador con edición de imágenes por IA",
+  "description": "Subasta Salvaje: subastas creativas multijugador con edici\u00f3n de im\u00e1genes por IA",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -11,7 +11,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "worker": "tsx --env-file-if-exists=.env.local scripts/worker.ts"
+    "worker": "tsx --env-file-if-exists=.env.local scripts/worker.ts",
+    "scan:secrets": "node scripts/scan-secrets.mjs"
   },
   "engines": {
     "node": ">=20"

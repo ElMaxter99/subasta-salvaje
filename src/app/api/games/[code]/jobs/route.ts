@@ -5,6 +5,7 @@ import { DomainError } from '@/lib/domain/errors';
 import { getContext } from '@/lib/services/context';
 import { getHostState } from '@/lib/services/game-service';
 import { processImageJobs } from '@/lib/services/jobs-service';
+import { redactSecrets } from '@/lib/security/redact';
 
 export const maxDuration = 300;
 
@@ -22,7 +23,7 @@ export const POST = handle(async (req: Request, { params }: { params: Promise<{ 
     try {
       await processImageJobs(ctx, { gameId, deadlineMs: (maxDuration - 30) * 1000, maxJobs: 6 });
     } catch (e) {
-      console.error('[jobs] kick falló', e);
+      console.error('[jobs] kick falló', redactSecrets(String(e)));
     }
   });
   return json({ ok: true, accepted: true }, { status: 202 });

@@ -2,6 +2,7 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { getSupabaseConfig } from '@/lib/config/env';
 import { toDomainError } from '@/lib/domain/errors';
 import { assertFnName, type Db } from './types';
+import { redactSecrets } from '@/lib/security/redact';
 
 let admin: SupabaseClient | null = null;
 
@@ -22,7 +23,7 @@ export function createSupabaseDb(client: SupabaseClient = getSupabaseAdmin()): D
       if (error) {
         const d = toDomainError(error);
         // Códigos típicos: PGRST202 (función inexistente: faltan migraciones), 42501 (permisos), 401/JWT (clave).
-        if (d.code === 'internal') console.error('[supabase-rpc]', fn, error.code, error.message);
+        if (d.code === 'internal') console.error('[supabase-rpc]', fn, error.code, redactSecrets(error.message));
         throw d;
       }
       return data as T;

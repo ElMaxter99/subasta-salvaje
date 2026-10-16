@@ -1,4 +1,5 @@
 import type { CloudflareConfig } from '@/lib/config/env';
+import { redactSecrets } from '@/lib/security/redact';
 import { buildEditPrompt, buildInitialScenePrompt, buildItemImagePrompt } from './prompts';
 import { ProviderError, type EditSceneInput, type GeneratedImage, type ImageGenerationProvider, type InitialSceneInput, type ItemImageInput } from './types';
 
@@ -46,7 +47,7 @@ export function createCloudflareProvider(cfg: CloudflareProviderOptions): ImageG
         signal: AbortSignal.timeout(timeout),
       });
     } catch (e) {
-      throw new ProviderError(`No se pudo contactar con Cloudflare: ${(e as Error).message}`, true);
+      throw new ProviderError(`No se pudo contactar con Cloudflare: ${redactSecrets((e as Error).message)}`, true);
     }
 
     const contentType = res.headers.get('content-type') ?? '';
@@ -61,7 +62,7 @@ export function createCloudflareProvider(cfg: CloudflareProviderOptions): ImageG
     }
     if (!res.ok || json?.success === false) {
       const first = json?.errors?.[0];
-      const detail = first?.message ?? text.slice(0, 300);
+      const detail = redactSecrets(first?.message ?? text.slice(0, 300));
       // Cuota gratuita agotada: no tiene sentido reintentar y NO se pasa a un proveedor de pago.
       if (/daily free allocation|neurons|exceeded.*(quota|allocation)/i.test(detail)) {
         throw new ProviderError(`Cloudflare: cuota diaria gratuita agotada (${detail}). La partida sigue con la imagen anterior; se renueva a las 00:00 UTC. No se activa ningún plan de pago automáticamente.`, false);

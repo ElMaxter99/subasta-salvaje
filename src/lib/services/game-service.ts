@@ -9,6 +9,7 @@ import { extensionForMime } from '@/lib/storage/types';
 import type { AppContext } from './context';
 import { catalogSceneSvg } from '@/lib/ai/catalog-scenes';
 import { attachUrls } from './urls';
+import { redactSecrets } from '@/lib/security/redact';
 
 type Ctx = Pick<AppContext, 'db' | 'storage' | 'publisher'>;
 
@@ -235,7 +236,7 @@ async function removeGameFiles(ctx: Ctx, gameId: string): Promise<void> {
     await ctx.storage.deletePrefix(`games/${gameId}/`);
   } catch (e) {
     // La BD ya no tiene la partida: un fallo de Storage sólo deja archivos huérfanos (se registra).
-    console.error('[purge] no se pudieron borrar los archivos de', gameId, (e as Error).message);
+    console.error('[purge] no se pudieron borrar los archivos de', gameId, redactSecrets((e as Error).message));
   }
 }
 

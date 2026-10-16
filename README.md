@@ -261,6 +261,14 @@ Los jugadores **no tienen cuenta**. Al unirse (reclamar un nombre libre o entrar
 ## Bucket con SVG (opcional)
 El bucket `game-images` admite `image/svg+xml` solo para el modo pegatinas y la galería de imágenes iniciales (los escribe únicamente el servidor, con texto escapado). Si usas solo un proveedor real y subes tus propias imágenes, puedes quitarlo: `update storage.buckets set allowed_mime_types = array['image/png','image/jpeg','image/webp'] where id = 'game-images';`
 
+## Cómo se evita filtrar credenciales al desplegar
+
+- **Solo en variables de entorno.** `.env`, `.env.local` y similares están en `.gitignore` (y en `.vercelignore` para despliegues con la CLI); solo se versiona `.env.example`, sin valores. Las credenciales reales (Supabase, Cloudflare, OpenAI, `CRON_SECRET`) se definen en *Vercel → Settings → Environment Variables*.
+- **Nunca en el navegador.** Solo las variables `NEXT_PUBLIC_…` (URL y clave *publishable/anon* de Supabase, públicas por diseño) llegan al cliente. `CLOUDFLARE_API_TOKEN`, `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY` y `CRON_SECRET` se leen únicamente en el servidor; ningún componente cliente importa los módulos que los usan (lo comprueba un test).
+- **Redacción en errores y logs.** Los mensajes de error de los proveedores, de la base de datos y de los trabajos de imagen pasan por `redactSecrets` (por formato `cfut_…`, `sb_secret_…`, `sk-…`, JWT, `Bearer …` y por el valor exacto de las variables secretas) antes de guardarse o registrarse.
+- **Escáner antes de desplegar:** `npm run build && npm run scan:secrets` busca credenciales en los archivos versionados, en todo el historial de git y en el bundle del navegador (`.next/static`), incluidos los valores exactos de tu `.env.local`. Falla con código 1 si encuentra algo. `npm test` incluye comprobaciones equivalentes sobre los archivos versionados.
+- **Si un secreto se publicó** (en un commit, un chat o un log), **rótalo** en su proveedor: borrarlo del historial no basta.
+
 ## Seguridad
 
 - Sin secretos en el cliente; `service_role` y `OPENAI_API_KEY` solo en servidor.

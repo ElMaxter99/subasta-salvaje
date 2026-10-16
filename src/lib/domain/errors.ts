@@ -1,3 +1,5 @@
+import { redactSecrets } from '@/lib/security/redact';
+
 /** Códigos de error de dominio (coinciden con `RAISE EXCEPTION 'ERR:<codigo>'` en SQL). */
 export const ERROR_MESSAGES: Record<string, string> = {
   game_not_found: 'No existe ninguna partida con ese código.',
@@ -102,6 +104,6 @@ export function toDomainError(err: unknown): DomainError {
   const message = typeof err === 'object' && err && 'message' in err ? String((err as { message: unknown }).message) : String(err);
   const match = /ERR:([a-z_]+)/.exec(message);
   if (match?.[1]) return new DomainError(match[1]);
-  console.error('[db-error]', message);
+  console.error('[db-error]', redactSecrets(message));
   return new DomainError('internal');
 }

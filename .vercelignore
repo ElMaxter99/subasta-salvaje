@@ -1,0 +1,11 @@
+# Nunca subir secretos ni datos locales si se despliega con `vercel` (CLI) desde esta carpeta
+.env
+.env.*
+!.env.example
+.demo-data
+.demo-data-*
+.next
+.next-*
+node_modules
+test-results
+playwright-report

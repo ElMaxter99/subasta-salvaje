@@ -4,6 +4,7 @@ import { requireHost } from '@/lib/auth/host';
 import { getContext } from '@/lib/services/context';
 import { performAction } from '@/lib/services/game-service';
 import { processImageJobs } from '@/lib/services/jobs-service';
+import { redactSecrets } from '@/lib/security/redact';
 
 /** Margen para que `after()` pueda terminar una generación de imagen (límite del plan de Vercel). */
 export const maxDuration = 300;
@@ -28,7 +29,7 @@ export const POST = handle(async (req: Request, { params }: { params: Promise<{ 
       try {
         await processImageJobs(ctx, { gameId, deadlineMs: (maxDuration - 30) * 1000, maxJobs: 6 });
       } catch (e) {
-        console.error('[jobs] after() falló', e);
+        console.error('[jobs] after() falló', redactSecrets(String(e)));
       }
     });
   }
