@@ -133,3 +133,32 @@ describe('imagen de partida común para todos', () => {
     expect(svg).toContain('data-demo-sticker');
   });
 });
+
+describe('migraciones del modo demo', () => {
+  it('una base local antigua (sin tabla de seguimiento) se actualiza sola sin repetir migraciones', async () => {
+    const { mkdtempSync, rmSync } = await import('node:fs');
+    const os = await import('node:os');
+    const path = await import('node:path');
+    const { createPgliteDb, portableMigrations } = await import('@/lib/db/pglite');
+    const dir = mkdtempSync(path.join(os.tmpdir(), 'ss-legacy-'));
+    try {
+      // Simula una BD creada sólo con la migración núcleo (versión antigua, sin seguimiento)
+      const { PGlite } = await import('@electric-sql/pglite');
+      const old = new PGlite(path.join(dir, 'pg'));
+      await old.exec(portableMigrations()[0]!.sql);
+      await old.close();
+      const db = await createPgliteDb(path.join(dir, 'pg'));
+      const cols = await db.pg.query("select 1 from information_schema.columns where table_name='games' and column_name='play_mode'");
+      expect(cols.rows).toHaveLength(1);
+      const applied = (await db.pg.query<{ name: string }>('select name from ss_migrations order by name')).rows.map((r) => r.name);
+      expect(applied).toEqual(portableMigrations().map((m) => m.name));
+      await db.close();
+      // Reabrir no vuelve a aplicar nada
+      const again = await createPgliteDb(path.join(dir, 'pg'));
+      expect((await again.pg.query('select count(*)::int as n from ss_migrations')).rows[0]).toEqual({ n: portableMigrations().length });
+      await again.close();
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  });
+});
