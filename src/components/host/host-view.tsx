@@ -7,6 +7,7 @@ import { ConnectionBadge, DemoBanner } from '@/components/ui/status';
 import { AiUsageChip } from './ai-usage-chip';
 import { ToastProvider } from '@/components/ui/toast';
 import { Logo } from '@/components/ui/logo';
+import { Mascot } from '@/components/mascot/mascot';
 import { GameGone } from '@/components/ui/game-gone';
 import { useLiveGame } from '@/lib/client/use-live-game';
 import type { HostSnapshot, RuntimeInfo } from '@/lib/domain/types';
@@ -74,6 +75,7 @@ function HostInner({ roomCode, initial, runtime, identity }: Props) {
       <DemoBanner runtime={runtime} />
       <header className="sticky top-0 z-30 border-b border-white/10 bg-night-900/95 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center gap-x-4 px-4 py-2">
+          <Mascot variant={game.status === 'finished' ? 'expr-celebrando' : game.status === 'paused' ? 'expr-triste' : game.status === 'active' ? 'pose-presenta' : 'expr-feliz'} size="xs" tile motion="wiggle" className="hidden sm:inline-block" />
           <div className="min-w-0 flex-1">
             <div className="hidden md:block">
               <Logo className="!text-sm" />

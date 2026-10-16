@@ -1,3 +1,4 @@
+import { MascotTitle } from '@/components/mascot/mascot';
 import Link from 'next/link';
 import { AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { Logo } from '@/components/ui/logo';
@@ -16,7 +17,7 @@ export default function SetupPage() {
   return (
     <main className="mx-auto min-h-screen max-w-2xl space-y-6 px-5 py-10">
       <Logo className="text-3xl" />
-      <h1 className="font-display text-3xl">Configuración necesaria</h1>
+      <MascotTitle variant="expr-pensativo" titleClassName="font-display text-3xl">Configuración necesaria</MascotTitle>
       <p className="text-white/75">
         {mode === 'unconfigured'
           ? 'Faltan variables de entorno de Supabase. En producción la app no arranca con datos de muestra.'

@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { Gavel, Smartphone, Sparkles, Tv, Wand2 } from 'lucide-react';
+import { Gavel, Sparkles } from 'lucide-react';
 import { DemoSeedButton, JoinPlayerForm, JoinScreenForm, SignOutButton } from '@/components/landing/landing-actions';
 import { DemoBanner } from '@/components/ui/status';
-import { Mascot } from '@/components/mascot/mascot';
+import { Bubble, ItemIcon, Mascot, Sparkles as MascotSparkles } from '@/components/mascot/mascot';
 import { getHostIdentity } from '@/lib/auth/host';
 import { getRuntimeMode } from '@/lib/config/env';
 import { themeLabel } from '@/lib/domain/themes';
@@ -65,7 +65,9 @@ export default async function Home() {
             </Link>
           </div>
           </div>
-          <div className="order-first flex justify-center md:order-none">
+          <div className="relative order-first flex justify-center md:order-none">
+            <MascotSparkles />
+            <Bubble className="absolute left-2 top-2 z-10 !text-sm md:left-0 md:top-6">¡Subasta activa!</Bubble>
             <Mascot variant="mascot-main" size="lg" tile motion="bob" priority className="[--mh:17rem] md:[--mh:28rem]" alt="Subasta Salvaje, la mascota de la app: un personaje con casco blanco, corona dorada y un martillo de subastador" />
           </div>
         </section>
@@ -73,21 +75,21 @@ export default async function Home() {
         <section className="grid gap-4 md:grid-cols-2">
           <div className="space-y-4 rounded-3xl border border-violet/40 bg-night-800/70 p-6 md:col-span-2">
             <h2 className="flex items-center gap-2 font-display text-xl">
-              <Smartphone className="size-5 text-violet-soft" aria-hidden /> Soy jugador: unirme desde el móvil
+              <ItemIcon variant="item-megafono" motion="bob" /> Soy jugador: unirme desde el móvil
             </h2>
             <p className="text-sm text-white/70">Si el anfitrión ha elegido jugar desde los móviles, escribe el código de sala, elige tu nombre y puja desde tu teléfono.</p>
             <JoinPlayerForm />
           </div>
           <div className="space-y-4 rounded-3xl border border-white/10 bg-night-800/70 p-6">
             <h2 className="flex items-center gap-2 font-display text-xl">
-              <Tv className="size-5 text-teal" aria-hidden /> Abrir una pantalla de TV
+              <ItemIcon variant="item-temporizador" /> Abrir una pantalla de TV
             </h2>
             <p className="text-sm text-white/70">Cualquiera con el código puede ver la partida (solo lectura). Ábrelo en la televisión.</p>
             <JoinScreenForm />
           </div>
           <div className="space-y-4 rounded-3xl border border-white/10 bg-night-800/70 p-6">
             <h2 className="flex items-center gap-2 font-display text-xl">
-              <Wand2 className="size-5 text-gold" aria-hidden /> Recuperar mis partidas
+              <ItemIcon variant="item-corona" /> Recuperar mis partidas
             </h2>
             {!identity ? (
               <p className="text-sm text-white/70">

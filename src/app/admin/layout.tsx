@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { requireSuperadmin } from '@/lib/auth/host';
 import { getRuntimeInfo } from '@/lib/services/context';
 import { DemoBanner } from '@/components/ui/status';
+import { Mascot } from '@/components/mascot/mascot';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Superadmin', robots: { index: false, follow: false } };
@@ -24,9 +25,12 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <DemoBanner runtime={getRuntimeInfo()} />
       <div className="mx-auto min-h-screen max-w-6xl px-4 py-6">
         <header className="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <div>
-            <p className="font-display text-2xl uppercase tracking-tight"><span className="text-gold">Superadmin</span> · Subasta Salvaje</p>
-            <p className="text-sm text-white/60">{admin.email ?? 'Anfitrión demo'}</p>
+          <div className="flex items-center gap-3">
+            <Mascot variant="expr-pensativo" size="xs" tile motion="wiggle" />
+            <div>
+              <p className="font-display text-2xl uppercase tracking-tight"><span className="text-gold">Superadmin</span> · Subasta Salvaje</p>
+              <p className="text-sm text-white/60">{admin.email ?? 'Anfitrión demo'}</p>
+            </div>
           </div>
           <nav aria-label="Secciones del panel de superadmin" className="flex flex-wrap gap-1">
             {NAV.map((n) => (

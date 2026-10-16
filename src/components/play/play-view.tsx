@@ -1,4 +1,5 @@
 'use client';
+import { MascotTitle } from '@/components/mascot/mascot';
 
 import { useCallback, useEffect, useState } from 'react';
 import { PlayerScreen } from './player-screen';
@@ -90,7 +91,7 @@ function PlayInner({ roomCode, initial, runtime, initialPlayerId }: { roomCode: 
       <div className="mx-auto min-h-dvh w-full max-w-md space-y-5 px-4 pb-10 pt-5">
         <header className="space-y-1">
           <Logo className="!text-base" />
-          <h1 className="font-display text-2xl leading-tight">{snapshot.game.name}</h1>
+          <MascotTitle variant="expr-feliz" size="xs" titleClassName="font-display text-2xl leading-tight">{snapshot.game.name}</MascotTitle>
           <p className="text-sm font-semibold text-white/70">
             Sala <span className="rounded-lg bg-night-700 px-2 py-0.5 font-mono tracking-widest text-gold">{snapshot.game.room_code}</span>
           </p>

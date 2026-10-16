@@ -5,7 +5,8 @@ import { useState } from 'react';
 import { Crown, LogOut, Pause, Trophy } from 'lucide-react';
 import { BidPad } from './bid-pad';
 import { GalleryVote } from './gallery-vote';
-import { Mascot } from '@/components/mascot/mascot';
+import { ItemIcon, Mascot } from '@/components/mascot/mascot';
+import { PlayerMascot } from './player-mascot';
 import { MyHouse } from './house';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { ConnectionBadge } from '@/components/ui/status';
@@ -89,10 +90,13 @@ export function PlayerScreen({
         <div className="mt-1 flex items-end justify-between gap-2">
           <div aria-live="polite">
             <p className="text-xs font-bold uppercase tracking-wider text-white/60">Tu saldo</p>
-            <p className="font-display text-4xl leading-none text-gold" data-testid="balance">
+            <p className="flex items-center gap-2 font-display text-4xl leading-none text-gold" data-testid="balance">
+              {/* La moneda gira cuando cambia el saldo (key = importe) */}
+              <ItemIcon key={me.balance_cents} variant="item-moneda" motion="spin" className="!h-[0.8em]" />
               {formatEuros(me.balance_cents)}
             </p>
           </div>
+          <PlayerMascot snapshot={snapshot} me={me} />
           <ConnectionBadge state={connection} runtime={runtime} className="pb-1 !text-xs" />
         </div>
       </header>

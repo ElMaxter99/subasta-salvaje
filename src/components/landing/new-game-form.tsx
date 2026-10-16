@@ -1,4 +1,5 @@
 'use client';
+import { MascotTitle } from '@/components/mascot/mascot';
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -68,7 +69,7 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
           <ArrowLeft className="size-4" aria-hidden /> Inicio
         </Link>
       </div>
-      <h1 className="font-display text-3xl">Nueva partida</h1>
+      <MascotTitle variant="expr-feliz" size="sm" say="¡Vamos a montarla!" titleClassName="font-display text-3xl">Nueva partida</MascotTitle>
       <form onSubmit={submit} className="space-y-6">
         <fieldset className="space-y-3 rounded-3xl border border-white/10 bg-night-800/70 p-5">
           <legend className="px-2 font-display text-xl">Modalidad de juego</legend>

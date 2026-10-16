@@ -1,7 +1,8 @@
 'use client';
 
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
-import { CheckCircle2, XCircle } from 'lucide-react';
+import { XCircle } from 'lucide-react';
+import { ItemIcon } from '@/components/mascot/mascot';
 
 interface Toast {
   id: number;
@@ -29,7 +30,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               t.kind === 'success' ? 'bg-teal text-night-950' : 'bg-rose text-night-950'
             }`}
           >
-            {t.kind === 'success' ? <CheckCircle2 className="size-5 shrink-0" /> : <XCircle className="size-5 shrink-0" />}
+            {t.kind === 'success' ? <ItemIcon variant="item-brillo" motion="spin" className="!h-5" /> : <XCircle className="size-5 shrink-0" />}
             {t.message}
           </div>
         ))}

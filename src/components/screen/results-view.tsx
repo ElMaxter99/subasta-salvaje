@@ -11,7 +11,7 @@ import { formatEuros } from '@/lib/domain/money';
 import { computeHighlights, computeRanking, rankingRuleLabel } from '@/lib/domain/ranking';
 import { themeLabel } from '@/lib/domain/themes';
 import { Confetti } from './award-overlay';
-import { Mascot } from '@/components/mascot/mascot';
+import { ItemIcon, Mascot, Sparkles } from '@/components/mascot/mascot';
 import { HouseImage } from './house-image';
 import './screen.css';
 
@@ -91,6 +91,7 @@ function ResultCard({ player, rank, scoreText, tv, dense, votes = null, galleryW
                 {rank === 1 ? <Trophy className="size-[0.9em]" aria-hidden /> : <Medal className="size-[0.9em]" aria-hidden />} {rank}.º
               </span>
             ) : null}
+            {rank === 1 || galleryWinner ? <ItemIcon variant="item-corona" motion="drop" className="!h-[1.1em]" /> : null}
             <span className="truncate">{player.name}</span>
           </h3>
           <p className={`shrink-0 font-display tabular-nums ${tv ? (dense ? 'text-[1.6rem]' : 'text-[2.1rem]') : 'text-2xl'}`} aria-label={`Saldo restante de ${player.name}`}>
@@ -196,6 +197,7 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
 
   const hero = (
     <div className="relative flex flex-col items-center text-center">
+      <Sparkles />
       <div className="flex items-center justify-center gap-[1.5rem]">
         <Mascot variant="expr-hype" size={tv ? 'xs' : 'sm'} tile motion="bob" />
         <p className={`font-display uppercase tracking-wide text-gold ${tv ? 'text-[3.4rem] leading-none' : 'text-4xl sm:text-6xl'}`}>¡Fin de la subasta!</p>
@@ -277,7 +279,7 @@ export function ResultsView({ roomCode, initial, runtime }: { roomCode: string; 
         <FinalResults snapshot={snapshot} />
       ) : (
         <div className="mx-auto flex min-h-[70dvh] max-w-xl flex-col items-center justify-center gap-5 px-4 text-center">
-          <Trophy className="size-14 text-gold" aria-hidden />
+          <Mascot variant="pose-cuenta-atras" size="md" tile motion="bob" />
           <h1 className="font-display text-3xl">La partida aún está en curso</h1>
           <p className="text-white/70">Los resultados aparecerán aquí cuando termine la subasta «{snapshot.game.name}».</p>
           <Link href={`/game/${roomCode}/screen`} className="inline-flex items-center gap-2 rounded-2xl bg-gold px-6 py-3 text-lg font-bold text-night-950 hover:bg-gold-soft">

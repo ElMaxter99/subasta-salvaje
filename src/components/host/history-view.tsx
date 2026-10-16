@@ -1,4 +1,5 @@
 'use client';
+import { ItemIcon } from '@/components/mascot/mascot';
 
 import { Suspense, useMemo, useState } from 'react';
 import Link from 'next/link';
@@ -56,7 +57,7 @@ function HistoryInner({ roomCode, initial, runtime }: Props) {
             <ArrowLeft className="size-5" aria-hidden /> Volver al panel
           </Link>
           <div className="min-w-0 flex-1">
-            <h1 className="truncate font-display text-xl">Historial de imágenes</h1>
+            <h1 className="truncate font-display text-xl"><ItemIcon variant="item-brillo" motion="twinkle" /> Historial de imágenes</h1>
             <p className="truncate text-sm text-white/65">{snapshot.game.name} · {roomCode}</p>
           </div>
           <ConnectionBadge state={connection} runtime={runtime} />

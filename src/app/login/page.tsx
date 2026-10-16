@@ -1,3 +1,4 @@
+import { MascotTitle } from '@/components/mascot/mascot';
 import { redirect } from 'next/navigation';
 import { DemoLoginButton } from '@/components/landing/landing-actions';
 import { LoginForm } from '@/components/landing/login-form';
@@ -29,8 +30,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         <Logo className="text-center text-3xl" />
         <div className="space-y-5 rounded-3xl border border-white/10 bg-night-800/80 p-6">
           <div>
-            <h1 className="font-display text-2xl">Acceso del anfitrión</h1>
-            <p className="mt-1 text-sm text-white/70">Solo el anfitrión necesita cuenta. Los jugadores no se registran.</p>
+            <MascotTitle variant="expr-guino" say="¡Hola, anfitrión!" subtitle="Solo el anfitrión necesita cuenta. Los jugadores no se registran.">Acceso del anfitrión</MascotTitle>
           </div>
           {denial ? (
             <div role="alert" className="space-y-3 rounded-2xl border border-rose/40 bg-rose/10 p-4 text-sm" data-testid="host-denied">

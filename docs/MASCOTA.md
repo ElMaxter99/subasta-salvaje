@@ -28,6 +28,13 @@ sueltos (flecha, barras, puntos, trazos, lema manuscrito): son formas simples qu
 - `screen/mascot-cue.tsx`: mascota de la **cabecera de la TV** que cambia de gesto: sala de espera (feliz), anuncio (pose «anuncia», 4,5 s), puja nueva (sorprendido, 2,5 s), cuenta atrás ≤ 10 s (pose «cuenta atrás»), puja cerrada (pose «adjudica»), adjudicado (celebrando), pausa (triste) y reposo (pensativo).
 - Animaciones en `globals.css` (`ss-mascot-bob`, `ss-mascot-pop`), desactivadas con `prefers-reduced-motion` (hay test e2e).
 
+## Animaciones y apariciones en títulos (segunda pasada)
+- `MascotTitle` (mascota + título + bocadillo CSS opcional) en: nueva partida, unirme, acceso del anfitrión, configuración y panel de superadmin (cabecera); `Bubble` = bocadillo de CSS puro (sin imagen).
+- `ItemIcon` usa los recursos con **transparencia real** como icono dentro de títulos: megáfono (soy jugador), temporizador (abrir TV), corona (recuperar partidas y ganador de los resultados, con caída), brillo (historial y avisos de éxito), moneda (saldo del móvil, gira al cambiar).
+- `Sparkles` (destellos que parpadean) alrededor de la mascota del inicio y de la cabecera de resultados.
+- **Móvil:** `PlayerMascot` reacciona: ¡Vas ganando!, ¡Te han superado!, ¡Tuyo! (al llevarte el objeto), sala de espera, pausa y fin. **Panel del anfitrión:** la mascota de la cabecera cambia con el estado de la partida.
+- Animaciones CSS (`globals.css`): `bob`, `pop`, `wiggle` (también al pasar el ratón), `coin-spin`, `twinkle`, `crown-drop`, `bubble-in`. Todas se anulan con `prefers-reduced-motion`.
+
 ## Dónde aparece
 Inicio (hero con la mascota principal y estado vacío «aún no has creado ninguna partida»), 404 (`not-found.tsx`), «partida ya no existe» (triste), «partida no es tuya» (enfadado),
 sala de espera de la TV (feliz), cabecera de la TV (cue contextual), overlay «¡Adjudicado!» (pose «adjudica» a un lado de la tarjeta), pantalla final «¡Fin de la subasta!» (hype), móvil al terminar (celebrando) y panel → Imágenes vacío (pensativo).
