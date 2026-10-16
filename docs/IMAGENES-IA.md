@@ -26,6 +26,13 @@ Los proveedores implementan `ImageGenerationProvider` (`ai/types.ts`): `generate
    (`COMPOSE_SLOTS`) sobre la imagen actual (`compositeOnto`). **Es un collage, no una edición real** (sin adaptar luz/perspectiva). Cuota, red, credenciales o moderación NO activan el plan B.
    `IMAGE_EDIT_COMPOSE=false` lo desactiva. El proveedor conserva su `id` (no cambia de proveedor ni de cuota).
 
+## Tema, foto del elemento y mezcla al ganar
+- **El tema fija el prompt base** de la imagen inicial: las plantillas usan su `emptyScene` (`domain/themes.ts`) y un tema libre se describe como un lugar reconocible (`emptySceneFor`); el prompt incluye siempre «Theme of the game».
+- **Imagen de un elemento del catálogo:** «Generar imagen» (job `item`) usa nombre + descripción (+ tema). El anfitrión también puede **subir su propia foto** (`/api/games/[code]/item-image`, `ss_set_item_image`, migración 2400) y quitarla (`item.clear_image`). Ambas se guardan en `auction_items.image_path`.
+- **Mezcla al ganar:** si el elemento tiene foto, el job de edición la carga (`jobContext → itemImagePath`) y la pasa como `EditSceneInput.itemImage`. `buildBlendPrompt`: imagen 0 = casa del jugador, imagen 1 = elemento; el objeto debe reproducirse fielmente (un conejo rosa con lazo azul sigue siendo rosa con lazo azul) y la casa se conserva. Cloudflare envía `input_image_1` (≤ 480 px) además de `input_image_0`; OpenAI envía `image[]` con dos imágenes (PNG normalizado con sharp, `reference.ts`). **Sin probar contra las APIs reales.**
+- **Plan B por composición:** con foto del elemento se pega ESA foto (recortada si tiene fondo liso o enmarcada con esquinas redondeadas si no) y no se genera nada nuevo. Sin foto sigue generándose el objeto aislado.
+- Sin foto el comportamiento es el de siempre (solo texto). En modo pegatinas se añade el emoji (la foto no interviene).
+
 ## Flujo de la «casa» de cada jugador
 **Imagen base compartida:** «generar para todos» encola UN job `base` (migración 2000: kind `base`, `image_jobs.scope`, índice único de uno activo por partida); al completarse se crea una `image_version` por jugador apuntando al MISMO archivo y, si `scope.new`, `games.new_player_image` pasa a `file`. Una sola cuota. Solo aplica en `lobby`.
 Imagen inicial (subida / galería / generada, para actuales y/o nuevos) → cada compra crea un job `edit` con `base_image_version_id` = imagen actual → al completarse se

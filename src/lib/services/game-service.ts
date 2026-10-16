@@ -158,6 +158,7 @@ export async function performAction(ctx: Ctx, roomCode: string, hostId: string, 
   const code = room(roomCode);
   const action = parseOrThrow(actionSchema.safeParse(rawAction));
   if (action.type === 'game.set_image_mode' && action.image_mode === 'ai') await assertAiAllowed(ctx, hostId);
+  if (action.type === 'item.clear_image') return setItemImage(ctx, code, hostId, action.item_id, null);
   if (action.type === 'image.set_initial_all') return setInitialFromCatalog(ctx, code, hostId, action.catalog_id, { current: action.scope_current, new: action.scope_new });;
   const { fn, params } = toRpc(action);
   const result = await ctx.db.rpc<Record<string, unknown>>(fn, { ...params, room_code: code, host_id: hostId });
@@ -199,6 +200,34 @@ export async function uploadInitialImage(
   const snapshot = await getHostState(ctx, code, hostId);
   await ctx.publisher.publish(code, snapshot.version);
   return { result, snapshot };
+}
+
+/**
+ * Pone (o quita, con `bytes = null`) la foto de un elemento del catálogo. Esa foto se usa como referencia cuando alguien gana el
+ * elemento: la IA la mezcla con la imagen de la casa del ganador. Sólo el anfitrión propietario; valida tipo real y tamaño.
+ */
+async function setItemImage(ctx: Ctx, code: string, hostId: string, itemId: string, bytes: Uint8Array | null): Promise<ActionResult> {
+  let mime = '';
+  if (bytes) {
+    try {
+      mime = validateImage(bytes, { maxBytes: UPLOAD_MAX_BYTES });
+    } catch (e) {
+      throw new DomainError('invalid_input', (e as Error).message);
+    }
+  }
+  const before = await getHostState(ctx, code, hostId); // comprueba permisos ANTES de escribir en el almacenamiento
+  if (!before.items.some((i) => i.id === itemId)) throw new DomainError('item_not_found');
+  const storagePath = bytes ? `games/${before.game.id}/items/${itemId}/${randomUUID()}.${extensionForMime(mime)}` : null;
+  if (bytes && storagePath) await ctx.storage.put(storagePath, bytes, mime);
+  const result = await ctx.db.rpc<{ old_path: string | null }>('ss_set_item_image', { room_code: code, host_id: hostId, item_id: itemId, storage_path: storagePath });
+  if (result.old_path) await ctx.storage.deletePrefix(result.old_path).catch(() => undefined); // la foto anterior ya no hace falta
+  const snapshot = await getHostState(ctx, code, hostId);
+  await ctx.publisher.publish(code, snapshot.version);
+  return { result, snapshot };
+}
+
+export async function uploadItemImage(ctx: Ctx, roomCode: string, hostId: string, itemId: string, bytes: Uint8Array): Promise<ActionResult> {
+  return setItemImage(ctx, room(roomCode), hostId, itemId, bytes);
 }
 
 /** Aplica UNA misma imagen inicial a todos los jugadores (antes de empezar). El archivo se guarda una vez. */

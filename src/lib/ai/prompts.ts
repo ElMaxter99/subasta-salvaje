@@ -19,6 +19,7 @@ export function buildInitialScenePrompt(input: InitialSceneInput): string {
  * nuevo elemento, mantener lo anterior, integrar luz/escala/sombras, sin texto.
  */
 export function buildEditPrompt(input: EditSceneInput): string {
+  if (input.itemImage) return buildBlendPrompt(input);
   const previous = input.previousItems.length
     ? `The scene already contains these purchased items, which must remain exactly where they are and unchanged: ${input.previousItems.join(', ')}.`
     : 'The scene is still empty apart from its original architecture.';
@@ -28,6 +29,25 @@ export function buildEditPrompt(input: EditSceneInput): string {
     previous,
     'Place the new element in a free area where it fits naturally. Match the lighting, scale, materials, perspective and cast shadows of the existing scene so it looks like it was always part of it.',
     'Add only the requested element and nothing else.',
+    NO_TEXT,
+  ].join(' ');
+}
+
+/**
+ * Mezcla de dos imágenes: la escena del jugador (imagen 0) y la foto del elemento comprado (imagen 1). El objeto debe verse
+ * como en la foto de referencia (p. ej. un conejo rosa con un lazo azul sigue siendo rosa con lazo azul) pero integrado en la casa.
+ */
+export function buildBlendPrompt(input: EditSceneInput): string {
+  const previous = input.previousItems.length
+    ? `The scene already contains these purchased items, which must remain exactly where they are and unchanged: ${input.previousItems.join(', ')}.`
+    : 'The scene is still empty apart from its original architecture.';
+  return [
+    `Image 0 is the existing "${input.theme}" scene. Image 1 is a reference picture of the object "${input.itemName}" (${input.itemDescription || 'no further description'}).`,
+    'Edit image 0 by adding exactly ONE new element: the object shown in image 1. Reproduce that object faithfully (its shape, colors, markings and distinctive details exactly as in the reference) and place it in the scene.',
+    'Keep the original composition, camera angle, perspective, architecture, colors and every existing object exactly as they are. Do NOT redraw the scene, do NOT remove, move, resize or restyle anything that is already there.',
+    previous,
+    'Place the object in a free area where it fits naturally, matching the lighting, scale, perspective and cast shadows of the scene so it looks like it was always part of it.',
+    'Add only that object and nothing else.',
     NO_TEXT,
   ].join(' ');
 }

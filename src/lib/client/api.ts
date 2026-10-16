@@ -48,6 +48,14 @@ export async function uploadInitialImage(roomCode: string, playerId: string, fil
   return parse<ActionResponse>(res);
 }
 
+/** Sube la foto de un elemento del catálogo (PNG/JPEG/WebP, máx. 7 MB). La IA la mezclará con la casa de quien gane el elemento. */
+export async function uploadItemImage(roomCode: string, itemId: string, file: File): Promise<ActionResponse> {
+  const form = new FormData();
+  form.set('item_id', itemId);
+  form.set('file', file);
+  return parse<ActionResponse>(await fetch(`/api/games/${roomCode}/item-image`, { method: 'POST', body: form }));
+}
+
 /** Pide al servidor que procese la cola de imágenes de la partida (responde 202 de inmediato). */
 export async function kickJobs(roomCode: string): Promise<void> {
   await parse(await fetch(`/api/games/${roomCode}/jobs`, { method: 'POST' }));

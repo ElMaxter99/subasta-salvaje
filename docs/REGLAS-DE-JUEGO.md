@@ -45,7 +45,7 @@ de móvil **se conservan** tras finalizar (solo sirven para votar/ver); en parti
 
 ## Imágenes por partida
 `image_mode`: `stickers` (por defecto, local, sin IA) | `ai` (proveedor real, con cuotas). Imagen inicial: subida, galería (`catalog`), generada, o ninguna. **La generada es UNA sola imagen base compartida** (job `base`, `ss_complete_image_job` asigna el mismo archivo a todos los jugadores del lobby y a los nuevos vía `new_player_image`); la generación por jugador (`image.request_initial`) es opcional y da casas distintas;
-aplicable a jugadores **actuales y/o nuevos** (`scope_current`, `scope_new`; `games.new_player_image`) y solo en `lobby`. Cada compra encadena una versión
+aplicable a jugadores **actuales y/o nuevos** (`scope_current`, `scope_new`; `games.new_player_image`) y solo en `lobby`. Un elemento puede tener su **foto** (subida por el anfitrión o generada con IA): al ganarlo, la edición de la casa del ganador la mezcla con la imagen de su casa (`docs/IMAGENES-IA.md`). Cada compra encadena una versión
 nueva (`image_versions.parent_version_id`); el anfitrión puede restaurar versiones (sin tocar saldos). Detalle en `IMAGENES-IA.md`.
 
 ## Acceso de anfitriones y superadmin (migración 2200)

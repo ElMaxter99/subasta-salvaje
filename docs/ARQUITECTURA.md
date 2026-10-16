@@ -49,7 +49,7 @@ Cada cambio funcional = una migración portable + otra `_security_` (permisos). 
 `0000_core` → `0100_security` → `0200/0300` imagen inicial común → `0400/0500` modo móviles → `0600/0700` endurecimiento →
 `0800/0900` política de altas y cuota de imágenes → `1000/1100` adjudicación automática → `1200/1300` modo de imágenes →
 `1400/1500` borrado de partidas → `1600/1700` imagen inicial para actuales/nuevos → `1800/1900` eventos sorpresa, deshacer
-adjudicación y galería (`ss_get_state` pasa a envoltorio sobre `ss_get_state_base`; tabla `gallery_votes`) → `2000/2100` imagen base compartida (job `base`) → `2200/2300` superadmin (`app_settings`, `host_profiles`, `host_invites`, `admin_audit`; funciones `ss_settings_*`, `ss_host_access`, `ss_host_ai_allowed`, `ss_admin_*`; `image_usage` sin FK a `games`).
+adjudicación y galería (`ss_get_state` pasa a envoltorio sobre `ss_get_state_base`; tabla `gallery_votes`) → `2000/2100` imagen base compartida (job `base`) → `2200/2300` superadmin (`app_settings`, `host_profiles`, `host_invites`, `admin_audit`; funciones `ss_settings_*`, `ss_host_access`, `ss_host_ai_allowed`, `ss_admin_*`; `image_usage` sin FK a `games`) → `2400/2500` fotos de elementos (`ss_set_item_image`).
 PGlite lleva un registro `ss_migrations` y aplica solo las pendientes (`LEGACY_MARKERS` cubre bases locales antiguas).
 **Nunca edites una migración ya publicada** (el propietario las aplica con `npx supabase db push`); crea una nueva.
 Tras migrar en Supabase: `notify pgrst, 'reload schema';`.

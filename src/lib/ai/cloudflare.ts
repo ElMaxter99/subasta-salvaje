@@ -1,5 +1,6 @@
 import type { CloudflareConfig } from '@/lib/config/env';
 import { redactSecrets } from '@/lib/security/redact';
+import { toReferencePng } from './reference';
 import { buildEditPrompt, buildInitialScenePrompt, buildItemImagePrompt } from './prompts';
 import { ProviderError, type EditSceneInput, type GeneratedImage, type ImageGenerationProvider, type InitialSceneInput, type ItemImageInput } from './types';
 
@@ -98,7 +99,8 @@ export function createCloudflareProvider(cfg: CloudflareProviderOptions): ImageG
           false,
         );
       }
-      const prompt = `Image 0 is the existing scene. ${buildEditPrompt(input)}`.slice(0, MAX_PROMPT);
+      // Con foto del elemento: la instrucción (buildBlendPrompt) ya describe imagen 0 = escena e imagen 1 = elemento.
+      const prompt = (input.itemImage ? buildEditPrompt(input) : `Image 0 is the existing scene. ${buildEditPrompt(input)}`).slice(0, MAX_PROMPT);
       let ref: Uint8Array;
       try {
         ref = await resize(input.base.bytes);
@@ -110,6 +112,13 @@ export function createCloudflareProvider(cfg: CloudflareProviderOptions): ImageG
       form.set('width', String(cfg.width));
       form.set('height', String(cfg.height));
       form.set('input_image_0', new Blob([ref as BlobPart], { type: 'image/png' }), 'scene.png');
+      if (input.itemImage) {
+        // Segunda referencia: la foto del elemento (el modelo admite hasta 4 imágenes; cada una < 512 px).
+        const item = await toReferencePng(input.itemImage, REF_MAX_SIDE).catch((e) => {
+          throw e instanceof ProviderError ? e : new ProviderError(String(e), false);
+        });
+        form.set('input_image_1', new Blob([item as BlobPart], { type: 'image/png' }), 'item.png');
+      }
       const bytes = await run(cfg.editModel, { form });
       return { bytes, mime: 'image/jpeg', prompt, model: cfg.editModel };
     },

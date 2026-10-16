@@ -34,6 +34,11 @@ export interface EditSceneInput {
   itemEmoji: string | null;
   /** Nombres de los elementos ya presentes (se deben conservar). */
   previousItems: string[];
+  /**
+   * Imagen del elemento del catálogo (subida por el anfitrión o generada con IA). Si existe, la edición debe MEZCLARLA con la
+   * imagen de la casa: el objeto añadido tiene que parecerse a esta referencia (formas, colores, detalles).
+   */
+  itemImage?: ImageData;
 }
 
 export interface ItemImageInput {

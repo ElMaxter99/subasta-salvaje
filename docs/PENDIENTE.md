@@ -22,7 +22,8 @@ Orden de las migraciones (carpeta `supabase/migrations`): `…0000_core` → `�
 → `…1600`/`…1700` (imagen inicial para jugadores actuales y nuevos)
 → `…1800`/`…1900` (eventos sorpresa, deshacer adjudicación y galería con votación; renombra `ss_get_state` a `ss_get_state_base` y crea la tabla `gallery_votes`)
 → `…2000`/`…2100` (imagen base única y compartida generada con IA/pegatinas)
-→ `…2200`/`…2300` (panel de superadmin: ajustes, perfiles, invitaciones, auditoría; `image_usage` deja de borrarse con la partida) Si alguna se aplicó a mano en el SQL Editor, marca antes
+→ `…2200`/`…2300` (panel de superadmin: ajustes, perfiles, invitaciones, auditoría; `image_usage` deja de borrarse con la partida)
+→ `…2400`/`…2500` (foto propia de los elementos del catálogo) Si alguna se aplicó a mano en el SQL Editor, marca antes
 esas versiones con `npx supabase migration repair --status applied <versión>`.
 Después de cada migración nueva, vuelve a probar a mano: crear partida, pujar, adjudicar (el saldo baja una sola vez) y borrar.
 
@@ -57,3 +58,4 @@ Después de cada migración nueva, vuelve a probar a mano: crear partida, pujar,
 - [ ] **MFA/TOTP obligatorio para el superadmin** (Supabase Auth MFA). Hasta entonces: contraseña larga y única. Al implementarlo, `requireSuperadmin()` debe exigir `aal2`.
 - [ ] Ideas del plan de superadmin no incluidas por ahora: alertas (descartadas: solo dashboard), conversión de imágenes a WebP y retención por versiones, detección de archivos huérfanos en el bucket, cuotas de IA por usuario (hoy: global + permiso por usuario), exportación CSV de la auditoría.
 - [ ] **Mascota:** para una colección completa de poses independientes con transparencia real hacen falta renders por pose (≥ 1024 px, fondo transparente o liso): primero mascota principal, celebrando, sorprendida y triste (`docs/MASCOTA.md`). Los recortes actuales de la lámina son de ≈150 px (bustos/poses).
+- [ ] **Mezcla de la foto del elemento con la casa** (Cloudflare `input_image_1`, OpenAI `image[]`): implementado según la documentación, **sin probar contra las APIs reales**. Prueba con un elemento con foto (p. ej. un conejo rosa con lazo azul) y comprueba que el objeto conserva su aspecto.

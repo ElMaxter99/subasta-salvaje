@@ -123,7 +123,7 @@ export function getThemePreset(id: string): ThemePreset | undefined {
 export function emptySceneFor(theme: string): string {
   const preset = getThemePreset(theme);
   if (preset) return preset.emptyScene;
-  return `an empty ${theme} scene, undecorated and ready to be filled with objects`;
+  return `an empty, undecorated ${theme} setting: the location itself must clearly read as "${theme}" (its architecture, landscape, materials and atmosphere), with open space ready to be filled with objects`;
 }
 
 export function themeLabel(theme: string): string {

@@ -59,6 +59,22 @@ export async function cutOutBackground(bytes: Uint8Array, tolerance = 70): Promi
   return new Uint8Array(out);
 }
 
+/**
+ * Recuadro redondeado con borde blanco para una foto que no tiene fondo liso recortable (p. ej. una foto subida por el
+ * anfitrión o una imagen de catálogo con degradado). Se pega como «foto en la casa» en lugar de recortar el objeto.
+ */
+export async function frameImage(bytes: Uint8Array, maxSide = 420): Promise<Uint8Array> {
+  const { default: sharp } = await import('sharp');
+  const resized = await sharp(Buffer.from(bytes), { density: 144 }).resize({ width: maxSide, height: maxSide, fit: 'inside', withoutEnlargement: false }).png().toBuffer();
+  const meta = await sharp(resized).metadata();
+  const w = meta.width ?? maxSide, h = meta.height ?? maxSide;
+  const r = Math.round(Math.min(w, h) * 0.12);
+  const mask = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect width="${w}" height="${h}" rx="${r}" fill="#fff"/></svg>`);
+  const border = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}"><rect x="3" y="3" width="${w - 6}" height="${h - 6}" rx="${r}" fill="none" stroke="#fff" stroke-width="6"/></svg>`);
+  const out = await sharp(resized).ensureAlpha().composite([{ input: mask, blend: 'dest-in' }, { input: border }]).png().toBuffer();
+  return new Uint8Array(out);
+}
+
 /** Pega `cutout` (PNG con alfa) sobre `base` en la posición `slot`, con sombra de contacto. Devuelve PNG. */
 export async function compositeOnto(base: Uint8Array, cutout: Uint8Array, slot: readonly [number, number]): Promise<Uint8Array> {
   const { default: sharp } = await import('sharp');
@@ -95,17 +111,22 @@ export function withComposedEdit(inner: ImageGenerationProvider): ImageGeneratio
     generateInitialScene: (i) => inner.generateInitialScene(i),
     generateItemImage: (i) => inner.generateItemImage(i),
     async editScene(input: EditSceneInput): Promise<GeneratedImage> {
-      const item = await inner.generateItemImage({
-        theme: input.theme,
-        itemName: input.itemName,
-        itemDescription: input.itemDescription,
-        itemEmoji: input.itemEmoji,
-        isolated: true,
-      });
+      // Con foto del elemento (subida o generada para el catálogo) se usa ESA foto: no hace falta generar nada.
+      const item = input.itemImage
+        ? { bytes: input.itemImage.bytes, prompt: 'foto del elemento del catálogo', model: 'reference' }
+        : await inner.generateItemImage({
+            theme: input.theme,
+            itemName: input.itemName,
+            itemDescription: input.itemDescription,
+            itemEmoji: input.itemEmoji,
+            isolated: true,
+          });
       let cut: Uint8Array;
       let merged: Uint8Array;
       try {
-        cut = await cutOutBackground(item.bytes);
+        cut = input.itemImage
+          ? await cutOutBackground(item.bytes).catch(() => frameImage(item.bytes)) // sin fondo liso: se pega la foto enmarcada
+          : await cutOutBackground(item.bytes);
         merged = await compositeOnto(input.base.bytes, cut, slotFor(input.previousItems.length));
       } catch (e) {
         if (e instanceof ProviderError) throw e;

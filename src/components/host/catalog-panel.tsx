@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowDown, ArrowUp, Pencil, Plus, Sparkles, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, ImageOff, Pencil, Plus, Sparkles, Trash2, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import type { AuctionItem } from '@/lib/domain/types';
+import { useToast } from '@/components/ui/toast';
+import { uploadItemImage } from '@/lib/client/api';
 import { Card, Notice, Pill, Thumb, inputCls } from './bits';
 import type { HostCtx } from './host-context';
 
@@ -62,8 +64,12 @@ function ItemForm({ initial, submitLabel, busyKey, ctx, onSubmit, onCancel }: { 
   );
 }
 
+const MAX_PHOTO_BYTES = 7 * 1024 * 1024;
+const PHOTO_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
+
 export function CatalogPanel({ ctx }: { ctx: HostCtx }) {
-  const { snapshot, busy, run, runtime } = ctx;
+  const { snapshot, busy, run, exec, runtime, roomCode } = ctx;
+  const toast = useToast();
   const items = [...snapshot.items].sort((a, b) => a.sort_order - b.sort_order);
   const finished = snapshot.game.status === 'finished';
   // Modo pegatinas: siempre se puede (ilustración local). Modo IA: sólo si hay proveedor configurado.
@@ -92,6 +98,10 @@ export function CatalogPanel({ ctx }: { ctx: HostCtx }) {
       {!canGenerate ? (
         <Notice tone="warn">Esta partida usa IA pero no hay proveedor configurado: la generación de imágenes de elementos está desactivada.</Notice>
       ) : null}
+
+      <Notice tone="info">
+        📷 Cada elemento puede tener su <b>foto</b> (la subes tú o la genera la IA). Cuando alguien gana el elemento, la IA <b>mezcla esa foto con la imagen de su casa</b>: si la foto es un conejo rosa con un lazo azul, ese conejo aparecerá en la casa. Sin foto, la IA usa solo el nombre y la descripción. (En modo pegatinas se añade el emoji.)
+      </Notice>
 
       <ul className="space-y-3">
         {items.map((it) => {
@@ -125,6 +135,29 @@ export function CatalogPanel({ ctx }: { ctx: HostCtx }) {
                   <Button size="md" variant="secondary" disabled={!canGenerate || generating || busy !== null} loading={busy === `genitem-${it.id}`} title={runtime.aiConfigured ? undefined : 'Requiere un proveedor de IA configurado'} onClick={() => run(`genitem-${it.id}`, { type: 'image.request_item', item_id: it.id }, 'Imagen del elemento solicitada')}>
                     <Sparkles className="size-4" aria-hidden /> {generating ? 'Generando…' : 'Generar imagen'}
                   </Button>
+                  <input
+                    id={`item-photo-${it.id}`}
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp"
+                    className="sr-only"
+                    tabIndex={-1}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      e.target.value = '';
+                      if (!file) return;
+                      if (!PHOTO_TYPES.includes(file.type)) return toast.error('Formato no válido. Usa PNG, JPEG o WebP.');
+                      if (file.size > MAX_PHOTO_BYTES) return toast.error('La imagen supera los 7 MB.');
+                      void exec(`upitem-${it.id}`, () => uploadItemImage(roomCode, it.id, file), `Foto de «${it.name}» guardada`);
+                    }}
+                  />
+                  <Button size="md" variant="secondary" disabled={busy !== null} loading={busy === `upitem-${it.id}`} onClick={() => document.getElementById(`item-photo-${it.id}`)?.click()} aria-label={`Subir foto de ${it.name}`}>
+                    <Upload className="size-4" aria-hidden /> {it.image_url ? 'Cambiar foto' : 'Subir foto'}
+                  </Button>
+                  {it.image_url ? (
+                    <Button size="md" variant="ghost" disabled={busy !== null} loading={busy === `clearitem-${it.id}`} onClick={() => run(`clearitem-${it.id}`, { type: 'item.clear_image', item_id: it.id }, 'Foto quitada')} aria-label={`Quitar foto de ${it.name}`}>
+                      <ImageOff className="size-4" aria-hidden /> Quitar foto
+                    </Button>
+                  ) : null}
                   {!locked ? (
                     <>
                       <Button size="md" variant="ghost" disabled={busy !== null} onClick={() => setEditing(editing === it.id ? null : it.id)}>

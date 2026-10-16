@@ -53,6 +53,8 @@ export const actionSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('item.update'), item_id: uuid, name: z.string().trim().min(1).max(80).optional(), description: z.string().trim().max(500).optional(), emoji: z.string().max(8).nullable().optional() }),
   z.object({ type: z.literal('item.remove'), item_id: uuid }),
   z.object({ type: z.literal('item.reorder'), ordered_ids: z.array(uuid).min(1).max(200) }),
+  /** Quita la foto del elemento (subida o generada). Para subir una se usa /item-image (multipart). */
+  z.object({ type: z.literal('item.clear_image'), item_id: uuid }),
   // Subasta
   z.object({ type: z.literal('auction.announce'), item_id: uuid, wild_event: z.enum(['none', 'blind', 'double']).optional() }),
   z.object({ type: z.literal('auction.bid'), auction_id: uuid, player_id: uuid, amount_cents: cents, idempotency_key: idempotencyKey }),

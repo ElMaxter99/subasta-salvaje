@@ -96,7 +96,7 @@ async function generate(ctx: Ctx, provider: ImageGenerationProvider, job: Claime
       playerName: job.kind === 'base' ? 'la partida' : (job.player_name ?? 'Jugador'),
     });
   }
-  const { itemEmoji, previousItems } = await jobContext(ctx, job);
+  const { itemEmoji, previousItems, itemImagePath } = await jobContext(ctx, job);
   if (job.kind === 'item') {
     return provider.generateItemImage({
       theme: job.theme,
@@ -110,8 +110,19 @@ async function generate(ctx: Ctx, provider: ImageGenerationProvider, job: Claime
   if (provider.id === 'openai' && (job.base_mime_type ?? base.mime) === 'image/svg+xml') {
     throw new ProviderError('La imagen base es un SVG de la galería/demo y OpenAI sólo edita PNG, JPEG o WebP. Sube una imagen PNG/JPG o genera la inicial con IA.', false);
   }
+  // Foto del elemento del catálogo (subida por el anfitrión o generada): se MEZCLA con la casa del ganador.
+  let itemImage: { bytes: Uint8Array; mime: string } | undefined;
+  if (itemImagePath) {
+    try {
+      const stored = await ctx.storage.get(itemImagePath);
+      itemImage = { bytes: stored.bytes, mime: stored.mime };
+    } catch {
+      itemImage = undefined; // la foto ya no existe: se edita sólo con el texto, sin fallar
+    }
+  }
   return provider.editScene({
     base: { bytes: base.bytes, mime: job.base_mime_type ?? base.mime },
+    ...(itemImage ? { itemImage } : {}),
     theme: job.theme,
     itemName: job.item_name ?? 'objeto',
     itemDescription: job.item_description ?? '',
@@ -120,16 +131,18 @@ async function generate(ctx: Ctx, provider: ImageGenerationProvider, job: Claime
   });
 }
 
-async function jobContext(ctx: Ctx, job: ClaimedJob): Promise<{ itemEmoji: string | null; previousItems: string[] }> {
+async function jobContext(ctx: Ctx, job: ClaimedJob): Promise<{ itemEmoji: string | null; previousItems: string[]; itemImagePath: string | null }> {
   // Datos secundarios (emoji y elementos previos) leídos de la instantánea pública.
-  const snap = await ctx.db.rpc<{ items: { id: string; emoji: string | null }[]; players: { id: string; purchases: { purchase_id: string; name: string }[] }[] }>(
+  const snap = await ctx.db.rpc<{ items: { id: string; emoji: string | null; image_path: string | null }[]; players: { id: string; purchases: { purchase_id: string; name: string }[] }[] }>(
     'ss_get_state',
     { room_code: job.room_code, view: 'public' },
   );
-  const itemEmoji = snap.items.find((i) => i.id === job.item_id)?.emoji ?? null;
+  const item = snap.items.find((i) => i.id === job.item_id);
+  const itemEmoji = item?.emoji ?? null;
+  const itemImagePath = item?.image_path ?? null;
   const player = snap.players.find((p) => p.id === job.player_id);
   const previousItems = (player?.purchases ?? []).filter((p) => p.purchase_id !== job.purchase_id).map((p) => p.name);
-  return { itemEmoji, previousItems };
+  return { itemEmoji, previousItems, itemImagePath };
 }
 
 async function runJob(ctx: Ctx, provider: ImageGenerationProvider, job: ClaimedJob, workerId: string): Promise<boolean> {

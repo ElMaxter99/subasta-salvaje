@@ -1,3 +1,4 @@
+import { toReferencePng } from './reference';
 import { buildEditPrompt, buildInitialScenePrompt, buildItemImagePrompt } from './prompts';
 import {
   ProviderError,
@@ -95,7 +96,14 @@ export function createOpenAiProvider(cfg: OpenAiProviderConfig): ImageGeneration
       form.set('output_format', 'png');
       if (fidelity !== 'off') form.set('input_fidelity', fidelity);
       const ext = input.base.mime === 'image/jpeg' ? 'jpg' : input.base.mime === 'image/webp' ? 'webp' : 'png';
-      form.set('image', new Blob([input.base.bytes as BlobPart], { type: input.base.mime }), `scene.${ext}`);
+      if (input.itemImage) {
+        // Varias imágenes: `image[]`. La primera es la escena y la segunda la foto del elemento (ver buildBlendPrompt).
+        const item = await toReferencePng(input.itemImage, 1024);
+        form.append('image[]', new Blob([input.base.bytes as BlobPart], { type: input.base.mime }), `scene.${ext}`);
+        form.append('image[]', new Blob([item as BlobPart], { type: 'image/png' }), 'item.png');
+      } else {
+        form.set('image', new Blob([input.base.bytes as BlobPart], { type: input.base.mime }), `scene.${ext}`);
+      }
       const bytes = await call('/images/edits', { method: 'POST', body: form });
       return { bytes, mime: 'image/png', prompt, model };
     },
