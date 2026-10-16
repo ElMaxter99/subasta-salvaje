@@ -41,7 +41,7 @@ export function useGameAudio(snap: PublicSnapshot, role: Extract<AudioRole, 'tv'
   // Escena de música (solo la TV)
   let scene: MusicScene = null;
   if (role === 'tv') {
-    if (game.status === 'lobby') scene = 'lobby';
+    if (game.status === 'lobby') scene = 'waiting';
     else if (game.status === 'active' && auction?.status === 'open') scene = countdown !== null && countdown > 0 && countdown <= 10 ? 'tense' : 'auction';
     else if (game.status === 'active') scene = 'lobby';
   }

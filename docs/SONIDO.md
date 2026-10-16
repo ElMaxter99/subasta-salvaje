@@ -5,7 +5,7 @@ Todo se **sintetiza en el navegador con Web Audio** (`src/lib/audio/engine.ts`):
 ## Quién suena y cuándo
 | Dispositivo | Música | Efectos | Por defecto |
 |---|---|---|---|
-| **TV** (`useGameAudio(snap,'tv')`) | Sala de espera (suave) · subasta abierta (animada) · últimos 10 s de la cuenta atrás (tensa) | Anuncio, puja (sube de tono con cada puja), tic-tac ≤ 10 s, puja cerrada (redoble), **adjudicado** (martillazo + fanfarria + monedas), fin de partida | Activado |
+| **TV** (`useGameAudio(snap,'tv')`) | Sala de espera (alegre y saltarina, escena propia `waiting`) · entre subastas (suave, `lobby`) · subasta abierta (animada) · últimos 10 s de la cuenta atrás (tensa) | Anuncio, puja (sube de tono con cada puja), tic-tac ≤ 10 s, puja cerrada (redoble), **adjudicado** (martillazo + fanfarria + monedas), fin de partida | Activado |
 | **Panel del anfitrión** (`useGameAudio(snap,'host')`) | No | Anuncio, puja, cierre, adjudicado, fin | Activado |
 | **Móvil del jugador** (`usePlayerSounds`) | No | Anuncio, «vas ganando», «te han superado», «¡tuyo!» | **Silencio** (lo activa el jugador) |
 

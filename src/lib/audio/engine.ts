@@ -9,7 +9,7 @@
 export type SoundName =
   | 'click' | 'announce' | 'bid' | 'tick' | 'tickUrgent' | 'closed' | 'award' | 'finish'
   | 'outbid' | 'leading' | 'won' | 'bidSent' | 'event';
-export type MusicScene = 'lobby' | 'auction' | 'tense' | null;
+export type MusicScene = 'waiting' | 'lobby' | 'auction' | 'tense' | null;
 export type AudioRole = 'tv' | 'host' | 'play';
 
 export interface AudioPrefs { enabled: boolean; music: boolean; volume: number }
@@ -182,6 +182,9 @@ export function play(name: SoundName, n = 0): void {
 
 // ---------------------------------------------------------------- música (secuenciador con anticipación)
 const SCENES = {
+  // Sala de espera: alegre y saltarina (do mayor pentatónico, ritmo de «fiesta que empieza»), distinta de la música de la subasta
+  waiting: { bpm: 112, bass: [48, 55, 52, 55, 53, 57, 55, 52], lead: [76, 0, 79, 81, 79, 0, 76, 74, 72, 0, 76, 79, 81, 0, 84, 0], kick: true },
+  // Entre subastas: tranquila
   lobby: { bpm: 96, bass: [48, 0, 55, 0, 52, 0, 55, 0], lead: [72, 0, 76, 0, 79, 0, 76, 0, 74, 0, 77, 0, 81, 0, 77, 0], kick: false },
   auction: { bpm: 126, bass: [48, 48, 55, 48, 53, 53, 55, 53], lead: [72, 76, 79, 76, 74, 77, 81, 77, 72, 79, 84, 79, 76, 74, 72, 0], kick: true },
   tense: { bpm: 156, bass: [45, 45, 52, 45, 45, 45, 52, 57], lead: [81, 0, 81, 84, 0, 84, 88, 0, 81, 0, 81, 84, 0, 88, 84, 0], kick: true },
