@@ -1,7 +1,217 @@
 {
   "source": "reference-sheet.webp",
-  "note": "Solo objetos (item-*) recortados de la lámina antigua. Los personajes se sustituyeron por la mascota oficial (public/assets/brand).",
+  "note": "Recortes de una lámina plana. transparency=real: fondo quitado; difuminado: conserva el fondo oscuro con bordes a transparente.",
   "assets": [
+    {
+      "id": "mascot-main",
+      "group": "mascot",
+      "file": "mascot-main.webp",
+      "width": 555,
+      "height": 665,
+      "bytes": 39500,
+      "transparency": "difuminado",
+      "sourceBox": [
+        20,
+        40,
+        555,
+        665
+      ]
+    },
+    {
+      "id": "expr-feliz",
+      "group": "expression",
+      "file": "expr-feliz.webp",
+      "width": 168,
+      "height": 172,
+      "bytes": 6358,
+      "transparency": "difuminado",
+      "sourceBox": [
+        551,
+        96,
+        168,
+        172
+      ]
+    },
+    {
+      "id": "expr-sorprendido",
+      "group": "expression",
+      "file": "expr-sorprendido.webp",
+      "width": 164,
+      "height": 168,
+      "bytes": 5524,
+      "transparency": "difuminado",
+      "sourceBox": [
+        732,
+        100,
+        164,
+        168
+      ]
+    },
+    {
+      "id": "expr-guino",
+      "group": "expression",
+      "file": "expr-guino.webp",
+      "width": 160,
+      "height": 168,
+      "bytes": 5848,
+      "transparency": "difuminado",
+      "sourceBox": [
+        906,
+        100,
+        160,
+        168
+      ]
+    },
+    {
+      "id": "expr-pensativo",
+      "group": "expression",
+      "file": "expr-pensativo.webp",
+      "width": 140,
+      "height": 168,
+      "bytes": 5238,
+      "transparency": "difuminado",
+      "sourceBox": [
+        1072,
+        100,
+        140,
+        168
+      ]
+    },
+    {
+      "id": "expr-triste",
+      "group": "expression",
+      "file": "expr-triste.webp",
+      "width": 132,
+      "height": 182,
+      "bytes": 4812,
+      "transparency": "difuminado",
+      "sourceBox": [
+        572,
+        328,
+        132,
+        182
+      ]
+    },
+    {
+      "id": "expr-enfadado",
+      "group": "expression",
+      "file": "expr-enfadado.webp",
+      "width": 136,
+      "height": 182,
+      "bytes": 5372,
+      "transparency": "difuminado",
+      "sourceBox": [
+        740,
+        328,
+        136,
+        182
+      ]
+    },
+    {
+      "id": "expr-celebrando",
+      "group": "expression",
+      "file": "expr-celebrando.webp",
+      "width": 172,
+      "height": 188,
+      "bytes": 7342,
+      "transparency": "difuminado",
+      "sourceBox": [
+        892,
+        322,
+        172,
+        188
+      ]
+    },
+    {
+      "id": "expr-hype",
+      "group": "expression",
+      "file": "expr-hype.webp",
+      "width": 156,
+      "height": 188,
+      "bytes": 6974,
+      "transparency": "difuminado",
+      "sourceBox": [
+        1062,
+        322,
+        156,
+        188
+      ]
+    },
+    {
+      "id": "pose-presenta",
+      "group": "pose",
+      "file": "pose-presenta.webp",
+      "width": 150,
+      "height": 166,
+      "bytes": 5428,
+      "transparency": "difuminado",
+      "sourceBox": [
+        546,
+        626,
+        150,
+        166
+      ]
+    },
+    {
+      "id": "pose-anuncia",
+      "group": "pose",
+      "file": "pose-anuncia.webp",
+      "width": 125,
+      "height": 152,
+      "bytes": 4704,
+      "transparency": "difuminado",
+      "sourceBox": [
+        696,
+        640,
+        125,
+        152
+      ]
+    },
+    {
+      "id": "pose-cuenta-atras",
+      "group": "pose",
+      "file": "pose-cuenta-atras.webp",
+      "width": 140,
+      "height": 156,
+      "bytes": 5440,
+      "transparency": "difuminado",
+      "sourceBox": [
+        818,
+        638,
+        140,
+        156
+      ]
+    },
+    {
+      "id": "pose-adjudica",
+      "group": "pose",
+      "file": "pose-adjudica.webp",
+      "width": 130,
+      "height": 162,
+      "bytes": 5346,
+      "transparency": "difuminado",
+      "sourceBox": [
+        956,
+        632,
+        130,
+        162
+      ]
+    },
+    {
+      "id": "pose-celebra",
+      "group": "pose",
+      "file": "pose-celebra.webp",
+      "width": 130,
+      "height": 166,
+      "bytes": 5672,
+      "transparency": "difuminado",
+      "sourceBox": [
+        1090,
+        626,
+        130,
+        166
+      ]
+    },
     {
       "id": "item-corona",
       "group": "item",

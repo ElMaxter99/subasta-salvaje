@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { Mascot } from '@/components/mascot/mascot';
+import { BrandMascot } from '@/components/mascot/mascot';
 
 /**
  * Estado de carga de marca: la mascota flota (sin movimiento con prefers-reduced-motion) y un texto dice QUÉ se está haciendo.
@@ -11,7 +11,7 @@ import { Mascot } from '@/components/mascot/mascot';
 export function Loader({ label = 'Cargando…', detail, failed, onRetry, retryLabel = 'Reintentar', compact = false, className = '' }: { label?: string; detail?: ReactNode; failed?: boolean; onRetry?: () => void; retryLabel?: string; compact?: boolean; className?: string }) {
   return (
     <div role={failed ? 'alert' : 'status'} aria-live={failed ? 'assertive' : 'polite'} className={`flex flex-col items-center gap-3 text-center ${compact ? 'py-4' : 'py-10'} ${className}`} data-testid={failed ? 'loader-failed' : 'loader'}>
-      <Mascot variant={failed ? 'expr-triste' : 'expr-feliz'} size={compact ? 'xs' : 'sm'} motion={failed ? 'none' : 'bob'} />
+      <BrandMascot part="head" size={compact ? 'xs' : 'sm'} motion={failed ? 'none' : 'bob'} />
       <p className={`font-display ${compact ? 'text-lg' : 'text-2xl'} ${failed ? 'text-rose' : 'text-gold'}`}>{label}</p>
       {detail ? <div className="max-w-md text-sm text-white/70">{detail}</div> : null}
       {failed && onRetry ? (

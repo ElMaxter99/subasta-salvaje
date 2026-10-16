@@ -131,6 +131,9 @@ export interface GameInfo {
   auto_run_idle_seconds?: number;
   /** Hora (del servidor) en la que se anunciará la siguiente subasta, o null. */
   auto_run_next_at?: string | null;
+  /** Efectos y música de la TV (los controla el anfitrión). */
+  sound_enabled?: boolean;
+  music_enabled?: boolean;
   /** Probabilidad (0-100) de que una subasta salga con evento sorpresa si el anfitrión no elige uno. */
   wild_chance_pct?: number;
   current_auction_id: string | null;

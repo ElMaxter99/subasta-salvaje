@@ -4,7 +4,7 @@ import { Gavel, Sparkles } from 'lucide-react';
 import { DemoSeedButton, JoinPlayerForm, JoinScreenForm, SignOutButton } from '@/components/landing/landing-actions';
 import { DemoBanner } from '@/components/ui/status';
 import { Logo } from '@/components/ui/logo';
-import { Bubble, ItemIcon, Mascot, Sparkles as MascotSparkles } from '@/components/mascot/mascot';
+import { Bubble, BrandMascot, ItemIcon, Mascot, Sparkles as MascotSparkles } from '@/components/mascot/mascot';
 import { getHostIdentity } from '@/lib/auth/host';
 import { getRuntimeMode } from '@/lib/config/env';
 import { themeLabel } from '@/lib/domain/themes';
@@ -67,7 +67,7 @@ export default async function Home() {
           <div className="relative order-first flex justify-center md:order-none">
             <MascotSparkles />
             <Bubble className="absolute left-2 top-2 z-10 !text-sm md:left-0 md:top-6">¡Subasta activa!</Bubble>
-            <Mascot variant="mascot-main" size="lg" motion="bob" priority className="[--mh:11rem] md:[--mh:22rem]" alt="Subasta Salvaje, la mascota de la app: un personaje con casco blanco, corona dorada y un martillo de subastador" />
+            <BrandMascot part="bust" size="lg" motion="bob" priority className="[--mh:11rem] md:[--mh:22rem]" alt="Subasta Salvaje, la mascota de la app: un personaje con casco blanco, corona dorada y un martillo de subastador" />
           </div>
         </section>
 

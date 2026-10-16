@@ -103,6 +103,8 @@ function toRpc(action: GameAction): { fn: string; params: Record<string, unknown
       return { fn: 'ss_gallery_set', params: {} };
     case 'game.set_rules':
       return { fn: 'ss_set_game_rules', params: rest };
+    case 'game.set_sound':
+      return { fn: 'ss_set_sound', params: rest };
     case 'game.set_auto_run':
       return { fn: 'ss_set_auto_run', params: rest };
     case 'game.set_join_policy':

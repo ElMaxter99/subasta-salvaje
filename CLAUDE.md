@@ -57,8 +57,8 @@ src/lib/db/            pglite.ts (demo/tests, migraciones con seguimiento) · su
 src/lib/ai/            proveedores de imagen (demo/pegatinas, cloudflare, openai), compose (edición gratis), prompts, validación
 src/lib/{auth,security,realtime,storage,client,config}/
 src/app/               páginas y /api/*      src/components/{host,screen,play,ui,landing,mascot,admin}/
-public/assets/brand/   logo, mascota OFICIAL (un solo dibujo), iconos (ver docs/MARCA.md; `npm run brand:build`)
-public/assets/mascot/  solo objetos item-* (docs/MASCOTA.md; `npm run mascot:extract`)
+public/assets/brand/   logo, mascota nueva (solo inicio y Loader), iconos (ver docs/MARCA.md; `npm run brand:build`)
+public/assets/mascot/  expresiones, poses y objetos de la mascota de uso general (docs/MASCOTA.md; `npm run mascot:extract`)
 tests/ e2e/ scripts/   scripts/assets/ = generador del asset pack (vectorial, no 3D)
 docs/                  documentación de proyecto (índice en docs/README.md)
 ```

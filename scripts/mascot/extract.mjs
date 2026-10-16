@@ -130,7 +130,6 @@ async function build(asset) {
 
 const inventory = [];
 for (const asset of ASSETS) {
-  if (asset.group !== 'item') continue; // los personajes de la lámina antigua ya no se usan: la mascota oficial está en public/assets/brand
   const r = await build(asset);
   let img = sharp(r.rgba, { raw: { width: r.w, height: r.h, channels: 4 } });
   let [w, h] = [r.w, r.h];

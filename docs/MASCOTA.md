@@ -1,4 +1,4 @@
-> **OBSOLETO en parte:** la mascota de la lámina antigua fue sustituida por la mascota oficial del logo nuevo (ver [`MARCA.md`](MARCA.md)). De este documento sigue vigente solo lo de los objetos `item-*`, los componentes (`Mascot`, `EmptyState`, `MascotTitle`, `ItemIcon`, `Sparkles`) y las animaciones.
+> Nota: la mascota del logo nuevo se usa solo en el inicio y el Loader (ver [`MARCA.md`](MARCA.md)); todo lo de este documento sigue vigente.
 
 # Mascota de marca (recursos, componentes y límites)
 

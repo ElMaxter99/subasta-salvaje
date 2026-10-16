@@ -1,6 +1,8 @@
 # Identidad de marca (logo, mascota, tipografía y tokens)
 
-Referencia oficial: el logo de **Subasta Salvaje** (personaje 3D con corona y martillo + rótulo). **La mascota nueva sustituye a la anterior** y es el único personaje de la app.
+Referencia oficial: el logo de **Subasta Salvaje** (personaje 3D con corona y martillo + rótulo).
+
+> **Decisión del propietario (posterior):** la mascota nueva del logo (un solo dibujo) NO sustituye a la anterior. Las **expresiones y poses antiguas** (`expr-*`, `pose-*`, `mascot-main`, en `public/assets/mascot/`) vuelven a usarse en toda la app porque dan más personalidad. La mascota nueva solo se usa en el **inicio (hero)** y en el **`Loader`**, mediante `<BrandMascot>`. El logo en imagen, la tipografía, los tokens, los iconos y los metadatos se mantienen.
 
 ## Recursos (`public/assets/brand/`) — se generan con `npm run brand:build`
 | Archivo | Qué es | Cómo se obtuvo |
@@ -16,7 +18,7 @@ Referencia oficial: el logo de **Subasta Salvaje** (personaje 3D con corona y ma
 
 ### Limitaciones (honestas)
 - El logo es un **raster**, no un vector: no hay versión vectorial del logo, solo del favicon simplificado.
-- **No existe el cuerpo completo** de la mascota (queda tapado por las letras) ni otras poses: solo hay **un dibujo**. Los gestos (`expr-triste`, `pose-adjudica`…) se expresan con movimiento y color en CSS (`.ss-mood-*`), no con imágenes distintas. Para poses reales harían falta renders nuevos del mismo personaje (mismo casco, corona, visor y estilo 3D); no se han inventado.
+- **No existe el cuerpo completo** de la mascota nueva (queda tapado por las letras) ni otras poses: solo hay **un dibujo**, y por eso las expresiones siguen siendo las antiguas. Para poses nuevas harían falta renders del mismo personaje (casco, corona, visor y estilo 3D); no se han inventado.
 - El recorte de la mascota conserva un halo suave semitransparente del original: está pensado para fondos oscuros; sobre blanco se ve grisáceo. El recorte `logo-compact` deja un borde superior recto (corte) que en fondo oscuro no se nota.
 - Los objetos `item-*` (corona, martillo, megáfono, moneda, temporizador, brillo) siguen siendo los recortes de la lámina antigua (`public/assets/mascot/`, ≈100 px); su estilo no es idéntico al del logo nuevo. Pendiente: reemplazarlos por recortes del mismo estilo.
 
@@ -30,9 +32,9 @@ Referencia oficial: el logo de **Subasta Salvaje** (personaje 3D con corona y ma
 
 ## Componentes
 - `ui/logo.tsx` → `<Logo size="sm|md|lg|xl" variant="compact|full" href />`.
-- `mascot/mascot.tsx` → `<Mascot variant size motion />` (cabeza en `xs`/`sm`, busto en el resto; `ss-bust-fade`). Los ids antiguos se conservan.
+- `mascot/mascot.tsx` → `<Mascot variant …>` (expresiones y poses antiguas) y `<BrandMascot part="bust|head">` (mascota nueva: inicio y Loader).
 - `ui/loader.tsx` → `<Loader label detail failed onRetry />`: mascota flotando + texto de lo que ocurre; con `failed` se detiene y muestra el motivo y «Reintentar». Respeta `prefers-reduced-motion`.
 - `app/loading.tsx`, `app/error.tsx`, `app/global-error.tsx`, `app/not-found.tsx`, `app/manifest.ts` y metadatos (favicon, Open Graph, Twitter) en `app/layout.tsx`.
 
 ## Dónde se aplica
-Inicio (logo + hero con la mascota), login/unirse/setup (logo), nueva partida (logo), TV (logo en la cabecera + cabeza que reacciona), panel del anfitrión (logo en ≥ md + cabeza), móvil de jugador (logo), historial (Loader), errores y 404.
+Inicio (logo + hero con la mascota nueva), login/unirse/setup/nueva partida/móvil (logo), TV y panel del anfitrión (logo en la cabecera; las mascotas son las antiguas), historial y errores (Loader con la cabeza nueva).
