@@ -16,7 +16,7 @@ export default function SetupPage() {
   ];
   return (
     <main className="mx-auto min-h-screen max-w-2xl space-y-6 px-5 py-10">
-      <Logo className="text-3xl" />
+      <Logo size="lg" />
       <MascotTitle variant="expr-pensativo" titleClassName="font-display text-3xl">Configuración necesaria</MascotTitle>
       <p className="text-white/75">
         {mode === 'unconfigured'

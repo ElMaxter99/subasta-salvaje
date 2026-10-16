@@ -1,3 +1,5 @@
+> **OBSOLETO en parte:** la mascota de la lámina antigua fue sustituida por la mascota oficial del logo nuevo (ver [`MARCA.md`](MARCA.md)). De este documento sigue vigente solo lo de los objetos `item-*`, los componentes (`Mascot`, `EmptyState`, `MascotTitle`, `ItemIcon`, `Sparkles`) y las animaciones.
+
 # Mascota de marca (recursos, componentes y límites)
 
 Fuente: la lámina de referencia `public/assets/mascot/reference-sheet.webp` (1254×1254, **imagen plana con fondo oscuro**, sin transparencia).

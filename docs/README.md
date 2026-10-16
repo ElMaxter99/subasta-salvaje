@@ -19,3 +19,5 @@
 
 El `README.md` de la raíz es la guía de usuario/despliegue (muy completa). Estos documentos son la memoria técnica: **si cambias
 una regla, una migración o una decisión, actualiza el documento correspondiente en el mismo cambio.**
+
+- [`MARCA.md`](MARCA.md): identidad visual (logo, mascota oficial, tipografía, tokens, componentes y limitaciones).

@@ -1,4 +1,5 @@
 'use client';
+import { Loader } from '@/components/ui/loader';
 import { ItemIcon } from '@/components/mascot/mascot';
 
 import { Suspense, useMemo, useState } from 'react';
@@ -25,7 +26,7 @@ export function HistoryView(props: Props) {
   return (
     <ToastProvider>
       {/* useSearchParams exige un límite <Suspense> para no desactivar el prerenderizado de toda la ruta. */}
-      <Suspense fallback={<p className="p-6 text-white/70" role="status">Cargando historial…</p>}>
+      <Suspense fallback={<Loader label="Cargando el historial…" detail="Recuperando las partidas guardadas." />}>
         <HistoryInner {...props} />
       </Suspense>
     </ToastProvider>

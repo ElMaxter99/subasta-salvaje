@@ -90,7 +90,7 @@ function PlayInner({ roomCode, initial, runtime, initialPlayerId }: { roomCode: 
       <DemoBanner runtime={runtime} />
       <div className="mx-auto min-h-dvh w-full max-w-md space-y-5 px-4 pb-10 pt-5">
         <header className="space-y-1">
-          <Logo className="!text-base" />
+          <Logo size="sm" />
           <MascotTitle variant="expr-feliz" size="xs" titleClassName="font-display text-2xl leading-tight">{snapshot.game.name}</MascotTitle>
           <p className="text-sm font-semibold text-white/70">
             Sala <span className="rounded-lg bg-night-700 px-2 py-0.5 font-mono tracking-widest text-gold">{snapshot.game.room_code}</span>

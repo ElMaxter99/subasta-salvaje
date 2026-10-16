@@ -10,7 +10,7 @@ export default async function JoinPage({ searchParams }: { searchParams: Promise
   if (code && code.length >= 4) redirect(`/game/${code}/play`);
   return (
     <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-6 px-5 py-10">
-      <Logo className="text-center text-3xl" />
+      <Logo size="lg" className="mx-auto !block w-fit" priority />
       <div className="space-y-4 rounded-3xl border border-white/10 bg-night-800/80 p-6">
         <MascotTitle variant="expr-guino" say="¡A pujar!">Unirme a una partida</MascotTitle>
         <p className="text-sm text-white/70">Escribe el código que aparece en la tele o en el panel del anfitrión.</p>

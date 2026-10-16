@@ -28,7 +28,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <div className="flex items-center gap-3">
             <Mascot variant="expr-pensativo" size="xs" tile motion="wiggle" />
             <div>
-              <p className="font-display text-2xl uppercase tracking-tight"><span className="text-gold">Superadmin</span> · Subasta Salvaje</p>
+              <p className="font-display text-2xl tracking-tight"><span className="text-gold">Superadmin</span> · Subasta Salvaje</p>
               <p className="text-sm text-white/60">{admin.email ?? 'Anfitrión demo'}</p>
             </div>
           </div>

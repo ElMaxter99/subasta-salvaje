@@ -12,8 +12,14 @@
   --color-violet-soft: #c4b5fd;
   --color-teal: #2dd4bf;
   --color-rose: #fb7185;
-  --font-display: 'Arial Black', 'Segoe UI Black', 'Helvetica Neue', Impact, system-ui, sans-serif;
-  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  /* Marca: azul marino (fondo), violeta y azul eléctrico (superficies y luz), dorado (pujas, premios, acciones clave), blanco (texto) */
+  --color-electric: #4f7cff;
+  --color-success: #2dd4bf;
+  --color-warning: #fbbf24;
+  --color-danger: #fb7185;
+  /* Tipografía: Baloo 2 (gruesa y redondeada) solo para títulos y cifras destacadas; Nunito para el texto funcional */
+  --font-display: var(--font-baloo), 'Arial Black', 'Segoe UI Black', 'Helvetica Neue', system-ui, sans-serif;
+  --font-sans: var(--font-nunito), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --animate-pop: pop 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) both;
   --animate-float-in: float-in 0.5s ease-out both;
   --animate-shimmer: shimmer 2.2s linear infinite;
@@ -112,3 +118,17 @@ body {
   .ss-step-in-right, .ss-step-in-left { animation: none; }
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
+
+/* Gestos de la mascota oficial (un solo dibujo): se expresan con color y postura. Se anulan con prefers-reduced-motion. */
+.ss-mood-sad img { filter: saturate(0.55) brightness(0.88); transform: rotate(-6deg) translateY(4%); transform-origin: 50% 90%; }
+.ss-mood-angry img { filter: saturate(1.25) hue-rotate(-12deg); transform: rotate(3deg); }
+.ss-mood-think img { transform: rotate(5deg); }
+.ss-mood-wow img { transform: scale(1.06); }
+.ss-mood-wink img { transform: rotate(-3deg); }
+.ss-mood-cheer img { filter: drop-shadow(0 0 0.6rem rgb(251 191 36 / 0.55)); }
+@media (prefers-reduced-motion: reduce) {
+  .ss-mood-sad img, .ss-mood-angry img, .ss-mood-think img, .ss-mood-wow img, .ss-mood-wink img { transform: none; }
+}
+
+/* Busto de la mascota: el original queda tapado por el rótulo, así que su borde inferior se desvanece */
+.ss-bust-fade { -webkit-mask-image: linear-gradient(to bottom, #000 80%, transparent); mask-image: linear-gradient(to bottom, #000 80%, transparent); }

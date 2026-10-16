@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation';
 import { Gavel, Sparkles } from 'lucide-react';
 import { DemoSeedButton, JoinPlayerForm, JoinScreenForm, SignOutButton } from '@/components/landing/landing-actions';
 import { DemoBanner } from '@/components/ui/status';
+import { Logo } from '@/components/ui/logo';
 import { Bubble, ItemIcon, Mascot, Sparkles as MascotSparkles } from '@/components/mascot/mascot';
 import { getHostIdentity } from '@/lib/auth/host';
 import { getRuntimeMode } from '@/lib/config/env';
@@ -27,9 +28,7 @@ export default async function Home() {
       <DemoBanner runtime={runtime} />
       <main className="mx-auto flex min-h-screen max-w-5xl flex-col gap-10 px-5 py-10">
         <header className="flex items-center justify-between">
-          <span className="font-display text-xl uppercase tracking-tight">
-            <span className="text-gold">Subasta</span> <span className="text-violet-soft">Salvaje</span>
-          </span>
+          <Logo size="lg" priority />
           {identity ? (
             <div className="flex items-center gap-2 text-sm text-white/70">
               {identity.superadmin ? (
@@ -45,7 +44,7 @@ export default async function Home() {
           )}
         </header>
 
-        <section className="grid items-center gap-8 py-6 text-center md:grid-cols-[1.25fr_1fr] md:text-left">
+        <section className="grid grid-cols-[minmax(0,1fr)] items-center gap-8 py-6 text-center md:grid-cols-[1.25fr_1fr] md:text-left">
           <div className="space-y-6">
           <p className="inline-flex items-center gap-2 rounded-full bg-violet/20 px-4 py-1.5 text-sm font-bold text-violet-soft">
             <Sparkles className="size-4" aria-hidden /> Subastas creativas para noches de juegos
@@ -68,11 +67,11 @@ export default async function Home() {
           <div className="relative order-first flex justify-center md:order-none">
             <MascotSparkles />
             <Bubble className="absolute left-2 top-2 z-10 !text-sm md:left-0 md:top-6">¡Subasta activa!</Bubble>
-            <Mascot variant="mascot-main" size="lg" tile motion="bob" priority className="[--mh:17rem] md:[--mh:28rem]" alt="Subasta Salvaje, la mascota de la app: un personaje con casco blanco, corona dorada y un martillo de subastador" />
+            <Mascot variant="mascot-main" size="lg" motion="bob" priority className="[--mh:11rem] md:[--mh:22rem]" alt="Subasta Salvaje, la mascota de la app: un personaje con casco blanco, corona dorada y un martillo de subastador" />
           </div>
         </section>
 
-        <section className="grid gap-4 md:grid-cols-2">
+        <section className="grid grid-cols-[minmax(0,1fr)] gap-4 md:grid-cols-2">
           <div className="space-y-4 rounded-3xl border border-violet/40 bg-night-800/70 p-6 md:col-span-2">
             <h2 className="flex items-center gap-2 font-display text-xl">
               <ItemIcon variant="item-megafono" motion="bob" /> Soy jugador: unirme desde el móvil

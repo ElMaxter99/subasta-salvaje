@@ -28,7 +28,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
     <>
       <DemoBanner runtime={runtime} />
       <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center gap-6 px-5 py-10">
-        <Logo className="text-center text-3xl" />
+        <Logo size="lg" className="mx-auto !block w-fit" priority />
         <div className="space-y-5 rounded-3xl border border-white/10 bg-night-800/80 p-6">
           <div>
             <MascotTitle variant="expr-guino" say="¡Hola, anfitrión!" subtitle="Solo el anfitrión necesita cuenta. Los jugadores no se registran.">Acceso del anfitrión</MascotTitle>

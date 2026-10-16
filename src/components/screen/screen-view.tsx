@@ -12,6 +12,7 @@ import { AwardOverlay } from './award-overlay';
 import { PlayerCard } from './player-card';
 import { WildTaxBanner } from './wild-tax-banner';
 import { MascotCue } from './mascot-cue';
+import { Logo } from '@/components/ui/logo';
 import { CompactInvite } from './join-invite';
 import { FinalResults } from './results-view';
 import { useFullscreenControls } from './use-fullscreen';
@@ -96,6 +97,7 @@ export function ScreenView({ roomCode, initial, runtime }: { roomCode: string; i
   return (
     <main className={`relative flex h-dvh w-screen flex-col overflow-hidden bg-gradient-to-b from-night-900 via-night-950 to-night-950 text-white ${fs.visible ? '' : 'cursor-none'}`}>
       <header className="flex shrink-0 items-center gap-[1.5rem] border-b border-white/10 bg-night-950/70 px-[2rem] py-[0.6rem]">
+        <Logo href={null} size="md" className="shrink-0" />
         <div className="min-w-0">
           <h1 className="truncate font-display text-[2.2rem] leading-tight text-white">{game.name}</h1>
           <p className="truncate text-[1rem] font-semibold text-white/60">

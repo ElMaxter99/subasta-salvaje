@@ -162,7 +162,7 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
   return (
     <main className="mx-auto min-h-dvh w-full max-w-3xl space-y-5 px-4 pb-32 pt-6 sm:px-6 2xl:max-w-5xl 2xl:space-y-8 2xl:pt-10">
       <div className="flex items-center justify-between">
-        <Logo className="text-2xl 2xl:text-4xl" />
+        <Logo size="md" className="2xl:[&>img]:h-20" />
         <Link href="/" className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-sm text-white/70 hover:text-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold/50 2xl:text-lg">
           <ArrowLeft className="size-4" aria-hidden /> Inicio
         </Link>

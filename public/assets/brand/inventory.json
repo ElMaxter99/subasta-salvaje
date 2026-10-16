@@ -1,0 +1,25 @@
+{
+  "source": "original/logo-original.webp",
+  "assets": {
+    "full": {
+      "name": "logo-full",
+      "width": 881,
+      "height": 913
+    },
+    "mascot": {
+      "name": "mascot",
+      "width": 703,
+      "height": 432
+    },
+    "compact": {
+      "name": "logo-compact",
+      "width": 712,
+      "height": 424
+    },
+    "head": {
+      "name": "head",
+      "width": 312,
+      "height": 356
+    }
+  }
+}
