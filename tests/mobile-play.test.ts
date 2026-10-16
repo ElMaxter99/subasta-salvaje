@@ -196,3 +196,78 @@ describe('política de altas e imagen para quien entra tarde', () => {
     expect(new Set(s.players.map((p) => p.current_image!.storage_path)).size).toBe(1);
   });
 });
+
+describe('imagen inicial para jugadores actuales y/o nuevos', () => {
+  it('«solo actuales» no cambia a los que entren después; «actuales y nuevos» los incluye (móvil y panel)', async () => {
+    const host = newHost();
+    const { room } = await mobileGame(host);
+    await act(ctx, room, host, { type: 'image.set_initial_all', catalog_id: 'house', scope_current: true, scope_new: false });
+    const late1 = await joinGame(ctx, room, { name: 'Tarde1' });
+    let s = await getHostState(ctx, room, host);
+    expect(s.game.new_player_image_kind ?? null).toBeNull();
+    expect(s.players.find((p) => p.id === late1.player_id)!.current_image?.storage_path).toBe(s.players[0]!.current_image!.storage_path); // hereda por coincidencia de todos
+    // Ahora «actuales y nuevos» con otra imagen
+    await act(ctx, room, host, { type: 'image.set_initial_all', catalog_id: 'island', scope_current: true, scope_new: true });
+    s = await getHostState(ctx, room, host);
+    expect(s.game.new_player_image_kind).toBe('file');
+    const islandPath = s.players[0]!.current_image!.storage_path;
+    expect(new Set(s.players.map((p) => p.current_image!.storage_path)).size).toBe(1);
+    const late2 = await joinGame(ctx, room, { name: 'Tarde2' }); // móvil
+    const added = await act(ctx, room, host, { type: 'player.add', name: 'Panel1' }); // panel
+    s = added.snapshot;
+    for (const name of ['Tarde2', 'Panel1']) expect(s.players.find((p) => p.name === name)!.current_image?.storage_path).toBe(islandPath);
+    expect(late2.player_id).toBeTruthy();
+    // Quitar la imagen por defecto de los nuevos
+    await act(ctx, room, host, { type: 'image.clear_new_player_image' });
+    const none = await act(ctx, room, host, { type: 'player.add', name: 'Sin imagen' });
+    expect(none.snapshot.game.new_player_image_kind ?? null).toBeNull();
+  });
+
+  it('«solo nuevos» deja a los actuales como están y guarda la imagen para los que lleguen', async () => {
+    const host = newHost();
+    const { room, snap } = await mobileGame(host);
+    await act(ctx, room, host, { type: 'image.set_initial_all', catalog_id: 'castle', scope_current: false, scope_new: true });
+    const s = await getHostState(ctx, room, host);
+    expect(s.players.every((p) => p.current_image === null)).toBe(true);
+    expect(s.game.new_player_image_kind).toBe('file');
+    await joinGame(ctx, room, { name: 'Recien' });
+    const after = await getHostState(ctx, room, host);
+    expect(after.players.find((p) => p.name === 'Recien')!.current_image).not.toBeNull();
+    expect(after.players.filter((p) => p.id !== after.players.find((x) => x.name === 'Recien')!.id).every((p) => p.current_image === null)).toBe(true);
+    expect(snap.players).toHaveLength(3);
+  });
+
+  it('«generar» encola la imagen inicial para los actuales y/o los nuevos (sin duplicar trabajos) y la procesa el worker', async () => {
+    const { processImageJobs } = await import('@/lib/services/jobs-service');
+    const host = newHost();
+    const { room, snap } = await mobileGame(host);
+    await act(ctx, room, host, { type: 'image.generate_initial_all', scope_current: true, scope_new: true });
+    await act(ctx, room, host, { type: 'image.generate_initial_all', scope_current: true, scope_new: true }); // doble clic
+    let s = await getHostState(ctx, room, host);
+    expect(s.jobs.filter((j) => j.kind === 'initial')).toHaveLength(3);
+    expect(s.game.new_player_image_kind).toBe('generate');
+    await joinGame(ctx, room, { name: 'Despues' });
+    s = await getHostState(ctx, room, host);
+    expect(s.jobs.filter((j) => j.kind === 'initial' && j.status === 'queued')).toHaveLength(4);
+    const run = await processImageJobs(ctx, { gameId: snap.game.id, maxJobs: 20 });
+    expect(run.succeeded).toBe(4);
+    s = await getHostState(ctx, room, host);
+    expect(s.players.every((p) => p.current_image !== null)).toBe(true);
+    // Sólo se puede en la sala de espera y sólo el anfitrión
+    await expect(act(ctx, room, newHost(), { type: 'image.generate_initial_all', scope_current: true, scope_new: false })).rejects.toMatchObject({ code: 'not_host' });
+    await act(ctx, room, host, { type: 'game.start' });
+    await expect(act(ctx, room, host, { type: 'image.generate_initial_all', scope_current: true, scope_new: true })).rejects.toMatchObject({ code: 'game_already_started' });
+  });
+
+  it('una subida a «actuales y nuevos» guarda un solo archivo compartido', async () => {
+    const { uploadInitialImageForAll } = await import('@/lib/services/game-service');
+    const host = newHost();
+    const { room } = await mobileGame(host);
+    const png = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 9, 9, 9, 9]);
+    await uploadInitialImageForAll(ctx, room, host, png, { current: true, new: true });
+    await joinGame(ctx, room, { name: 'Nuevo' });
+    const s = await getHostState(ctx, room, host);
+    expect(new Set(s.players.map((p) => p.current_image!.storage_path)).size).toBe(1);
+    expect(s.players.every((p) => p.current_image!.provider === 'upload')).toBe(true);
+  });
+});

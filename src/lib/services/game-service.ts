@@ -74,6 +74,10 @@ function toRpc(action: GameAction): { fn: string; params: Record<string, unknown
   switch (type) {
     case 'game.update':
       return { fn: 'ss_update_game', params: rest };
+    case 'image.generate_initial_all':
+      return { fn: 'ss_apply_initial_image', params: { kind: 'generate', scope_current: rest.scope_current, scope_new: rest.scope_new } };
+    case 'image.clear_new_player_image':
+      return { fn: 'ss_apply_initial_image', params: { kind: 'clear', scope_current: false, scope_new: true } };
     case 'game.set_image_mode':
       return { fn: 'ss_set_image_mode', params: rest };
     case 'game.set_auto_award':
@@ -137,7 +141,7 @@ export async function performAction(ctx: Ctx, roomCode: string, hostId: string, 
   const code = room(roomCode);
   const action = parseOrThrow(actionSchema.safeParse(rawAction));
   if (action.type === 'game.set_image_mode' && action.image_mode === 'ai' && !getImageProviderId()) throw new DomainError('ai_not_available');
-  if (action.type === 'image.set_initial_all') return setInitialFromCatalog(ctx, code, hostId, action.catalog_id);
+  if (action.type === 'image.set_initial_all') return setInitialFromCatalog(ctx, code, hostId, action.catalog_id, { current: action.scope_current, new: action.scope_new });;
   const { fn, params } = toRpc(action);
   const result = await ctx.db.rpc<Record<string, unknown>>(fn, { ...params, room_code: code, host_id: hostId });
   const snapshot = await getHostState(ctx, code, hostId);
@@ -181,33 +185,41 @@ export async function uploadInitialImage(
 }
 
 /** Aplica UNA misma imagen inicial a todos los jugadores (antes de empezar). El archivo se guarda una vez. */
-async function storeAndSetForAll(ctx: Ctx, code: string, hostId: string, bytes: Uint8Array, mime: string, provider: string): Promise<ActionResult> {
+export interface InitialScope {
+  /** Aplicar a los jugadores que ya están en la partida. */
+  current: boolean;
+  /** Guardarla como imagen inicial de los que se unan después (móvil o añadidos en el panel). */
+  new: boolean;
+}
+
+async function storeAndSetForAll(ctx: Ctx, code: string, hostId: string, bytes: Uint8Array, mime: string, provider: string, scope: InitialScope): Promise<ActionResult> {
   const before = await getHostState(ctx, code, hostId); // comprueba permisos antes de escribir
   if (before.game.status !== 'lobby') throw new DomainError('game_already_started');
   const storagePath = `games/${before.game.id}/shared/${randomUUID()}.${extensionForMime(mime)}`;
   await ctx.storage.put(storagePath, bytes, mime);
-  const result = await ctx.db.rpc<Record<string, unknown>>('ss_set_initial_all', {
-    room_code: code, host_id: hostId, storage_path: storagePath, mime_type: mime, bytes: bytes.length, provider,
+  const result = await ctx.db.rpc<Record<string, unknown>>('ss_apply_initial_image', {
+    room_code: code, host_id: hostId, kind: 'file', storage_path: storagePath, mime_type: mime, bytes: bytes.length, provider,
+    scope_current: scope.current, scope_new: scope.new,
   });
   const snapshot = await getHostState(ctx, code, hostId);
   await ctx.publisher.publish(code, snapshot.version);
   return { result, snapshot };
 }
 
-export async function setInitialFromCatalog(ctx: Ctx, code: string, hostId: string, catalogId: string): Promise<ActionResult> {
+export async function setInitialFromCatalog(ctx: Ctx, code: string, hostId: string, catalogId: string, scope: InitialScope = { current: true, new: false }): Promise<ActionResult> {
   const svg = catalogSceneSvg(catalogId);
   if (!svg) throw new DomainError('invalid_input', 'Esa imagen de la galería no existe.');
-  return storeAndSetForAll(ctx, code, hostId, svg, 'image/svg+xml', 'catalog');
+  return storeAndSetForAll(ctx, code, hostId, svg, 'image/svg+xml', 'catalog', scope);
 }
 
-export async function uploadInitialImageForAll(ctx: Ctx, roomCode: string, hostId: string, bytes: Uint8Array): Promise<ActionResult> {
+export async function uploadInitialImageForAll(ctx: Ctx, roomCode: string, hostId: string, bytes: Uint8Array, scope: InitialScope = { current: true, new: false }): Promise<ActionResult> {
   let mime: string;
   try {
     mime = validateImage(bytes, { maxBytes: UPLOAD_MAX_BYTES });
   } catch (e) {
     throw new DomainError('invalid_input', (e as Error).message);
   }
-  return storeAndSetForAll(ctx, room(roomCode), hostId, bytes, mime, 'upload');
+  return storeAndSetForAll(ctx, room(roomCode), hostId, bytes, mime, 'upload', scope);
 }
 
 /**

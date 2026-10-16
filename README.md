@@ -104,6 +104,7 @@ npx supabase status          # muestra API URL, anon key y service_role key → 
    8. `supabase/migrations/20260101001000_auto_award.sql` y `20260101001100_security_auto_award.sql` (adjudicación automática).
    9. `supabase/migrations/20260101001200_image_mode.sql` y `20260101001300_security_image_mode.sql` (modo de imágenes: pegatinas o IA).
    10. `supabase/migrations/20260101001400_delete_games.sql` y `20260101001500_security_delete_games.sql` (borrado de partidas).
+   11. `supabase/migrations/20260101001600_initial_image_scopes.sql` y `20260101001700_security_initial_image_scopes.sql` (imagen inicial para jugadores actuales y nuevos).
 
    Con la CLI: `npx supabase link --project-ref TU_REF` y `npx supabase db push`. Si ya aplicaste archivos a mano en el SQL Editor, antes marca esas versiones: `npx supabase migration repair --status applied 20260101000000 20260101000100 …`.
 
@@ -239,6 +240,10 @@ PG_TEST_URL=postgres://postgres@localhost:5432/postgres npx vitest run tests/pos
 Con varias conexiones simultáneas comprueba: 16 adjudicaciones a la vez → una compra y un cobro; pujas y reintentos en paralelo; varios workers sobre varias partidas sin deadlocks ni trabajos duplicados. Además aplica **ambas migraciones con los roles `anon`/`authenticated`/`service_role`** (esquemas `auth`/`storage` simulados) y verifica que `anon` no puede leer tablas ni ejecutar funciones `ss_*` (tampoco las futuras) y que el bucket tiene los límites esperados. Lo que NO se ha podido probar sin un proyecto real: el comportamiento exacto de PostgREST/Realtime/Storage de Supabase y la API real de OpenAI.
 
 <a id="seguridad"></a>
+## Imagen de partida para jugadores actuales y nuevos
+
+En el panel (*Jugadores → Imagen de partida para todos*, solo en la sala de espera) puedes subir una foto, elegir una de la galería o **generar** la imagen inicial (con IA o como pegatinas, según el modo de la partida) y decidir a quién se aplica: **jugadores actuales**, **jugadores nuevos** (los que se unan después desde el móvil o que añadas en el panel) o ambos. Para los nuevos se guarda como imagen por defecto de la partida (se puede quitar). Si es una generación, el trabajo se encola al unirse cada jugador y cuenta para el límite de generaciones de IA.
+
 ## Finalizar y borrar partidas
 
 - **Finalizar:** desde *Resumen*, al **pausar** la partida aparece «Finalizar partida» junto a «Reanudar» (también está en *Ajustes → Zona de peligro*). Pide escribir `FINALIZAR`, cancela cualquier subasta en curso sin cobrar y la TV muestra los resultados.

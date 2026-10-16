@@ -109,6 +109,8 @@ export interface GameInfo {
   play_mode: PlayMode;
   join_policy: JoinPolicy;
   image_mode: ImageMode;
+  /** Qué recibirán los jugadores NUEVOS como imagen inicial: 'file' (imagen), 'generate' (se genera) o null. */
+  new_player_image_kind?: 'file' | 'generate' | null;
   /** Adjudicación automática: por tiempo desde la última puja, o al instante si nadie más puede superar la puja. */
   auto_award_enabled: boolean;
   auto_award_seconds: number;

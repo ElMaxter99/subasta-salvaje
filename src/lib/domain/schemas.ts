@@ -66,7 +66,10 @@ export const actionSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('image.request_initial'), player_id: uuid }),
   z.object({ type: z.literal('image.request_item'), item_id: uuid }),
   z.object({ type: z.literal('image.retry'), job_id: uuid }),
-  z.object({ type: z.literal('image.set_initial_all'), catalog_id: z.string().regex(/^[a-z0-9_-]{1,40}$/) }),
+  // Imagen inicial común: `scope_current` = jugadores actuales (por defecto sí), `scope_new` = jugadores que se unan después.
+  z.object({ type: z.literal('image.set_initial_all'), catalog_id: z.string().regex(/^[a-z0-9_-]{1,40}$/), scope_current: z.boolean().default(true), scope_new: z.boolean().default(false) }),
+  z.object({ type: z.literal('image.generate_initial_all'), scope_current: z.boolean().default(true), scope_new: z.boolean().default(false) }),
+  z.object({ type: z.literal('image.clear_new_player_image') }),
   z.object({ type: z.literal('image.restore'), player_id: uuid, version_id: uuid }),
 ]);
 export type GameAction = z.infer<typeof actionSchema>;

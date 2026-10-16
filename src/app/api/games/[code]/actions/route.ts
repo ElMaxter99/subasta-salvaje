@@ -9,7 +9,7 @@ import { redactSecrets } from '@/lib/security/redact';
 /** Margen para que `after()` pueda terminar una generación de imagen (límite del plan de Vercel). */
 export const maxDuration = 300;
 
-const KICK_JOBS = new Set(['auction.award', 'image.request_initial', 'image.request_item', 'image.retry']);
+const KICK_JOBS = new Set(['auction.award', 'player.add', 'image.generate_initial_all', 'image.request_initial', 'image.request_item', 'image.retry']);
 
 export const POST = handle(async (req: Request, { params }: { params: Promise<{ code: string }> }) => {
   assertSameOrigin(req);

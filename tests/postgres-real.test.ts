@@ -61,6 +61,8 @@ describe.skipIf(!URL_)('PostgreSQL real', () => {
     await pool.query(mig('20260101001300_security_image_mode.sql'));
     await pool.query(mig('20260101001400_delete_games.sql'));
     await pool.query(mig('20260101001500_security_delete_games.sql'));
+    await pool.query(mig('20260101001600_initial_image_scopes.sql'));
+    await pool.query(mig('20260101001700_security_initial_image_scopes.sql'));
     const db: Db = {
       async rpc<T>(fn: string, params: Record<string, unknown>) {
         try {

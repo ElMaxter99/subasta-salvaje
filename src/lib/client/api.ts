@@ -36,9 +36,13 @@ export async function sendAction(roomCode: string, action: GameAction | (Record<
 }
 
 /** playerId = 'all' aplica la imagen a todos los jugadores. */
-export async function uploadInitialImage(roomCode: string, playerId: string, file: File): Promise<ActionResponse> {
+export async function uploadInitialImage(roomCode: string, playerId: string, file: File, scope?: { current: boolean; new: boolean }): Promise<ActionResponse> {
   const form = new FormData();
   form.set('player_id', playerId);
+  if (scope) {
+    form.set('scope_current', String(scope.current));
+    form.set('scope_new', String(scope.new));
+  }
   form.set('file', file);
   const res = await fetch(`/api/games/${roomCode}/initial-image`, { method: 'POST', body: form });
   return parse<ActionResponse>(res);

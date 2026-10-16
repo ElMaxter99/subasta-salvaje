@@ -22,6 +22,9 @@ export const POST = handle(async (req: Request, { params }: { params: Promise<{ 
   const ctx = await getContext();
   const bytes = new Uint8Array(await file.arrayBuffer());
   // player_id = 'all' aplica la misma imagen a todos los jugadores.
-  if (playerId === 'all') return json(await uploadInitialImageForAll(ctx, code, host.id, bytes));
+  if (playerId === 'all') {
+    const flag = (k: string, d: boolean) => (form?.get(k) === null || form?.get(k) === undefined ? d : form.get(k) === 'true');
+    return json(await uploadInitialImageForAll(ctx, code, host.id, bytes, { current: flag('scope_current', true), new: flag('scope_new', false) }));
+  }
   return json(await uploadInitialImage(ctx, code, host.id, playerId, bytes));
 });
