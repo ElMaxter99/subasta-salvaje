@@ -6,6 +6,7 @@ import { Flag, History, Minus, Plus, Smartphone, Trophy, Tv } from 'lucide-react
 import { Button } from '@/components/ui/button';
 import { formatEuros, parseEurosToCents } from '@/lib/domain/money';
 import type { ImageMode, JoinPolicy, PlayMode, RankingRule } from '@/lib/domain/types';
+import { TemplateExportCard } from './template-export-card';
 import { DeleteGameCard } from './delete-game-card';
 import { FinishGameDialog } from './finish-dialog';
 import { Card, Dot, Notice, inputCls } from './bits';
@@ -228,6 +229,8 @@ export function SettingsPanel({ ctx }: { ctx: HostCtx }) {
           </div>
         ) : null}
       </Card>
+
+      <TemplateExportCard ctx={ctx} />
 
       <Card title="Enlaces">
         <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">

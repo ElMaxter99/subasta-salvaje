@@ -66,6 +66,12 @@ export async function createGameRequest(body: unknown): Promise<{ room_code: str
   return parse<{ room_code: string }>(res);
 }
 
+export interface PhotoImportResult { imported: number; failed: { name: string; reason: string }[] }
+export async function importPhotosRequest(roomCode: string, photos: { name: string; url: string }[]): Promise<PhotoImportResult> {
+  const res = await fetch(`/api/games/${roomCode}/import-photos`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ photos }) });
+  return parse<PhotoImportResult>(res);
+}
+
 export async function demoLogin(): Promise<void> {
   await parse(await fetch('/api/auth/demo', { method: 'POST' }));
 }

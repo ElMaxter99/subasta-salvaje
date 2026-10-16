@@ -8,13 +8,15 @@ import { Bubble, Mascot } from '@/components/mascot/mascot';
 import type { MascotId } from '@/components/mascot/assets';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/ui/logo';
-import { createGameRequest } from '@/lib/client/api';
+import { createGameRequest, importPhotosRequest } from '@/lib/client/api';
+import { TemplateImport } from './template-import';
+import { CUSTOM_THEME, type TemplateFormValues } from '@/lib/domain/template';
 import { formatEuros, parseEurosToCents } from '@/lib/domain/money';
 import { PLAYER_COLORS } from '@/lib/domain/schemas';
 import { THEME_PRESETS, getThemePreset } from '@/lib/domain/themes';
 import { Stepper, type StepInfo } from './new-game-stepper';
 
-const CUSTOM = '__custom__';
+const CUSTOM = CUSTOM_THEME;
 /** `2xl` (≥1536 px, p. ej. una TV a 1080p con zoom del navegador) agranda campos y botones para leer a distancia. */
 const field = 'w-full rounded-xl border border-white/15 bg-night-900 px-4 py-3 text-base focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold/50 2xl:px-5 2xl:py-4 2xl:text-xl';
 const label = 'mb-1 block text-sm font-bold 2xl:text-lg';
@@ -62,7 +64,10 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
   const [integerBids, setIntegerBids] = useState(true);
   // Sin jugadores de partida: se pueden crear luego en el panel o, en modo móviles, darse de alta ellos mismos.
   const [players, setPlayers] = useState<string[]>([]);
+  // Catálogo propio cargado desde una plantilla (null = el de la temática)
+  const [items, setItems] = useState<TemplateFormValues['items']>(null);
   const [busy, setBusy] = useState(false);
+  const [busyLabel, setBusyLabel] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
 
@@ -70,8 +75,24 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
   const themeValue = themeChoice === CUSTOM ? customTheme.trim() : themeChoice;
   const names = players.map((p) => p.trim()).filter(Boolean);
   /** Rondas por defecto = elementos del catálogo de la temática (las temáticas libres usan el catálogo base). */
-  const defaultRounds = (preset ?? getThemePreset('free'))?.items.length ?? 12;
+  const defaultRounds = items?.length ?? (preset ?? getThemePreset('free'))?.items.length ?? 12;
   const roundsValue = maxRounds.trim() === '' ? defaultRounds : Number(maxRounds);
+  function applyTemplate(v: TemplateFormValues) {
+    setName(v.name);
+    setThemeChoice(v.themeChoice);
+    setCustomTheme(v.customTheme);
+    setBudget(v.budget);
+    setMinBid(v.minBid);
+    setMaxRounds(v.maxRounds);
+    setIntegerBids(v.integerBids);
+    setRanking(v.ranking);
+    setPlayMode(v.playMode);
+    setImageMode(v.imageMode === 'ai' && !aiAvailable ? 'stickers' : v.imageMode);
+    setPlayers(v.players);
+    setItems(v.items);
+    go(STEPS.length - 1); // directo al resumen para revisar
+  }
+
   const last = step === STEPS.length - 1;
   const current = STEPS[step]!;
 
@@ -134,11 +155,24 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
         max_rounds: roundsValue,
         integer_bids: integerBids,
         players: names.map((n, i) => ({ name: n, color: PLAYER_COLORS[i % PLAYER_COLORS.length] })),
+        ...(items ? { items: items.map((i) => ({ name: i.name, description: i.description, emoji: i.emoji })) } : {}),
       });
+      // Fotos de la plantilla (por URL): la partida YA existe; si alguna falla se avisa en el panel pero no se bloquea nada.
+      const photos = (items ?? []).filter((i) => i.photoUrl).map((i) => ({ name: i.name, url: i.photoUrl! }));
+      if (photos.length > 0) {
+        setBusyLabel(`Descargando ${photos.length} ${photos.length === 1 ? 'foto' : 'fotos'}…`);
+        try {
+          const r = await importPhotosRequest(room_code, photos);
+          if (r.failed.length > 0) window.sessionStorage.setItem('ss_import_notice', JSON.stringify({ code: room_code, imported: r.imported, failed: r.failed }));
+        } catch {
+          window.sessionStorage.setItem('ss_import_notice', JSON.stringify({ code: room_code, imported: 0, failed: photos.map((p) => ({ name: p.name, reason: 'no se pudo descargar' })) }));
+        }
+      }
       router.push(`/game/${room_code}/host`);
     } catch (err) {
       setError((err as Error).message);
       setBusy(false);
+      setBusyLabel(null);
     }
   }
 
@@ -188,6 +222,7 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
         <div key={step} className={`${dir === 1 ? 'ss-step-in-right' : 'ss-step-in-left'} space-y-4`} data-testid={`wizard-step-${step + 1}`}>
           {step === 0 ? (
             <>
+              <TemplateImport onLoaded={applyTemplate} />
               <fieldset className={card}>
                 <legend className="px-2 font-display text-xl 2xl:text-3xl">Quién puja</legend>
                 <Choice name="play_mode" value="host" checked={playMode === 'host'} onChange={() => setPlayMode('host')} title="Pujas del anfitrión" desc="Los jugadores pujan en voz alta y tú registras cada puja desde tu panel. No necesitan móvil ni cuenta." />
@@ -334,6 +369,27 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
                   <p className="text-white/70">{RANKING_LABEL[ranking]}</p>
                 </>
               ))}
+              {items ? (
+                <div className="rounded-2xl border border-violet/40 bg-night-900 p-4 md:col-span-2" data-testid="summary-catalog">
+                  <div className="mb-1 flex items-center justify-between gap-2">
+                    <h3 className="text-sm font-bold uppercase tracking-wide text-white/60 2xl:text-base">Catálogo de la plantilla</h3>
+                    <Button type="button" size="sm" variant="ghost" onClick={() => setItems(null)} aria-label="Usar el catálogo de la temática">
+                      <X className="size-4" aria-hidden /> Usar el de la temática
+                    </Button>
+                  </div>
+                  <p className="text-base 2xl:text-xl">
+                    <b>{items.length}</b> {items.length === 1 ? 'elemento' : 'elementos'} · {items.filter((i) => i.photoUrl).length} con foto (se descargan al crear la partida)
+                  </p>
+                  <ul className="mt-2 flex flex-wrap gap-2">
+                    {items.slice(0, 12).map((i, n) => (
+                      <li key={i.name + n} className="flex items-center gap-1.5 rounded-full bg-night-800 px-3 py-1 text-sm 2xl:text-lg">
+                        <span aria-hidden>{i.emoji ?? '📦'}</span> {i.name}{i.photoUrl ? <span aria-label="con foto"> 🖼️</span> : null}
+                      </li>
+                    ))}
+                    {items.length > 12 ? <li className="px-2 py-1 text-sm text-white/60">… y {items.length - 12} más</li> : null}
+                  </ul>
+                </div>
+              ) : null}
               {summaryRow('Jugadores', 4, (
                 names.length === 0 ? (
                   <p className="text-white/70">Sin jugadores todavía: {playMode === 'mobile' ? 'podrás añadirlos en el panel o se darán de alta ellos mismos desde el móvil.' : 'podrás añadirlos en el panel (pestaña Jugadores).'}</p>
@@ -361,7 +417,7 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
             </Button>
             {last ? (
               <Button type="submit" variant="primary" size="xl" loading={busy} className="flex-1 sm:flex-none sm:min-w-72">
-                <Rocket className="size-6" aria-hidden /> Crear partida
+                <Rocket className="size-6" aria-hidden /> {busyLabel ?? 'Crear partida'}
               </Button>
             ) : (
               <Button type="submit" variant="primary" size="lg" className="flex-1 sm:flex-none sm:min-w-56 2xl:min-h-16 2xl:text-xl">

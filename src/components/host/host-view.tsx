@@ -1,5 +1,6 @@
 'use client';
 
+import { ImportNotice } from './import-notice';
 import { HostSoundControls } from './sound-controls';
 import { useGameAudio } from '@/lib/audio/use-audio';
 import { useRef, useState, type ComponentType } from 'react';
@@ -100,6 +101,7 @@ function HostInner({ roomCode, initial, runtime, identity }: Props) {
       <div className="mx-auto max-w-6xl px-4 pt-3 md:hidden">
         <TvLinks roomCode={roomCode} />
       </div>
+      <ImportNotice roomCode={roomCode} />
       <div className="mx-auto max-w-6xl px-4 pt-3">
         <HostSoundControls ctx={ctx} />
       </div>
