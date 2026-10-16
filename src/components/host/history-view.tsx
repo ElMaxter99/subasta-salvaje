@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { Suspense, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { ArrowLeft, ChevronDown, RotateCcw } from 'lucide-react';
@@ -23,7 +23,10 @@ interface Props {
 export function HistoryView(props: Props) {
   return (
     <ToastProvider>
-      <HistoryInner {...props} />
+      {/* useSearchParams exige un límite <Suspense> para no desactivar el prerenderizado de toda la ruta. */}
+      <Suspense fallback={<p className="p-6 text-white/70" role="status">Cargando historial…</p>}>
+        <HistoryInner {...props} />
+      </Suspense>
     </ToastProvider>
   );
 }

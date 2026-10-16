@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { DomainError } from '@/lib/domain/errors';
-import { actionSchema, createGameSchema, roomCodeSchema, type CreateGameInput, type GameAction } from '@/lib/domain/schemas';
+import { PLAYER_COLORS, actionSchema, createGameSchema, roomCodeSchema, type CreateGameInput, type GameAction } from '@/lib/domain/schemas';
 import { getThemePreset } from '@/lib/domain/themes';
 import type { GameSummary, HostSnapshot, PublicSnapshot } from '@/lib/domain/types';
 import { validateImage } from '@/lib/ai/image-validation';
@@ -25,7 +25,8 @@ function parseOrThrow<T>(result: { success: true; data: T } | { success: false }
 export async function createGame(ctx: Ctx, hostId: string, rawInput: unknown): Promise<{ room_code: string }> {
   const input: CreateGameInput = parseOrThrow(createGameSchema.safeParse(rawInput));
   const items = input.items ?? (getThemePreset(input.theme) ?? getThemePreset('free'))!.items;
-  const res = await ctx.db.rpc<{ room_code: string }>('ss_create_game', { ...input, items, host_id: hostId });
+  const players = input.players.map((p, i) => ({ ...p, color: p.color ?? PLAYER_COLORS[i % PLAYER_COLORS.length] }));
+  const res = await ctx.db.rpc<{ room_code: string }>('ss_create_game', { ...input, players, items, host_id: hostId });
   return res;
 }
 
