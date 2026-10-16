@@ -107,7 +107,7 @@ describe.skipIf(!URL_)('PostgreSQL real', () => {
     it('el bucket de imágenes es público de lectura con límites de tamaño y tipo', async () => {
       const r = await pool.query(`select public, file_size_limit, allowed_mime_types from storage.buckets where id = 'game-images'`);
       expect(r.rows[0]).toMatchObject({ public: true, file_size_limit: '10485760' });
-      expect(r.rows[0].allowed_mime_types).toEqual(['image/png', 'image/jpeg', 'image/webp']);
+      expect(r.rows[0].allowed_mime_types).toEqual(['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml']);
     });
   });
 

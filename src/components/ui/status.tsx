@@ -21,14 +21,15 @@ export function ConnectionBadge({ state, runtime, className = '' }: { state: Con
   );
 }
 
-/** Aviso visible de que se ejecuta con datos locales y sin IA real. */
+/** Aviso visible de que se usan datos locales y/o imágenes de muestra (no IA real). */
 export function DemoBanner({ runtime }: { runtime: RuntimeInfo }) {
-  if (runtime.mode !== 'demo') return null;
+  const sampleImages = runtime.aiProvider === 'demo' && runtime.aiConfigured;
+  if (runtime.mode !== 'demo' && !sampleImages) return null;
   return (
     <div className="flex items-center justify-center gap-2 bg-gold px-3 py-1.5 text-center text-sm font-bold text-night-950">
       <FlaskConical className="size-4 shrink-0" aria-hidden />
-      MODO DEMO · datos locales ·{' '}
-      {runtime.aiConfigured && runtime.aiProvider === 'openai'
+      {runtime.mode === 'demo' ? 'MODO DEMO · datos locales · ' : 'PRUEBAS · '}
+      {runtime.aiProvider === 'openai' && runtime.aiConfigured
         ? 'IA real activa (OPENAI_API_KEY)'
         : 'las imágenes son de muestra y NO están generadas por IA'}
     </div>

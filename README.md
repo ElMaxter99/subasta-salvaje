@@ -109,7 +109,8 @@ El proveedor real incluido es **OpenAI Images** (`gpt-image-1`), que admite *edi
 
 1. Crea una API key en <https://platform.openai.com/api-keys> (la organización puede requerir verificación para usar `gpt-image-1`).
 2. Define `OPENAI_API_KEY` (y opcionalmente `OPENAI_IMAGE_MODEL`, `OPENAI_IMAGE_SIZE`, `OPENAI_IMAGE_QUALITY`, `OPENAI_IMAGE_INPUT_FIDELITY`, ver `.env.example`).
-3. La clave solo se usa en el servidor. Sin ella los trabajos quedan **en cola** (nunca se simulan) y la interfaz del anfitrión lo indica.
+3. Para probar el flujo completo sin gastar IA, define `IMAGE_PROVIDER=demo` (con Supabase real): usa el proveedor de **muestra** (SVG marcados «DEMO», no es IA) y la interfaz lo avisa con un banner. Requiere que el bucket admita `image/svg+xml` (ya incluido en la migración de seguridad).
+4. La clave solo se usa en el servidor. Sin ella los trabajos quedan **en cola** (nunca se simulan) y la interfaz del anfitrión lo indica.
 
 Control de costes: máximo 150 trabajos de imagen por partida y 5 reintentos manuales por trabajo. Como el registro de Supabase Auth es abierto, define `ALLOWED_HOST_EMAILS` (lista de correos separados por comas) para que solo esas cuentas puedan ser anfitrión.
 

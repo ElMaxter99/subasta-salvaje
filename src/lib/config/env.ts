@@ -25,6 +25,7 @@ export function openAiKey(env: NodeJS.ProcessEnv = process.env): string | null {
 }
 
 export function getImageProviderId(env: NodeJS.ProcessEnv = process.env): 'openai' | 'demo' | null {
+  if (env.IMAGE_PROVIDER === 'demo') return 'demo'; // opt-in explícito: imágenes de muestra, NO IA
   if (openAiKey(env)) return 'openai';
   return getRuntimeMode(env) === 'demo' ? 'demo' : null;
 }

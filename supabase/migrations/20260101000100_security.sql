@@ -51,11 +51,13 @@ create policy deny_all_image_jobs       on image_jobs       for all to anon, aut
 create policy deny_all_game_events      on game_events      for all to anon, authenticated using (false) with check (false);
 create policy deny_all_idempotency_keys on idempotency_keys for all to anon, authenticated using (false) with check (false);
 
+-- NOTA: image/svg+xml sólo lo escribe el servidor con el proveedor de MUESTRA (IMAGE_PROVIDER=demo);
+-- las subidas de usuarios se validan por bytes y nunca admiten SVG. Quita el tipo si no usas ese proveedor.
 -- Storage: bucket público (lectura por URL); la escritura sólo con service_role
 -- (que se salta RLS). Sin políticas para anon/authenticated => no pueden subir,
 -- modificar, borrar ni listar objetos.
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
-values ('game-images', 'game-images', true, 10485760, array['image/png', 'image/jpeg', 'image/webp'])
+values ('game-images', 'game-images', true, 10485760, array['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml'])
 on conflict (id) do update
   set public = excluded.public,
       file_size_limit = excluded.file_size_limit,
