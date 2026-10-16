@@ -57,8 +57,11 @@ Defensas (`src/lib/security/safe-fetch.ts`, con tests): solo `https`, sin creden
 - **Fotos:** solo se guardan las **URL**; las fotos incrustadas de un ZIP no (se avisa).
 - **Privacidad:** al borrar a un usuario desde el superadmin se borran también sus plantillas (`ss_admin_delete_user` envuelta).
 
+## Editor del catálogo en el asistente
+En el **Resumen**, el bloque del catálogo ofrece «Personalizar catálogo» (copia el de la temática) o «Editar catálogo» (si viene de una plantilla). El editor permite cambiar título, descripción, emoji y foto (URL https), **reordenar** (el orden es el de las rondas), quitar y añadir elementos (1–100). Valida con las mismas reglas que el servidor (`validateCatalog`) y no deja pulsar «Listo» ni crear la partida con errores; las rondas por defecto siguen al tamaño del catálogo. Las fotos incrustadas de un ZIP se pueden quitar desde aquí.
+
 ## Límites / pendiente
 - **Hecho:** fases 1 (JSON, importar, exportar, plantilla vacía, fotos por URL), 3 (CSV y ZIP) y 4 (plantillas guardadas).
-- **Pendiente:** compartir plantillas entre anfitriones (no se ha hecho a propósito: exigiría moderación); editar el catálogo importado dentro del asistente (hoy se edita después en el panel → Catálogo); exportar un ZIP con las fotos.
+- **Pendiente:** compartir plantillas entre anfitriones (no se ha hecho a propósito: exigiría moderación) y exportar un ZIP con las fotos (las URL de las fotos no se conservan al exportar).
 - Las fotos por URL no se han probado contra Internet real desde este entorno (sin salida de red para ello): el flujo se prueba con transporte simulado y con un rechazo real de IP interna en el e2e.
 - La importación en la nube (Vercel) hace la descarga desde el servidor: respeta `maxDuration = 60` de la ruta.

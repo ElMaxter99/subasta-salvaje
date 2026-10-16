@@ -9,6 +9,7 @@ import type { MascotId } from '@/components/mascot/assets';
 import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/ui/logo';
 import { createGameRequest, importPhotosRequest, saveTemplateRequest } from '@/lib/client/api';
+import { CatalogEditor, validateCatalog } from './catalog-editor';
 import { TemplateImport, type LoadedCatalog, type LoadedTemplate } from './template-import';
 import { CUSTOM_THEME, formToTemplate } from '@/lib/domain/template';
 import { ApiError, uploadItemImage } from '@/lib/client/api';
@@ -69,6 +70,7 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
   const [items, setItems] = useState<LoadedCatalog | null>(null);
   const [busy, setBusy] = useState(false);
   const [busyLabel, setBusyLabel] = useState<string | null>(null);
+  const [editingCatalog, setEditingCatalog] = useState(false);
   const [tplName, setTplName] = useState('');
   const [tplMsg, setTplMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -80,6 +82,13 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
   /** Rondas por defecto = elementos del catálogo de la temática (las temáticas libres usan el catálogo base). */
   const defaultRounds = items?.length ?? (preset ?? getThemePreset('free'))?.items.length ?? 12;
   const roundsValue = maxRounds.trim() === '' ? defaultRounds : Number(maxRounds);
+  /** Copia el catálogo de la temática para poder editarlo (a partir de aquí es un catálogo propio). */
+  function customizeCatalog() {
+    const base = (preset ?? getThemePreset('free'))?.items ?? [];
+    setItems(base.map((i) => ({ name: i.name, description: i.description, emoji: i.emoji, photoUrl: null, photoPath: null, photoFile: null })));
+    setEditingCatalog(true);
+  }
+
   async function saveAsTemplate() {
     const title = (tplName.trim() || name.trim()).slice(0, 80);
     setTplMsg(null);
@@ -150,6 +159,12 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
   }
 
   async function create() {
+    const catalogErr = items ? validateCatalog(items) : null;
+    if (catalogErr) {
+      go(STEPS.length - 1);
+      setEditingCatalog(true);
+      return setError(catalogErr);
+    }
     for (let i = 0; i < STEPS.length - 1; i++) {
       const err = validate(i);
       if (err) {
@@ -424,13 +439,20 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
                   <p className="text-white/70">{RANKING_LABEL[ranking]}</p>
                 </>
               ))}
-              {items ? (
+              {items && editingCatalog ? (
+                <CatalogEditor items={items} onChange={setItems} onClose={() => setEditingCatalog(false)} />
+              ) : items ? (
                 <div className="rounded-2xl border border-violet/40 bg-night-900 p-4 md:col-span-2" data-testid="summary-catalog">
-                  <div className="mb-1 flex items-center justify-between gap-2">
-                    <h3 className="text-sm font-bold uppercase tracking-wide text-white/60 2xl:text-base">Catálogo de la plantilla</h3>
-                    <Button type="button" size="sm" variant="ghost" onClick={() => setItems(null)} aria-label="Usar el catálogo de la temática">
-                      <X className="size-4" aria-hidden /> Usar el de la temática
-                    </Button>
+                  <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
+                    <h3 className="text-sm font-bold uppercase tracking-wide text-white/60 2xl:text-base">Catálogo propio</h3>
+                    <span className="flex gap-1">
+                      <Button type="button" size="sm" variant="ghost" onClick={() => setEditingCatalog(true)} aria-label="Editar el catálogo">
+                        <Pencil className="size-4" aria-hidden /> Editar catálogo
+                      </Button>
+                      <Button type="button" size="sm" variant="ghost" onClick={() => setItems(null)} aria-label="Usar el catálogo de la temática">
+                        <X className="size-4" aria-hidden /> Usar el de la temática
+                      </Button>
+                    </span>
                   </div>
                   <p className="text-base 2xl:text-xl">
                     <b>{items.length}</b> {items.length === 1 ? 'elemento' : 'elementos'} · {items.filter((i) => i.photoUrl || i.photoFile).length} con foto (se suben o descargan al crear la partida)
@@ -444,7 +466,17 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
                     {items.length > 12 ? <li className="px-2 py-1 text-sm text-white/60">… y {items.length - 12} más</li> : null}
                   </ul>
                 </div>
-              ) : null}
+              ) : (
+                <div className="rounded-2xl border border-white/10 bg-night-900 p-4 md:col-span-2" data-testid="summary-catalog-theme">
+                  <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
+                    <h3 className="text-sm font-bold uppercase tracking-wide text-white/60 2xl:text-base">Catálogo de la temática</h3>
+                    <Button type="button" size="sm" variant="ghost" onClick={customizeCatalog} aria-label="Personalizar el catálogo">
+                      <Pencil className="size-4" aria-hidden /> Personalizar catálogo
+                    </Button>
+                  </div>
+                  <p className="text-base 2xl:text-xl"><b>{defaultRounds}</b> elementos de «{preset ? preset.label : 'temática libre'}». Puedes cambiarlos, añadir los tuyos y ponerles foto.</p>
+                </div>
+              )}
               <div className="rounded-2xl border border-white/10 bg-night-900 p-4 md:col-span-2" data-testid="save-template">
                 <h3 className="mb-2 text-sm font-bold uppercase tracking-wide text-white/60 2xl:text-base">Guardar como plantilla</h3>
                 <div className="flex flex-wrap items-end gap-2">

@@ -144,3 +144,50 @@ test('plantillas guardadas: guardar desde el resumen, aparecer en «Mis plantill
   await expect(page.getByTestId('saved-templates')).not.toContainText('Mi base lunar');
   expect((await (await ctx.request.get('/api/templates')).json()).templates).toHaveLength(1);
 });
+
+test('editor de catálogo en el asistente: personalizar el de la temática, editar, reordenar, quitar, añadir y crear', async ({ browser }) => {
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  expect((await ctx.request.post('/api/auth/demo')).ok()).toBeTruthy();
+  const page = await ctx.newPage();
+  await page.goto('/new-game');
+  await expect(page.getByTestId('template-import')).toBeVisible({ timeout: 60_000 });
+  await page.waitForTimeout(2500);
+  const next = () => page.getByRole('button', { name: /Siguiente/ }).click();
+  for (let i = 0; i < 5; i++) {
+    if (i === 2) await page.getByLabel('Nombre de la partida').fill('Catálogo propio');
+    if (i === 4) await page.getByRole('button', { name: /Añadir jugador/ }).click().then(() => page.getByLabel('Nombre del jugador 1').fill('Ana'));
+    await next();
+  }
+  await expect(page.getByTestId('wizard-step-6')).toBeVisible();
+  await expect(page.getByTestId('summary-catalog-theme')).toContainText('12 elementos');
+
+  await page.getByRole('button', { name: 'Personalizar el catálogo' }).click();
+  const editor = page.getByTestId('catalog-editor');
+  await expect(editor).toContainText('Catálogo (12)');
+  await expect(page.getByLabel('Título del elemento 1', { exact: true })).toHaveValue('Piscina infinita');
+
+  await page.getByLabel('Título del elemento 1', { exact: true }).fill('Piscina de lava');
+  await page.getByLabel('Foto (URL https) del elemento 1', { exact: true }).fill('http://no-https.com/a.jpg');
+  await expect(page.getByTestId('catalog-error')).toContainText('https');
+  await expect(editor.getByRole('button', { name: 'Listo' })).toBeDisabled();
+  await page.getByLabel('Foto (URL https) del elemento 1', { exact: true }).fill('');
+  await page.getByRole('button', { name: 'Bajar el elemento 1', exact: true }).click(); // la piscina pasa a la 2.ª posición
+  await expect(page.getByLabel('Título del elemento 2', { exact: true })).toHaveValue('Piscina de lava');
+  for (let i = 0; i < 9; i++) await page.getByRole('button', { name: 'Quitar el elemento 3', exact: true }).click(); // 12 → 3
+  await page.getByRole('button', { name: /Añadir elemento/ }).click();
+  await expect(page.getByTestId('catalog-error')).toContainText('Elemento 4 del catálogo: falta el título');
+  await page.getByLabel('Título del elemento 4', { exact: true }).fill('Ovni');
+  await page.getByLabel('Emoji del elemento 4', { exact: true }).fill('🛸');
+  await page.getByLabel('Descripción del elemento 4', { exact: true }).fill('Aparcado en el jardín');
+  await editor.getByRole('button', { name: 'Listo' }).click();
+  await expect(page.getByTestId('summary-catalog')).toContainText('4 elementos');
+  await expect(page.getByTestId('summary-catalog')).toContainText('Ovni');
+
+  await page.getByRole('button', { name: /Crear partida/ }).click();
+  await page.waitForURL(/\/game\/[A-Z0-9]{6}\/host/, { timeout: 60_000 });
+  const code = page.url().match(/game\/([A-Z0-9]{6})\//)![1]!;
+  const s = (await (await ctx.request.get(`/api/games/${code}`)).json()).snapshot;
+  expect(s.items.map((i: { name: string }) => i.name)).toEqual(['Sofá gigante', 'Piscina de lava', 'Tobogán interior', 'Ovni']);
+  expect(s.items[3]).toMatchObject({ emoji: '🛸', description: 'Aparcado en el jardín' });
+  expect(s.game.total_rounds).toBe(4); // las rondas siguen al tamaño del catálogo propio
+});
