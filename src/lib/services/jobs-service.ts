@@ -90,6 +90,9 @@ async function generate(ctx: Ctx, provider: ImageGenerationProvider, job: Claime
   }
   if (!job.base_storage_path) throw new ProviderError('No hay imagen base para editar', false);
   const base = await ctx.storage.get(job.base_storage_path);
+  if (provider.id === 'openai' && (job.base_mime_type ?? base.mime) === 'image/svg+xml') {
+    throw new ProviderError('La imagen base es un SVG de la galería/demo y OpenAI sólo edita PNG, JPEG o WebP. Sube una imagen PNG/JPG o genera la inicial con IA.', false);
+  }
   return provider.editScene({
     base: { bytes: base.bytes, mime: job.base_mime_type ?? base.mime },
     theme: job.theme,

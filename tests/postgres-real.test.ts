@@ -46,7 +46,9 @@ describe.skipIf(!URL_)('PostgreSQL real', () => {
       create table storage.buckets (id text primary key, name text, public boolean, file_size_limit bigint, allowed_mime_types text[]);
       grant usage on schema public to anon, authenticated;`);
     await pool.query(mig('20260101000000_core.sql'));
+    await pool.query(mig('20260101000200_initial_all.sql'));
     await pool.query(mig('20260101000100_security.sql'));
+    await pool.query(mig('20260101000300_security_initial_all.sql'));
     const db: Db = {
       async rpc<T>(fn: string, params: Record<string, unknown>) {
         try {

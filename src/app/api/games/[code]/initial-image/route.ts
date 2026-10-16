@@ -2,11 +2,11 @@ import { assertSameOrigin, handle, json, limit } from '@/lib/api';
 import { requireHost } from '@/lib/auth/host';
 import { DomainError } from '@/lib/domain/errors';
 import { getContext } from '@/lib/services/context';
-import { uploadInitialImage } from '@/lib/services/game-service';
+import { uploadInitialImage, uploadInitialImageForAll } from '@/lib/services/game-service';
 
 const MAX = 8 * 1024 * 1024;
 
-/** multipart/form-data: player_id + file (PNG/JPEG/WebP, máx. 8 MB). */
+/** multipart/form-data: player_id (uuid o 'all') + file (PNG/JPEG/WebP, máx. 8 MB). */
 export const POST = handle(async (req: Request, { params }: { params: Promise<{ code: string }> }) => {
   assertSameOrigin(req);
   const { code } = await params;
@@ -20,5 +20,8 @@ export const POST = handle(async (req: Request, { params }: { params: Promise<{ 
   if (typeof playerId !== 'string' || !(file instanceof File)) throw new DomainError('invalid_input');
   if (file.size > MAX) throw new DomainError('invalid_input', 'La imagen supera el máximo de 8 MB.');
   const ctx = await getContext();
-  return json(await uploadInitialImage(ctx, code, host.id, playerId, new Uint8Array(await file.arrayBuffer())));
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  // player_id = 'all' aplica la misma imagen a todos los jugadores.
+  if (playerId === 'all') return json(await uploadInitialImageForAll(ctx, code, host.id, bytes));
+  return json(await uploadInitialImage(ctx, code, host.id, playerId, bytes));
 });

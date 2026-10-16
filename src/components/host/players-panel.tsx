@@ -12,6 +12,7 @@ import { PLAYER_COLORS } from '@/lib/domain/schemas';
 import type { Player } from '@/lib/domain/types';
 import { Card, Dot, Notice, Pill, Thumb, inputCls } from './bits';
 import type { HostCtx } from './host-context';
+import { InitialImageCard } from './initial-image-card';
 
 const MAX_BYTES = 8 * 1024 * 1024;
 const TYPES = ['image/png', 'image/jpeg', 'image/webp'];
@@ -84,6 +85,8 @@ export function PlayersPanel({ ctx }: { ctx: HostCtx }) {
       {lobby && demoProvider ? (
         <Notice tone="warn">{ctx.runtime.mode === 'demo' ? 'Modo demo: las imágenes iniciales son de muestra, no están generadas por IA.' : 'IA no configurada: las imágenes iniciales quedan en cola hasta configurarla. Puedes subir una foto propia.'}</Notice>
       ) : null}
+
+      {lobby ? <InitialImageCard ctx={ctx} /> : null}
 
       <ul className="space-y-3">
         {players.map((p, i) => (
@@ -168,7 +171,7 @@ function PlayerRow({ ctx, player: p, index, total, onMove, onRemove }: { ctx: Ho
           <p className="text-lg font-bold text-gold">{formatEuros(p.balance_cents)}</p>
           <div className="mt-1 flex flex-wrap gap-1.5">
             <Pill>{p.purchases.length} {p.purchases.length === 1 ? 'elemento' : 'elementos'}</Pill>
-            {p.generating.length > 0 ? <Pill tone="violet">Imagen en preparación</Pill> : p.current_image ? <Pill tone="teal">Imagen lista{p.current_image.provider === 'demo' ? ' (muestra)' : ''}</Pill> : <Pill tone="rose">Sin imagen</Pill>}
+            {p.generating.length > 0 ? <Pill tone="violet">Imagen en preparación</Pill> : p.current_image ? <Pill tone="teal">Imagen lista{p.current_image.provider === 'demo' ? ' (muestra)' : p.current_image.provider === 'catalog' ? ' (galería)' : ''}</Pill> : <Pill tone="rose">Sin imagen</Pill>}
           </div>
           {p.purchases.length > 0 ? <p className="mt-1 truncate text-sm text-white/60">{p.purchases.map((x) => `${x.emoji ?? ''} ${x.name}`).join(' · ')}</p> : null}
         </div>

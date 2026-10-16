@@ -55,12 +55,13 @@ function backdrop(theme: string): string {
   }
 }
 
-function watermark(): string {
+function watermarkMark(): string {
   return `<g><rect x="24" y="${H - 64}" width="560" height="40" rx="20" fill="#000" opacity=".6"/>
     <text x="44" y="${H - 38}" font-family="system-ui,sans-serif" font-size="22" font-weight="700" fill="#fde047">DEMO · imagen de muestra, no generada por IA</text></g>`;
 }
 
-function scene(theme: string, label: string): string {
+/** Escena SVG vacía. `watermark=false` sólo para la galería incluida en la app (no se presenta como IA). */
+export function renderScene(theme: string, label: string, watermark = true): string {
   const p = paletteFor(theme);
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">
   <defs>
@@ -72,7 +73,7 @@ function scene(theme: string, label: string): string {
   ${backdrop(theme)}
   <text x="${W / 2}" y="130" text-anchor="middle" font-family="system-ui,sans-serif" font-size="30" fill="${p.accent}" opacity=".9">${xml(label)}</text>
   <g id="stickers"></g>
-  ${watermark()}
+  ${watermark ? watermarkMark() : ''}
 </svg>`;
 }
 
@@ -98,15 +99,20 @@ export function createDemoProvider(): ImageGenerationProvider {
     id: 'demo',
     async generateInitialScene(input: InitialSceneInput): Promise<GeneratedImage> {
       return {
-        bytes: enc(scene(input.theme, `Escena inicial de ${input.playerName}`)),
+        bytes: enc(renderScene(input.theme, `Escena inicial de ${input.playerName}`)),
         mime: 'image/svg+xml',
         prompt: `[DEMO] Escena vacía local para «${input.theme}» (sin IA)`,
         model: 'demo-svg',
       };
     },
     async editScene(input: EditSceneInput): Promise<GeneratedImage> {
-      const svg = new TextDecoder().decode(input.base.bytes);
-      if (!svg.includes('</svg>')) throw new ProviderError('La imagen base del modo demo no es un SVG de muestra', false);
+      let svg = new TextDecoder().decode(input.base.bytes);
+      if (input.base.mime !== 'image/svg+xml') {
+        // Base ráster (subida por el anfitrión): se incrusta en un SVG para poder apilar las pegatinas.
+        const b64 = Buffer.from(input.base.bytes).toString('base64');
+        svg = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}"><image href="data:${input.base.mime};base64,${b64}" width="${W}" height="${H}" preserveAspectRatio="xMidYMid slice"/><g id="stickers"></g>${watermarkMark()}</svg>`;
+      }
+      if (!svg.includes('</svg>')) throw new ProviderError('La imagen base del modo demo no es válida', false);
       const count = (svg.match(new RegExp(DEMO_MARKER, 'g')) ?? []).length;
       const next = svg.replace('<g id="stickers">', `<g id="stickers">${sticker(count, input.itemEmoji ?? '🎁', input.itemName)}`);
       return {

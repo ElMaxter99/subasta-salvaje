@@ -6,6 +6,7 @@ import type { GameSummary, HostSnapshot, PublicSnapshot } from '@/lib/domain/typ
 import { validateImage } from '@/lib/ai/image-validation';
 import { extensionForMime } from '@/lib/storage/types';
 import type { AppContext } from './context';
+import { catalogSceneSvg } from '@/lib/ai/catalog-scenes';
 import { attachUrls } from './urls';
 
 type Ctx = Pick<AppContext, 'db' | 'storage' | 'publisher'>;
@@ -102,6 +103,7 @@ export interface ActionResult {
 export async function performAction(ctx: Ctx, roomCode: string, hostId: string, rawAction: unknown): Promise<ActionResult> {
   const code = room(roomCode);
   const action = parseOrThrow(actionSchema.safeParse(rawAction));
+  if (action.type === 'image.set_initial_all') return setInitialFromCatalog(ctx, code, hostId, action.catalog_id);
   const { fn, params } = toRpc(action);
   const result = await ctx.db.rpc<Record<string, unknown>>(fn, { ...params, room_code: code, host_id: hostId });
   const snapshot = await getHostState(ctx, code, hostId);
@@ -142,4 +144,34 @@ export async function uploadInitialImage(
   const snapshot = await getHostState(ctx, code, hostId);
   await ctx.publisher.publish(code, snapshot.version);
   return { result, snapshot };
+}
+
+/** Aplica UNA misma imagen inicial a todos los jugadores (antes de empezar). El archivo se guarda una vez. */
+async function storeAndSetForAll(ctx: Ctx, code: string, hostId: string, bytes: Uint8Array, mime: string, provider: string): Promise<ActionResult> {
+  const before = await getHostState(ctx, code, hostId); // comprueba permisos antes de escribir
+  if (before.game.status !== 'lobby') throw new DomainError('game_already_started');
+  const storagePath = `games/${before.game.id}/shared/${randomUUID()}.${extensionForMime(mime)}`;
+  await ctx.storage.put(storagePath, bytes, mime);
+  const result = await ctx.db.rpc<Record<string, unknown>>('ss_set_initial_all', {
+    room_code: code, host_id: hostId, storage_path: storagePath, mime_type: mime, bytes: bytes.length, provider,
+  });
+  const snapshot = await getHostState(ctx, code, hostId);
+  await ctx.publisher.publish(code, snapshot.version);
+  return { result, snapshot };
+}
+
+export async function setInitialFromCatalog(ctx: Ctx, code: string, hostId: string, catalogId: string): Promise<ActionResult> {
+  const svg = catalogSceneSvg(catalogId);
+  if (!svg) throw new DomainError('invalid_input', 'Esa imagen de la galería no existe.');
+  return storeAndSetForAll(ctx, code, hostId, svg, 'image/svg+xml', 'catalog');
+}
+
+export async function uploadInitialImageForAll(ctx: Ctx, roomCode: string, hostId: string, bytes: Uint8Array): Promise<ActionResult> {
+  let mime: string;
+  try {
+    mime = validateImage(bytes, { maxBytes: 8 * 1024 * 1024 });
+  } catch (e) {
+    throw new DomainError('invalid_input', (e as Error).message);
+  }
+  return storeAndSetForAll(ctx, room(roomCode), hostId, bytes, mime, 'upload');
 }

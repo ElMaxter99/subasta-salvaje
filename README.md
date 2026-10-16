@@ -94,6 +94,8 @@ npx supabase status          # muestra API URL, anon key y service_role key → 
 2. **Aplicar migraciones.** En *SQL Editor*, ejecuta **en orden** el contenido de:
    1. `supabase/migrations/20260101000000_core.sql` (tablas, índices, restricciones y funciones `ss_*`).
    2. `supabase/migrations/20260101000100_security.sql` (RLS, revocación de permisos para `anon`/`authenticated`, bucket de Storage `game-images`).
+   3. `supabase/migrations/20260101000200_initial_all.sql` (imagen inicial común para todos).
+   4. `supabase/migrations/20260101000300_security_initial_all.sql` (permisos de esa función y bucket con SVG).
 
    O con la CLI: `npx supabase link --project-ref TU_REF && npx supabase db push`.
 3. **Claves.** *Project Settings → API*: copia `Project URL` → `NEXT_PUBLIC_SUPABASE_URL`, `anon public` → `NEXT_PUBLIC_SUPABASE_ANON_KEY` y `service_role` → `SUPABASE_SERVICE_ROLE_KEY` (**secreta**, solo servidor).

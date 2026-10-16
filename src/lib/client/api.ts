@@ -35,6 +35,7 @@ export async function sendAction(roomCode: string, action: GameAction | (Record<
   return parse<ActionResponse>(res);
 }
 
+/** playerId = 'all' aplica la imagen a todos los jugadores. */
 export async function uploadInitialImage(roomCode: string, playerId: string, file: File): Promise<ActionResponse> {
   const form = new FormData();
   form.set('player_id', playerId);

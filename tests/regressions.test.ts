@@ -90,3 +90,46 @@ describe('topes de coste de IA', () => {
     await expect(act(ctx, room, host, { type: 'image.retry', job_id: jobId })).rejects.toMatchObject({ code: 'retry_limit' });
   });
 });
+
+describe('imagen de partida común para todos', () => {
+  it('la galería aplica la misma imagen a todos, sólo antes de empezar, y se puede seguir editando con el proveedor de muestra', async () => {
+    const host = newHost();
+    const { room } = await lobby(host);
+    const r = await act(ctx, room, host, { type: 'image.set_initial_all', catalog_id: 'house' });
+    expect(r.snapshot.players.every((p) => p.current_image?.provider === 'catalog')).toBe(true);
+    const paths = new Set(r.snapshot.players.map((p) => p.current_image!.storage_path));
+    expect(paths.size).toBe(1); // un único archivo compartido
+    await expect(act(ctx, room, host, { type: 'image.set_initial_all', catalog_id: 'no-existe' })).rejects.toMatchObject({ code: 'invalid_input' });
+    await expect(act(ctx, room, newHost(), { type: 'image.set_initial_all', catalog_id: 'house' })).rejects.toMatchObject({ code: 'not_host' });
+    await act(ctx, room, host, { type: 'game.start' });
+    await expect(act(ctx, room, host, { type: 'image.set_initial_all', catalog_id: 'island' })).rejects.toMatchObject({ code: 'game_already_started' });
+    // compra y edición sobre la imagen de galería (SVG)
+    const s = await getHostState(ctx, room, host);
+    const a = await act(ctx, room, host, { type: 'auction.announce', item_id: s.items[0]!.id });
+    const ana = playerByName(s, 'Ana').id;
+    await act(ctx, room, host, { type: 'auction.bid', auction_id: a.snapshot.auction!.id, player_id: ana, amount_cents: 300, idempotency_key: key() });
+    await act(ctx, room, host, { type: 'auction.award', auction_id: a.snapshot.auction!.id, expected_winner_id: ana, expected_price_cents: 300, idempotency_key: key() });
+    expect((await processImageJobs(ctx, { gameId: s.game.id })).succeeded).toBe(1);
+  });
+
+  it('una imagen PNG subida para todos también se puede editar con el proveedor de muestra (se incrusta en un SVG)', async () => {
+    const { uploadInitialImageForAll } = await import('@/lib/services/game-service');
+    const host = newHost();
+    const { room } = await lobby(host);
+    const png = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1, 2, 3, 4]);
+    const r = await uploadInitialImageForAll(ctx, room, host, png);
+    expect(r.snapshot.players.every((p) => p.current_image?.provider === 'upload')).toBe(true);
+    await expect(uploadInitialImageForAll(ctx, room, host, new TextEncoder().encode('no es imagen'))).rejects.toMatchObject({ code: 'invalid_input' });
+    await act(ctx, room, host, { type: 'game.start' });
+    const s = await getHostState(ctx, room, host);
+    const a = await act(ctx, room, host, { type: 'auction.announce', item_id: s.items[0]!.id });
+    const beto = playerByName(s, 'Beto').id;
+    await act(ctx, room, host, { type: 'auction.bid', auction_id: a.snapshot.auction!.id, player_id: beto, amount_cents: 300, idempotency_key: key() });
+    await act(ctx, room, host, { type: 'auction.award', auction_id: a.snapshot.auction!.id, expected_winner_id: beto, expected_price_cents: 300, idempotency_key: key() });
+    expect((await processImageJobs(ctx, { gameId: s.game.id })).succeeded).toBe(1);
+    const cur = playerByName(await getHostState(ctx, room, host), 'Beto').current_image!;
+    const svg = new TextDecoder().decode(ctx.storage.files.get(cur.storage_path!)!.bytes);
+    expect(svg).toContain('data:image/png;base64');
+    expect(svg).toContain('data-demo-sticker');
+  });
+});
