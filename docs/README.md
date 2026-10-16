@@ -13,6 +13,7 @@
 | [ASSETS.md](ASSETS.md) | Asset pack (mascota, props, UI, VFX, marca): pipeline, formato y limitaciones |
 | [DECISIONES.md](DECISIONES.md) | Registro de decisiones (qué, por qué, alternativas) |
 | [HISTORIAL.md](HISTORIAL.md) | Cronología de las peticiones del propietario y lo entregado |
+| [PLAN-SUPERADMIN.md](PLAN-SUPERADMIN.md) | Plan (sin implementar) del panel de superadmin: usuarios, partidas, IA/cuotas y peso de Supabase |
 | [PENDIENTE.md](PENDIENTE.md) | Tareas manuales del propietario y lo no verificado |
 
 El `README.md` de la raíz es la guía de usuario/despliegue (muy completa). Estos documentos son la memoria técnica: **si cambias

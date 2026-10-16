@@ -19,6 +19,7 @@ Cronología resumida (de la más antigua a la más reciente) con lo entregado. �
 15. **Ideas extra** y elegidas **5, 1, 2:** deshacer adjudicación, galería final con votación, eventos sorpresa. (Propuestas aún sin hacer: pausa de emergencia/reparto manual de saldo, registro exportable CSV, plantillas de partida, catálogos CSV, tiempo extra, sonido, accesibilidad móvil, efectos y mascota en la TV.)
 16. **Documentación para futuras sesiones** (este conjunto: `CLAUDE.md`, `AGENTS.md`, `docs/*`).
 17. **Imagen base única:** al generar la imagen inicial con IA debe ser la misma para todos los jugadores, se unan cuando se unan (job `base`, migraciones 2000/2100).
+18. **Plan de superadmin** (usuarios, partidas, accesos de IA y peso de Supabase free tier): documentado en `docs/PLAN-SUPERADMIN.md`, pendiente de decisiones y de implementar.
 
 ## Estado actual (resumen)
 Todo lo anterior está implementado y subido a `claude/eager-cerf-lgnq1z` (sin PR). Migraciones hasta `…2100`. Tests: 124 unitarios + 9 de Postgres real + 5 e2e. Pendiente del propietario: rotar claves,
