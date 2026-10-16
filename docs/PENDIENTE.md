@@ -19,7 +19,8 @@ Después, en el *SQL Editor* de Supabase, una vez: `notify pgrst, 'reload schema
 Orden de las migraciones (carpeta `supabase/migrations`): `…0000_core` → `…0100_security` → `…0200`/`…0300` (imagen inicial común)
 → `…0400`/`…0500` (modo móviles) → `…0600`/`…0700` (endurecimiento) → `…0800`/`…0900` (política de altas y cuota)
 → `…1000`/`…1100` (adjudicación automática) → `…1200`/`…1300` (modo de imágenes) → `…1400`/`…1500` (borrado de partidas)
-→ `…1600`/`…1700` (imagen inicial para jugadores actuales y nuevos). Si alguna se aplicó a mano en el SQL Editor, marca antes
+→ `…1600`/`…1700` (imagen inicial para jugadores actuales y nuevos)
+→ `…1800`/`…1900` (eventos sorpresa, deshacer adjudicación y galería con votación; renombra `ss_get_state` a `ss_get_state_base` y crea la tabla `gallery_votes`). Si alguna se aplicó a mano en el SQL Editor, marca antes
 esas versiones con `npx supabase migration repair --status applied <versión>`.
 Después de cada migración nueva, vuelve a probar a mano: crear partida, pujar, adjudicar (el saldo baja una sola vez) y borrar.
 

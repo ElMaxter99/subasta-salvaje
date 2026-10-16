@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { DomainError } from '@/lib/domain/errors';
-import { joinSchema, playerBidSchema, PLAYER_COLORS, roomCodeSchema } from '@/lib/domain/schemas';
+import { galleryVoteSchema, joinSchema, playerBidSchema, PLAYER_COLORS, roomCodeSchema } from '@/lib/domain/schemas';
 import type { PublicSnapshot } from '@/lib/domain/types';
 import type { AppContext } from './context';
 import { getPublicState } from './game-service';
@@ -73,4 +73,14 @@ export async function leaveGame(ctx: Ctx, roomCode: string, token: string | unde
   const code = room(roomCode);
   const res = await ctx.db.rpc<{ replay?: boolean }>('ss_release_player', { room_code: code, token_hash: hashToken(token!) });
   if (!res.replay) await publishAfter(ctx, code);
+}
+
+/** Voto de la galería final (un voto por jugador, se puede cambiar mientras no se cierre la votación). */
+export async function galleryVote(ctx: Ctx, roomCode: string, token: string | undefined | null, rawBody: unknown): Promise<PublicSnapshot> {
+  const parsed = galleryVoteSchema.safeParse(rawBody);
+  if (!parsed.success) throw new DomainError('invalid_input');
+  if (!token) throw new DomainError('not_player');
+  const code = room(roomCode);
+  await ctx.db.rpc('ss_gallery_vote', { target_id: parsed.data.target_id, room_code: code, token_hash: hashToken(token) });
+  return publishAfter(ctx, code);
 }

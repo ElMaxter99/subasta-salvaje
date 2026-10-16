@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Crown, LogOut, Pause, Trophy } from 'lucide-react';
 import { BidPad } from './bid-pad';
+import { GalleryVote } from './gallery-vote';
 import { MyHouse } from './house';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { ConnectionBadge } from '@/components/ui/status';
@@ -42,7 +43,8 @@ export function PlayerScreen({
 
   const open = auction?.status === 'open' && game.status === 'active';
   const closed = auction?.status === 'closed' && game.status !== 'finished';
-  const leading = open && auction.current_bidder_id === me.id;
+  const leading = open && !auction.hidden && auction.current_bidder_id === me.id;
+  const blind = Boolean(auction?.hidden);
   const hasBids = (auction?.bids.length ?? 0) > 0;
   // Sin pujas la base es 0: el primer «+1 €» es una puja de 1 € (la puja mínima de la partida actúa como suelo en el pad).
   const base = open && hasBids ? auction.current_bid_cents : 0;
@@ -110,6 +112,8 @@ export function PlayerScreen({
           </div>
         ) : null}
 
+        {game.status === 'finished' ? <GalleryVote roomCode={roomCode} snapshot={snapshot} me={me} onSnapshot={onSnapshot} onNotPlayer={onNotPlayer} /> : null}
+
         {game.status === 'lobby' ? (
           <p role="status" aria-live="polite" className="rounded-2xl bg-night-800 px-4 py-4 text-center text-lg font-bold">
             Esperando a que empiece la partida…
@@ -137,12 +141,14 @@ export function PlayerScreen({
               aria-live="polite"
               className={`rounded-3xl border-2 p-4 text-center ${leading ? 'border-teal bg-teal/15' : 'border-gold/40 bg-night-800'}`}
             >
-              <p className="text-xs font-bold uppercase tracking-wider text-white/60">Puja actual</p>
+              <p className="text-xs font-bold uppercase tracking-wider text-white/60">{blind ? '🙈 Puja a ciegas' : 'Puja actual'}</p>
               <p className="font-display text-6xl leading-tight text-gold" data-testid="current-bid">
-                {hasBids ? formatEuros(auction.current_bid_cents) : '—'}
+                {blind ? '¿¿ ?? €' : hasBids ? formatEuros(auction.current_bid_cents) : '—'}
               </p>
               <p className="mt-1 flex items-center justify-center gap-2 text-lg font-bold" data-testid="leader">
-                {leading ? (
+                {blind ? (
+                  <>{auction.bids_count ?? 0} {auction.bids_count === 1 ? 'puja hecha' : 'pujas hechas'} · ¡arriesga!</>
+                ) : leading ? (
                   <>
                     <Crown className="size-5 text-teal" aria-hidden /> <span className="text-teal">¡Vas ganando!</span>
                   </>
@@ -153,6 +159,11 @@ export function PlayerScreen({
                 )}
               </p>
             </div>
+
+            {auction.wild_event === 'double' ? (
+              <p role="status" className="rounded-2xl bg-violet/25 px-4 py-2 text-center text-sm font-bold text-violet-soft">🎲 Doble o mitad: al adjudicar se sortea si pagas la mitad o el doble de tu puja.</p>
+            ) : null}
+            {blind ? <p role="status" className="rounded-2xl bg-violet/25 px-4 py-2 text-center text-sm font-bold text-violet-soft">Nadie ve el importe ni quién lidera. Si tu puja es demasiado baja se rechazará.</p> : null}
 
             {countdown !== null ? (
               <p role="status" className={`rounded-2xl px-4 py-2 text-center text-base font-bold tabular-nums ${countdown <= 5 ? 'bg-rose text-night-950' : 'bg-night-700 text-gold-soft'}`} data-testid="auto-award-countdown">

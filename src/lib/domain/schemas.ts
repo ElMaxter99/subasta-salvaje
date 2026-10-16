@@ -54,7 +54,7 @@ export const actionSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('item.remove'), item_id: uuid }),
   z.object({ type: z.literal('item.reorder'), ordered_ids: z.array(uuid).min(1).max(200) }),
   // Subasta
-  z.object({ type: z.literal('auction.announce'), item_id: uuid }),
+  z.object({ type: z.literal('auction.announce'), item_id: uuid, wild_event: z.enum(['none', 'blind', 'double']).optional() }),
   z.object({ type: z.literal('auction.bid'), auction_id: uuid, player_id: uuid, amount_cents: cents, idempotency_key: idempotencyKey }),
   z.object({ type: z.literal('auction.undo_bid'), auction_id: uuid, bid_id: uuid }),
   z.object({ type: z.literal('auction.close'), auction_id: uuid }),
@@ -62,6 +62,11 @@ export const actionSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('auction.cancel'), auction_id: uuid }),
   z.object({ type: z.literal('auction.clear') }),
   z.object({ type: z.literal('auction.award'), auction_id: uuid, expected_winner_id: uuid, expected_price_cents: z.number().int().min(0).max(100_000_000), idempotency_key: idempotencyKey }),
+  z.object({ type: z.literal('auction.undo_award'), purchase_id: uuid, reason: z.string().trim().max(200).optional(), idempotency_key: idempotencyKey }),
+  // Eventos sorpresa y galería final
+  z.object({ type: z.literal('game.set_wild'), chance_pct: z.number().int().min(0).max(100) }),
+  z.object({ type: z.literal('wild.tax'), idempotency_key: idempotencyKey }),
+  z.object({ type: z.literal('gallery.close') }),
   // Imágenes
   z.object({ type: z.literal('image.request_initial'), player_id: uuid }),
   z.object({ type: z.literal('image.request_item'), item_id: uuid }),
@@ -83,6 +88,8 @@ export const playerBidSchema = z.object({
   amount_cents: cents,
   idempotency_key: idempotencyKey,
 });
+/** Voto de la galería final desde el móvil del jugador. */
+export const galleryVoteSchema = z.object({ target_id: uuid });
 export const joinSchema = z.union([
   z.object({ player_id: uuid }),
   z.object({ name: name }),

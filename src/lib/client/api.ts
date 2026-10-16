@@ -100,3 +100,9 @@ export async function fetchMe(roomCode: string): Promise<string | null> {
 export async function deleteGameRequest(roomCode: string): Promise<void> {
   await parse(await fetch(`/api/games/${roomCode}`, { method: 'DELETE' }));
 }
+
+/** Voto de la galería final desde el móvil (un voto por jugador; se puede cambiar hasta que el anfitrión cierre). */
+export async function galleryVoteRequest(roomCode: string, targetId: string): Promise<{ snapshot: import('@/lib/domain/types').PublicSnapshot; player_id: string | null }> {
+  const res = await fetch(`/api/play/${roomCode}/vote`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ target_id: targetId }) });
+  return parse(res);
+}

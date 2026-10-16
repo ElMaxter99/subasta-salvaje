@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createGame, getHostState, getPublicState } from '@/lib/services/game-service';
-import { hashToken, identifyPlayer, joinGame, leaveGame, playerBid } from '@/lib/services/play-service';
+import { galleryVote, hashToken, identifyPlayer, joinGame, leaveGame, playerBid } from '@/lib/services/play-service';
 import { act, key, makeCtx, newHost, playerByName, type TestCtx } from './helpers';
 
 let ctx: TestCtx;
@@ -139,13 +139,16 @@ describe('endurecimiento del modo móviles', () => {
     await expect(joinGame(ctx, room, { name: 'dani' })).rejects.toMatchObject({ code: 'duplicate_name' });
   });
 
-  it('al finalizar la partida los tokens de los móviles dejan de valer', async () => {
+  it('tras finalizar el token no permite pujar y, cerrada la galería, tampoco votar', async () => {
     const host = newHost();
     const { room, snap } = await mobileGame(host);
     const j = await joinGame(ctx, room, { player_id: playerByName(snap, 'Ana').id });
     await act(ctx, room, host, { type: 'game.start' });
     await act(ctx, room, host, { type: 'game.finish' });
-    expect(await identifyPlayer(ctx, room, j.token)).toBeNull();
+    expect(await identifyPlayer(ctx, room, j.token)).not.toBeNull();
+    await expect(playerBid(ctx, room, j.token, { auction_id: crypto.randomUUID(), amount_cents: 100, idempotency_key: 'k-12345678' })).rejects.toMatchObject({ code: expect.stringMatching(/game_not_active|auction_not_found/) });
+    await act(ctx, room, host, { type: 'gallery.close' });
+    await expect(galleryVote(ctx, room, j.token, { target_id: crypto.randomUUID() })).rejects.toMatchObject({ code: 'gallery_closed' });
   });
 
   it('salir con un token inventado no toca la BD ni publica nada', async () => {

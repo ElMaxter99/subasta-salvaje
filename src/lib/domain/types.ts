@@ -84,6 +84,13 @@ export interface Auction {
   closed_at: string | null;
   /** Momento (hora del servidor) en que se adjudicará sola si nadie puja más; null si no aplica. */
   auto_award_at?: string | null;
+  /** Evento sorpresa de esta subasta (null = subasta normal). */
+  wild_event?: WildEvent | null;
+  /** «Doble o mitad»: resultado del sorteo, sólo tras adjudicar. */
+  wild_note?: { outcome: 'half' | 'double'; bid_cents: number; charged_cents: number } | null;
+  /** Puja a ciegas en curso: importe, líder y pujas se ocultan en las vistas públicas. */
+  hidden?: boolean;
+  bids_count?: number;
   item: Pick<AuctionItem, 'id' | 'name' | 'description' | 'emoji' | 'image_path' | 'image_url'>;
   bids: Bid[];
 }
@@ -114,6 +121,8 @@ export interface GameInfo {
   /** Adjudicación automática: por tiempo desde la última puja, o al instante si nadie más puede superar la puja. */
   auto_award_enabled: boolean;
   auto_award_seconds: number;
+  /** Probabilidad (0-100) de que una subasta salga con evento sorpresa si el anfitrión no elige uno. */
+  wild_chance_pct?: number;
   current_auction_id: string | null;
   created_at: string;
   finished_at: string | null;
@@ -182,6 +191,28 @@ export interface PublicSnapshot {
   auction: Auction | null;
   last_award: LastAward | null;
   stats: GameStats;
+  gallery?: Gallery;
+  /** Último impuesto al más rico (para avisar en la pantalla). */
+  wild_tax?: { id: number; created_at: string; payload: WildTaxPayload } | null;
+}
+
+export type WildEvent = 'blind' | 'double';
+
+export interface WildTaxPayload {
+  rate_pct: number;
+  payers: { player_id: string; name: string; amount_cents: number }[];
+  share_cents: number;
+  recipients: number;
+}
+
+export interface Gallery {
+  enabled: boolean;
+  open: boolean;
+  closed: boolean;
+  /** Quién ya votó (no a quién). */
+  voters: string[];
+  /** Recuento por jugador: sólo visible para el anfitrión o cuando la votación está cerrada. */
+  results: { player_id: string; votes: number }[] | null;
 }
 
 /** Instantánea del anfitrión: añade trabajos, versiones y eventos. */

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Coins, Gavel, Medal, Package, Trophy, TrendingUp, Ban } from 'lucide-react';
-import type { Player, PublicSnapshot, RankingRule, RuntimeInfo } from '@/lib/domain/types';
+import type { Gallery, Player, PublicSnapshot, RankingRule, RuntimeInfo } from '@/lib/domain/types';
 import { GameGone } from '@/components/ui/game-gone';
 import { useLiveGame } from '@/lib/client/use-live-game';
 import { ConnectionBadge, DemoBanner } from '@/components/ui/status';
@@ -62,14 +62,19 @@ function BeforeAfter({ player, tv }: { player: Player; tv: boolean }) {
   );
 }
 
-function ResultCard({ player, rank, scoreText, tv, dense }: { player: Player; rank: number | null; scoreText: string | null; tv: boolean; dense: boolean }) {
+function ResultCard({ player, rank, scoreText, tv, dense, votes = null, galleryWinner = false }: { player: Player; rank: number | null; scoreText: string | null; tv: boolean; dense: boolean; votes?: number | null; galleryWinner?: boolean }) {
   const spent = player.purchases.reduce((s, x) => s + x.price_cents, 0);
   return (
     <article
-      className={`flex min-h-0 flex-col overflow-hidden rounded-2xl border-2 bg-night-800 ${tv ? 'h-full' : ''} ${rank === 1 ? 'border-gold shadow-[0_0_3rem_rgb(251_191_36/0.3)]' : 'border-white/10'}`}
+      className={`flex min-h-0 flex-col overflow-hidden rounded-2xl border-2 bg-night-800 ${tv ? 'h-full' : ''} ${rank === 1 || galleryWinner ? 'border-gold shadow-[0_0_3rem_rgb(251_191_36/0.3)]' : 'border-white/10'}`}
     >
       <div className={`relative flex min-h-0 flex-col ${tv ? 'flex-1' : 'aspect-[3/2]'}`}>
         <BeforeAfter player={player} tv={tv} />
+        {votes !== null ? (
+          <span className={`absolute bottom-2 left-2 rounded-full px-3 py-1 font-black text-night-950 ${galleryWinner ? 'bg-gold' : 'bg-white/90'} ${tv ? 'text-[1.2rem]' : 'text-sm'}`} data-testid="gallery-votes">
+            {galleryWinner ? '🏆 ' : '🗳️ '}{votes} {votes === 1 ? 'voto' : 'votos'}
+          </span>
+        ) : null}
       </div>
       <div className="shrink-0 px-4 py-3" style={{ borderTop: `0.3rem solid ${player.color}` }}>
         <div className="flex items-baseline justify-between gap-3">
@@ -114,6 +119,42 @@ function StatTile({ icon, label, value, tv }: { icon: React.ReactNode; label: st
   );
 }
 
+/** Resultado de la galería: ganador(es) por votos, o el progreso mientras la votación sigue abierta. */
+function galleryInfo(snapshot: PublicSnapshot) {
+  const g: Gallery | undefined = snapshot.gallery;
+  if (!g || !g.enabled || snapshot.game.play_mode !== 'mobile') return null;
+  const votes = new Map((g.results ?? []).map((r) => [r.player_id, r.votes]));
+  const top = g.closed && g.results?.length ? Math.max(...g.results.map((r) => r.votes)) : 0;
+  const winners = g.closed && top > 0 ? snapshot.players.filter((p) => (votes.get(p.id) ?? 0) === top) : [];
+  return { g, votes: g.closed ? votes : null, top, winners };
+}
+
+function GalleryBanner({ snapshot, tv }: { snapshot: PublicSnapshot; tv: boolean }) {
+  const info = galleryInfo(snapshot);
+  if (!info) return null;
+  const connected = snapshot.players.filter((p) => p.claimed).length;
+  const size = tv ? 'text-[1.5rem]' : 'text-lg';
+  if (info.g.open) {
+    return (
+      <p className={`mx-auto mt-2 w-fit rounded-2xl bg-violet px-6 py-2 text-center font-bold text-white ${size}`} role="status" data-testid="gallery-open">
+        🗳️ ¡Votación abierta! Vota desde tu móvil la mejor casa · {info.g.voters.length} {info.g.voters.length === 1 ? 'voto' : 'votos'} de {Math.max(connected, info.g.voters.length)}
+      </p>
+    );
+  }
+  if (info.winners.length > 0) {
+    return (
+      <p className={`mx-auto mt-2 w-fit rounded-2xl bg-gold px-6 py-2 text-center font-display text-night-950 ${size}`} role="status" data-testid="gallery-winner">
+        🏆 Mejor casa según los jugadores: {info.winners.map((w) => w.name).join(' y ')} ({info.top} {info.top === 1 ? 'voto' : 'votos'})
+      </p>
+    );
+  }
+  return (
+    <p className={`mx-auto mt-2 w-fit rounded-2xl bg-night-700 px-6 py-2 text-center font-semibold text-white/80 ${size}`} role="status">
+      Votación cerrada sin votos.
+    </p>
+  );
+}
+
 /** Pantalla final: casas, antes/después, estadísticas y clasificación opcional. */
 export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapshot; tv?: boolean }) {
   const { game, players, stats } = snapshot;
@@ -125,6 +166,8 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
   const n = players.length;
   const cols = n <= 4 ? Math.max(n, 1) : n <= 8 ? 4 : n <= 10 ? 5 : 6;
   const rows = Math.max(1, Math.ceil(n / cols));
+  const gallery = galleryInfo(snapshot);
+  const cardProps = (id: string) => ({ votes: gallery?.votes ? (gallery.votes.get(id) ?? 0) : null, galleryWinner: Boolean(gallery?.winners.some((w) => w.id === id)) });
 
   const tiles = (
     <>
@@ -151,6 +194,7 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
         {game.name} · {themeLabel(game.theme)}
         {ranking ? <> · Clasificación: <strong className="text-gold-soft">{rankingRuleLabel(rule)}</strong></> : null}
       </p>
+      <GalleryBanner snapshot={snapshot} tv={tv} />
     </div>
   );
 
@@ -166,7 +210,7 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
             <div key={r} className="flex min-h-0 flex-1 justify-center gap-[0.9rem]">
               {row.map(({ player, rank }) => (
                 <div key={player.id} className="min-h-0" style={{ width: `calc((100% - ${(cols - 1) * 0.9}rem) / ${cols})`, maxWidth: rows === 1 ? '28rem' : undefined }}>
-                  <ResultCard player={player} rank={rank} scoreText={ranking && rank && rule !== 'balance' ? scoreLabel(rule, player) : null} tv dense={rows > 1} />
+                  <ResultCard player={player} rank={rank} scoreText={ranking && rank && rule !== 'balance' ? scoreLabel(rule, player) : null} tv dense={rows > 1} {...cardProps(player.id)} />
                 </div>
               ))}
             </div>
@@ -204,7 +248,7 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
 
       <section aria-label="Casas finales" className="relative z-10 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
         {ordered.map(({ player, rank }) => (
-          <ResultCard key={player.id} player={player} rank={rank} scoreText={ranking && rank && rule !== 'balance' ? scoreLabel(rule, player) : null} tv={false} dense={false} />
+          <ResultCard key={player.id} player={player} rank={rank} scoreText={ranking && rank && rule !== 'balance' ? scoreLabel(rule, player) : null} tv={false} dense={false} {...cardProps(player.id)} />
         ))}
       </section>
     </div>

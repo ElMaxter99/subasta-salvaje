@@ -10,6 +10,7 @@ import { themeLabel } from '@/lib/domain/themes';
 import { Card, Dot, Notice, Pill, STATUS_LABEL } from './bits';
 import type { HostCtx } from './host-context';
 import { FinishGameDialog } from './finish-dialog';
+import { GalleryCard } from './gallery-card';
 import { JoinCard } from './join-card';
 
 function Check({ ok, children }: { ok: boolean; children: React.ReactNode }) {
@@ -96,6 +97,8 @@ export function OverviewPanel({ ctx, goTo }: { ctx: HostCtx; goTo: (s: 'jugadore
           ) : null}
         </div>
       </Card>
+
+      <GalleryCard ctx={ctx} />
 
       <JoinCard ctx={ctx} />
 

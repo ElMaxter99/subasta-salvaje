@@ -82,6 +82,14 @@ function toRpc(action: GameAction): { fn: string; params: Record<string, unknown
       return { fn: 'ss_set_image_mode', params: rest };
     case 'game.set_auto_award':
       return { fn: 'ss_set_auto_award', params: rest };
+    case 'game.set_wild':
+      return { fn: 'ss_set_wild', params: rest };
+    case 'wild.tax':
+      return { fn: 'ss_wild_tax', params: rest };
+    case 'auction.undo_award':
+      return { fn: 'ss_undo_award', params: rest };
+    case 'gallery.close':
+      return { fn: 'ss_gallery_set', params: {} };
     case 'game.set_join_policy':
       return { fn: 'ss_set_join_policy', params: rest };
     case 'game.set_mode':

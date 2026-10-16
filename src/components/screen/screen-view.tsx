@@ -10,6 +10,7 @@ import { themeLabel } from '@/lib/domain/themes';
 import { AuctionStage } from './auction-stage';
 import { AwardOverlay } from './award-overlay';
 import { PlayerCard } from './player-card';
+import { WildTaxBanner } from './wild-tax-banner';
 import { CompactInvite } from './join-invite';
 import { FinalResults } from './results-view';
 import { useFullscreenControls } from './use-fullscreen';
@@ -163,6 +164,7 @@ export function ScreenView({ roomCode, initial, runtime }: { roomCode: string; i
       ) : null}
 
       <AwardOverlay award={snapshot.last_award} players={players} />
+      <WildTaxBanner snapshot={snapshot} />
       {controls}
     </main>
   );

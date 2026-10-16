@@ -32,6 +32,7 @@ function ActiveAuction({ snap, auction, players, compact }: { snap: PublicSnapsh
   const leaderId = awarded ? auction.winner_id : auction.current_bidder_id;
   const leader = players.find((p) => p.id === leaderId);
   const recent = auction.bids.slice(0, 5);
+  const blind = Boolean(auction.hidden);
   const nameOf = (id: string) => players.find((p) => p.id === id);
 
   return (
@@ -44,19 +45,29 @@ function ActiveAuction({ snap, auction, players, compact }: { snap: PublicSnapsh
             {auction.item.emoji ? <span aria-hidden className="mr-3">{auction.item.emoji}</span> : null}
             {auction.item.name}
           </h2>
+          {auction.wild_event ? (
+            <p className="mt-2 inline-flex items-center gap-3 rounded-2xl bg-violet px-5 py-1.5 font-display text-[1.9rem] text-white" data-testid="wild-badge">
+              {auction.wild_event === 'blind' ? '🙈 ¡Puja a ciegas! Nadie ve el importe' : '🎲 ¡Doble o mitad! Se sortea al adjudicar'}
+            </p>
+          ) : null}
           <p className={`mt-2 line-clamp-2 max-w-[56rem] font-medium text-white/75 ${compact ? 'text-[1.6rem]' : 'text-[2rem]'}`}>{auction.item.description}</p>
         </div>
 
         <div aria-live="polite">
           <p className="text-[1.3rem] font-bold uppercase tracking-[0.25em] text-gold-soft">
-            {awarded ? 'Precio final' : closed ? 'Puja cerrada' : 'Puja actual'}
+            {awarded ? 'Precio final' : closed ? 'Puja cerrada' : blind ? 'Puja a ciegas' : 'Puja actual'}
           </p>
           <p
             key={price}
             className={`ss-price-pop font-display leading-none tabular-nums text-gold drop-shadow-[0_0_2rem_rgb(251_191_36/0.45)] ${compact ? 'text-[10rem]' : 'text-[13rem]'}`}
           >
-            {formatEuros(price)}
+            {blind ? '¿¿ ?? €' : formatEuros(price)}
           </p>
+          {awarded && auction.wild_note ? (
+            <p className="mt-2 inline-flex items-center gap-3 rounded-2xl bg-violet px-5 py-2 font-display text-[2rem] text-white" data-testid="wild-result">
+              🎲 {auction.wild_note.outcome === 'half' ? '¡Mitad de precio!' : '¡Pagas el doble!'} Pujó {formatEuros(auction.wild_note.bid_cents)} · paga {formatEuros(auction.wild_note.charged_cents)}
+            </p>
+          ) : null}
           {closed ? (
             <p className="mt-2 inline-flex items-center gap-3 rounded-2xl bg-rose px-5 py-2 font-display text-[2rem] text-night-950">
               <Gavel className="size-8" aria-hidden /> ¡Puja cerrada! Última palabra…
@@ -78,7 +89,9 @@ function ActiveAuction({ snap, auction, players, compact }: { snap: PublicSnapsh
         </div>
 
         <div className="min-h-[3.5rem]">
-          {leader ? (
+          {blind ? (
+            <p className="text-[1.9rem] font-bold text-violet-soft">{auction.bids_count ?? 0} {auction.bids_count === 1 ? 'puja hecha' : 'pujas hechas'} · ¡el líder se revelará al adjudicar!</p>
+          ) : leader ? (
             <p className="flex items-center gap-3 text-[1.9rem] font-bold">
               <span className="size-6 shrink-0 rounded-full ring-4 ring-white/20" style={{ background: leader.color }} aria-hidden />
               <span className="text-white/70">{awarded ? 'Se lo lleva' : 'Va ganando'}</span>
@@ -86,7 +99,7 @@ function ActiveAuction({ snap, auction, players, compact }: { snap: PublicSnapsh
             </p>
           ) : (
             <p className="text-[1.7rem] font-semibold text-white/60">
-              {auction.bids.length === 0 ? 'Sin pujas todavía: ¡quien puje primero marca el ritmo!' : ''}
+              {auction.bids.length === 0 && !blind ? 'Sin pujas todavía: ¡quien puje primero marca el ritmo!' : ''}
             </p>
           )}
         </div>
@@ -108,7 +121,7 @@ function ActiveAuction({ snap, auction, players, compact }: { snap: PublicSnapsh
               </li>
             );
           })}
-          {recent.length === 0 ? <li className="rounded-xl border border-dashed border-white/15 px-4 py-3 text-[1.3rem] text-white/50">Aún no hay pujas.</li> : null}
+          {recent.length === 0 ? <li className="rounded-xl border border-dashed border-white/15 px-4 py-3 text-[1.3rem] text-white/50">{blind ? 'Pujas ocultas 🙈' : 'Aún no hay pujas.'}</li> : null}
         </ol>
       </aside>
     </div>
