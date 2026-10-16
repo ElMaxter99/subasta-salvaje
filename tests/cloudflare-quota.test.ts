@@ -28,8 +28,8 @@ describe('selección de proveedor de IA: desactivado por defecto, nunca cambia s
   it('configuración de Cloudflare y cuotas con valores por defecto y validación', () => {
     expect(cloudflareConfig({ CLOUDFLARE_ACCOUNT_ID: 'a' } as never)).toBeNull();
     expect(cloudflareConfig({ ...real, CLOUDFLARE_IMAGE_STEPS: '99' } as never)).toMatchObject({ model: '@cf/black-forest-labs/flux-1-schnell', steps: 4, editModel: null });
-    expect(quotaConfig({} as never)).toEqual({ perGame: 30, perDay: 100 });
-    expect(quotaConfig({ IMAGE_QUOTA_PER_GAME: '5', IMAGE_QUOTA_PER_DAY: 'x' } as never)).toEqual({ perGame: 5, perDay: 100 });
+    expect(quotaConfig({} as never)).toEqual({ perGame: 10, perDay: 50 });
+    expect(quotaConfig({ IMAGE_QUOTA_PER_GAME: '5', IMAGE_QUOTA_PER_DAY: 'x' } as never)).toEqual({ perGame: 5, perDay: 50 });
   });
 });
 
@@ -275,5 +275,64 @@ describe('modo de imágenes por partida: pegatinas (sin IA) o IA', () => {
     expect((await processImageJobs(onlyStickers, { maxJobs: 20 })).succeeded).toBe(2);
     await act(ctx, real.room, host, { type: 'game.start' });
     await expect(act(ctx, real.room, host, { type: 'game.set_image_mode', image_mode: 'stickers' })).rejects.toMatchObject({ code: 'game_already_started' });
+  });
+});
+
+describe('interruptor de seguridad y continuidad de la partida', () => {
+  it('IMAGE_AI_DISABLED apaga la IA real aunque haya proveedor y credenciales', () => {
+    const real = { IMAGE_PROVIDER: 'cloudflare', CLOUDFLARE_ACCOUNT_ID: 'a', CLOUDFLARE_API_TOKEN: 't' };
+    expect(getImageProviderId(real as never)).toBe('cloudflare');
+    expect(getImageProviderId({ ...real, IMAGE_AI_DISABLED: 'true' } as never)).toBeNull();
+    expect(getImageProviderId({ ...real, IMAGE_AI_DISABLED: '1' } as never)).toBeNull();
+    expect(getImageProviderId({ ...real, IMAGE_AI_DISABLED: 'false' } as never)).toBe('cloudflare');
+  });
+
+  it('con 10 generaciones por partida: la 11ª no llama al proveedor, la última imagen válida se conserva y la subasta continúa', async () => {
+    const c = await makeCtx();
+    try {
+      process.env.IMAGE_QUOTA_PER_GAME = '10';
+      process.env.IMAGE_QUOTA_PER_DAY = '1000';
+      let calls = 0;
+      const real: ImageGenerationProvider = {
+        ...createDemoProvider(), id: 'cloudflare', capabilities: { edit: true },
+        generateInitialScene: async () => { calls++; return { bytes: PNG, mime: 'image/png', prompt: 'p', model: 'm' }; },
+        editScene: async () => { calls++; return { bytes: PNG, mime: 'image/png', prompt: 'p', model: 'm' }; },
+      };
+      const host = newHost();
+      const { room_code: room } = await createGame(c, host, { name: 'Tope', players: [{ name: 'Ana' }, { name: 'Beto' }] });
+      let snap = await getHostState(c, room, host);
+      const ana = playerByName(snap, 'Ana').id;
+      // 1 generación inicial (Ana) + 1 (Beto) = 2; y luego regeneraciones hasta agotar las 10
+      for (const p of snap.players) await act(c, room, host, { type: 'image.request_initial', player_id: p.id });
+      await processImageJobs({ ...c, provider: real }, { gameId: snap.game.id });
+      await act(c, room, host, { type: 'game.start' });
+      // Compras: cada una genera una edición real (8 más hasta llegar a 10)
+      for (let i = 0; i < 9; i++) {
+        snap = await getHostState(c, room, host);
+        const item = snap.items.find((x) => x.status === 'available')!;
+        const a = await act(c, room, host, { type: 'auction.announce', item_id: item.id });
+        await act(c, room, host, { type: 'auction.bid', auction_id: a.snapshot.auction!.id, player_id: ana, amount_cents: 100, idempotency_key: key() });
+        await act(c, room, host, { type: 'auction.award', auction_id: a.snapshot.auction!.id, expected_winner_id: ana, expected_price_cents: 100, idempotency_key: key() });
+        await processImageJobs({ ...c, provider: real }, { gameId: snap.game.id });
+      }
+      snap = await getHostState(c, room, host);
+      expect(calls).toBe(10);
+      const lastGood = playerByName(snap, 'Ana').current_image_version_id;
+      expect(snap.jobs.filter((j) => j.status === 'failed')).toHaveLength(1); // la 10ª compra ya no cabe
+      expect(snap.jobs.find((j) => j.status === 'failed')!.error_message).toMatch(/Cuota de generaciones de esta partida alcanzada/);
+      // La subasta continúa con normalidad aunque la IA esté al límite
+      const item = snap.items.find((x) => x.status === 'available')!;
+      const a = await act(c, room, host, { type: 'auction.announce', item_id: item.id });
+      await act(c, room, host, { type: 'auction.bid', auction_id: a.snapshot.auction!.id, player_id: ana, amount_cents: 100, idempotency_key: key() });
+      const aw = await act(c, room, host, { type: 'auction.award', auction_id: a.snapshot.auction!.id, expected_winner_id: ana, expected_price_cents: 100, idempotency_key: key() });
+      expect(aw.snapshot.stats.purchases_count).toBe(10);
+      await processImageJobs({ ...c, provider: real }, { gameId: snap.game.id });
+      expect(calls).toBe(10); // el proveedor no se vuelve a llamar
+      expect(playerByName(await getHostState(c, room, host), 'Ana').current_image_version_id).toBe(lastGood); // imagen válida conservada
+    } finally {
+      delete process.env.IMAGE_QUOTA_PER_GAME;
+      delete process.env.IMAGE_QUOTA_PER_DAY;
+      await c.db.close();
+    }
   });
 });

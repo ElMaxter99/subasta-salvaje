@@ -64,6 +64,8 @@ export function cloudflareConfig(env: NodeJS.ProcessEnv = process.env): Cloudfla
  * Si se pide uno y faltan sus credenciales devuelve null: NUNCA se cambia solo a otro proveedor.
  */
 export function getImageProviderId(env: NodeJS.ProcessEnv = process.env): ImageProviderId | null {
+  // Interruptor de seguridad: IMAGE_AI_DISABLED=true apaga TODA la IA real sin tocar credenciales ni partidas.
+  if (/^(1|true|yes)$/i.test(env.IMAGE_AI_DISABLED?.trim() ?? '')) return null;
   const want = (env.IMAGE_PROVIDER ?? '').trim().toLowerCase();
   if (want === 'cloudflare') return cloudflareConfig(env) ? 'cloudflare' : null;
   if (want === 'openai') return openAiKey(env) ? 'openai' : null;
@@ -81,7 +83,7 @@ export function quotaConfig(env: NodeJS.ProcessEnv = process.env): QuotaConfig {
     const n = Number(v);
     return Number.isInteger(n) && n > 0 ? n : d;
   };
-  return { perGame: pos(env.IMAGE_QUOTA_PER_GAME, 30), perDay: pos(env.IMAGE_QUOTA_PER_DAY, 100) };
+  return { perGame: pos(env.IMAGE_QUOTA_PER_GAME, 10), perDay: pos(env.IMAGE_QUOTA_PER_DAY, 50) };
 }
 
 export function getSupabaseConfig(env: NodeJS.ProcessEnv = process.env) {

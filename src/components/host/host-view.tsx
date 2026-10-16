@@ -4,6 +4,7 @@ import { useRef, useState, type ComponentType } from 'react';
 import Link from 'next/link';
 import { Gavel, History, ImageIcon, LayoutDashboard, Package, Settings, Users } from 'lucide-react';
 import { ConnectionBadge, DemoBanner } from '@/components/ui/status';
+import { AiUsageChip } from './ai-usage-chip';
 import { ToastProvider } from '@/components/ui/toast';
 import { Logo } from '@/components/ui/logo';
 import { GameGone } from '@/components/ui/game-gone';
@@ -84,6 +85,7 @@ function HostInner({ roomCode, initial, runtime, identity }: Props) {
               </span>
               <Pill tone={statusTone}>{STATUS_LABEL[game.status]}</Pill>
               <ConnectionBadge state={connection} runtime={runtime} />
+              <AiUsageChip usage={snapshot.usage} />
               {identity.email ? <span className="hidden text-xs text-white/50 lg:inline">{identity.email}</span> : null}
             </p>
           </div>
