@@ -8,7 +8,8 @@ import { GameGone } from '@/components/ui/game-gone';
 import { useLiveGame } from '@/lib/client/use-live-game';
 import { ConnectionBadge, DemoBanner } from '@/components/ui/status';
 import { formatEuros } from '@/lib/domain/money';
-import { computeHighlights, computeRanking, rankingRuleLabel } from '@/lib/domain/ranking';
+import { computeHighlights, computePodium, computeRanking, rankingRuleLabel } from '@/lib/domain/ranking';
+import { Podium } from './podium';
 import { themeLabel } from '@/lib/domain/themes';
 import { Confetti } from './award-overlay';
 import { ItemIcon, Mascot, Sparkles } from '@/components/mascot/mascot';
@@ -175,6 +176,8 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
   const cols = n <= 4 ? Math.max(n, 1) : n <= 8 ? 4 : n <= 10 ? 5 : 6;
   const rows = Math.max(1, Math.ceil(n / cols));
   const gallery = galleryInfo(snapshot);
+  // Con la votación de la galería cerrada y con votos, la pantalla final pasa a mostrar el PODIO.
+  const pod = gallery?.g.closed && gallery.votes && gallery.top > 0 ? computePodium(players, gallery.votes) : null;
   const cardProps = (id: string) => ({ votes: gallery?.votes ? (gallery.votes.get(id) ?? 0) : null, galleryWinner: Boolean(gallery?.winners.some((w) => w.id === id)) });
 
   const tiles = (
@@ -209,6 +212,28 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
       <GalleryBanner snapshot={snapshot} tv={tv} />
     </div>
   );
+
+  if (tv && pod) {
+    return (
+      <div className="relative flex h-full flex-col gap-[0.8rem] px-[2rem] py-[1rem]" data-testid="podium-view">
+        <Confetti count={48} />
+        <div className="relative z-10">{hero}</div>
+        <div className="relative z-10 flex min-h-0 flex-1 items-end justify-center">
+          <Podium groups={pod.podium} tv />
+        </div>
+        {pod.rest.length > 0 ? (
+          <ul className="relative z-10 flex shrink-0 flex-wrap items-center justify-center gap-[0.6rem]" aria-label="Resto de jugadores">
+            {pod.rest.map(({ player, votes }) => (
+              <li key={player.id} className="rounded-xl bg-night-800/90 px-[1rem] py-[0.3rem] text-[1.3rem] font-semibold" style={{ color: player.color }}>
+                {player.name} <span className="text-white/70">· {votes} {votes === 1 ? 'voto' : 'votos'}</span>
+              </li>
+            ))}
+          </ul>
+        ) : null}
+        <div className="relative z-10 grid shrink-0 grid-cols-4 gap-[0.6rem]">{tiles}</div>
+      </div>
+    );
+  }
 
   if (tv) {
     return (
@@ -254,6 +279,21 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
             ))}
           </ol>
         </section>
+      ) : null}
+
+      {pod ? (
+        <div className="relative z-10" data-testid="podium-view">
+          <Podium groups={pod.podium} tv={false} />
+          {pod.rest.length > 0 ? (
+            <ul className="mt-4 flex flex-wrap justify-center gap-2" aria-label="Resto de jugadores">
+              {pod.rest.map(({ player, votes }) => (
+                <li key={player.id} className="rounded-xl bg-night-800 px-3 py-1 text-sm font-semibold" style={{ color: player.color }}>
+                  {player.name} <span className="text-white/70">· {votes} {votes === 1 ? 'voto' : 'votos'}</span>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
       ) : null}
 
       <section aria-label="Estadísticas" className="relative z-10 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">{tiles}</section>

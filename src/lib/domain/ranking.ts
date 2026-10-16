@@ -60,3 +60,28 @@ export function computeHighlights(snap: Pick<PublicSnapshot, 'players'>): GameHi
   }
   return { mostExpensive, biggestSpender, mostItems };
 }
+
+export interface PodiumGroup {
+  /** 1 = primer puesto, 2 = segundo… (los empatados comparten puesto y el siguiente es el inmediato: 1, 1, 2). */
+  place: number;
+  votes: number;
+  players: Player[];
+}
+
+/**
+ * Podio de la votación de la galería: agrupa por número de votos (de más a menos). Los empatados comparten escalón.
+ * `podium` son los 3 primeros escalones con votos; `rest` el resto de jugadores (con o sin votos). Sin ningún voto no hay podio.
+ */
+export function computePodium(players: Player[], votes: Map<string, number>): { podium: PodiumGroup[]; rest: { player: Player; votes: number }[] } {
+  const withVotes = players.map((player) => ({ player, votes: votes.get(player.id) ?? 0 })).sort((a, b) => b.votes - a.votes || a.player.sort_order - b.player.sort_order);
+  const groups: PodiumGroup[] = [];
+  for (const e of withVotes) {
+    if (e.votes <= 0) continue;
+    const last = groups[groups.length - 1];
+    if (last && last.votes === e.votes) last.players.push(e.player);
+    else groups.push({ place: groups.length + 1, votes: e.votes, players: [e.player] });
+  }
+  const podium = groups.slice(0, 3);
+  const onPodium = new Set(podium.flatMap((g) => g.players.map((p) => p.id)));
+  return { podium, rest: withVotes.filter((e) => !onPodium.has(e.player.id)) };
+}

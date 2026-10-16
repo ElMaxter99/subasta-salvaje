@@ -174,6 +174,7 @@ describe('galería final con votación', () => {
     const [ana, beto, carla] = ['Ana', 'Beto', 'Carla'].map((n) => playerByName(s, n));
     const ta = (await joinGame(ctx, room_code, { player_id: ana!.id })).token;
     const tb = (await joinGame(ctx, room_code, { player_id: beto!.id })).token;
+    await joinGame(ctx, room_code, { player_id: carla!.id }); // conectada pero sin votar: la votación no se cierra sola
     await act(ctx, room_code, host, { type: 'game.start' });
 
     await expect(galleryVote(ctx, room_code, ta, { target_id: beto!.id })).rejects.toMatchObject({ code: 'gallery_not_open' });
@@ -197,5 +198,59 @@ describe('galería final con votación', () => {
     expect(closed.gallery).toMatchObject({ closed: true, open: false });
     expect(closed.gallery!.results![0]).toEqual({ player_id: carla!.id, votes: 2 });
     await expect(galleryVote(ctx, room_code, ta, { target_id: beto!.id })).rejects.toMatchObject({ code: 'gallery_closed' });
+  });
+});
+
+describe('galería: cierre automático y podio', () => {
+  async function mobileFinished(names: string[]) {
+    const host = newHost();
+    const { room_code } = await createGame(ctx, host, { name: 'Podio', play_mode: 'mobile', players: names.map((name) => ({ name })) });
+    const s = await getHostState(ctx, room_code, host);
+    const tokens: Record<string, string> = {};
+    const ids: Record<string, string> = {};
+    for (const n of names) {
+      const pl = playerByName(s, n)!;
+      ids[n] = pl.id;
+      tokens[n] = (await joinGame(ctx, room_code, { player_id: pl.id })).token;
+    }
+    await act(ctx, room_code, host, { type: 'game.start' });
+    await act(ctx, room_code, host, { type: 'game.finish' });
+    return { host, room_code, tokens, ids };
+  }
+
+  it('se cierra sola cuando han votado todos los conectados y el recuento queda público para el podio', async () => {
+    const { room_code, tokens, ids } = await mobileFinished(['Ana', 'Beto', 'Carla']);
+    await galleryVote(ctx, room_code, tokens.Ana!, { target_id: ids.Carla! });
+    await galleryVote(ctx, room_code, tokens.Beto!, { target_id: ids.Carla! });
+    let pub = await getPublicState(ctx, room_code);
+    expect(pub.gallery).toMatchObject({ open: true, closed: false, results: null }); // faltan votos: sigue abierta y sin recuento público
+    await galleryVote(ctx, room_code, tokens.Carla!, { target_id: ids.Ana! });
+    pub = await getPublicState(ctx, room_code);
+    expect(pub.gallery).toMatchObject({ open: false, closed: true });
+    expect(pub.gallery!.results).toEqual([{ player_id: ids.Carla, votes: 2 }, { player_id: ids.Ana, votes: 1 }, { player_id: ids.Beto, votes: 0 }]);
+    await expect(galleryVote(ctx, room_code, tokens.Ana!, { target_id: ids.Beto! })).rejects.toMatchObject({ code: 'gallery_closed' });
+  });
+
+  it('con un solo jugador conectado no se cierra sola (hace falta que el anfitrión la cierre)', async () => {
+    const host = newHost();
+    const { room_code } = await createGame(ctx, host, { name: 'Solo', play_mode: 'mobile', players: [{ name: 'Ana' }, { name: 'Beto' }] });
+    const s = await getHostState(ctx, room_code, host);
+    const ta = (await joinGame(ctx, room_code, { player_id: playerByName(s, 'Ana')!.id })).token;
+    await act(ctx, room_code, host, { type: 'game.start' });
+    await act(ctx, room_code, host, { type: 'game.finish' });
+    await galleryVote(ctx, room_code, ta, { target_id: playerByName(s, 'Beto')!.id });
+    expect((await getPublicState(ctx, room_code)).gallery).toMatchObject({ open: true, closed: false });
+  });
+
+  it('los empates: ambos aparecen con los mismos votos en el recuento', async () => {
+    const { room_code, tokens, ids } = await mobileFinished(['Ana', 'Beto', 'Carla', 'Dani']);
+    await galleryVote(ctx, room_code, tokens.Ana!, { target_id: ids.Beto! });
+    await galleryVote(ctx, room_code, tokens.Beto!, { target_id: ids.Ana! });
+    await galleryVote(ctx, room_code, tokens.Carla!, { target_id: ids.Beto! });
+    await galleryVote(ctx, room_code, tokens.Dani!, { target_id: ids.Ana! });
+    const pub = await getPublicState(ctx, room_code);
+    expect(pub.gallery!.closed).toBe(true);
+    expect(pub.gallery!.results!.slice(0, 2).map((r) => r.votes)).toEqual([2, 2]);
+    expect(pub.gallery!.results!.slice(2).map((r) => r.votes)).toEqual([0, 0]);
   });
 });
