@@ -15,7 +15,7 @@ export const POST = handle(async (req: Request, { params }: { params: Promise<{ 
   const host = await requireHost();
   limit(req, 'jobs-kick', host.id, 30);
   const ctx = await getContext();
-  if (!ctx.provider) throw new DomainError('provider_not_configured');
+  if (!ctx.provider && !ctx.stickers) throw new DomainError('provider_not_configured');
   const snap = await getHostState(ctx, code, host.id); // comprueba permisos
   const gameId = snap.game.id;
   after(async () => {

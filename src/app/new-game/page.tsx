@@ -15,7 +15,7 @@ export default async function NewGamePage() {
   return (
     <>
       <DemoBanner runtime={runtime} />
-      <NewGameForm />
+      <NewGameForm aiAvailable={runtime.aiConfigured} aiProvider={runtime.aiProvider} />
     </>
   );
 }

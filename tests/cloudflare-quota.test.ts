@@ -12,11 +12,12 @@ const jpeg = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 1, 2, 3]).toString('base64');
 const PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1, 2, 3]);
 const CF = { accountId: 'acc123', apiToken: 'tok-secret', model: '@cf/black-forest-labs/flux-1-schnell', steps: 4, editModel: null, width: 1024, height: 768 };
 
-describe('selección de proveedor: demo por defecto, nunca cambia solo a uno de pago', () => {
+describe('selección de proveedor de IA: desactivado por defecto, nunca cambia solo a uno de pago', () => {
   const real = { OPENAI_API_KEY: 'k', CLOUDFLARE_ACCOUNT_ID: 'a', CLOUDFLARE_API_TOKEN: 't' };
-  it('sin IMAGE_PROVIDER usa demo aunque haya credenciales reales (no se consume cuota por accidente)', () => {
-    expect(getImageProviderId({ ...real } as never)).toBe('demo');
-    expect(getImageProviderId({} as never)).toBe('demo');
+  it('sin IMAGE_PROVIDER no hay IA aunque haya credenciales reales (no se consume cuota por accidente)', () => {
+    expect(getImageProviderId({ ...real } as never)).toBeNull();
+    expect(getImageProviderId({} as never)).toBeNull();
+    expect(getImageProviderId({ IMAGE_PROVIDER: 'demo' } as never)).toBeNull();
   });
   it('un proveedor real sólo se activa si se pide y tiene credenciales; si faltan, "no configurado" (sin fallback)', () => {
     expect(getImageProviderId({ ...real, IMAGE_PROVIDER: 'cloudflare' } as never)).toBe('cloudflare');
@@ -116,8 +117,8 @@ describe('cuota de generaciones reales por partida y por día', () => {
   beforeAll(async () => { ctx = await makeCtx(); });
   afterAll(async () => { await ctx.db.close(); });
 
-  async function game(host: string) {
-    const { room_code } = await createGame(ctx, host, { name: 'Q', players: [{ name: 'Ana' }, { name: 'Beto' }] });
+  async function game(host: string, image_mode: 'stickers' | 'ai' = 'stickers') {
+    const { room_code } = await createGame(ctx, host, { name: 'Q', image_mode, players: [{ name: 'Ana' }, { name: 'Beto' }] });
     return { room: room_code, snap: await getHostState(ctx, room_code, host) };
   }
 
@@ -160,7 +161,7 @@ describe('cuota de generaciones reales por partida y por día', () => {
       const before = await ctx.db.pg.query<{ n: number }>("select count(*)::int as n from image_usage where (created_at at time zone 'utc')::date = (now() at time zone 'utc')::date");
       process.env.IMAGE_QUOTA_PER_DAY = String(before.rows[0]!.n + 1);
       const host = newHost();
-      const { room, snap } = await game(host);
+      const { room, snap } = await game(host, 'ai');
       const real = { ...ctx, provider: fakeReal() };
       for (const p of snap.players) await act(ctx, room, host, { type: 'image.request_initial', player_id: p.id });
       const run = await processImageJobs(real, { gameId: snap.game.id });
@@ -205,3 +206,74 @@ describe('cuota de generaciones reales por partida y por día', () => {
   });
 });
 
+
+describe('modo de imágenes por partida: pegatinas (sin IA) o IA', () => {
+  let ctx: TestCtx;
+  let aiCalls = 0;
+  const ai: ImageGenerationProvider = {
+    ...createDemoProvider(),
+    id: 'cloudflare',
+    capabilities: { edit: true },
+    generateInitialScene: async () => { aiCalls++; return { bytes: PNG, mime: 'image/png', prompt: 'p', model: 'm' }; },
+    editScene: async () => { aiCalls++; return { bytes: PNG, mime: 'image/png', prompt: 'p', model: 'm' }; },
+  };
+  beforeAll(async () => { ctx = await makeCtx(); });
+  afterAll(async () => { await ctx.db.close(); });
+
+  async function lobby(host: string, image_mode: 'stickers' | 'ai') {
+    process.env.IMAGE_PROVIDER = 'cloudflare';
+    process.env.CLOUDFLARE_ACCOUNT_ID = 'a';
+    process.env.CLOUDFLARE_API_TOKEN = 't';
+    try {
+      const { room_code } = await createGame(ctx, host, { name: 'M', image_mode, players: [{ name: 'Ana' }, { name: 'Beto' }] });
+      return { room: room_code, snap: await getHostState(ctx, room_code, host) };
+    } finally {
+      for (const k of ['IMAGE_PROVIDER', 'CLOUDFLARE_ACCOUNT_ID', 'CLOUDFLARE_API_TOKEN']) delete process.env[k];
+    }
+  }
+
+  it('el modo por defecto es pegatinas; elegir IA sin proveedor configurado se rechaza con un error claro', async () => {
+    const host = newHost();
+    const { room_code } = await createGame(ctx, host, { name: 'D', players: [{ name: 'Ana' }, { name: 'Beto' }] });
+    expect((await getHostState(ctx, room_code, host)).game.image_mode).toBe('stickers');
+    await expect(createGame(ctx, host, { name: 'X', image_mode: 'ai', players: [] })).rejects.toMatchObject({ code: 'ai_not_available' });
+    await expect(act(ctx, room_code, host, { type: 'game.set_image_mode', image_mode: 'ai' })).rejects.toMatchObject({ code: 'ai_not_available' });
+  });
+
+  it('cada partida usa SU proveedor: pegatinas -> local sin cuota; IA -> proveedor real con cuota', async () => {
+    const both = { ...ctx, provider: ai, stickers: createDemoProvider() };
+    const host = newHost();
+    const st = await lobby(host, 'stickers');
+    const real = await lobby(host, 'ai');
+    expect(real.snap.game.image_mode).toBe('ai');
+    aiCalls = 0;
+    for (const g of [st, real]) for (const p of g.snap.players) await act(ctx, g.room, host, { type: 'image.request_initial', player_id: p.id });
+    const r = await processImageJobs(both, { maxJobs: 20 });
+    expect(r.succeeded).toBe(4);
+    expect(aiCalls).toBe(2); // sólo la partida en modo IA llamó al proveedor real
+    const stState = await getHostState(ctx, st.room, host);
+    expect(stState.players.every((p) => p.current_image?.provider === 'demo')).toBe(true);
+    expect(stState.players[0]!.current_image!.storage_path).toMatch(/\.svg$/);
+    const aiState = await getHostState(ctx, real.room, host);
+    expect(aiState.players.every((p) => p.current_image?.provider === 'cloudflare')).toBe(true);
+    const used = await ctx.db.pg.query<{ n: number }>('select count(*)::int as n from image_usage u join games g on g.id = u.game_id where g.room_code = $1', [st.room]);
+    expect(used.rows[0]!.n).toBe(0);
+  });
+
+  it('si la IA no está configurada, los trabajos del modo IA no se reclaman (siguen en cola) pero las pegatinas funcionan', async () => {
+    const onlyStickers = { ...ctx, provider: null, stickers: createDemoProvider() };
+    const host = newHost();
+    const st = await lobby(host, 'stickers');
+    const real = await lobby(host, 'ai');
+    for (const g of [st, real]) for (const p of g.snap.players) await act(ctx, g.room, host, { type: 'image.request_initial', player_id: p.id });
+    const r = await processImageJobs(onlyStickers, { maxJobs: 20 });
+    expect(r.succeeded).toBe(2);
+    const aiJobs = (await getHostState(ctx, real.room, host)).jobs;
+    expect(aiJobs.every((j) => j.status === 'queued')).toBe(true);
+    // El modo sólo se puede cambiar en la sala de espera
+    await act(ctx, real.room, host, { type: 'game.set_image_mode', image_mode: 'stickers' });
+    expect((await processImageJobs(onlyStickers, { maxJobs: 20 })).succeeded).toBe(2);
+    await act(ctx, real.room, host, { type: 'game.start' });
+    await expect(act(ctx, real.room, host, { type: 'game.set_image_mode', image_mode: 'stickers' })).rejects.toMatchObject({ code: 'game_already_started' });
+  });
+});

@@ -6,7 +6,7 @@ import { emptySceneFor } from '@/lib/domain/themes';
 import { extensionForMime } from '@/lib/storage/types';
 import type { AppContext } from './context';
 
-type Ctx = Pick<AppContext, 'db' | 'storage' | 'publisher'> & { provider: ImageGenerationProvider | null };
+type Ctx = Pick<AppContext, 'db' | 'storage' | 'publisher'> & { provider: ImageGenerationProvider | null; stickers?: ImageGenerationProvider };
 
 interface ClaimedJob {
   job_id: string;
@@ -45,8 +45,10 @@ export async function processImageJobs(
   opts: { maxJobs?: number; deadlineMs?: number; workerId?: string; gameId?: string } = {},
 ): Promise<ProcessResult> {
   const result: ProcessResult = { processed: 0, succeeded: 0, failed: 0 };
-  const provider = ctx.provider;
-  if (!provider) return { ...result, skipped: 'provider_not_configured' };
+  // Proveedor por MODO de la partida: «stickers» (pegatinas, local, sin IA) o «ai» (proveedor real configurado).
+  // Sin `ctx.stickers` (pruebas) se usa `ctx.provider` para todo.
+  if (!ctx.provider && !ctx.stickers) return { ...result, skipped: 'provider_not_configured' };
+  const modes = ctx.stickers ? ['stickers', ...(ctx.provider ? ['ai'] : [])] : null;
 
   const maxJobs = opts.maxJobs ?? 10;
   const deadline = Date.now() + (opts.deadlineMs ?? 240_000);
@@ -58,6 +60,7 @@ export async function processImageJobs(
       worker_id: workerId,
       lease_seconds: 300,
       ...(opts.gameId ? { game_id: opts.gameId } : {}),
+      ...(modes ? { image_modes: modes } : {}),
     });
     if (!job) break;
     if (job.retry) {
@@ -65,11 +68,19 @@ export async function processImageJobs(
       continue;
     }
     result.processed++;
+    const provider = await providerFor(ctx, job);
     const ok = await runJob(ctx, provider, job, workerId);
     if (ok) result.succeeded++;
     else result.failed++;
   }
   return result;
+}
+
+/** Elige el proveedor según el modo de imágenes de la partida del trabajo. */
+async function providerFor(ctx: Ctx, job: ClaimedJob): Promise<ImageGenerationProvider> {
+  if (!ctx.stickers) return ctx.provider!;
+  const snap = await ctx.db.rpc<{ game: { image_mode: 'stickers' | 'ai' } }>('ss_get_state', { room_code: job.room_code, view: 'public' });
+  return snap.game.image_mode === 'ai' && ctx.provider ? ctx.provider : ctx.stickers;
 }
 
 async function generate(ctx: Ctx, provider: ImageGenerationProvider, job: ClaimedJob): Promise<GeneratedImage> {

@@ -1,9 +1,9 @@
 import { ProviderError, type EditSceneInput, type GeneratedImage, type ImageGenerationProvider, type InitialSceneInput, type ItemImageInput } from './types';
 
 /**
- * Proveedor de MUESTRA para el modo demo (sin credenciales de IA).
+ * Proveedor del modo «pegatinas» (sin IA, local, gratis).
  * NO usa inteligencia artificial: dibuja escenas SVG locales y apila "pegatinas" de los
- * elementos comprados. Toda imagen lleva una marca visible "DEMO" y se guarda con provider='demo'.
+ * elementos comprados. Lleva una marca visible «Modo pegatinas · sin IA» y se guarda con provider="demo"..
  */
 const W = 1536;
 const H = 1024;
@@ -57,7 +57,7 @@ function backdrop(theme: string): string {
 
 function watermarkMark(): string {
   return `<g><rect x="24" y="${H - 64}" width="560" height="40" rx="20" fill="#000" opacity=".6"/>
-    <text x="44" y="${H - 38}" font-family="system-ui,sans-serif" font-size="22" font-weight="700" fill="#fde047">DEMO · imagen de muestra, no generada por IA</text></g>`;
+    <text x="44" y="${H - 38}" font-family="system-ui,sans-serif" font-size="22" font-weight="700" fill="#fde047">Modo pegatinas · ilustración local, sin IA</text></g>`;
 }
 
 /** Escena SVG vacía. `watermark=false` sólo para la galería incluida en la app (no se presenta como IA). */
@@ -102,7 +102,7 @@ export function createDemoProvider(): ImageGenerationProvider {
       return {
         bytes: enc(renderScene(input.theme, `Escena inicial de ${input.playerName}`)),
         mime: 'image/svg+xml',
-        prompt: `[DEMO] Escena vacía local para «${input.theme}» (sin IA)`,
+        prompt: `[PEGATINAS] Escena vacía local para «${input.theme}» (sin IA)`,
         model: 'demo-svg',
       };
     },
@@ -121,7 +121,7 @@ export function createDemoProvider(): ImageGenerationProvider {
       return {
         bytes: enc(next),
         mime: 'image/svg+xml',
-        prompt: `[DEMO] Se apila «${input.itemName}» sobre la imagen anterior (sin IA)`,
+        prompt: `[PEGATINAS] Se apila «${input.itemName}» sobre la imagen anterior (sin IA)`,
         model: 'demo-svg',
       };
     },
@@ -131,8 +131,8 @@ export function createDemoProvider(): ImageGenerationProvider {
   <rect width="600" height="400" fill="${p.sky[1]}"/><rect y="280" width="600" height="120" fill="${p.ground[0]}"/>
   <text x="300" y="250" text-anchor="middle" font-size="190">${xml(input.itemEmoji ?? '🎁')}</text>
   <rect x="16" y="352" width="330" height="32" rx="16" fill="#000" opacity=".6"/>
-  <text x="32" y="375" font-family="system-ui,sans-serif" font-size="17" font-weight="700" fill="#fde047">DEMO · imagen de muestra, no IA</text></svg>`;
-      return { bytes: enc(svg), mime: 'image/svg+xml', prompt: `[DEMO] Ilustración local de «${input.itemName}» (sin IA)`, model: 'demo-svg' };
+  <text x="32" y="375" font-family="system-ui,sans-serif" font-size="17" font-weight="700" fill="#fde047">Modo pegatinas · sin IA</text></svg>`;
+      return { bytes: enc(svg), mime: 'image/svg+xml', prompt: `[PEGATINAS] Ilustración local de «${input.itemName}» (sin IA)`, model: 'demo-svg' };
     },
   };
 }

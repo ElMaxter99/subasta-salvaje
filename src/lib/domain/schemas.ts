@@ -20,6 +20,7 @@ export const createGameSchema = z.object({
   min_bid_cents: z.number().int().min(1).max(100_000_000).default(100),
   ranking_rule: z.enum(['none', 'balance', 'items', 'votes']).default('none'),
   play_mode: z.enum(['host', 'mobile']).default('host'),
+  image_mode: z.enum(['stickers', 'ai']).default('stickers'),
   players: z.array(z.object({ name, color: color.optional() })).max(12).default([]),
   /** Si se omite, se usa el catálogo de la plantilla de temática (o vacío si es temática libre). */
   items: z
@@ -33,6 +34,7 @@ export const actionSchema = z.discriminatedUnion('type', [
   // Partida
   z.object({ type: z.literal('game.update'), name: z.string().trim().min(1).max(80).optional(), theme: z.string().trim().min(1).max(120).optional(), initial_budget_cents: z.number().int().min(0).max(100_000_000).optional(), min_bid_cents: z.number().int().min(1).max(100_000_000).optional(), ranking_rule: z.enum(['none', 'balance', 'items', 'votes']).optional() }),
   z.object({ type: z.literal('game.set_mode'), play_mode: z.enum(['host', 'mobile']) }),
+  z.object({ type: z.literal('game.set_image_mode'), image_mode: z.enum(['stickers', 'ai']) }),
   z.object({ type: z.literal('game.set_auto_award'), enabled: z.boolean(), seconds: z.number().int().min(3).max(300) }),
   z.object({ type: z.literal('game.set_join_policy'), join_policy: z.enum(['open', 'slots', 'closed']) }),
   z.object({ type: z.literal('player.release'), player_id: uuid }),

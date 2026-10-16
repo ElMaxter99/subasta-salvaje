@@ -59,7 +59,7 @@ Si **no** defines las variables de Supabase y `NODE_ENV !== 'production'`, la ap
 
 - Base de datos local PGlite (`./.demo-data/pgdata`), imágenes en disco (`./.demo-data/images`).
 - Acceso de anfitrión con un botón (sin cuenta).
-- Con el proveedor por defecto (`demo`): proveedor de **muestra** (escenas SVG y «pegatinas» de los elementos). Toda imagen lleva la marca visible **«DEMO · imagen de muestra, no generada por IA»**, se guarda con `provider = 'demo'` y la interfaz muestra un banner amarillo permanente. **No es IA**.
+- El modo de imágenes **pegatinas** (escenas SVG y emojis de los elementos) es local y no usa IA; en el modo demo la interfaz muestra además un banner amarillo permanente de «datos locales».
 - Con `IMAGE_PROVIDER=cloudflare` (u `openai`) y sus credenciales en modo demo se usa la IA real (la BD y el almacenamiento siguen siendo locales). Solo `IMAGE_PROVIDER` activa un proveedor real: tener credenciales en el entorno no basta.
 - En producción sin credenciales la app **no** cae a modo demo: muestra `/setup` con lo que falta (salvo que fuerces `ALLOW_DEMO_MODE=true`, no recomendado).
 - El botón «Cargar partida de ejemplo (demo)» de la landing crea una partida con jugadores, compras e imágenes para probar la interfaz.
@@ -102,6 +102,7 @@ npx supabase status          # muestra API URL, anon key y service_role key → 
    6. `supabase/migrations/20260101000600_mobile_hardening.sql` y `20260101000700_security_mobile_hardening.sql` (endurecimiento).
    7. `supabase/migrations/20260101000800_join_policy_quota.sql` y `20260101000900_security_join_policy_quota.sql` (política de altas de los móviles y cuota de generaciones).
    8. `supabase/migrations/20260101001000_auto_award.sql` y `20260101001100_security_auto_award.sql` (adjudicación automática).
+   9. `supabase/migrations/20260101001200_image_mode.sql` y `20260101001300_security_image_mode.sql` (modo de imágenes: pegatinas o IA).
 
    Con la CLI: `npx supabase link --project-ref TU_REF` y `npx supabase db push`. Si ya aplicaste archivos a mano en el SQL Editor, antes marca esas versiones: `npx supabase migration repair --status applied 20260101000000 20260101000100 …`.
 
@@ -115,7 +116,11 @@ npx supabase status          # muestra API URL, anon key y service_role key → 
 <a id="configurar-la-ia"></a>
 ## Configurar el proveedor de imágenes
 
-Por defecto la app usa el proveedor **`demo`** (`IMAGE_PROVIDER=demo` o sin definir): ilustraciones SVG de muestra, **no es IA**, sin coste, marcadas «DEMO» y con un banner permanente. **Ninguna credencial activa un proveedor real por sí sola**: hay que pedirlo con `IMAGE_PROVIDER=cloudflare` (primera opción) u `openai`. Si pides uno real y faltan sus credenciales, la IA aparece como «no configurada» y los trabajos quedan en cola: **nunca se cambia automáticamente a otro proveedor ni se activa un plan de pago**. Si el proveedor falla, la compra, el saldo y la imagen anterior se conservan y se puede seguir jugando; el trabajo se puede reintentar sin volver a cobrar.
+Cada **partida** elige su modo de imágenes al crearla (y puede cambiarlo en *Ajustes* mientras esté en la sala de espera):
+- **🎨 Pegatinas con emojis** (por defecto): cada compra añade el emoji del elemento a la casa. Son ilustraciones SVG locales: **sin IA, gratis e instantáneo**, y siempre están disponibles. Cada imagen lleva la marca «Modo pegatinas · sin IA» y se guarda con `provider = 'demo'` (la interfaz la etiqueta como «Pegatinas»).
+- **✨ Con IA**: usa el proveedor de IA real configurado (`IMAGE_PROVIDER=cloudflare` u `openai`), con cuotas por partida y por día. Esta opción solo aparece disponible si el despliegue tiene IA configurada.
+
+**Ninguna credencial activa la IA por sí sola**: hay que pedirla con `IMAGE_PROVIDER`. Si la pides y faltan credenciales, la IA aparece como «no disponible» (las partidas en modo IA dejan sus trabajos en cola) y **nunca se cambia automáticamente a otro proveedor ni se activa un plan de pago**. Si el proveedor falla, la compra, el saldo y la imagen anterior se conservan y se puede seguir jugando; el trabajo se puede reintentar sin volver a cobrar.
 
 ### Cloudflare Workers AI (primera opción real)
 
@@ -199,7 +204,7 @@ Notas: las rutas que generan imágenes declaran `maxDuration = 300`. Si tu proye
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Sí (modo real) | cliente+servidor | Clave pública (sin permisos sobre tablas por RLS). |
 | `SUPABASE_SERVICE_ROLE_KEY` | Sí (modo real) | **solo servidor** | Clave de servicio. Nunca en el navegador. |
 | `SUPABASE_STORAGE_BUCKET` | No | servidor | Bucket de imágenes (por defecto `game-images`). |
-| `IMAGE_PROVIDER` | No (por defecto `demo`) | servidor | `demo` \| `cloudflare` \| `openai`. Ninguna credencial activa un proveedor real sin esto. |
+| `IMAGE_PROVIDER` | No (vacío = sin IA) | servidor | `cloudflare` \| `openai`. Activa el modo «Con IA». Ninguna credencial lo activa sin esto. |
 | `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN` | Con `cloudflare` | **solo servidor** | Credenciales de Workers AI. |
 | `CLOUDFLARE_IMAGE_MODEL`, `_IMAGE_STEPS`, `CLOUDFLARE_EDIT_MODEL`, `_EDIT_WIDTH`, `_EDIT_HEIGHT` | No | servidor | Modelos y parámetros (ver arriba). |
 | `IMAGE_QUOTA_PER_GAME`, `IMAGE_QUOTA_PER_DAY` | No (30 / 100) | servidor | Límite de generaciones reales por partida y por día. |
@@ -246,7 +251,7 @@ Cómo se ejecuta sin un proceso en segundo plano (Vercel): cualquier lectura del
 Los jugadores **no tienen cuenta**. Al unirse (reclamar un nombre libre o entrar con uno nuevo en la sala de espera) el servidor genera un token aleatorio que va en una cookie `httpOnly` del móvil; en la base de datos solo se guarda su hash SHA-256 y la vista pública solo expone si la casilla está ocupada (`claimed`). Las pujas del móvil pasan por `POST /api/play/[código]/bid`, que identifica al jugador por esa cookie y aplica **las mismas reglas SQL** que las del anfitrión (saldo, mínimo, subasta abierta, idempotencia) más una: no puedes pujar contra ti mismo. Quien llega primero reclama la casilla; si alguien se equivoca o cambia de móvil, el anfitrión pulsa «Liberar móvil». El código de sala da acceso de juego: compártelo solo con quien quieras que participe.
 
 ## Bucket con SVG (opcional)
-El bucket `game-images` admite `image/svg+xml` solo para el proveedor `demo` y la galería de imágenes iniciales (los escribe únicamente el servidor, con texto escapado). Si usas solo un proveedor real y subes tus propias imágenes, puedes quitarlo: `update storage.buckets set allowed_mime_types = array['image/png','image/jpeg','image/webp'] where id = 'game-images';`
+El bucket `game-images` admite `image/svg+xml` solo para el modo pegatinas y la galería de imágenes iniciales (los escribe únicamente el servidor, con texto escapado). Si usas solo un proveedor real y subes tus propias imágenes, puedes quitarlo: `update storage.buckets set allowed_mime_types = array['image/png','image/jpeg','image/webp'] where id = 'game-images';`
 
 ## Seguridad
 

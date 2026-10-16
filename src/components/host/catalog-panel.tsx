@@ -66,6 +66,8 @@ export function CatalogPanel({ ctx }: { ctx: HostCtx }) {
   const { snapshot, busy, run, runtime } = ctx;
   const items = [...snapshot.items].sort((a, b) => a.sort_order - b.sort_order);
   const finished = snapshot.game.status === 'finished';
+  // Modo pegatinas: siempre se puede (ilustración local). Modo IA: sólo si hay proveedor configurado.
+  const canGenerate = snapshot.game.image_mode === 'stickers' || runtime.aiConfigured;
   const [editing, setEditing] = useState<string | null>(null);
   const [removing, setRemoving] = useState<AuctionItem | null>(null);
 
@@ -87,8 +89,8 @@ export function CatalogPanel({ ctx }: { ctx: HostCtx }) {
 
   return (
     <div className="space-y-4">
-      {!runtime.aiConfigured ? (
-        <Notice tone="warn">{runtime.mode === 'demo' ? 'Modo demo: no hay IA configurada, así que no se generan imágenes de elementos.' : 'IA no configurada: la generación de imágenes de elementos está desactivada.'}</Notice>
+      {!canGenerate ? (
+        <Notice tone="warn">Esta partida usa IA pero no hay proveedor configurado: la generación de imágenes de elementos está desactivada.</Notice>
       ) : null}
 
       <ul className="space-y-3">
@@ -120,7 +122,7 @@ export function CatalogPanel({ ctx }: { ctx: HostCtx }) {
               </div>
               {!finished ? (
                 <div className="mt-3 flex flex-wrap gap-2">
-                  <Button size="md" variant="secondary" disabled={!runtime.aiConfigured || generating || busy !== null} loading={busy === `genitem-${it.id}`} title={runtime.aiConfigured ? undefined : 'Requiere un proveedor de IA configurado'} onClick={() => run(`genitem-${it.id}`, { type: 'image.request_item', item_id: it.id }, 'Imagen del elemento solicitada')}>
+                  <Button size="md" variant="secondary" disabled={!canGenerate || generating || busy !== null} loading={busy === `genitem-${it.id}`} title={runtime.aiConfigured ? undefined : 'Requiere un proveedor de IA configurado'} onClick={() => run(`genitem-${it.id}`, { type: 'image.request_item', item_id: it.id }, 'Imagen del elemento solicitada')}>
                     <Sparkles className="size-4" aria-hidden /> {generating ? 'Generando…' : 'Generar imagen'}
                   </Button>
                   {!locked ? (

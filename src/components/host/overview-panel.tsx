@@ -38,8 +38,8 @@ export function OverviewPanel({ ctx, goTo }: { ctx: HostCtx; goTo: (s: 'jugadore
 
   return (
     <div className="space-y-4">
-      {!runtime.aiConfigured ? <Notice tone="warn">IA no configurada: las imágenes quedan en cola hasta que se configure el proveedor.</Notice> : null}
-      {runtime.mode === 'demo' ? <Notice tone="info">Modo demo: las imágenes son de muestra, no generadas por IA.</Notice> : null}
+      {snapshot.game.image_mode === 'ai' && !runtime.aiConfigured ? <Notice tone="warn">Esta partida usa IA pero no hay proveedor configurado: las imágenes quedan en cola. Cambia al modo pegatinas en Ajustes (solo en la sala de espera) o configura IMAGE_PROVIDER.</Notice> : null}
+      {snapshot.game.image_mode === 'stickers' ? <Notice tone="info">Modo pegatinas: cada compra añade el emoji del elemento a la casa (ilustraciones locales, sin IA, instantáneo y gratis).</Notice> : null}
       {failedJobs > 0 ? (
         <Notice tone="warn">
           Hay {failedJobs} trabajo{failedJobs > 1 ? 's' : ''} de imagen fallido{failedJobs > 1 ? 's' : ''}. La compra y el saldo están a salvo.{' '}

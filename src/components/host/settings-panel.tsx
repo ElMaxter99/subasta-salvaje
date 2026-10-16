@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useToast } from '@/components/ui/toast';
 import { formatEuros, parseEurosToCents } from '@/lib/domain/money';
-import type { JoinPolicy, PlayMode, RankingRule } from '@/lib/domain/types';
+import type { ImageMode, JoinPolicy, PlayMode, RankingRule } from '@/lib/domain/types';
 import { Card, Dot, Notice, inputCls } from './bits';
 import type { HostCtx } from './host-context';
 
@@ -27,6 +27,11 @@ const POLICIES: { id: JoinPolicy; label: string; hint: string }[] = [
   { id: 'open', label: 'Abierta', hint: 'Se puede reclamar una casilla libre o entrar con un nombre nuevo (solo en la sala de espera).' },
   { id: 'slots', label: 'Solo mis jugadores', hint: 'Solo se pueden reclamar las casillas que ya creaste; no se admiten nombres nuevos.' },
   { id: 'closed', label: 'Cerrada', hint: 'Nadie nuevo puede unirse (ni casillas libres). Los móviles ya conectados siguen jugando.' },
+];
+
+const IMAGE_MODES: { id: ImageMode; label: string; hint: string }[] = [
+  { id: 'stickers', label: '🎨 Pegatinas con emojis', hint: 'Sin IA, gratis e instantáneo: cada compra añade el emoji del elemento a la casa.' },
+  { id: 'ai', label: '✨ Con inteligencia artificial', hint: 'La IA genera y edita las casas. Con límites de generaciones por partida y por día.' },
 ];
 
 export function SettingsPanel({ ctx }: { ctx: HostCtx }) {
@@ -78,6 +83,29 @@ export function SettingsPanel({ ctx }: { ctx: HostCtx }) {
           </div>
           <p className="text-xs text-white/55">No se puede cambiar mientras hay una subasta abierta.</p>
         </form>
+      </Card>
+
+      <Card title="Modo de imágenes" icon={<Smartphone className="size-5 text-gold" aria-hidden />}>
+        <div role="radiogroup" aria-label="Modo de imágenes" className="grid gap-2 sm:grid-cols-2">
+          {IMAGE_MODES.map((m) => {
+            const unavailable = m.id === 'ai' && !ctx.runtime.aiConfigured;
+            return (
+              <button
+                key={m.id}
+                type="button"
+                role="radio"
+                aria-checked={game.image_mode === m.id}
+                disabled={game.status !== 'lobby' || busy !== null || unavailable}
+                onClick={() => game.image_mode !== m.id && run(`imode-${m.id}`, { type: 'game.set_image_mode', image_mode: m.id }, `Modo de imágenes: ${m.label}`)}
+                className={`rounded-2xl border-2 p-3 text-left transition disabled:opacity-60 ${game.image_mode === m.id ? 'border-gold bg-gold/10' : 'border-white/10 bg-night-700 hover:bg-night-600'}`}
+              >
+                <b className="block">{m.label}</b>
+                <span className="text-sm text-white/65">{unavailable ? 'No disponible: no hay proveedor de IA configurado (IMAGE_PROVIDER).' : m.hint}</span>
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-3 text-sm text-white/70">Solo se puede cambiar en la sala de espera, antes de empezar. Si ya generaste imágenes iniciales, se conservan en el historial.</p>
       </Card>
 
       <Card title="Modalidad de juego" icon={<Smartphone className="size-5 text-gold" aria-hidden />}>

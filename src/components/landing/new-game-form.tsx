@@ -14,7 +14,7 @@ import { THEME_PRESETS } from '@/lib/domain/themes';
 const CUSTOM = '__custom__';
 const field = 'w-full rounded-xl border border-white/15 bg-night-900 px-4 py-3 text-base';
 
-export function NewGameForm() {
+export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean; aiProvider: 'openai' | 'cloudflare' | 'demo' }) {
   const router = useRouter();
   const [name, setName] = useState('Noche de Subasta Salvaje');
   const [themeChoice, setThemeChoice] = useState('house');
@@ -22,6 +22,7 @@ export function NewGameForm() {
   const [budget, setBudget] = useState('20');
   const [minBid, setMinBid] = useState('1');
   const [playMode, setPlayMode] = useState<'host' | 'mobile'>('host');
+  const [imageMode, setImageMode] = useState<'stickers' | 'ai'>('stickers');
   const [ranking, setRanking] = useState<'none' | 'balance' | 'items' | 'votes'>('none');
   const [players, setPlayers] = useState<string[]>(['', '', '', '']);
   const [busy, setBusy] = useState(false);
@@ -49,6 +50,7 @@ export function NewGameForm() {
         min_bid_cents: minBidCents,
         ranking_rule: ranking,
         play_mode: playMode,
+        image_mode: imageMode,
         players: names.map((n, i) => ({ name: n, color: PLAYER_COLORS[i % PLAYER_COLORS.length] })),
       });
       router.push(`/game/${room_code}/host`);
@@ -82,6 +84,28 @@ export function NewGameForm() {
               </span>
             </label>
           ))}
+        </fieldset>
+
+        <fieldset className="space-y-3 rounded-3xl border border-white/10 bg-night-800/70 p-5">
+          <legend className="px-2 font-display text-xl">Modo de imágenes</legend>
+          <label className={`flex cursor-pointer gap-3 rounded-2xl border p-4 ${imageMode === 'stickers' ? 'border-gold bg-gold/10' : 'border-white/10 bg-night-900'}`}>
+            <input type="radio" name="image_mode" value="stickers" checked={imageMode === 'stickers'} onChange={() => setImageMode('stickers')} className="mt-1 size-5 accent-[#fbbf24]" />
+            <span>
+              <span className="block text-lg font-bold">🎨 Pegatinas con emojis</span>
+              <span className="block text-sm text-white/70">Cada compra añade el emoji del elemento a la casa del jugador. Ilustraciones locales: sin IA, gratis e instantáneo.</span>
+            </span>
+          </label>
+          <label className={`flex gap-3 rounded-2xl border p-4 ${aiAvailable ? 'cursor-pointer' : 'cursor-not-allowed opacity-60'} ${imageMode === 'ai' ? 'border-gold bg-gold/10' : 'border-white/10 bg-night-900'}`}>
+            <input type="radio" name="image_mode" value="ai" checked={imageMode === 'ai'} disabled={!aiAvailable} onChange={() => setImageMode('ai')} className="mt-1 size-5 accent-[#fbbf24]" />
+            <span>
+              <span className="block text-lg font-bold">✨ Con inteligencia artificial</span>
+              <span className="block text-sm text-white/70">
+                {aiAvailable
+                  ? `La IA (${aiProvider === 'cloudflare' ? 'Cloudflare Workers AI' : 'OpenAI'}) genera la casa inicial y la va editando con cada compra. Tiene límites de generaciones por partida y por día.`
+                  : 'No disponible: este despliegue no tiene un proveedor de IA configurado (IMAGE_PROVIDER). Usa el modo pegatinas.'}
+              </span>
+            </span>
+          </label>
         </fieldset>
 
         <section className="space-y-4 rounded-3xl border border-white/10 bg-night-800/70 p-5">

@@ -21,17 +21,14 @@ export function ConnectionBadge({ state, runtime, className = '' }: { state: Con
   );
 }
 
-/** Aviso visible de que se usan datos locales y/o imágenes de muestra (no IA real). */
+/** Aviso visible de que se ejecuta con datos locales (modo demo de desarrollo, sin Supabase). */
 export function DemoBanner({ runtime }: { runtime: RuntimeInfo }) {
-  const sampleImages = runtime.aiProvider === 'demo' && runtime.aiConfigured;
-  if (runtime.mode !== 'demo' && !sampleImages) return null;
+  if (runtime.mode !== 'demo') return null;
   return (
     <div className="flex items-center justify-center gap-2 bg-gold px-3 py-1.5 text-center text-sm font-bold text-night-950">
       <FlaskConical className="size-4 shrink-0" aria-hidden />
-      {runtime.mode === 'demo' ? 'MODO DEMO · datos locales · ' : 'PRUEBAS · '}
-      {runtime.aiProvider !== 'demo' && runtime.aiConfigured
-        ? `IA real activa (${runtime.aiProvider === 'cloudflare' ? 'Cloudflare Workers AI' : 'OpenAI'})`
-        : 'las imágenes son de muestra y NO están generadas por IA'}
+      MODO DEMO · datos locales de desarrollo ·{' '}
+      {runtime.aiConfigured ? `IA disponible (${runtime.aiProvider === 'cloudflare' ? 'Cloudflare Workers AI' : 'OpenAI'})` : 'modo pegatinas (sin IA)'}
     </div>
   );
 }

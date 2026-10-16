@@ -40,7 +40,7 @@ export function PlayersPanel({ ctx }: { ctx: HostCtx }) {
   const [removing, setRemoving] = useState<Player | null>(null);
   const [releasing, setReleasing] = useState<Player | null>(null);
   const budgetCents = parseEurosToCents(budget);
-  const demoProvider = ctx.runtime.aiProvider === 'demo' || !ctx.runtime.aiConfigured;
+  const aiMode = game.image_mode === 'ai';
 
   async function add() {
     if (!name.trim()) return;
@@ -84,9 +84,10 @@ export function PlayersPanel({ ctx }: { ctx: HostCtx }) {
         </Card>
       ) : null}
 
-      {lobby && demoProvider ? (
-        <Notice tone="warn">{ctx.runtime.mode === 'demo' ? 'Modo demo: las imágenes iniciales son de muestra, no están generadas por IA.' : 'IA no configurada: las imágenes iniciales quedan en cola hasta configurarla. Puedes subir una foto propia.'}</Notice>
+      {lobby && aiMode && !ctx.runtime.aiConfigured ? (
+        <Notice tone="warn">IA no configurada: las imágenes iniciales quedan en cola. Puedes subir una imagen propia, elegir de la galería o cambiar al modo pegatinas en Ajustes.</Notice>
       ) : null}
+      {lobby && !aiMode ? <Notice tone="info">Modo pegatinas: «Generar imagen inicial» dibuja una escena vacía local (sin IA). También puedes subir una imagen o elegir de la galería.</Notice> : null}
 
       <JoinCard ctx={ctx} />
 

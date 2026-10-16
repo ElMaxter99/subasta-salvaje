@@ -57,6 +57,8 @@ describe.skipIf(!URL_)('PostgreSQL real', () => {
     await pool.query(mig('20260101000900_security_join_policy_quota.sql'));
     await pool.query(mig('20260101001000_auto_award.sql'));
     await pool.query(mig('20260101001100_security_auto_award.sql'));
+    await pool.query(mig('20260101001200_image_mode.sql'));
+    await pool.query(mig('20260101001300_security_image_mode.sql'));
     const db: Db = {
       async rpc<T>(fn: string, params: Record<string, unknown>) {
         try {

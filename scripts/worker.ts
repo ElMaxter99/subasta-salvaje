@@ -23,11 +23,7 @@ async function main() {
     process.exit(1);
   }
   const ctx = await getContext();
-  if (!ctx.provider) {
-    console.error('Falta OPENAI_API_KEY: sin proveedor de IA no hay nada que procesar.');
-    process.exit(1);
-  }
-  console.log(`[worker] iniciado (${ctx.provider.id}) ${once ? 'una pasada' : `cada ${intervalMs} ms`}`);
+  console.log(`[worker] iniciado (pegatinas${ctx.provider ? ` + IA ${ctx.provider.id}` : ', IA no configurada'}) ${once ? 'una pasada' : `cada ${intervalMs} ms`}`);
   let stop = false;
   for (const sig of ['SIGINT', 'SIGTERM'] as const) process.on(sig, () => (stop = true));
   do {

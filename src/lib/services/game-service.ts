@@ -29,6 +29,7 @@ function parseOrThrow<T>(result: { success: true; data: T } | { success: false }
 /** Crea la partida. Si no se envía catálogo se usa el de la plantilla de temática. */
 export async function createGame(ctx: Ctx, hostId: string, rawInput: unknown): Promise<{ room_code: string }> {
   const input: CreateGameInput = parseOrThrow(createGameSchema.safeParse(rawInput));
+  if (input.image_mode === 'ai' && !getImageProviderId()) throw new DomainError('ai_not_available');
   const items = input.items ?? (getThemePreset(input.theme) ?? getThemePreset('free'))!.items;
   const players = input.players.map((p, i) => ({ ...p, color: p.color ?? PLAYER_COLORS[i % PLAYER_COLORS.length] }));
   const res = await ctx.db.rpc<{ room_code: string }>('ss_create_game', { ...input, players, items, host_id: hostId });
@@ -45,9 +46,10 @@ export async function getHostState(ctx: Ctx, roomCode: string, hostId: string): 
   const used = await ctx.db.rpc<{ game_used: number; day_used: number }>('ss_image_usage', { room_code: room(roomCode) });
   const provider = getImageProviderId();
   const q = quotaConfig();
-  const limited = provider !== null && provider !== 'demo';
+  // Sólo las partidas en modo IA consumen (y tienen) cuota; el modo pegatinas es local y gratuito.
+  const limited = provider !== null && snap.game.image_mode === 'ai';
   const usage: ImageUsage = {
-    provider: provider ?? 'demo',
+    provider: limited ? provider! : 'demo',
     limited,
     game_used: limited ? used.game_used : 0,
     game_limit: limited ? q.perGame : null,
@@ -67,6 +69,8 @@ function toRpc(action: GameAction): { fn: string; params: Record<string, unknown
   switch (type) {
     case 'game.update':
       return { fn: 'ss_update_game', params: rest };
+    case 'game.set_image_mode':
+      return { fn: 'ss_set_image_mode', params: rest };
     case 'game.set_auto_award':
       return { fn: 'ss_set_auto_award', params: rest };
     case 'game.set_join_policy':
@@ -127,6 +131,7 @@ export interface ActionResult {
 export async function performAction(ctx: Ctx, roomCode: string, hostId: string, rawAction: unknown): Promise<ActionResult> {
   const code = room(roomCode);
   const action = parseOrThrow(actionSchema.safeParse(rawAction));
+  if (action.type === 'game.set_image_mode' && action.image_mode === 'ai' && !getImageProviderId()) throw new DomainError('ai_not_available');
   if (action.type === 'image.set_initial_all') return setInitialFromCatalog(ctx, code, hostId, action.catalog_id);
   const { fn, params } = toRpc(action);
   const result = await ctx.db.rpc<Record<string, unknown>>(fn, { ...params, room_code: code, host_id: hostId });

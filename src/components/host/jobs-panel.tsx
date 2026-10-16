@@ -25,12 +25,12 @@ export function useAutoKick(ctx: Pick<HostCtx, 'roomCode' | 'snapshot' | 'runtim
   const hasPending = pendingJobs(ctx.snapshot.jobs) > 0;
   const { roomCode, runtime } = ctx;
   useEffect(() => {
-    if (!hasPending || !runtime.aiConfigured) return;
+    if (!hasPending || (ctx.snapshot.game.image_mode === 'ai' && !runtime.aiConfigured)) return;
     const id = setInterval(() => {
       if (document.visibilityState === 'visible') kickJobs(roomCode).catch(() => undefined);
     }, 25_000);
     return () => clearInterval(id);
-  }, [hasPending, roomCode, runtime.aiConfigured]);
+  }, [hasPending, roomCode, runtime.aiConfigured, ctx.snapshot.game.image_mode]);
 }
 
 export function JobsPanel({ ctx, refresh }: { ctx: HostCtx; refresh: () => Promise<void> }) {
@@ -57,14 +57,13 @@ export function JobsPanel({ ctx, refresh }: { ctx: HostCtx; refresh: () => Promi
 
   return (
     <div className="space-y-4">
-      {!runtime.aiConfigured ? <Notice tone="warn">IA no configurada: las imágenes quedan en cola hasta que se configure el proveedor.</Notice> : null}
+      {snapshot.game.image_mode === 'ai' && !runtime.aiConfigured ? <Notice tone="warn">IA no configurada: las imágenes de esta partida quedan en cola hasta que se configure el proveedor (IMAGE_PROVIDER).</Notice> : null}
       <UsageCard ctx={ctx} />
-      {runtime.aiConfigured && !runtime.aiCanEdit ? (
+      {snapshot.game.image_mode === 'ai' && runtime.aiConfigured && !runtime.aiCanEdit ? (
         <Notice tone="warn">
           El modelo de IA configurado solo genera imágenes nuevas: <b>no puede editar la casa existente</b>. Las compras se registran igual y la imagen anterior se conserva, pero la edición saldrá como fallida hasta que configures un modelo con edición (<code>CLOUDFLARE_EDIT_MODEL</code>) u otro proveedor.
         </Notice>
       ) : null}
-      {runtime.mode === 'demo' ? <Notice tone="info">Modo demo: el proveedor de muestra completa los trabajos al instante con imágenes de ejemplo, no generadas por IA.</Notice> : null}
       {failed.length > 0 ? (
         <Notice tone="warn">
           {failed.length === 1 ? 'Un trabajo de imagen ha fallado' : `${failed.length} trabajos de imagen han fallado`}, pero <b>la compra y el saldo están a salvo</b>. Puedes reintentarlo sin que se cobre nada otra vez.
@@ -130,7 +129,7 @@ function UsageCard({ ctx }: { ctx: HostCtx }) {
     return (
       <Card title="Generaciones de imagen">
         <p className="text-sm text-white/70">
-          Proveedor de muestra (<b>demo</b>): no consume cuota ni genera con IA real.
+          Modo <b>pegatinas</b>: ilustraciones locales sin IA. No consume cuota ni cuesta nada.
         </p>
       </Card>
     );

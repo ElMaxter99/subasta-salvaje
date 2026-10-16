@@ -24,7 +24,7 @@ export function openAiKey(env: NodeJS.ProcessEnv = process.env): string | null {
   return env.OPENAI_API_KEY?.trim() || null;
 }
 
-export type ImageProviderId = 'demo' | 'cloudflare' | 'openai';
+export type ImageProviderId = 'cloudflare' | 'openai';
 
 export interface CloudflareConfig {
   accountId: string;
@@ -58,16 +58,16 @@ export function cloudflareConfig(env: NodeJS.ProcessEnv = process.env): Cloudfla
 }
 
 /**
- * Proveedor de imágenes. POR DEFECTO `demo` (imágenes de muestra, no IA, sin coste): ninguna credencial
- * activa un proveedor real por sí sola. Hay que pedirlo con IMAGE_PROVIDER=cloudflare|openai.
- * Si se pide uno real y faltan sus credenciales devuelve null (IA no configurada): NUNCA se cambia solo
- * a otro proveedor.
+ * Proveedor de IA REAL (para las partidas en modo «ai»). Las partidas en modo «stickers» no lo usan nunca.
+ * Hay que pedirlo con IMAGE_PROVIDER=cloudflare|openai; ninguna credencial lo activa por sí sola (no se consume
+ * cuota por accidente). Sin él (o con `demo`/vacío) la IA no está disponible y sólo existe el modo pegatinas.
+ * Si se pide uno y faltan sus credenciales devuelve null: NUNCA se cambia solo a otro proveedor.
  */
 export function getImageProviderId(env: NodeJS.ProcessEnv = process.env): ImageProviderId | null {
-  const want = (env.IMAGE_PROVIDER ?? 'demo').trim().toLowerCase();
+  const want = (env.IMAGE_PROVIDER ?? '').trim().toLowerCase();
   if (want === 'cloudflare') return cloudflareConfig(env) ? 'cloudflare' : null;
   if (want === 'openai') return openAiKey(env) ? 'openai' : null;
-  return 'demo';
+  return null;
 }
 
 export interface QuotaConfig {

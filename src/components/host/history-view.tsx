@@ -160,7 +160,7 @@ function VersionItem({ v, parent, current, isA, isB, onA, onB, onRestore, busy }
           <div className="flex flex-wrap items-center gap-1.5">
             <b className="text-base">{versionLabel(v)}</b>
             {current ? <Pill tone="gold">ACTUAL</Pill> : null}
-            {v.provider === 'demo' ? <Pill tone="violet">DEMO</Pill> : <Pill>{v.provider}</Pill>}
+            {v.provider === 'demo' ? <Pill tone="violet">Pegatinas</Pill> : v.provider === 'catalog' ? <Pill>Galería</Pill> : <Pill>{v.provider}</Pill>}
             <Pill tone={failed ? 'rose' : 'teal'}>{failed ? 'Fallida' : 'Completada'}</Pill>
           </div>
           <p className="text-sm text-white/60">{fmtDateTime(v.created_at)}</p>

@@ -7,6 +7,8 @@ export type RankingRule = 'none' | 'balance' | 'items' | 'votes';
 /** host = el anfitrión registra todas las pujas; mobile = cada jugador se une con el código y puja desde su móvil. */
 export type PlayMode = 'host' | 'mobile';
 /** Quién puede unirse en modo móviles: open = casillas + nombres nuevos, slots = sólo casillas existentes, closed = nadie nuevo. */
+/** stickers = pegatinas con emojis sin IA (gratis); ai = generación/edición con IA real (con cuotas). */
+export type ImageMode = 'stickers' | 'ai';
 export type JoinPolicy = 'open' | 'slots' | 'closed';
 export type JobKind = 'initial' | 'edit' | 'item';
 export type JobStatus = 'queued' | 'running' | 'completed' | 'failed';
@@ -106,6 +108,7 @@ export interface GameInfo {
   ranking_rule: RankingRule;
   play_mode: PlayMode;
   join_policy: JoinPolicy;
+  image_mode: ImageMode;
   /** Adjudicación automática: por tiempo desde la última puja, o al instante si nadie más puede superar la puja. */
   auto_award_enabled: boolean;
   auto_award_seconds: number;
@@ -202,6 +205,7 @@ export interface HostSnapshot extends PublicSnapshot {
 export interface RuntimeInfo {
   mode: 'supabase' | 'demo';
   aiConfigured: boolean;
+  /** Proveedor de IA REAL configurado ('demo' = ninguno: sólo está disponible el modo pegatinas). */
   aiProvider: 'openai' | 'cloudflare' | 'demo';
   /** El proveedor configurado puede EDITAR la imagen existente de una casa (si no, sólo genera imágenes nuevas). */
   aiCanEdit: boolean;

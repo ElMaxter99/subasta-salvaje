@@ -102,7 +102,7 @@ describe('9. Trabajo de IA tras una compra', () => {
     expect(a2.generating).toHaveLength(0);
     const v = after.versions.find((x) => x.id === a2.current_image_version_id)!;
     expect(v).toMatchObject({ parent_version_id: ana.current_image_version_id, origin: 'edit', generation_status: 'completed', is_approved: true });
-    expect(v.prompt_used).toContain('[DEMO]');
+    expect(v.prompt_used).toContain('[PEGATINAS]');
     expect(v.source_purchase_id).toBe(job.purchase_id);
     expect(after.jobs.find((j) => j.id === job.id)!.status).toBe('completed');
     // Cumulativo: la nueva imagen contiene la anterior más la pegatina

@@ -19,8 +19,10 @@ export interface AppContext {
   db: Db;
   storage: ImageStorage;
   publisher: Publisher;
-  /** null = IA no configurada (los trabajos quedan en cola, nada se simula). */
+  /** Proveedor de IA REAL para el modo «ai» (null = no configurado: esos trabajos quedan en cola, nada se simula). */
   provider: ImageGenerationProvider | null;
+  /** Modo «stickers»: pegatinas con emojis, locales y sin IA. Siempre disponible. Si falta (tests) se usa `provider`. */
+  stickers?: ImageGenerationProvider;
 }
 
 export const demoDataDir = () => process.env.DEMO_DATA_DIR || path.join(process.cwd(), '.demo-data');
@@ -41,7 +43,6 @@ function buildProvider(): ImageGenerationProvider | null {
     });
   }
   if (id === 'cloudflare') return createCloudflareProvider(cloudflareConfig()!);
-  if (id === 'demo') return createDemoProvider();
   return null;
 }
 
@@ -49,10 +50,10 @@ async function build(): Promise<AppContext> {
   const mode = getRuntimeMode();
   if (mode === 'unconfigured') throw new DomainError('internal', 'La aplicación no está configurada. Visita /setup.');
   if (mode === 'supabase') {
-    return { mode, db: createSupabaseDb(), storage: createSupabaseStorage(), publisher: createSupabasePublisher(), provider: buildProvider() };
+    return { mode, db: createSupabaseDb(), storage: createSupabaseStorage(), publisher: createSupabasePublisher(), provider: buildProvider(), stickers: createDemoProvider() };
   }
   const db = await createPgliteDb(path.join(demoDataDir(), 'pgdata'));
-  return { mode, db, storage: createLocalStorage(path.join(demoDataDir(), 'images')), publisher: noopPublisher, provider: buildProvider() };
+  return { mode, db, storage: createLocalStorage(path.join(demoDataDir(), 'images')), publisher: noopPublisher, provider: buildProvider(), stickers: createDemoProvider() };
 }
 
 /** Contexto singleton por proceso (se reutiliza entre peticiones y recargas en desarrollo). */

@@ -37,7 +37,8 @@ export async function seedDemoGame(ctx: Ctx, hostId: string, stage: SeedStage = 
     const player = s.players[0]!;
     await performAction(ctx, room_code, hostId, { type: 'auction.bid', auction_id: id, player_id: player.id, amount_cents: 400, idempotency_key: randomUUID() });
     await performAction(ctx, room_code, hostId, { type: 'auction.award', auction_id: id, expected_winner_id: player.id, expected_price_cents: 400, idempotency_key: randomUUID() });
-    const failing = { ...ctx, provider: ctx.provider && { ...ctx.provider, editScene: async () => { throw new ProviderError('Simulado: proveedor no disponible', false); } } };
+    const broken = ctx.provider && { ...ctx.provider, editScene: async () => { throw new ProviderError('Simulado: proveedor no disponible', false); } };
+    const failing = { ...ctx, provider: broken, stickers: broken ?? undefined };
     await processImageJobs(failing, { gameId: snap.game.id });
     return room_code;
   }
