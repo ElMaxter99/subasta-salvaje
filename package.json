@@ -17,7 +17,8 @@
     "mascot:extract": "node scripts/mascot/extract.mjs",
     "brand:build": "node scripts/brand/build-brand.mjs",
     "brand:mini": "node scripts/brand/build-mini-hero.mjs",
-    "emails:build": "node scripts/emails/build-emails.mjs"
+    "emails:build": "node scripts/emails/build-emails.mjs",
+    "legal:credits": "node scripts/legal/build-credits.mjs"
   },
   "engines": {
     "node": ">=20"

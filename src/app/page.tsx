@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { Gavel, Sparkles } from 'lucide-react';
 import { DemoSeedButton, JoinPlayerForm, JoinScreenForm, SignOutButton } from '@/components/landing/landing-actions';
+import { SiteFooter } from '@/components/landing/site-footer';
 import { DemoBanner } from '@/components/ui/status';
 import { Logo } from '@/components/ui/logo';
 import { Bubble, BrandMascot, ItemIcon, Mascot, Sparkles as MascotSparkles } from '@/components/mascot/mascot';
@@ -135,6 +136,9 @@ export default async function Home() {
           </section>
         ) : null}
       </main>
+      <div className="mx-auto max-w-5xl px-5 pb-10">
+        <SiteFooter />
+      </div>
     </>
   );
 }
