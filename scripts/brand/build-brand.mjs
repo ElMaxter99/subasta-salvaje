@@ -83,3 +83,12 @@ await writeFile(`${OUT}/inventory.json`, JSON.stringify({ source: 'original/logo
   await writeFile(`${OUT}/og-image.png`, await sharp(bg).composite([{ input: logo, gravity: 'center' }]).png({ compressionLevel: 9 }).toBuffer());
   console.log('og-image.png 1200x630');
 }
+
+// 6) Imágenes ligeras para correos (PNG: WebP no se ve en todos los clientes de correo).
+{
+  const logo = await sharp(`${OUT}/logo-compact.png`).resize({ width: 320 }).png({ compressionLevel: 9, palette: true, quality: 90 }).toBuffer();
+  await writeFile(`${OUT}/email-logo.png`, logo);
+  const headPng = await sharp(head).resize({ width: 160 }).png({ compressionLevel: 9, palette: true, quality: 90 }).toBuffer();
+  await writeFile(`${OUT}/email-head.png`, headPng);
+  console.log('email-logo.png', Math.round(logo.length / 1024), 'KB · email-head.png', Math.round(headPng.length / 1024), 'KB');
+}

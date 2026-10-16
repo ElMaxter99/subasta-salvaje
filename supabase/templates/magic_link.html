@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark">
+<meta name="supported-color-schemes" content="dark">
+<title>Entra con un solo clic</title>
+</head>
+<body style="margin:0;padding:0;background:#050816;">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#050816;">Entra con un solo clic.</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#050816" style="background:#050816;">
+<tr><td align="center" style="padding:28px 12px;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;">
+    <tr><td align="center" style="padding:0 0 18px;">
+      <a href="{{ .SiteURL }}" style="text-decoration:none;"><img src="{{ .SiteURL }}/assets/brand/email-logo.png" width="200" alt="Subasta Salvaje" style="display:block;border:0;height:auto;max-width:200px;"></a>
+    </td></tr>
+    <tr><td bgcolor="#111a35" style="background:#111a35;border:1px solid #2a3a6e;border-radius:20px;padding:28px 26px;font-family:'Trebuchet MS','Segoe UI',Arial,sans-serif;color:#e8ecff;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+        <td width="72" valign="middle" style="padding-right:14px;"><img src="{{ .SiteURL }}/assets/brand/email-head.png" width="64" alt="" style="display:block;border:0;height:auto;"></td>
+        <td valign="middle"><h1 style="margin:0;font-family:'Trebuchet MS','Segoe UI',Arial,sans-serif;font-size:24px;line-height:1.2;color:#ffffff;font-weight:800;">Entra con un solo clic</h1></td>
+      </tr></table>
+      <p style="margin:20px 0 0;font-size:16px;line-height:1.55;color:#e8ecff;">Pulsa el botón para iniciar sesión en Subasta Salvaje. El enlace es de un solo uso y caduca en poco tiempo.</p>
+      
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:26px auto 0;"><tr><td align="center" bgcolor="#fbbf24" style="background:#fbbf24;border-radius:14px;border-bottom:4px solid #b45309;">
+        <a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=magiclink&next=/" style="display:inline-block;padding:14px 30px;font-family:'Trebuchet MS','Segoe UI',Arial,sans-serif;font-size:18px;font-weight:800;color:#050816;text-decoration:none;">Entrar en Subasta Salvaje</a>
+      </td></tr></table>
+      <p style="margin:18px 0 0;font-size:13px;line-height:1.5;color:#aab4d6;">¿El botón no funciona? Copia y pega este enlace en tu navegador:<br><a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=magiclink&next=/" style="color:#c4b5fd;word-break:break-all;">{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&type=magiclink&next=/</a></p>
+      
+    </td></tr>
+    <tr><td align="center" style="padding:18px 8px 0;font-family:'Trebuchet MS','Segoe UI',Arial,sans-serif;font-size:12px;line-height:1.5;color:#aab4d6;">
+      Si no has sido tú, puedes ignorar este correo con tranquilidad: no se hará ningún cambio.<br>Subasta Salvaje · subastas creativas para noches de juegos
+    </td></tr>
+  </table>
+</td></tr>
+</table>
+</body>
+</html>

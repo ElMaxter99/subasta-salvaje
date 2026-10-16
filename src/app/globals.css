@@ -1,5 +1,9 @@
 @import 'tailwindcss';
 
+/* Fuentes propias (OFL, subconjunto latino). Sin next/font: en desarrollo provocaba recargas de página en bucle. */
+@font-face { font-family: 'Baloo 2'; font-style: normal; font-weight: 700 800; font-display: swap; src: url('/assets/fonts/baloo2.woff2') format('woff2'); }
+@font-face { font-family: 'Nunito'; font-style: normal; font-weight: 200 1000; font-display: swap; src: url('/assets/fonts/nunito-var.woff2') format('woff2'); }
+
 @theme {
   --color-night-950: #050816;
   --color-night-900: #0a1022;
@@ -18,8 +22,8 @@
   --color-warning: #fbbf24;
   --color-danger: #fb7185;
   /* Tipografía: Baloo 2 (gruesa y redondeada) solo para títulos y cifras destacadas; Nunito para el texto funcional */
-  --font-display: var(--font-baloo), 'Arial Black', 'Segoe UI Black', 'Helvetica Neue', system-ui, sans-serif;
-  --font-sans: var(--font-nunito), ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-display: 'Baloo 2', 'Arial Black', 'Segoe UI Black', 'Helvetica Neue', system-ui, sans-serif;
+  --font-sans: 'Nunito', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --animate-pop: pop 0.45s cubic-bezier(0.2, 1.4, 0.4, 1) both;
   --animate-float-in: float-in 0.5s ease-out both;
   --animate-shimmer: shimmer 2.2s linear infinite;

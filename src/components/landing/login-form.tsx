@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 
 export function LoginForm({ next, supabaseUrl, supabaseAnonKey, signupsOpen = true }: { next: string; supabaseUrl: string; supabaseAnonKey: string; signupsOpen?: boolean }) {
   const router = useRouter();
-  const [mode, setMode] = useState<'signin' | 'signup'>('signin');
+  const [mode, setMode] = useState<'signin' | 'signup' | 'forgot'>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);
@@ -17,6 +17,14 @@ export function LoginForm({ next, supabaseUrl, supabaseAnonKey, signupsOpen = tr
     e.preventDefault();
     setBusy(true);
     setMessage(null);
+    if (mode === 'forgot') {
+      const res = await fetch('/api/auth/forgot', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) });
+      const out = (await res.json().catch(() => null)) as { ok?: boolean; error?: { message: string } } | null;
+      if (!res.ok || !out?.ok) setMessage({ kind: 'error', text: out?.error?.message ?? 'No se pudo enviar el correo. Inténtalo de nuevo.' });
+      else setMessage({ kind: 'info', text: 'Si existe una cuenta con ese correo, te hemos enviado un enlace para elegir una contraseña nueva. Revisa también la carpeta de spam.' });
+      setBusy(false);
+      return;
+    }
     const supabase = createBrowserClient(supabaseUrl, supabaseAnonKey);
     if (mode === 'signin') {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
@@ -56,6 +64,7 @@ export function LoginForm({ next, supabaseUrl, supabaseAnonKey, signupsOpen = tr
         </label>
         <input id="email" type="email" required autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} className={input} />
       </div>
+      {mode !== 'forgot' ? (
       <div>
         <label htmlFor="password" className="mb-1 block text-sm font-bold">
           Contraseña
@@ -70,16 +79,28 @@ export function LoginForm({ next, supabaseUrl, supabaseAnonKey, signupsOpen = tr
           onChange={(e) => setPassword(e.target.value)}
           className={input}
         />
+        {mode === 'signin' ? (
+          <button type="button" className="mt-2 text-sm text-white/70 underline" data-testid="forgot-link" onClick={() => { setMode('forgot'); setMessage(null); }}>
+            ¿Has olvidado tu contraseña?
+          </button>
+        ) : null}
       </div>
+      ) : (
+        <p className="text-sm text-white/70">Escribe el correo de tu cuenta y te enviaremos un enlace para elegir una contraseña nueva.</p>
+      )}
       {message ? (
         <p role="alert" className={`rounded-xl px-4 py-3 text-sm font-semibold ${message.kind === 'error' ? 'bg-rose/20 text-rose' : 'bg-teal/20 text-teal'}`}>
           {message.text}
         </p>
       ) : null}
       <Button type="submit" variant="primary" size="lg" className="w-full" loading={busy}>
-        {mode === 'signin' ? 'Entrar' : 'Crear cuenta'}
+        {mode === 'signin' ? 'Entrar' : mode === 'signup' ? 'Crear cuenta' : 'Enviar enlace'}
       </Button>
-      {signupsOpen ? (
+      {mode === 'forgot' ? (
+        <button type="button" className="w-full text-center text-sm text-white/70 underline" onClick={() => { setMode('signin'); setMessage(null); }}>
+          Volver a iniciar sesión
+        </button>
+      ) : signupsOpen ? (
         <button type="button" className="w-full text-center text-sm text-white/70 underline" onClick={() => setMode(mode === 'signin' ? 'signup' : 'signin')}>
           {mode === 'signin' ? '¿No tienes cuenta? Crear una' : 'Ya tengo cuenta'}
         </button>

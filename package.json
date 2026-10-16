@@ -15,7 +15,8 @@
     "scan:secrets": "node scripts/scan-secrets.mjs",
     "assets:build": "node scripts/assets/build-assets.mjs",
     "mascot:extract": "node scripts/mascot/extract.mjs",
-    "brand:build": "node scripts/brand/build-brand.mjs"
+    "brand:build": "node scripts/brand/build-brand.mjs",
+    "emails:build": "node scripts/emails/build-emails.mjs"
   },
   "engines": {
     "node": ">=20"

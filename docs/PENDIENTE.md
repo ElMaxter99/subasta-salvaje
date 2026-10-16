@@ -25,7 +25,7 @@ Orden de las migraciones (carpeta `supabase/migrations`): `…0000_core` → `�
 → `…2200`/`…2300` (panel de superadmin: ajustes, perfiles, invitaciones, auditoría; `image_usage` deja de borrarse con la partida)
 → `…2400`/`…2500` (foto propia de los elementos del catálogo)
 → `…2600`/`…2700` (rondas máximas, pujas enteras, imagen inicial obligatoria y subasta automática)
-→ `…2800`/`…2900` (puerta de alta: `ss_signup_allowed`; el formulario de la app ya no permite crear cuenta con el registro cerrado) Si alguna se aplicó a mano en el SQL Editor, marca antes
+→ `…2800`/`…2900` (puerta de alta: `ss_signup_allowed`; el formulario de la app ya no permite crear cuenta con el registro cerrado) → `…3000`/`…3100` (sonido: interruptores de efectos y música de la TV) Si alguna se aplicó a mano en el SQL Editor, marca antes
 esas versiones con `npx supabase migration repair --status applied <versión>`.
 Después de cada migración nueva, vuelve a probar a mano: crear partida, pujar, adjudicar (el saldo baja una sola vez) y borrar.
 
@@ -40,6 +40,7 @@ Después de cada migración nueva, vuelve a probar a mano: crear partida, pujar,
 - [ ] Tras cambiar variables: *Deployments → Redeploy*. Comprueba `/api/health` (debe dar `ok: true`) y `/setup`.
 
 ## 4. Supabase Auth y Storage
+- [ ] **Plantillas de correo y «He olvidado mi contraseña»:** pega las plantillas de `supabase/templates/` en *Authentication → Email Templates*, pon la *Site URL* y añade `https://TU-DOMINIO/auth/callback` a *Redirect URLs* (ver `docs/EMAILS-Y-CONTRASENA.md`). Sin probar contra Supabase real; para producción, SMTP propio.
 - [ ] **Cerrar el registro de verdad:** el cierre del superadmin bloquea el alta desde la app (`/api/auth/signup`) y el acceso de cuentas nuevas, pero la API pública de Supabase Auth sigue aceptando `signUp` directo con la clave anon (esas cuentas no entran en la app). Para cerrarlo del todo desactiva *Authentication → Sign In / Providers → Allow new users to sign up* (y crea tus cuentas desde el panel de Supabase o con invitación). Sin probar contra Supabase real.
 - [ ] *Authentication → Providers → Email* activado (opcional: desactivar *Confirm email* para entrar sin confirmar el correo).
 - [ ] *Authentication → URL Configuration*: pon tu dominio de Vercel como *Site URL*.
@@ -58,6 +59,7 @@ Después de cada migración nueva, vuelve a probar a mano: crear partida, pujar,
 - Plan de Vercel: `maxDuration = 300` en las rutas que procesan imágenes; si el plan no lo admite, bájalo (ver README).
 
 ## 8. Pendiente para más adelante (decidido por el propietario)
+- [ ] **Afinar el sonido escuchándolo** (melodías, volúmenes, tic-tac): ver `docs/SONIDO.md`. Fases pendientes del plan: ajuste de música por partida en el asistente y pulir con uso real.
 - [ ] **MFA/TOTP obligatorio para el superadmin** (Supabase Auth MFA). Hasta entonces: contraseña larga y única. Al implementarlo, `requireSuperadmin()` debe exigir `aal2`.
 - [ ] Ideas del plan de superadmin no incluidas por ahora: alertas (descartadas: solo dashboard), conversión de imágenes a WebP y retención por versiones, detección de archivos huérfanos en el bucket, cuotas de IA por usuario (hoy: global + permiso por usuario), exportación CSV de la auditoría.
 - [ ] **Mascota:** para una colección completa de poses independientes con transparencia real hacen falta renders por pose (≥ 1024 px, fondo transparente o liso): primero mascota principal, celebrando, sorprendida y triste (`docs/MASCOTA.md`). Los recortes actuales de la lámina son de ≈150 px (bustos/poses).

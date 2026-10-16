@@ -1,5 +1,7 @@
 'use client';
 
+import { SoundToggle } from '@/components/ui/sound-toggle';
+import { usePlayerSounds } from '@/lib/audio/use-audio';
 import Link from 'next/link';
 import { useState } from 'react';
 import { Crown, LogOut, Pause, Trophy } from 'lucide-react';
@@ -39,6 +41,7 @@ export function PlayerScreen({
 }) {
   const { game, auction, last_award, players } = snapshot;
   const countdown = useAutoAwardCountdown(snapshot);
+  usePlayerSounds(snapshot, me);
   const [menu, setMenu] = useState(false);
   const [confirmLeave, setConfirmLeave] = useState(false);
   const nameOf = (id: string | null) => players.find((p) => p.id === id)?.name ?? 'Alguien';
@@ -101,6 +104,9 @@ export function PlayerScreen({
         </div>
       </header>
 
+      <div className="px-4 pt-3">
+        <SoundToggle />
+      </div>
       <main className="flex-1 space-y-4 px-4 pb-6 pt-4">
         {game.status === 'paused' ? (
           <p role="status" className="flex items-center justify-center gap-2 rounded-2xl bg-gold px-4 py-3 text-base font-bold text-night-950">

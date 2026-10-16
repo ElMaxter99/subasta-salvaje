@@ -15,3 +15,4 @@ coverage
 .demo-data-e2e
 .next-*
 *.jar
+.email-preview/

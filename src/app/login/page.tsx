@@ -17,8 +17,9 @@ function safeNext(next: string | undefined): string {
   return next && next.startsWith('/') && !next.startsWith('//') && !next.includes('\\') ? next : '/';
 }
 
-export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
-  const next = safeNext((await searchParams).next);
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; link?: string }> }) {
+  const sp = await searchParams;
+  const next = safeNext(sp.next);
   if (getRuntimeMode() === 'unconfigured') redirect('/setup');
   const { identity, denial, email } = await resolveHost();
   if (identity) redirect(next);
@@ -33,6 +34,11 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           <div>
             <MascotTitle variant="expr-guino" say="¡Hola, anfitrión!" subtitle="Solo el anfitrión necesita cuenta. Los jugadores no se registran.">Acceso del anfitrión</MascotTitle>
           </div>
+          {sp.link === 'invalid' ? (
+            <p role="alert" className="rounded-2xl border border-gold/40 bg-gold/10 p-3 text-sm font-semibold text-gold-soft" data-testid="link-invalid">
+              Ese enlace ya no es válido o ha caducado. Si querías cambiar la contraseña, pide uno nuevo con «¿Has olvidado tu contraseña?».
+            </p>
+          ) : null}
           {denial ? (
             <div role="alert" className="space-y-3 rounded-2xl border border-rose/40 bg-rose/10 p-4 text-sm" data-testid="host-denied">
               <p className="font-bold text-rose">{denial === 'blocked' ? 'Tu cuenta está bloqueada.' : 'El registro está cerrado.'}</p>

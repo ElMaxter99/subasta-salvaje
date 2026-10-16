@@ -1,5 +1,7 @@
 'use client';
 
+import { SoundToggle } from '@/components/ui/sound-toggle';
+import { useGameAudio } from '@/lib/audio/use-audio';
 import { useEffect } from 'react';
 import { Maximize2, Minimize2, Pause, Loader2 } from 'lucide-react';
 import type { PublicSnapshot, RuntimeInfo } from '@/lib/domain/types';
@@ -54,6 +56,7 @@ export function ScreenView({ roomCode, initial, runtime }: { roomCode: string; i
     };
   }, []);
 
+  useGameAudio(snapshot, 'tv');
   const { game, players, auction } = snapshot;
   const finished = game.status === 'finished';
   const live = auction && auction.status !== 'cancelled' ? auction : null;
@@ -126,6 +129,7 @@ export function ScreenView({ roomCode, initial, runtime }: { roomCode: string; i
           ) : null}
           <span className={`rounded-full px-5 py-1.5 font-display text-[1.4rem] uppercase tracking-wide ${pill.tone}`}>{pill.label}</span>
           <ConnectionBadge state={connection} runtime={runtime} className="opacity-70" />
+          <SoundToggle music big />
         </div>
       </header>
 

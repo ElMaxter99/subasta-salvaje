@@ -11,7 +11,7 @@ test('la mascota aparece en inicio, TV (anuncio, cuenta atrás, adjudicado) y re
   // Inicio: mascota principal cargada
   const home = await (await browser.newContext({ viewport: { width: 1280, height: 900 } })).newPage();
   await home.goto('/');
-  await expect(home.locator('[data-mascot="mascot-main"]')).toBeVisible({ timeout: 60_000 });
+  await expect(home.locator('[data-mascot="brand-bust"]')).toBeVisible({ timeout: 60_000 });
   await expect.poll(async () => (await imagesLoaded(home).catch(() => [])).filter((i) => !i.ok).length + ((await imagesLoaded(home).catch(() => [])).length === 0 ? 1 : 0), { timeout: 20_000 }).toBe(0);
   await home.screenshot({ path: info.outputPath('home.png') });
 
@@ -56,14 +56,14 @@ test('con prefers-reduced-motion la mascota no se anima', async ({ browser }) =>
   const ctx = await browser.newContext({ reducedMotion: 'reduce' });
   const page = await ctx.newPage();
   await page.goto('/');
-  const m = page.locator('[data-mascot="mascot-main"]');
+  const m = page.locator('[data-mascot="brand-bust"]');
   await expect(m).toBeVisible({ timeout: 60_000 });
   await expect(m).toHaveClass(/ss-mascot-bob/);
   expect(await m.evaluate((el) => getComputedStyle(el).animationName)).toBe('none');
   const normal = await (await browser.newContext({ reducedMotion: 'no-preference' })).newPage();
   await normal.goto('/');
-  await expect(normal.locator('[data-mascot="mascot-main"]')).toBeVisible({ timeout: 30_000 });
-  expect(await normal.locator('[data-mascot="mascot-main"]').evaluate((el) => getComputedStyle(el).animationName)).toBe('ss-mascot-bob');
+  await expect(normal.locator('[data-mascot="brand-bust"]')).toBeVisible({ timeout: 30_000 });
+  expect(await normal.locator('[data-mascot="brand-bust"]').evaluate((el) => getComputedStyle(el).animationName)).toBe('ss-mascot-bob');
 });
 
 test('mascota en títulos y en el móvil: reacciona a ir ganando y a que te superen', async ({ browser }, info) => {

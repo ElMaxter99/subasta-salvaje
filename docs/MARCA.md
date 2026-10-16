@@ -23,7 +23,7 @@ Referencia oficial: el logo de **Subasta Salvaje** (personaje 3D con corona y ma
 - Los objetos `item-*` (corona, martillo, megáfono, moneda, temporizador, brillo) siguen siendo los recortes de la lámina antigua (`public/assets/mascot/`, ≈100 px); su estilo no es idéntico al del logo nuevo. Pendiente: reemplazarlos por recortes del mismo estilo.
 
 ## Tipografía
-- Títulos y cifras destacadas (precios, saldos): **Baloo 2** (700/800, OFL) con `next/font/google` (se sirve desde nuestro dominio, `display: swap`). Token `font-display`.
+- Títulos y cifras destacadas (precios, saldos): **Baloo 2** (700/800, OFL) con `@font-face` en `globals.css` (woff2 propios en `public/assets/fonts/`, subconjunto latino, `font-display: swap`, precarga de la de títulos). No se usa `next/font` (ni google ni local): en el servidor de desarrollo provocaba recargas de página en bucle. Token `font-display`.
 - Texto funcional (formularios, listas, instrucciones): **Nunito** (variable, OFL). Token `font-sans`.
 - El logotipo es **imagen** (`Logo`); los títulos funcionales son texto accesible.
 
@@ -34,7 +34,7 @@ Referencia oficial: el logo de **Subasta Salvaje** (personaje 3D con corona y ma
 - `ui/logo.tsx` → `<Logo size="sm|md|lg|xl" variant="compact|full" href />`.
 - `mascot/mascot.tsx` → `<Mascot variant …>` (expresiones y poses antiguas) y `<BrandMascot part="bust|head">` (mascota nueva: inicio y Loader).
 - `ui/loader.tsx` → `<Loader label detail failed onRetry />`: mascota flotando + texto de lo que ocurre; con `failed` se detiene y muestra el motivo y «Reintentar». Respeta `prefers-reduced-motion`.
-- `app/loading.tsx`, `app/error.tsx`, `app/global-error.tsx`, `app/not-found.tsx`, `app/manifest.ts` y metadatos (favicon, Open Graph, Twitter) en `app/layout.tsx`.
+- `app/game/[code]/loading.tsx` (no en la raíz: ver DECISIONES #40), `app/error.tsx`, `app/global-error.tsx`, `app/not-found.tsx`, `app/manifest.ts` y metadatos (favicon, Open Graph, Twitter) en `app/layout.tsx`.
 
 ## Dónde se aplica
 Inicio (logo + hero con la mascota nueva), login/unirse/setup/nueva partida/móvil (logo), TV y panel del anfitrión (logo en la cabecera; las mascotas son las antiguas), historial y errores (Loader con la cabeza nueva).

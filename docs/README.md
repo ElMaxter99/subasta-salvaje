@@ -20,4 +20,6 @@
 El `README.md` de la raíz es la guía de usuario/despliegue (muy completa). Estos documentos son la memoria técnica: **si cambias
 una regla, una migración o una decisión, actualiza el documento correspondiente en el mismo cambio.**
 
+- [`EMAILS-Y-CONTRASENA.md`](EMAILS-Y-CONTRASENA.md): recuperar contraseña y plantillas de correo de Supabase Auth.
+- [`SONIDO.md`](SONIDO.md): sonidos y música sintetizados, control del anfitrión y límites.
 - [`MARCA.md`](MARCA.md): identidad visual (logo, mascota oficial, tipografía, tokens, componentes y limitaciones).

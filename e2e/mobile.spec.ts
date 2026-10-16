@@ -48,9 +48,9 @@ test('modo móviles: unirse con el código, pujar desde el móvil, adjudicar y s
   // Primera puja de la subasta: «+1 €» es una puja de 1 €, no de 2 €
   await expect.poll(async () => (await state()).auction?.current_bid_cents).toBe(100);
   expect((await state()).auction.current_bidder_id).toBe(anaId);
-  await beto.p.getByRole('textbox').first().fill('3,5');
+  await beto.p.getByRole('textbox').first().fill('4');
   await beto.p.getByRole('button', { name: 'Pujar', exact: true }).click();
-  await expect.poll(async () => (await state()).auction?.current_bid_cents).toBe(350);
+  await expect.poll(async () => (await state()).auction?.current_bid_cents).toBe(400);
 
   // Sin cookie de jugador no se puede pujar
   const anon = await browser.newContext();
@@ -58,17 +58,17 @@ test('modo móviles: unirse con el código, pujar desde el móvil, adjudicar y s
     data: { auction_id: (await state()).auction.id, amount_cents: 900, idempotency_key: 'abcdefgh-1234' },
   });
   expect(bad.status()).toBe(409);
-  expect((await state()).auction.current_bid_cents).toBe(350);
+  expect((await state()).auction.current_bid_cents).toBe(400);
 
-  // El anfitrión adjudica (doble envío simultáneo): saldo de Beto -3,50 una sola vez
+  // El anfitrión adjudica (doble envío simultáneo): saldo de Beto -4 € una sola vez
   const a = (await state()).auction;
-  const body = { type: 'auction.award', auction_id: a.id, expected_winner_id: a.current_bidder_id, expected_price_cents: 350 };
+  const body = { type: 'auction.award', auction_id: a.id, expected_winner_id: a.current_bidder_id, expected_price_cents: 400 };
   await Promise.all([
     host.post(`/api/games/${code}/actions`, { data: { ...body, idempotency_key: crypto.randomUUID() } }),
     host.post(`/api/games/${code}/actions`, { data: { ...body, idempotency_key: crypto.randomUUID() } }),
   ]);
   const after = await state();
-  expect(after.players.find((x: { name: string }) => x.name === 'Beto').balance_cents).toBe(1650);
+  expect(after.players.find((x: { name: string }) => x.name === 'Beto').balance_cents).toBe(1600);
   expect(after.stats.purchases_count).toBe(1);
   await expect(beto.p.getByText(/Te llevaste/)).toBeVisible({ timeout: 20_000 });
 

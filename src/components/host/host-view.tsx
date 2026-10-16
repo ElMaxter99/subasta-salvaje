@@ -1,5 +1,7 @@
 'use client';
 
+import { HostSoundControls } from './sound-controls';
+import { useGameAudio } from '@/lib/audio/use-audio';
 import { useRef, useState, type ComponentType } from 'react';
 import Link from 'next/link';
 import { Gavel, History, ImageIcon, LayoutDashboard, Package, Settings, Users } from 'lucide-react';
@@ -53,6 +55,7 @@ function HostInner({ roomCode, initial, runtime, identity }: Props) {
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const ctx: HostCtx = { roomCode, snapshot, runtime, busy, run, exec };
   useAutoKick(ctx);
+  useGameAudio(snapshot, 'host');
   const { game } = snapshot;
 
   function onKey(e: React.KeyboardEvent, i: number) {
@@ -96,6 +99,9 @@ function HostInner({ roomCode, initial, runtime, identity }: Props) {
       </header>
       <div className="mx-auto max-w-6xl px-4 pt-3 md:hidden">
         <TvLinks roomCode={roomCode} />
+      </div>
+      <div className="mx-auto max-w-6xl px-4 pt-3">
+        <HostSoundControls ctx={ctx} />
       </div>
 
       <div className="mx-auto grid max-w-6xl gap-6 px-4 pt-4 md:grid-cols-[13rem_1fr]">
