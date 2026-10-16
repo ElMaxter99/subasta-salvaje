@@ -27,6 +27,7 @@ Cronología resumida (de la más antigua a la más reciente) con lo entregado. �
 23. **Más mascota y animaciones:** títulos con mascota y bocadillo, iconos de objeto con transparencia real, destellos, corona del ganador, moneda que gira, mascota reactiva en el móvil y el panel (`docs/MASCOTA.md`).
 24. **«Nueva partida» como asistente por pasos** (Cómo jugáis → Partida → Reglas → Jugadores → Resumen): validación por paso, resumen editable, barra de navegación fija, mascota guía y diseño responsive móvil/escritorio/TV (`new-game-form.tsx`, `new-game-stepper.tsx`).
 25. **IA: tema → prompt base, foto de elemento y mezcla:** el tema determina el prompt de la imagen inicial; el anfitrión puede subir/quitar la foto de un elemento del catálogo; al ganar un elemento con foto, la IA la mezcla con la casa del ganador (Cloudflare/OpenAI con 2 imágenes, y plan B pegando la foto). Migraciones 2400/2500.
+26. **Reglas y subasta automática:** máximo de rondas (fin sí o sí), pujas solo en euros enteros (configurable), asistente sin jugadores por defecto (se pueden crear luego o darse de alta desde el móvil), imagen inicial obligatoria para empezar y «Subasta automática» desde Resumen con pausa configurable (migraciones 2600/2700).
 
 ## Estado actual (resumen)
 Todo lo anterior está implementado y subido a `claude/eager-cerf-lgnq1z` (sin PR). Migraciones hasta `…2300`. Tests: 124 unitarios + 9 de Postgres real + 5 e2e. Pendiente del propietario: rotar claves,

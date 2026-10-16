@@ -4,12 +4,12 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { CheckCircle2, Circle, Flag, Pause, Play, Rocket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { formatEuros } from '@/lib/domain/money';
 import { themeLabel } from '@/lib/domain/themes';
 import { Card, Dot, Notice, Pill, STATUS_LABEL } from './bits';
 import type { HostCtx } from './host-context';
 import { FinishGameDialog } from './finish-dialog';
+import { AutoRunCard } from './auto-run-card';
 import { GalleryCard } from './gallery-card';
 import { PendingImagesNotice } from './pending-images';
 import { JoinCard } from './join-card';
@@ -29,7 +29,6 @@ function Check({ ok, children }: { ok: boolean; children: React.ReactNode }) {
 export function OverviewPanel({ ctx, goTo }: { ctx: HostCtx; goTo: (s: 'jugadores' | 'catalogo' | 'imagenes') => void }) {
   const { snapshot, runtime, busy, run, roomCode } = ctx;
   const { game, players, items, auction } = snapshot;
-  const [confirmStart, setConfirmStart] = useState(false);
   const [finishOpen, setFinishOpen] = useState(false);
   const withImage = players.filter((p) => p.current_image).length;
   const imagesOk = players.length > 0 && withImage === players.length;
@@ -71,7 +70,7 @@ export function OverviewPanel({ ctx, goTo }: { ctx: HostCtx; goTo: (s: 'jugadore
 
         <div className="mt-4 flex flex-wrap gap-3">
           {game.status === 'lobby' ? (
-            <Button variant="primary" size="xl" className="w-full sm:w-auto" disabled={!ready || busy !== null} loading={busy === 'start'} onClick={() => (imagesOk ? run('start', { type: 'game.start' }, '¡Partida en marcha!') : setConfirmStart(true))}>
+            <Button variant="primary" size="xl" className="w-full sm:w-auto" disabled={!ready || !imagesOk || busy !== null} loading={busy === 'start'} onClick={() => run('start', { type: 'game.start' }, '¡Partida en marcha!')}>
               <Rocket className="size-6" aria-hidden /> Empezar partida
             </Button>
           ) : null}
@@ -102,6 +101,8 @@ export function OverviewPanel({ ctx, goTo }: { ctx: HostCtx; goTo: (s: 'jugadore
       {game.status === 'finished' ? <PendingImagesNotice ctx={ctx} /> : null}
       <GalleryCard ctx={ctx} />
 
+      <AutoRunCard ctx={ctx} />
+
       <JoinCard ctx={ctx} />
 
       {game.status === 'lobby' ? (
@@ -120,7 +121,11 @@ export function OverviewPanel({ ctx, goTo }: { ctx: HostCtx; goTo: (s: 'jugadore
               </button>
             </Check>
             <Check ok={imagesOk}>
-              Imagen inicial de cada jugador ({withImage}/{players.length}). Recomendado.
+              Imagen inicial de cada jugador ({withImage}/{players.length}). <b>Obligatoria</b> para empezar:{' '}
+              <button type="button" className="font-bold text-violet-soft underline" onClick={() => goTo('jugadores')}>
+                ponla aquí
+              </button>
+              .
             </Check>
             {mobile ? (
               <Check ok={players.length > 0 && connected === players.length}>
@@ -147,22 +152,6 @@ export function OverviewPanel({ ctx, goTo }: { ctx: HostCtx; goTo: (s: 'jugadore
         </ul>
       </Card>
 
-      <ConfirmDialog
-        open={confirmStart}
-        title="Empezar sin todas las imágenes"
-        confirmLabel="Empezar igualmente"
-        variant="success"
-        loading={busy === 'start'}
-        onCancel={() => setConfirmStart(false)}
-        onConfirm={async () => {
-          await run('start', { type: 'game.start' }, '¡Partida en marcha!');
-          setConfirmStart(false);
-        }}
-      >
-        <p>
-          {players.length - withImage} jugador{players.length - withImage === 1 ? '' : 'es'} sin imagen inicial. Las imágenes iniciales no se pueden añadir después de empezar. ¿Empezar de todos modos?
-        </p>
-      </ConfirmDialog>
     </div>
   );
 }

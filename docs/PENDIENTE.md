@@ -23,7 +23,9 @@ Orden de las migraciones (carpeta `supabase/migrations`): `…0000_core` → `�
 → `…1800`/`…1900` (eventos sorpresa, deshacer adjudicación y galería con votación; renombra `ss_get_state` a `ss_get_state_base` y crea la tabla `gallery_votes`)
 → `…2000`/`…2100` (imagen base única y compartida generada con IA/pegatinas)
 → `…2200`/`…2300` (panel de superadmin: ajustes, perfiles, invitaciones, auditoría; `image_usage` deja de borrarse con la partida)
-→ `…2400`/`…2500` (foto propia de los elementos del catálogo) Si alguna se aplicó a mano en el SQL Editor, marca antes
+→ `…2400`/`…2500` (foto propia de los elementos del catálogo)
+→ `…2600`/`…2700` (rondas máximas, pujas enteras, imagen inicial obligatoria y subasta automática)
+→ `…2800`/`…2900` (puerta de alta: `ss_signup_allowed`; el formulario de la app ya no permite crear cuenta con el registro cerrado) Si alguna se aplicó a mano en el SQL Editor, marca antes
 esas versiones con `npx supabase migration repair --status applied <versión>`.
 Después de cada migración nueva, vuelve a probar a mano: crear partida, pujar, adjudicar (el saldo baja una sola vez) y borrar.
 
@@ -38,6 +40,7 @@ Después de cada migración nueva, vuelve a probar a mano: crear partida, pujar,
 - [ ] Tras cambiar variables: *Deployments → Redeploy*. Comprueba `/api/health` (debe dar `ok: true`) y `/setup`.
 
 ## 4. Supabase Auth y Storage
+- [ ] **Cerrar el registro de verdad:** el cierre del superadmin bloquea el alta desde la app (`/api/auth/signup`) y el acceso de cuentas nuevas, pero la API pública de Supabase Auth sigue aceptando `signUp` directo con la clave anon (esas cuentas no entran en la app). Para cerrarlo del todo desactiva *Authentication → Sign In / Providers → Allow new users to sign up* (y crea tus cuentas desde el panel de Supabase o con invitación). Sin probar contra Supabase real.
 - [ ] *Authentication → Providers → Email* activado (opcional: desactivar *Confirm email* para entrar sin confirmar el correo).
 - [ ] *Authentication → URL Configuration*: pon tu dominio de Vercel como *Site URL*.
 - [ ] Si no usas pegatinas ni la galería, puedes quitar `image/svg+xml` del bucket (ver README, «Bucket con SVG»).

@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { Gavel } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { newIdempotencyKey } from '@/lib/client/api';
-import { formatEuros, parseEurosToCents } from '@/lib/domain/money';
+import { formatEuros, parseEurosToCents, wholeUp } from '@/lib/domain/money';
 import type { Auction } from '@/lib/domain/types';
 import { Dot, inputCls } from './bits';
 import type { HostCtx } from './host-context';
@@ -21,7 +21,8 @@ export function BidPad({ ctx, auction }: { ctx: HostCtx; auction: Auction }) {
   const hasBids = auction.current_bid_cents > 0;
   // Sin pujas la base es 0: «+1 €» = puja de 1 € (la puja mínima actúa como suelo).
   const base = hasBids ? auction.current_bid_cents : 0;
-  const minNext = hasBids ? auction.current_bid_cents + 1 : game.min_bid_cents;
+  const whole = game.integer_bids !== false;
+  const minNext = wholeUp(hasBids ? auction.current_bid_cents + 1 : game.min_bid_cents, whole);
   const player = players.find((p) => p.id === selected) ?? null;
   const manualCents = useMemo(() => parseEurosToCents(manual), [manual]);
 
@@ -32,7 +33,7 @@ export function BidPad({ ctx, auction }: { ctx: HostCtx; auction: Auction }) {
   }
 
   const manualProblem =
-    manual.trim() === '' ? null : manualCents === null ? 'Escribe un importe válido, p. ej. 12 o 12,5' : manualCents < minNext ? `Debe ser al menos ${formatEuros(minNext)}` : player && manualCents > player.balance_cents ? `${player.name} solo tiene ${formatEuros(player.balance_cents)}` : null;
+    manual.trim() === '' ? null : manualCents === null ? `Escribe un importe válido, p. ej. ${whole ? '12' : '12 o 12,5'}` : whole && manualCents % 100 !== 0 ? 'En esta partida solo se puede pujar en euros enteros' : manualCents < minNext ? `Debe ser al menos ${formatEuros(minNext)}` : player && manualCents > player.balance_cents ? `${player.name} solo tiene ${formatEuros(player.balance_cents)}` : null;
 
   return (
     <div className="space-y-4">
@@ -74,7 +75,7 @@ export function BidPad({ ctx, auction }: { ctx: HostCtx; auction: Auction }) {
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         {INCREMENTS.map((inc) => {
-          const amount = Math.max(base + inc, game.min_bid_cents);
+          const amount = wholeUp(Math.max(base + inc, game.min_bid_cents), whole);
           const tooMuch = !!player && amount > player.balance_cents;
           return (
             <Button key={inc} variant="primary" size="lg" disabled={!player || tooMuch || busy !== null} loading={busy === `bid-${amount}`} onClick={() => bid(amount)} aria-label={`Sumar ${formatEuros(inc)}: pujar ${formatEuros(amount)}`}>
@@ -85,8 +86,8 @@ export function BidPad({ ctx, auction }: { ctx: HostCtx; auction: Auction }) {
         })}
       </div>
       {!hasBids ? (
-        <Button variant="secondary" size="md" className="w-full" disabled={!player || game.min_bid_cents > (player?.balance_cents ?? 0) || busy !== null} onClick={() => bid(game.min_bid_cents)}>
-          Pujar la mínima ({formatEuros(game.min_bid_cents)})
+        <Button variant="secondary" size="md" className="w-full" disabled={!player || wholeUp(game.min_bid_cents, whole) > (player?.balance_cents ?? 0) || busy !== null} onClick={() => bid(wholeUp(game.min_bid_cents, whole))}>
+          Pujar la mínima ({formatEuros(wholeUp(game.min_bid_cents, whole))})
         </Button>
       ) : null}
 
@@ -101,7 +102,7 @@ export function BidPad({ ctx, auction }: { ctx: HostCtx; auction: Auction }) {
           Importe manual (€)
         </label>
         <div className="flex gap-2">
-          <input id="bid-manual" className={inputCls} inputMode="decimal" placeholder="12,5" value={manual} onChange={(e) => setManual(e.target.value)} autoComplete="off" />
+          <input id="bid-manual" className={inputCls} inputMode={whole ? 'numeric' : 'decimal'} placeholder={whole ? '12' : '12,5'} value={manual} onChange={(e) => setManual(e.target.value)} autoComplete="off" />
           <Button type="submit" variant="success" size="md" disabled={!player || manualCents === null || !!manualProblem || busy !== null} loading={busy === 'bid-manual'} className="shrink-0">
             <Gavel className="size-5" aria-hidden /> Pujar
           </Button>

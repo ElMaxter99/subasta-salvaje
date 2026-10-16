@@ -24,6 +24,12 @@ Temáticas con catálogo de elementos de ejemplo (`domain/themes.ts`). **Borrado
    la cuenta atrás) o **al instante** si nadie más puede superar la puja por saldo. No actúa con la puja cerrada ni en pausa. La TV/lecturas la disparan
    cuando vence (`autoAwardTick`).
 
+## Rondas, pujas enteras, imagen obligatoria y subasta automática (migración 2600)
+- **Máximo de rondas** (`games.max_rounds`, por defecto = elementos del catálogo; editable en Ajustes, nunca menor que las rondas jugadas). Una ronda = una subasta adjudicada. Al agotarse: `ss_announce` termina la partida en vez de anunciar, y `ss_auto_run_tick` (lo dispara cualquier lectura de TV/móvil/panel) la finaliza tras 8 s para ver la última adjudicación, aunque el anfitrión no haga nada. `game.total_rounds` de la instantánea ya incorpora este límite.
+- **Pujas solo en euros enteros** (`games.integer_bids`, activado por defecto): `bid_not_whole` si no es múltiplo de 1 €; la puja mínima y los botones rápidos se redondean hacia arriba; «doble o mitad» cobra la mitad redondeada a euros. Se puede desactivar en el asistente o en Ajustes (1,50 €…).
+- **Imagen inicial obligatoria:** `game.start` falla con `initial_image_required` si algún jugador no tiene imagen actual (subida, de galería o generada). En el panel el botón «Empezar» queda desactivado con la explicación.
+- **Subasta automática** (`ss_set_auto_run` + `ss_auto_run_tick`): desde Resumen. Anuncia por orden los elementos disponibles, tras la pausa configurada (`auto_run_gap_seconds`, 3–300, 10 de serie), con el evento sorpresa habitual; al activarla enciende la adjudicación automática con el último tiempo usado (o el indicado; 20 s de serie). Si una subasta abierta no recibe ninguna puja en `auto_run_idle_seconds` (10–600, 60 de serie) se cancela y el elemento pasa al final; si se da una vuelta entera sin pujas se detiene sola. Sin elementos o sin rondas, finaliza la partida. En pausa no avanza. El servidor la «mueve» cuando alguien lee el estado, así que necesita al menos una pantalla (TV, móvil o panel) abierta.
+
 ## Eventos sorpresa (migración 1800)
 - Por subasta (`auctions.wild_event`): `blind` o `double`; elegido por el anfitrión o sorteado según `games.wild_chance_pct` si no indica nada (`none` = normal).
 - **Blind:** las vistas `public` ocultan importe, líder, pujas y `auto_award_at` mientras está `open`/`closed` (muestran `bids_count`); el anfitrión ve todo.

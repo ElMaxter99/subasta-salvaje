@@ -121,6 +121,16 @@ export interface GameInfo {
   /** Adjudicación automática: por tiempo desde la última puja, o al instante si nadie más puede superar la puja. */
   auto_award_enabled: boolean;
   auto_award_seconds: number;
+  /** Pujas solo en euros enteros. */
+  integer_bids?: boolean;
+  /** Máximo de rondas (null = todos los elementos). `total_rounds` ya incorpora este límite. */
+  max_rounds?: number | null;
+  /** Subasta automática (anuncia sola los elementos por orden). */
+  auto_run_enabled?: boolean;
+  auto_run_gap_seconds?: number;
+  auto_run_idle_seconds?: number;
+  /** Hora (del servidor) en la que se anunciará la siguiente subasta, o null. */
+  auto_run_next_at?: string | null;
   /** Probabilidad (0-100) de que una subasta salga con evento sorpresa si el anfitrión no elige uno. */
   wild_chance_pct?: number;
   current_auction_id: string | null;

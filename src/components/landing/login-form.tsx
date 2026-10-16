@@ -5,7 +5,7 @@ import { useState, type FormEvent } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
 import { Button } from '@/components/ui/button';
 
-export function LoginForm({ next, supabaseUrl, supabaseAnonKey }: { next: string; supabaseUrl: string; supabaseAnonKey: string }) {
+export function LoginForm({ next, supabaseUrl, supabaseAnonKey, signupsOpen = true }: { next: string; supabaseUrl: string; supabaseAnonKey: string; signupsOpen?: boolean }) {
   const router = useRouter();
   const [mode, setMode] = useState<'signin' | 'signup'>('signin');
   const [email, setEmail] = useState('');
@@ -28,12 +28,14 @@ export function LoginForm({ next, supabaseUrl, supabaseAnonKey }: { next: string
       router.push(next);
       router.refresh();
     } else {
-      const { data, error } = await supabase.auth.signUp({ email, password });
-      if (error) {
-        setMessage({ kind: 'error', text: error.message });
+      const res = await fetch('/api/auth/signup', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
+      const out = (await res.json().catch(() => null)) as { ok?: boolean; session?: boolean; error?: { message: string } } | null;
+      if (!res.ok || !out?.ok) {
+        setMessage({ kind: 'error', text: out?.error?.message ?? 'No se pudo crear la cuenta.' });
         setBusy(false);
         return;
       }
+      const data = { session: out.session };
       if (data.session) {
         router.push(next);
         router.refresh();
@@ -77,9 +79,15 @@ export function LoginForm({ next, supabaseUrl, supabaseAnonKey }: { next: string
       <Button type="submit" variant="primary" size="lg" className="w-full" loading={busy}>
         {mode === 'signin' ? 'Entrar' : 'Crear cuenta'}
       </Button>
-      <button type="button" className="w-full text-center text-sm text-white/70 underline" onClick={() => setMode(mode === 'signin' ? 'signup' : 'signin')}>
-        {mode === 'signin' ? '¿No tienes cuenta? Crear una' : 'Ya tengo cuenta'}
-      </button>
+      {signupsOpen ? (
+        <button type="button" className="w-full text-center text-sm text-white/70 underline" onClick={() => setMode(mode === 'signin' ? 'signup' : 'signin')}>
+          {mode === 'signin' ? '¿No tienes cuenta? Crear una' : 'Ya tengo cuenta'}
+        </button>
+      ) : (
+        <p className="text-center text-sm text-white/70" data-testid="signups-closed">
+          El registro está cerrado: solo pueden crear cuenta los correos invitados por el administrador.
+        </p>
+      )}
     </form>
   );
 }

@@ -287,6 +287,13 @@ Requieren las migraciones `…1800` y `…1900` (ver `docs/PENDIENTE.md`).
 Recortada de la lámina de referencia (`public/assets/mascot/`, 22 WebP ≈ 140 KB) y mostrada con `<Mascot>`/`<EmptyState>` (`src/components/mascot/`): inicio, 404 y estados vacíos, sala de espera, cabecera de la TV (gestos según anuncio, puja, cuenta atrás y adjudicación), overlay «¡Adjudicado!» y pantalla final. Respeta `prefers-reduced-motion`.
 **Honestidad:** solo los objetos (corona, martillo, megáfono, temporizador, logo, moneda, brillo) tienen transparencia real; la mascota, las expresiones y las poses conservan el fondo oscuro de la lámina con bordes difuminados (el cuerpo azul marino no se separa del fondo), y su resolución es baja (≈150 px; la principal 555×665). Detalle, límites y qué falta en `docs/MASCOTA.md`. Se regeneran con `npm run mascot:extract`.
 
+## Rondas, pujas enteras y subasta automática
+- **Máximo de rondas** al crear la partida (por defecto, los elementos del catálogo): al jugarse todas, la partida termina sola. Editable en Ajustes → *Rondas y pujas*.
+- **Solo pujas en euros enteros** (por defecto): 1, 2, 3… €; si lo desactivas se admiten 1,50 €, etc.
+- **Jugadores en el asistente:** ninguno por defecto; se pueden crear luego en el panel o, en modo móviles, darse de alta ellos mismos.
+- **Imagen inicial obligatoria:** no se puede empezar la partida hasta que todos los jugadores tengan su casa de partida (subida, de la galería o generada).
+- **Subasta automática** (Resumen): anuncia por orden los elementos disponibles, adjudica sola (con el último tiempo usado o el que indiques) y espera una **pausa configurable** entre subastas; si nadie puja, salta al siguiente; al acabar las rondas finaliza. El servidor avanza cuando hay una pantalla (TV, móvil o panel) abierta. Requiere las migraciones `…2600`/`…2700`.
+
 ## Fotos de los elementos y mezcla con la casa
 En *Catálogo* cada elemento tiene **«Generar imagen»** (la IA usa nombre + descripción + temática) y **«Subir foto»** (PNG/JPEG/WebP, máx. 7 MB; también «Quitar foto»). Cuando alguien gana un elemento que tiene foto, la IA **mezcla esa foto con la imagen de la casa del ganador** (la casa se conserva y el objeto se parece a su foto). Sin foto, la IA usa solo el texto. El tema de la partida determina el prompt base de la imagen inicial. Requiere las migraciones `…2400`/`…2500`. La mezcla con Cloudflare/OpenAI está implementada según su documentación pero **no probada contra las APIs reales**.
 

@@ -11,7 +11,7 @@ import { Logo } from '@/components/ui/logo';
 import { createGameRequest } from '@/lib/client/api';
 import { formatEuros, parseEurosToCents } from '@/lib/domain/money';
 import { PLAYER_COLORS } from '@/lib/domain/schemas';
-import { THEME_PRESETS } from '@/lib/domain/themes';
+import { THEME_PRESETS, getThemePreset } from '@/lib/domain/themes';
 import { Stepper, type StepInfo } from './new-game-stepper';
 
 const CUSTOM = '__custom__';
@@ -57,7 +57,10 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
   const [playMode, setPlayMode] = useState<'host' | 'mobile'>('host');
   const [imageMode, setImageMode] = useState<'stickers' | 'ai'>('stickers');
   const [ranking, setRanking] = useState<'none' | 'balance' | 'items' | 'votes'>('none');
-  const [players, setPlayers] = useState<string[]>(['', '', '', '']);
+  const [maxRounds, setMaxRounds] = useState('');
+  const [integerBids, setIntegerBids] = useState(true);
+  // Sin jugadores de partida: se pueden crear luego en el panel o, en modo móviles, darse de alta ellos mismos.
+  const [players, setPlayers] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -65,6 +68,9 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
   const preset = THEME_PRESETS.find((t) => t.id === themeChoice);
   const themeValue = themeChoice === CUSTOM ? customTheme.trim() : themeChoice;
   const names = players.map((p) => p.trim()).filter(Boolean);
+  /** Rondas por defecto = elementos del catálogo de la temática (las temáticas libres usan el catálogo base). */
+  const defaultRounds = (preset ?? getThemePreset('free'))?.items.length ?? 12;
+  const roundsValue = maxRounds.trim() === '' ? defaultRounds : Number(maxRounds);
   const last = step === STEPS.length - 1;
   const current = STEPS[step]!;
 
@@ -85,6 +91,8 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
       if (parseEurosToCents(budget) === null) return 'El presupuesto no es válido (usa por ejemplo 20 o 12,50).';
       const m = parseEurosToCents(minBid);
       if (m === null || m < 1) return 'La puja mínima no es válida.';
+      if (integerBids && m % 100 !== 0) return 'Con pujas en euros enteros, la puja mínima también debe ser un euro entero (1, 2, 3…).';
+      if (!Number.isInteger(roundsValue) || roundsValue < 1 || roundsValue > 500) return 'El máximo de rondas debe ser un número entre 1 y 500.';
     }
     if (i === 3 && new Set(names.map((n) => n.toLowerCase())).size !== names.length) return 'Hay nombres de jugador repetidos.';
     return null;
@@ -122,6 +130,8 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
         ranking_rule: ranking,
         play_mode: playMode,
         image_mode: imageMode,
+        max_rounds: roundsValue,
+        integer_bids: integerBids,
         players: names.map((n, i) => ({ name: n, color: PLAYER_COLORS[i % PLAYER_COLORS.length] })),
       });
       router.push(`/game/${room_code}/host`);
@@ -235,6 +245,20 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
                   <p className="mt-1 text-xs text-white/55 2xl:text-base">La primera puja de cada subasta no puede ser menor.</p>
                 </div>
               </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label htmlFor="rounds" className={label}>Máximo de rondas</label>
+                  <input id="rounds" inputMode="numeric" value={maxRounds} placeholder={String(defaultRounds)} onChange={(e) => setMaxRounds(e.target.value.replace(/\D/g, '').slice(0, 3))} className={field} />
+                  <p className="mt-1 text-xs text-white/55 2xl:text-base">Por defecto, los {defaultRounds} elementos del catálogo. Al jugarse todas las rondas la partida termina sola.</p>
+                </div>
+                <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-white/10 bg-night-900 p-3 sm:mt-6 has-[:focus-visible]:ring-4 has-[:focus-visible]:ring-gold/50">
+                  <input type="checkbox" checked={integerBids} onChange={(e) => setIntegerBids(e.target.checked)} className="mt-1 size-5 shrink-0 accent-[#fbbf24] 2xl:size-6" />
+                  <span>
+                    <span className="block font-bold 2xl:text-xl">Solo pujas en euros enteros</span>
+                    <span className="block text-sm text-white/65 2xl:text-lg">{integerBids ? '1, 2, 3, 4… €.' : 'Se podrá pujar también 1,50 €, 2,25 €…'} Puedes cambiarlo luego en Ajustes.</span>
+                  </span>
+                </label>
+              </div>
               <div>
                 <label htmlFor="ranking" className={label}>Clasificación final (opcional)</label>
                 <select id="ranking" value={ranking} onChange={(e) => setRanking(e.target.value as typeof ranking)} className={field}>
@@ -248,9 +272,19 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
 
           {step === 3 ? (
             <section className={card}>
-              <p className="text-sm text-white/60 2xl:text-lg">
-                {playMode === 'mobile' ? 'En modo móviles cada jugador elegirá su nombre de esta lista al unirse (o podrá entrar con uno nuevo).' : 'Cada jugador tiene su color y su casa. Déjalo en blanco si todavía no sabes los nombres.'}
-              </p>
+              <div className="rounded-2xl border border-teal/40 bg-teal/10 p-4 text-sm 2xl:text-lg" data-testid="players-help">
+                <p className="font-bold text-teal">No hace falta añadir jugadores ahora</p>
+                <ul className="mt-1 list-disc space-y-1 pl-5 text-white/80">
+                  <li>Puedes <b>crearlos más tarde</b> desde el panel de la partida (pestaña Jugadores), mientras estés en la sala de espera.</li>
+                  {playMode === 'mobile' ? (
+                    <li>Como la partida es <b>desde el móvil</b>, los propios jugadores pueden <b>darse de alta ellos mismos</b>: entran con el código o el QR y escriben su nombre (si dejas la política de altas «abierta», que es la de serie).</li>
+                  ) : (
+                    <li>Si prefieres que cada uno se dé de alta desde su móvil, elige «Cada jugador desde su móvil» en el primer paso.</li>
+                  )}
+                  <li>Para empezar necesitarás al menos 2 jugadores.</li>
+                </ul>
+              </div>
+              {players.length === 0 ? <p className="text-sm text-white/60 2xl:text-lg">Todavía no has añadido ninguno.</p> : null}
               {players.map((p, i) => (
                 <div key={i} className="flex items-center gap-2">
                   <span aria-hidden className="size-6 shrink-0 rounded-full 2xl:size-8" style={{ background: PLAYER_COLORS[i % PLAYER_COLORS.length] }} />
@@ -261,12 +295,12 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
                 </div>
               ))}
               {players.length < 12 ? (
-                <Button type="button" variant="secondary" onClick={() => setPlayers([...players, ''])}>
+                <Button type="button" variant={players.length === 0 ? 'primary' : 'secondary'} onClick={() => setPlayers([...players, ''])}>
                   <Plus className="size-4" aria-hidden /> Añadir jugador
                 </Button>
               ) : null}
               <p className={`text-sm font-semibold ${names.length >= 2 ? 'text-teal' : 'text-white/60'} 2xl:text-lg`} aria-live="polite">
-                {names.length} {names.length === 1 ? 'jugador' : 'jugadores'}{names.length < 2 ? ' · necesitarás al menos 2 para empezar' : ' · ¡perfecto!'}
+                {names.length} {names.length === 1 ? 'jugador' : 'jugadores'}{names.length < 2 ? ' · necesitarás al menos 2 para empezar (puedes crearlos luego)' : ' · ¡perfecto!'}
               </p>
             </section>
           ) : null}
@@ -290,12 +324,13 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
                   <p>
                     Presupuesto <b className="text-gold">{formatEuros(parseEurosToCents(budget) ?? 0)}</b> · puja mínima <b className="text-gold">{formatEuros(parseEurosToCents(minBid) ?? 0)}</b>
                   </p>
+                  <p className="text-white/70">{roundsValue} {roundsValue === 1 ? 'ronda' : 'rondas'} máximo · {integerBids ? 'pujas en euros enteros' : 'se admiten céntimos'}</p>
                   <p className="text-white/70">{RANKING_LABEL[ranking]}</p>
                 </>
               ))}
               {summaryRow('Jugadores', 3, (
                 names.length === 0 ? (
-                  <p className="text-white/70">Sin jugadores todavía (podrás añadirlos en el panel).</p>
+                  <p className="text-white/70">Sin jugadores todavía: {playMode === 'mobile' ? 'podrás añadirlos en el panel o se darán de alta ellos mismos desde el móvil.' : 'podrás añadirlos en el panel (pestaña Jugadores).'}</p>
                 ) : (
                   <ul className="flex flex-wrap gap-2">
                     {names.map((n, i) => (

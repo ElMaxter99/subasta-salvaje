@@ -21,6 +21,10 @@ export const createGameSchema = z.object({
   ranking_rule: z.enum(['none', 'balance', 'items', 'votes']).default('none'),
   play_mode: z.enum(['host', 'mobile']).default('host'),
   image_mode: z.enum(['stickers', 'ai']).default('stickers'),
+  /** Máximo de rondas (por defecto, todos los elementos del catálogo). Al agotarse la partida termina sola. */
+  max_rounds: z.number().int().min(1).max(500).optional(),
+  /** Pujas solo en euros enteros (por defecto sí). */
+  integer_bids: z.boolean().default(true),
   players: z.array(z.object({ name, color: color.optional() })).max(12).default([]),
   /** Si se omite, se usa el catálogo de la plantilla de temática (o vacío si es temática libre). */
   items: z
@@ -36,6 +40,9 @@ export const actionSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('game.set_mode'), play_mode: z.enum(['host', 'mobile']) }),
   z.object({ type: z.literal('game.set_image_mode'), image_mode: z.enum(['stickers', 'ai']) }),
   z.object({ type: z.literal('game.set_auto_award'), enabled: z.boolean(), seconds: z.number().int().min(3).max(300) }),
+  z.object({ type: z.literal('game.set_rules'), max_rounds: z.number().int().min(1).max(500).nullable().optional(), integer_bids: z.boolean().optional() }),
+  /** Subasta automática: anuncia los elementos por orden, adjudica sola y espera `gap_seconds` entre subastas. */
+  z.object({ type: z.literal('game.set_auto_run'), enabled: z.boolean(), gap_seconds: z.number().int().min(3).max(300), idle_seconds: z.number().int().min(10).max(600), auto_award_seconds: z.number().int().min(3).max(300).optional() }),
   z.object({ type: z.literal('game.set_join_policy'), join_policy: z.enum(['open', 'slots', 'closed']) }),
   z.object({ type: z.literal('player.release'), player_id: uuid }),
   z.object({ type: z.literal('game.start') }),

@@ -19,7 +19,7 @@ afterAll(async () => {
 /** Partida con imágenes iniciales ya generadas (como en el flujo real, antes de empezar). */
 async function gameWithImages(host: string, players = ['Ana', 'Beto']) {
   const { createGame } = await import('@/lib/services/game-service');
-  const { room_code } = await createGame(ctx, host, { name: 'Con imágenes', players: players.map((name) => ({ name })) });
+  const { room_code } = await createGame(ctx, host, { name: 'Con imágenes', integer_bids: false, players: players.map((name) => ({ name })) });
   let snap = await getHostState(ctx, room_code, host);
   for (const p of snap.players) await act(ctx, room_code, host, { type: 'image.request_initial', player_id: p.id });
   const run = await processImageJobs(ctx, { gameId: snap.game.id });

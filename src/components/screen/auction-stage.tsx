@@ -2,7 +2,7 @@
 
 import { Gavel, Hourglass } from 'lucide-react';
 import type { Auction, GameInfo, Player, PublicSnapshot } from '@/lib/domain/types';
-import { useAutoAwardCountdown } from '@/lib/client/auto-award';
+import { useAutoAwardCountdown, useCountdownTo } from '@/lib/client/auto-award';
 import { formatEuros } from '@/lib/domain/money';
 import { LobbyInvite } from './join-invite';
 import { Mascot } from '@/components/mascot/mascot';
@@ -133,6 +133,8 @@ function IdleStage({ snap }: { snap: PublicSnapshot }) {
   const { game, last_award: award, players } = snap;
   const lobby = game.status === 'lobby';
   const winner = award ? players.find((p) => p.id === award.player_id) : null;
+  const nextIn = useCountdownTo(game.status === 'active' ? game.auto_run_next_at : null, snap.server_time);
+  const lastRoundDone = game.status === 'active' && game.total_rounds > 0 && game.rounds_completed >= game.total_rounds;
   return (
     <div className="flex h-full flex-col items-center justify-center gap-[1.5rem] text-center" aria-live="polite">
       {lobby && game.play_mode === 'mobile' ? (
@@ -142,7 +144,14 @@ function IdleStage({ snap }: { snap: PublicSnapshot }) {
           <div className="ss-bounce text-[7rem] leading-none" aria-hidden>
             <Hourglass className="mx-auto size-[7rem] text-gold" />
           </div>
-          <p className="font-display text-[4.2rem] leading-tight text-white">Preparando la siguiente subasta…</p>
+          <p className="font-display text-[4.2rem] leading-tight text-white">{lastRoundDone ? '¡Esa era la última ronda!' : 'Preparando la siguiente subasta…'}</p>
+          {lastRoundDone ? (
+            <p className="rounded-2xl bg-violet px-8 py-3 font-display text-[2.4rem] text-white" data-testid="tv-last-round">Enseguida, los resultados finales</p>
+          ) : nextIn !== null ? (
+            <p className="inline-flex items-center gap-3 rounded-2xl bg-night-700 px-8 py-3 font-display text-[2.6rem] tabular-nums text-gold-soft" data-testid="tv-next-auction">
+              <Hourglass className="size-[2.6rem]" aria-hidden /> {nextIn > 0 ? `Siguiente subasta en ${nextIn} s` : '¡Ya viene el siguiente elemento!'}
+            </p>
+          ) : null}
           {award ? (
             <p className="rounded-2xl bg-night-800/90 px-8 py-4 text-[2rem] font-semibold text-white/85">
               Último adjudicado: <span className="mr-1">{award.emoji ?? '🎁'}</span>

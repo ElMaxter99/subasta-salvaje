@@ -8,7 +8,7 @@ beforeAll(async () => { ctx = await makeCtx(); });
 afterAll(async () => { await ctx.db.close(); });
 
 async function mobileGame(host: string, mode: 'mobile' | 'host' = 'mobile') {
-  const { room_code } = await createGame(ctx, host, { name: 'Móviles', play_mode: mode, players: [{ name: 'Ana' }, { name: 'Beto' }, { name: 'Carla' }] });
+  const { room_code } = await createGame(ctx, host, { name: 'Móviles', play_mode: mode, integer_bids: false, players: [{ name: 'Ana' }, { name: 'Beto' }, { name: 'Carla' }] });
   return { room: room_code, snap: await getHostState(ctx, room_code, host) };
 }
 async function openAuction(host: string, room: string) {

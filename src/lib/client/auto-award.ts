@@ -8,8 +8,11 @@ import type { PublicSnapshot } from '@/lib/domain/types';
  * Usa la hora del servidor de la instantánea (`server_time`) para no depender del reloj del dispositivo.
  */
 export function useAutoAwardCountdown(snapshot: Pick<PublicSnapshot, 'server_time' | 'auction'>): number | null {
-  const at = snapshot.auction?.auto_award_at ?? null;
-  const serverTime = snapshot.server_time;
+  return useCountdownTo(snapshot.auction?.auto_award_at ?? null, snapshot.server_time);
+}
+
+/** Segundos hasta `at` (hora del servidor) usando el desfase del reloj del dispositivo; null si no hay fecha. */
+export function useCountdownTo(at: string | null | undefined, serverTime: string): number | null {
   const [remaining, setRemaining] = useState<number | null>(null);
 
   useEffect(() => {

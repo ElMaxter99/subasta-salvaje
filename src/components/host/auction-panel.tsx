@@ -267,6 +267,15 @@ function NextItem({ ctx }: { ctx: HostCtx }) {
         <Notice tone="info">La última subasta se canceló sin cobrar nada. Anuncia otro elemento (o el mismo).</Notice>
       ) : null}
 
+      {game.status === 'active' && game.total_rounds > 0 && game.rounds_completed >= game.total_rounds ? (
+        <Card className="border-violet/40">
+          <p className="font-display text-xl">🏁 Se han jugado todas las rondas ({game.rounds_completed}/{game.total_rounds})</p>
+          <p className="mt-1 text-sm text-white/70">La partida terminará sola en unos segundos (o al anunciar otro elemento). Puedes finalizarla ya o ampliar el máximo de rondas en Ajustes.</p>
+          <Button className="mt-3" variant="primary" disabled={busy !== null} loading={busy === 'finish-rounds'} onClick={() => run('finish-rounds', { type: 'game.finish' }, 'Partida finalizada')}>
+            Finalizar y ver resultados
+          </Button>
+        </Card>
+      ) : null}
       <LastAwardCard ctx={ctx} />
       <TaxCard ctx={ctx} />
 

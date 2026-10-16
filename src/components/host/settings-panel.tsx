@@ -40,6 +40,7 @@ export function SettingsPanel({ ctx }: { ctx: HostCtx }) {
   const finished = game.status === 'finished';
   const [name, setName] = useState(game.name);
   const [minBid, setMinBid] = useState('');
+  const [rounds, setRounds] = useState(String(game.total_rounds));
   const [finishOpen, setFinishOpen] = useState(false);
   const minCents = parseEurosToCents(minBid);
 
@@ -81,6 +82,41 @@ export function SettingsPanel({ ctx }: { ctx: HostCtx }) {
           </div>
           <p className="text-xs text-white/55">No se puede cambiar mientras hay una subasta abierta.</p>
         </form>
+      </Card>
+
+      <Card title="Rondas y pujas" icon={<Flag className="size-5 text-gold" aria-hidden />}>
+        <form
+          className="space-y-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const n = Number(rounds);
+            if (Number.isInteger(n) && n >= 1) void run('rounds', { type: 'game.set_rules', max_rounds: n }, 'Máximo de rondas actualizado');
+          }}
+        >
+          <label htmlFor="max-rounds" className="text-sm font-semibold text-white/80">
+            Máximo de rondas (ahora {game.total_rounds}; jugadas {game.rounds_completed})
+          </label>
+          <div className="flex gap-2">
+            <input id="max-rounds" className={inputCls} inputMode="numeric" value={rounds} disabled={finished} onChange={(e) => setRounds(e.target.value.replace(/\D/g, '').slice(0, 3))} />
+            <Button type="submit" variant="secondary" disabled={finished || !rounds || Number(rounds) < 1 || Number(rounds) === game.total_rounds || busy !== null} loading={busy === 'rounds'}>
+              Guardar
+            </Button>
+          </div>
+          <p className="text-xs text-white/55">Al jugarse todas las rondas la partida termina sola (no puede ser menor que las rondas ya jugadas).</p>
+        </form>
+        <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-2xl border border-white/10 bg-night-900 p-3">
+          <input
+            type="checkbox"
+            className="mt-1 size-5 accent-[#fbbf24]"
+            checked={game.integer_bids !== false}
+            disabled={finished || busy !== null}
+            onChange={(e) => run('integer', { type: 'game.set_rules', integer_bids: e.target.checked }, e.target.checked ? 'Solo se puja en euros enteros' : 'Ahora se pueden pujar céntimos (1,50 €)')}
+          />
+          <span>
+            <b className="block">Solo pujas en euros enteros</b>
+            <span className="text-sm text-white/65">Activado: 1, 2, 3… €. Desactivado: también 1,50 €, 2,25 €… (se aplica a las próximas pujas).</span>
+          </span>
+        </label>
       </Card>
 
       <Card title="Modo de imágenes" icon={<Smartphone className="size-5 text-gold" aria-hidden />}>

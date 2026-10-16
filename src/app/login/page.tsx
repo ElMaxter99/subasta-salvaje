@@ -7,7 +7,7 @@ import { Logo } from '@/components/ui/logo';
 import { resolveHost } from '@/lib/auth/host';
 import { SignOutButton } from '@/components/landing/landing-actions';
 import { getRuntimeMode } from '@/lib/config/env';
-import { getRuntimeInfo } from '@/lib/services/context';
+import { getContext, getRuntimeInfo } from '@/lib/services/context';
 
 export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Acceso del anfitrión' };
@@ -23,6 +23,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   const { identity, denial, email } = await resolveHost();
   if (identity) redirect(next);
   const runtime = getRuntimeInfo();
+  const signupsOpen = runtime.mode === 'supabase' ? (await (await getContext()).db.rpc<{ open: boolean }>('ss_signup_allowed', {}).catch(() => ({ open: true }))).open : true;
   return (
     <>
       <DemoBanner runtime={runtime} />
@@ -47,7 +48,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
               <DemoLoginButton next={next} />
             </div>
           ) : (
-            <LoginForm next={next} supabaseUrl={runtime.supabaseUrl!} supabaseAnonKey={runtime.supabaseAnonKey!} />
+            <LoginForm next={next} supabaseUrl={runtime.supabaseUrl!} supabaseAnonKey={runtime.supabaseAnonKey!} signupsOpen={signupsOpen} />
           )}
         </div>
       </main>

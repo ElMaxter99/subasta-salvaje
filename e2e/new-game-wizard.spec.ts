@@ -43,7 +43,20 @@ test('asistente de nueva partida: pasos, validación, resumen editable y creaci�
     await nav.click();
     await expect(page.getByTestId('wizard-error')).toContainText('presupuesto');
     await page.getByLabel('Presupuesto inicial (€)').fill('30');
+    // Rondas por defecto = catálogo (12 en «Casa») y pujas enteras por defecto
+    await expect(page.getByLabel('Máximo de rondas')).toHaveAttribute('placeholder', '12');
+    await expect(page.getByRole('checkbox', { name: /Solo pujas en euros enteros/ })).toBeChecked();
+    await page.getByLabel('Puja mínima (€)').fill('1,5');
     await nav.click();
+    await expect(page.getByTestId('wizard-error')).toContainText('euros enteros');
+    await page.getByLabel('Puja mínima (€)').fill('1');
+    await page.getByLabel('Máximo de rondas').fill('5');
+    await nav.click();
+    // Jugadores: ninguno por defecto y explicación de que se pueden crear luego
+    await expect(page.getByLabel('Nombre del jugador 1')).toHaveCount(0);
+    await expect(page.getByTestId('players-help')).toContainText('crearlos más tarde');
+    await page.getByRole('button', { name: /Añadir jugador/ }).click();
+    await page.getByRole('button', { name: /Añadir jugador/ }).click();
     await page.getByLabel('Nombre del jugador 1').fill('Ana');
     await page.getByLabel('Nombre del jugador 2').fill('ana');
     await nav.click();
@@ -52,6 +65,7 @@ test('asistente de nueva partida: pasos, validación, resumen editable y creaci�
     await page.getByLabel('Nombre del jugador 2').press('Enter'); // Enter avanza, no crea
     await expect(page.getByTestId('wizard-step-5')).toBeVisible();
     await expect(page.getByText('Ana')).toBeVisible();
+    await expect(page.getByText(/5 rondas máximo/)).toBeVisible();
     await page.screenshot({ path: info.outputPath(`wizard-${vp.name}-5.png`) });
 
     // Editar desde el resumen y volver

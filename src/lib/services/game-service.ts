@@ -43,6 +43,8 @@ export async function createGame(ctx: Ctx, hostId: string, rawInput: unknown): P
   const items = input.items ?? (getThemePreset(input.theme) ?? getThemePreset('free'))!.items;
   const players = input.players.map((p, i) => ({ ...p, color: p.color ?? PLAYER_COLORS[i % PLAYER_COLORS.length] }));
   const res = await ctx.db.rpc<{ room_code: string }>('ss_create_game', { ...input, players, items, host_id: hostId });
+  // Reglas: máximo de rondas (por defecto, el tamaño del catálogo) y pujas enteras.
+  await ctx.db.rpc('ss_set_game_rules', { room_code: res.room_code, host_id: hostId, max_rounds: input.max_rounds ?? items.length, integer_bids: input.integer_bids });
   return res;
 }
 
@@ -99,6 +101,10 @@ function toRpc(action: GameAction): { fn: string; params: Record<string, unknown
       return { fn: 'ss_undo_award', params: rest };
     case 'gallery.close':
       return { fn: 'ss_gallery_set', params: {} };
+    case 'game.set_rules':
+      return { fn: 'ss_set_game_rules', params: rest };
+    case 'game.set_auto_run':
+      return { fn: 'ss_set_auto_run', params: rest };
     case 'game.set_join_policy':
       return { fn: 'ss_set_join_policy', params: rest };
     case 'game.set_mode':
@@ -276,10 +282,12 @@ export async function uploadInitialImageForAll(ctx: Ctx, roomCode: string, hostI
 export async function autoAwardTick(ctx: Ctx, roomCode: string): Promise<boolean> {
   const code = room(roomCode);
   const r = await ctx.db.rpc<{ awarded?: boolean }>('ss_auto_award', { room_code: code });
-  if (!r.awarded) return false;
+  // Avance automático: fin por rondas agotadas, subasta automática (anunciar el siguiente) y saltar subastas sin pujas.
+  const run = await ctx.db.rpc<{ changed?: boolean }>('ss_auto_run_tick', { room_code: code });
+  if (!r.awarded && !run.changed) return false;
   const snap = await ctx.db.rpc<{ version: number }>('ss_get_state', { room_code: code, view: 'public' });
   await ctx.publisher.publish(code, snap.version);
-  return true;
+  return Boolean(r.awarded);
 }
 
 /** Borra una partida y sus archivos de Storage. Sólo el anfitrión propietario. Irreversible. */

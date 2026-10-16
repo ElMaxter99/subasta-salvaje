@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useToast } from '@/components/ui/toast';
 import { ApiError, newIdempotencyKey, playerBidRequest } from '@/lib/client/api';
-import { formatEuros, parseEurosToCents } from '@/lib/domain/money';
+import { formatEuros, parseEurosToCents, wholeUp } from '@/lib/domain/money';
 import type { PublicSnapshot } from '@/lib/domain/types';
 
 const QUICK = [100, 200, 500, 1000];
@@ -17,6 +17,7 @@ export function BidPad({
   auctionId,
   baseCents,
   minBidCents,
+  integerBids = true,
   balanceCents,
   leading,
   onSnapshot,
@@ -27,6 +28,8 @@ export function BidPad({
   /** Puja actual, o la mínima si aún no hay pujas. */
   baseCents: number;
   minBidCents: number;
+  /** Solo euros enteros (por defecto sí). */
+  integerBids?: boolean;
   balanceCents: number;
   leading: boolean;
   onSnapshot: (s: PublicSnapshot) => void;
@@ -42,6 +45,7 @@ export function BidPad({
   const locked = leading || noFunds;
   const manual = parseEurosToCents(text);
   const manualBad = text.trim() !== '' && manual === null;
+  const manualFraction = integerBids && manual !== null && manual % 100 !== 0;
 
   async function send(amount: number) {
     if (busy) return;
@@ -85,7 +89,7 @@ export function BidPad({
       ) : null}
       <div className="grid grid-cols-4 gap-2">
         {QUICK.map((d) => {
-          const amount = Math.max(baseCents + d, minBidCents);
+          const amount = wholeUp(Math.max(baseCents + d, minBidCents), integerBids);
           return (
             <Button
               key={d}
@@ -114,7 +118,7 @@ export function BidPad({
           </label>
           <input
             id="bid-amount"
-            inputMode="decimal"
+            inputMode={integerBids ? 'numeric' : 'decimal'}
             autoComplete="off"
             enterKeyHint="send"
             value={text}
@@ -122,17 +126,17 @@ export function BidPad({
             onChange={(e) => setText(e.target.value)}
             onFocus={(e) => window.setTimeout(() => e.target.scrollIntoView({ block: 'center', behavior: 'smooth' }), 300)}
             aria-invalid={manualBad || undefined}
-            placeholder={`Otro importe (€) · mín. ${formatEuros(baseCents > 0 ? baseCents + 1 : minBidCents)}`}
+            placeholder={`Otro importe (€) · mín. ${formatEuros(wholeUp(baseCents > 0 ? baseCents + 1 : minBidCents, integerBids))}`}
             className="min-h-14 w-full rounded-2xl border border-white/20 bg-night-950 px-4 text-lg text-white placeholder:text-sm placeholder:text-white/40 disabled:opacity-45"
           />
         </div>
-        <Button type="submit" variant="success" size="lg" loading={busy} disabled={locked || manual === null || manual <= 0} className="shrink-0">
+        <Button type="submit" variant="success" size="lg" loading={busy} disabled={locked || manual === null || manual <= 0 || manualFraction} className="shrink-0">
           <Gavel className="size-5" aria-hidden /> Pujar
         </Button>
       </form>
-      {manualBad ? (
+      {manualBad || manualFraction ? (
         <p role="alert" className="text-sm font-semibold text-rose">
-          Escribe un importe válido, por ejemplo 12 o 12,5.
+          {manualFraction ? 'En esta partida solo se puede pujar en euros enteros (1, 2, 3…).' : `Escribe un importe válido, por ejemplo ${integerBids ? '12' : '12 o 12,5'}.`}
         </p>
       ) : null}
       <ConfirmDialog

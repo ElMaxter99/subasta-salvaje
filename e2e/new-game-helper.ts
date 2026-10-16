@@ -13,7 +13,10 @@ export async function createGameViaWizard(page: Page, opts: { name: string; mobi
   // 3. Reglas
   await next();
   // 4. Jugadores
-  for (const [i, n] of opts.players.entries()) await page.getByLabel(`Nombre del jugador ${i + 1}`).fill(n);
+  for (const [i, n] of opts.players.entries()) {
+    await page.getByRole('button', { name: /Añadir jugador/ }).click();
+    await page.getByLabel(`Nombre del jugador ${i + 1}`).fill(n);
+  }
   await next();
   // 5. Resumen
   await page.getByRole('button', { name: /Crear partida/ }).click();

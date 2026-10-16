@@ -251,6 +251,7 @@ export function PlayerScreen({
             auctionId={auction.id}
             baseCents={base}
             minBidCents={game.min_bid_cents}
+            integerBids={game.integer_bids !== false}
             balanceCents={me.balance_cents}
             leading={leading}
             onSnapshot={onSnapshot}

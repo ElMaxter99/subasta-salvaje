@@ -47,6 +47,15 @@ describe('acceso de anfitriones: registro abierto/cerrado, invitaciones y bloque
     await expect(adminInvite(ctx, 'root', { op: 'add', email: 'no-es-un-correo' })).rejects.toMatchObject({ code: 'invalid_input' });
   });
 
+  it('la puerta de alta respeta el registro cerrado y las invitaciones', async () => {
+    const gate = (email: string) => ctx.db.rpc<{ open: boolean; allowed: boolean }>('ss_signup_allowed', { email });
+    expect(await gate('n@x.es')).toEqual({ open: true, allowed: true });
+    await adminSetSetting(ctx, 'root', { key: 'signups_open', value: false });
+    expect(await gate('n@x.es')).toEqual({ open: false, allowed: false });
+    await adminInvite(ctx, 'root', { op: 'add', email: 'N@x.es' });
+    expect(await gate(' n@x.es ')).toEqual({ open: false, allowed: true });
+  });
+
   it('quien ya tenía partidas antes conserva el acceso con el registro cerrado', async () => {
     const host = newHost();
     await createGame(ctx, host, { name: 'Vieja', players: [{ name: 'Ana' }, { name: 'Beto' }] });
