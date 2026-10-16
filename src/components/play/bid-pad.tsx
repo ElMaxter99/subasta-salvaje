@@ -85,7 +85,7 @@ export function BidPad({
       ) : null}
       <div className="grid grid-cols-4 gap-2">
         {QUICK.map((d) => {
-          const amount = baseCents + d;
+          const amount = Math.max(baseCents + d, minBidCents);
           return (
             <Button
               key={d}
@@ -122,7 +122,7 @@ export function BidPad({
             onChange={(e) => setText(e.target.value)}
             onFocus={(e) => window.setTimeout(() => e.target.scrollIntoView({ block: 'center', behavior: 'smooth' }), 300)}
             aria-invalid={manualBad || undefined}
-            placeholder={`Otro importe (€) · mín. ${formatEuros(baseCents + 100)}`}
+            placeholder={`Otro importe (€) · mín. ${formatEuros(baseCents > 0 ? baseCents + 1 : minBidCents)}`}
             className="min-h-14 w-full rounded-2xl border border-white/20 bg-night-950 px-4 text-lg text-white placeholder:text-sm placeholder:text-white/40 disabled:opacity-45"
           />
         </div>

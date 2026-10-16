@@ -19,7 +19,8 @@ export function BidPad({ ctx, auction }: { ctx: HostCtx; auction: Auction }) {
   const [manual, setManual] = useState('');
 
   const hasBids = auction.current_bid_cents > 0;
-  const base = hasBids ? auction.current_bid_cents : game.min_bid_cents;
+  // Sin pujas la base es 0: «+1 €» = puja de 1 € (la puja mínima actúa como suelo).
+  const base = hasBids ? auction.current_bid_cents : 0;
   const minNext = hasBids ? auction.current_bid_cents + 1 : game.min_bid_cents;
   const player = players.find((p) => p.id === selected) ?? null;
   const manualCents = useMemo(() => parseEurosToCents(manual), [manual]);
@@ -73,7 +74,7 @@ export function BidPad({ ctx, auction }: { ctx: HostCtx; auction: Auction }) {
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         {INCREMENTS.map((inc) => {
-          const amount = base + inc;
+          const amount = Math.max(base + inc, game.min_bid_cents);
           const tooMuch = !!player && amount > player.balance_cents;
           return (
             <Button key={inc} variant="primary" size="lg" disabled={!player || tooMuch || busy !== null} loading={busy === `bid-${amount}`} onClick={() => bid(amount)} aria-label={`Sumar ${formatEuros(inc)}: pujar ${formatEuros(amount)}`}>

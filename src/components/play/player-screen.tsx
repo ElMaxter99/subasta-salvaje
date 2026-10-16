@@ -42,7 +42,8 @@ export function PlayerScreen({
   const closed = auction?.status === 'closed' && game.status !== 'finished';
   const leading = open && auction.current_bidder_id === me.id;
   const hasBids = (auction?.bids.length ?? 0) > 0;
-  const base = open ? (hasBids ? auction.current_bid_cents : Math.max(auction.current_bid_cents, game.min_bid_cents)) : 0;
+  // Sin pujas la base es 0: el primer «+1 €» es una puja de 1 € (la puja mínima de la partida actúa como suelo en el pad).
+  const base = open && hasBids ? auction.current_bid_cents : 0;
   const lowFunds = me.balance_cents <= 0 || me.balance_cents < game.min_bid_cents;
   const recent = open ? [...auction.bids].sort((a, b) => b.created_at.localeCompare(a.created_at)).slice(0, 4) : [];
 
