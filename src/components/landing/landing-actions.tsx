@@ -2,7 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { ArrowRight, FlaskConical, LogOut, Tv } from 'lucide-react';
+import { ArrowRight, FlaskConical, LogOut, Smartphone, Tv } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { demoLogin, seedDemo } from '@/lib/client/api';
 
@@ -31,6 +31,37 @@ export function JoinScreenForm() {
       />
       <Button type="submit" variant="secondary" size="lg" disabled={code.length < 4}>
         <Tv className="size-5" aria-hidden /> Ver pantalla
+      </Button>
+    </form>
+  );
+}
+
+export function JoinPlayerForm() {
+  const router = useRouter();
+  const [code, setCode] = useState('');
+  return (
+    <form
+      className="flex w-full gap-2"
+      onSubmit={(e) => {
+        e.preventDefault();
+        const c = code.trim().toUpperCase();
+        if (c) router.push(`/game/${c}/play`);
+      }}
+    >
+      <label className="sr-only" htmlFor="player-room-code">
+        Código de sala
+      </label>
+      <input
+        id="player-room-code"
+        value={code}
+        onChange={(e) => setCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12))}
+        placeholder="CÓDIGO"
+        autoComplete="off"
+        autoCapitalize="characters"
+        className="min-w-0 flex-1 rounded-xl border border-white/15 bg-night-900 px-4 py-3 text-center font-display text-xl tracking-[0.3em] placeholder:tracking-widest placeholder:text-white/30"
+      />
+      <Button type="submit" variant="primary" size="lg" disabled={code.length < 4}>
+        <Smartphone className="size-5" aria-hidden /> Unirme
       </Button>
     </form>
   );

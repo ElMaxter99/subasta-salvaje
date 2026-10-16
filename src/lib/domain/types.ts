@@ -4,6 +4,8 @@ export type GameStatus = 'lobby' | 'active' | 'paused' | 'finished';
 export type AuctionStatus = 'open' | 'closed' | 'awarded' | 'cancelled';
 export type ItemStatus = 'available' | 'in_auction' | 'sold';
 export type RankingRule = 'none' | 'balance' | 'items' | 'votes';
+/** host = el anfitrión registra todas las pujas; mobile = cada jugador se une con el código y puja desde su móvil. */
+export type PlayMode = 'host' | 'mobile';
 export type JobKind = 'initial' | 'edit' | 'item';
 export type JobStatus = 'queued' | 'running' | 'completed' | 'failed';
 
@@ -39,6 +41,8 @@ export interface Player {
   sort_order: number;
   balance_cents: number;
   votes: number;
+  /** true si un móvil ya ha reclamado a este jugador (modo móviles). */
+  claimed: boolean;
   current_image_version_id: string | null;
   current_image: ImageRef | null;
   initial_image: ImageRef | null;
@@ -96,6 +100,7 @@ export interface GameInfo {
   initial_budget_cents: number;
   min_bid_cents: number;
   ranking_rule: RankingRule;
+  play_mode: PlayMode;
   current_auction_id: string | null;
   created_at: string;
   finished_at: string | null;

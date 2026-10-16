@@ -15,6 +15,7 @@ export const createGameSchema = z.object({
   initial_budget_cents: z.number().int().min(0).max(100_000_000).default(2000),
   min_bid_cents: z.number().int().min(1).max(100_000_000).default(100),
   ranking_rule: z.enum(['none', 'balance', 'items', 'votes']).default('none'),
+  play_mode: z.enum(['host', 'mobile']).default('host'),
   players: z.array(z.object({ name, color: color.optional() })).max(12).default([]),
   /** Si se omite, se usa el catálogo de la plantilla de temática (o vacío si es temática libre). */
   items: z
@@ -27,6 +28,8 @@ export type CreateGameInput = z.infer<typeof createGameSchema>;
 export const actionSchema = z.discriminatedUnion('type', [
   // Partida
   z.object({ type: z.literal('game.update'), name: z.string().trim().min(1).max(80).optional(), theme: z.string().trim().min(1).max(120).optional(), initial_budget_cents: z.number().int().min(0).max(100_000_000).optional(), min_bid_cents: z.number().int().min(1).max(100_000_000).optional(), ranking_rule: z.enum(['none', 'balance', 'items', 'votes']).optional() }),
+  z.object({ type: z.literal('game.set_mode'), play_mode: z.enum(['host', 'mobile']) }),
+  z.object({ type: z.literal('player.release'), player_id: uuid }),
   z.object({ type: z.literal('game.start') }),
   z.object({ type: z.literal('game.pause') }),
   z.object({ type: z.literal('game.resume') }),
@@ -62,3 +65,14 @@ export type GameAction = z.infer<typeof actionSchema>;
 
 export const roomCodeSchema = z.string().trim().toUpperCase().regex(/^[A-Z0-9]{4,12}$/);
 export const themeIds = THEME_PRESETS.map((t) => t.id);
+
+/** Acciones de los jugadores desde el móvil (se autentican con su token, no con la sesión del anfitrión). */
+export const playerBidSchema = z.object({
+  auction_id: uuid,
+  amount_cents: cents,
+  idempotency_key: idempotencyKey,
+});
+export const joinSchema = z.union([
+  z.object({ player_id: uuid }),
+  z.object({ name: name }),
+]);

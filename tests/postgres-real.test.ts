@@ -49,6 +49,8 @@ describe.skipIf(!URL_)('PostgreSQL real', () => {
     await pool.query(mig('20260101000200_initial_all.sql'));
     await pool.query(mig('20260101000100_security.sql'));
     await pool.query(mig('20260101000300_security_initial_all.sql'));
+    await pool.query(mig('20260101000400_mobile_players.sql'));
+    await pool.query(mig('20260101000500_security_mobile_players.sql'));
     const db: Db = {
       async rpc<T>(fn: string, params: Record<string, unknown>) {
         try {

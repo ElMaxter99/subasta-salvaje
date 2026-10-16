@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { Gavel, Sparkles, Tv, Wand2 } from 'lucide-react';
-import { DemoSeedButton, JoinScreenForm, SignOutButton } from '@/components/landing/landing-actions';
+import { Gavel, Smartphone, Sparkles, Tv, Wand2 } from 'lucide-react';
+import { DemoSeedButton, JoinPlayerForm, JoinScreenForm, SignOutButton } from '@/components/landing/landing-actions';
 import { DemoBanner } from '@/components/ui/status';
 import { getHostIdentity } from '@/lib/auth/host';
 import { getRuntimeMode } from '@/lib/config/env';
@@ -62,6 +62,13 @@ export default async function Home() {
         </section>
 
         <section className="grid gap-4 md:grid-cols-2">
+          <div className="space-y-4 rounded-3xl border border-violet/40 bg-night-800/70 p-6 md:col-span-2">
+            <h2 className="flex items-center gap-2 font-display text-xl">
+              <Smartphone className="size-5 text-violet-soft" aria-hidden /> Soy jugador: unirme desde el móvil
+            </h2>
+            <p className="text-sm text-white/70">Si el anfitrión ha elegido jugar desde los móviles, escribe el código de sala, elige tu nombre y puja desde tu teléfono.</p>
+            <JoinPlayerForm />
+          </div>
           <div className="space-y-4 rounded-3xl border border-white/10 bg-night-800/70 p-6">
             <h2 className="flex items-center gap-2 font-display text-xl">
               <Tv className="size-5 text-teal" aria-hidden /> Abrir una pantalla de TV

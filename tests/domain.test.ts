@@ -8,7 +8,7 @@ import { getImageProviderId, getRuntimeMode } from '@/lib/config/env';
 import type { Player } from '@/lib/domain/types';
 
 const player = (name: string, balance: number, items: number, votes = 0): Player => ({
-  id: name, name, color: '#ffffff', sort_order: 0, balance_cents: balance, votes,
+  id: name, name, color: '#ffffff', sort_order: 0, balance_cents: balance, votes, claimed: false,
   current_image_version_id: null, current_image: null, initial_image: null, generating: [],
   purchases: Array.from({ length: items }, (_, i) => ({ purchase_id: `${name}${i}`, item_id: `${i}`, name: `x${i}`, emoji: null, price_cents: 100 * (i + 1), created_at: '' })),
 });

@@ -21,6 +21,7 @@ export function NewGameForm() {
   const [customTheme, setCustomTheme] = useState('');
   const [budget, setBudget] = useState('20');
   const [minBid, setMinBid] = useState('1');
+  const [playMode, setPlayMode] = useState<'host' | 'mobile'>('host');
   const [ranking, setRanking] = useState<'none' | 'balance' | 'items' | 'votes'>('none');
   const [players, setPlayers] = useState<string[]>(['', '', '', '']);
   const [busy, setBusy] = useState(false);
@@ -47,6 +48,7 @@ export function NewGameForm() {
         initial_budget_cents: budgetCents,
         min_bid_cents: minBidCents,
         ranking_rule: ranking,
+        play_mode: playMode,
         players: names.map((n, i) => ({ name: n, color: PLAYER_COLORS[i % PLAYER_COLORS.length] })),
       });
       router.push(`/game/${room_code}/host`);
@@ -66,6 +68,22 @@ export function NewGameForm() {
       </div>
       <h1 className="font-display text-3xl">Nueva partida</h1>
       <form onSubmit={submit} className="space-y-6">
+        <fieldset className="space-y-3 rounded-3xl border border-white/10 bg-night-800/70 p-5">
+          <legend className="px-2 font-display text-xl">Modalidad de juego</legend>
+          {([
+            ['host', 'Pujas del anfitrión', 'Los jugadores pujan en voz alta y tú registras cada puja desde tu panel. No necesitan móvil ni cuenta.'],
+            ['mobile', 'Cada jugador desde su móvil', 'Los jugadores se unen con el código de sala (o un QR), eligen su nombre y pujan ellos mismos. Tú sigues anunciando, cerrando y adjudicando.'],
+          ] as const).map(([value, title, desc]) => (
+            <label key={value} className={`flex cursor-pointer gap-3 rounded-2xl border p-4 ${playMode === value ? 'border-gold bg-gold/10' : 'border-white/10 bg-night-900'}`}>
+              <input type="radio" name="play_mode" value={value} checked={playMode === value} onChange={() => setPlayMode(value)} className="mt-1 size-5 accent-[#fbbf24]" />
+              <span>
+                <span className="block text-lg font-bold">{title}</span>
+                <span className="block text-sm text-white/70">{desc}</span>
+              </span>
+            </label>
+          ))}
+        </fieldset>
+
         <section className="space-y-4 rounded-3xl border border-white/10 bg-night-800/70 p-5">
           <div>
             <label htmlFor="name" className="mb-1 block text-sm font-bold">Nombre de la partida</label>
@@ -108,7 +126,7 @@ export function NewGameForm() {
 
         <section className="space-y-3 rounded-3xl border border-white/10 bg-night-800/70 p-5">
           <h2 className="font-display text-xl">Jugadores</h2>
-          <p className="text-sm text-white/60">Mínimo 2 para empezar. Podrás cambiarlos en el panel mientras estés en la sala de espera.</p>
+          <p className="text-sm text-white/60">Mínimo 2 para empezar. Podrás cambiarlos en el panel mientras estés en la sala de espera.{playMode === 'mobile' ? ' En modo móviles cada jugador elegirá su nombre de esta lista al unirse (o podrá entrar con uno nuevo).' : ''}</p>
           {players.map((p, i) => (
             <div key={i} className="flex items-center gap-2">
               <span aria-hidden className="size-6 shrink-0 rounded-full" style={{ background: PLAYER_COLORS[i % PLAYER_COLORS.length] }} />

@@ -51,6 +51,10 @@ function toRpc(action: GameAction): { fn: string; params: Record<string, unknown
   switch (type) {
     case 'game.update':
       return { fn: 'ss_update_game', params: rest };
+    case 'game.set_mode':
+      return { fn: 'ss_set_play_mode', params: rest };
+    case 'player.release':
+      return { fn: 'ss_release_player', params: rest };
     case 'game.start':
     case 'game.pause':
     case 'game.resume':

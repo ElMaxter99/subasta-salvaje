@@ -1,0 +1,121 @@
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { createGame, getHostState, getPublicState } from '@/lib/services/game-service';
+import { hashToken, identifyPlayer, joinGame, leaveGame, playerBid } from '@/lib/services/play-service';
+import { act, key, makeCtx, newHost, playerByName, type TestCtx } from './helpers';
+
+let ctx: TestCtx;
+beforeAll(async () => { ctx = await makeCtx(); });
+afterAll(async () => { await ctx.db.close(); });
+
+async function mobileGame(host: string, mode: 'mobile' | 'host' = 'mobile') {
+  const { room_code } = await createGame(ctx, host, { name: 'Móviles', play_mode: mode, players: [{ name: 'Ana' }, { name: 'Beto' }, { name: 'Carla' }] });
+  return { room: room_code, snap: await getHostState(ctx, room_code, host) };
+}
+async function openAuction(host: string, room: string) {
+  await act(ctx, room, host, { type: 'game.start' });
+  const s = await getHostState(ctx, room, host);
+  const a = await act(ctx, room, host, { type: 'auction.announce', item_id: s.items[0]!.id });
+  return { auctionId: a.snapshot.auction!.id, s };
+}
+
+describe('modo móviles', () => {
+  it('el modo se elige al crear y se puede cambiar; por defecto es «host»', async () => {
+    const host = newHost();
+    const { room, snap } = await mobileGame(host);
+    expect(snap.game.play_mode).toBe('mobile');
+    expect((await mobileGame(host, 'host')).snap.game.play_mode).toBe('host');
+    const r = await act(ctx, room, host, { type: 'game.set_mode', play_mode: 'host' });
+    expect(r.snapshot.game.play_mode).toBe('host');
+    await expect(act(ctx, room, newHost(), { type: 'game.set_mode', play_mode: 'mobile' })).rejects.toMatchObject({ code: 'not_host' });
+  });
+
+  it('un jugador reclama su casilla (primero en llegar), se identifica con su token y la vista pública sólo expone `claimed`', async () => {
+    const host = newHost();
+    const { room, snap } = await mobileGame(host);
+    const ana = playerByName(snap, 'Ana').id;
+    const j = await joinGame(ctx, room, { player_id: ana });
+    expect(j.player_id).toBe(ana);
+    expect(await identifyPlayer(ctx, room, j.token)).toBe(ana);
+    expect(await identifyPlayer(ctx, room, 'token-inventado-de-prueba-123456')).toBeNull();
+    await expect(joinGame(ctx, room, { player_id: ana })).rejects.toMatchObject({ code: 'player_taken' });
+    const pub = await getPublicState(ctx, room);
+    expect(pub.players.find((p) => p.id === ana)!.claimed).toBe(true);
+    expect(pub.players.find((p) => p.name === 'Beto')!.claimed).toBe(false);
+    const dump = JSON.stringify(pub);
+    expect(dump).not.toContain(j.token);
+    expect(dump).not.toContain(hashToken(j.token));
+    expect(dump).not.toContain('token_hash');
+  });
+
+  it('el anfitrión puede liberar una casilla y otro móvil la reclama; el token viejo deja de valer', async () => {
+    const host = newHost();
+    const { room, snap } = await mobileGame(host);
+    const beto = playerByName(snap, 'Beto').id;
+    const first = await joinGame(ctx, room, { player_id: beto });
+    await act(ctx, room, host, { type: 'player.release', player_id: beto });
+    expect(await identifyPlayer(ctx, room, first.token)).toBeNull();
+    const second = await joinGame(ctx, room, { player_id: beto });
+    expect(await identifyPlayer(ctx, room, second.token)).toBe(beto);
+    await leaveGame(ctx, room, second.token);
+    expect(await identifyPlayer(ctx, room, second.token)).toBeNull();
+    await expect(act(ctx, room, newHost(), { type: 'player.release', player_id: beto })).rejects.toMatchObject({ code: 'not_host' });
+  });
+
+  it('se puede entrar con un nombre nuevo sólo en la sala de espera y sin duplicar nombres', async () => {
+    const host = newHost();
+    const { room } = await mobileGame(host);
+    const j = await joinGame(ctx, room, { name: 'Dani' });
+    const pub = await getPublicState(ctx, room);
+    const dani = pub.players.find((p) => p.name === 'Dani')!;
+    expect(dani).toMatchObject({ claimed: true, balance_cents: 2000 });
+    expect(await identifyPlayer(ctx, room, j.token)).toBe(dani.id);
+    await expect(joinGame(ctx, room, { name: 'dani' })).rejects.toMatchObject({ code: 'duplicate_name' });
+    await act(ctx, room, host, { type: 'game.start' });
+    await expect(joinGame(ctx, room, { name: 'Tarde' })).rejects.toMatchObject({ code: 'game_already_started' });
+  });
+
+  it('en modo «host» nadie puede unirse ni pujar desde el móvil', async () => {
+    const host = newHost();
+    const { room, snap } = await mobileGame(host, 'host');
+    await expect(joinGame(ctx, room, { player_id: snap.players[0]!.id })).rejects.toMatchObject({ code: 'mobile_disabled' });
+    await expect(playerBid(ctx, room, 'x'.repeat(30), { auction_id: crypto.randomUUID(), amount_cents: 100, idempotency_key: key() })).rejects.toMatchObject({ code: 'mobile_disabled' });
+  });
+
+  it('un jugador puja desde su móvil con las mismas reglas: saldo, mínimo, subir la puja, cierre y no pujar contra sí mismo', async () => {
+    const host = newHost();
+    const { room, snap } = await mobileGame(host);
+    const ana = await joinGame(ctx, room, { player_id: playerByName(snap, 'Ana').id });
+    const beto = await joinGame(ctx, room, { player_id: playerByName(snap, 'Beto').id });
+    const { auctionId } = await openAuction(host, room);
+    const bid = (t: string, amount: number, k = key()) => playerBid(ctx, room, t, { auction_id: auctionId, amount_cents: amount, idempotency_key: k });
+
+    const r = await bid(ana.token, 300);
+    expect(r.auction!.current_bid_cents).toBe(300);
+    expect(r.auction!.current_bidder_id).toBe(ana.player_id);
+    await expect(bid(ana.token, 500)).rejects.toMatchObject({ code: 'already_leading' });
+    await expect(bid(beto.token, 300)).rejects.toMatchObject({ code: 'bid_too_low' });
+    await expect(bid(beto.token, 2001)).rejects.toMatchObject({ code: 'insufficient_balance' });
+    await expect(bid(beto.token, 50)).rejects.toMatchObject({ code: 'bid_below_minimum' });
+    await expect(bid('no-es-un-token-valido-123456789', 900)).rejects.toMatchObject({ code: 'not_player' });
+    const k = key();
+    await bid(beto.token, 600, k);
+    await bid(beto.token, 600, k).catch(() => null); // reintento con la misma clave: no duplica
+    const s = await getHostState(ctx, room, host);
+    expect(s.auction!.bids.map((b) => b.amount_cents)).toEqual([600, 300]);
+    // el anfitrión también puede seguir pujando por voz, y cierra/adjudica como siempre
+    await act(ctx, room, host, { type: 'auction.close', auction_id: auctionId });
+    await expect(bid(ana.token, 900)).rejects.toMatchObject({ code: 'auction_closed' });
+    await act(ctx, room, host, { type: 'auction.award', auction_id: auctionId, expected_winner_id: beto.player_id, expected_price_cents: 600, idempotency_key: key() });
+    expect(playerByName(await getHostState(ctx, room, host), 'Beto').balance_cents).toBe(1400);
+  });
+
+  it('un token de un jugador no sirve en otra partida', async () => {
+    const host = newHost();
+    const a = await mobileGame(host);
+    const b = await mobileGame(host);
+    const ana = await joinGame(ctx, a.room, { player_id: playerByName(a.snap, 'Ana').id });
+    expect(await identifyPlayer(ctx, b.room, ana.token)).toBeNull();
+    const { auctionId } = await openAuction(host, b.room);
+    await expect(playerBid(ctx, b.room, ana.token, { auction_id: auctionId, amount_cents: 200, idempotency_key: key() })).rejects.toMatchObject({ code: 'not_player' });
+  });
+});
