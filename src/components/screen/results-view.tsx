@@ -70,6 +70,11 @@ function ResultCard({ player, rank, scoreText, tv, dense, votes = null, galleryW
     >
       <div className={`relative flex min-h-0 flex-col ${tv ? 'flex-1' : 'aspect-[3/2]'}`}>
         <BeforeAfter player={player} tv={tv} />
+        {player.generating.some((g) => g.kind === 'edit') ? (
+          <span className={`absolute right-2 bottom-2 rounded-full bg-violet px-3 py-1 font-black text-white ${tv ? 'text-[1.2rem]' : 'text-sm'}`} role="status" data-testid="final-generating">
+            ⏳ Generando la imagen final…
+          </span>
+        ) : null}
         {votes !== null ? (
           <span className={`absolute bottom-2 left-2 rounded-full px-3 py-1 font-black text-night-950 ${galleryWinner ? 'bg-gold' : 'bg-white/90'} ${tv ? 'text-[1.2rem]' : 'text-sm'}`} data-testid="gallery-votes">
             {galleryWinner ? '🏆 ' : '🗳️ '}{votes} {votes === 1 ? 'voto' : 'votos'}

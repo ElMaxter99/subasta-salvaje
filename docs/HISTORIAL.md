@@ -21,6 +21,7 @@ Cronología resumida (de la más antigua a la más reciente) con lo entregado. �
 17. **Imagen base única:** al generar la imagen inicial con IA debe ser la misma para todos los jugadores, se unan cuando se unan (job `base`, migraciones 2000/2100).
 18. **Plan de superadmin** (usuarios, partidas, accesos de IA y peso de Supabase free tier): documentado en `docs/PLAN-SUPERADMIN.md`, pendiente de decisiones y de implementar.
 19. **Superadmin implementado** según las respuestas del propietario: único superadmin, registro abierto con interruptor e invitaciones, borrado total de usuarios, dashboards de cuota de IA y peso de Supabase sin alertas, auditoría, borrado automático a 7 días configurable; MFA pendiente.
+20. **Pantalla final con «Después» = imagen inicial:** ocurría al finalizar con ediciones pendientes o fallidas. Ahora finalizar dispara el procesado, la pantalla final muestra «Generando la imagen final…», el panel avisa (y permite reintentar las fallidas) y hay tests.
 
 ## Estado actual (resumen)
 Todo lo anterior está implementado y subido a `claude/eager-cerf-lgnq1z` (sin PR). Migraciones hasta `…2300`. Tests: 124 unitarios + 9 de Postgres real + 5 e2e. Pendiente del propietario: rotar claves,

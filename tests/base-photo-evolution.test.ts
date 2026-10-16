@@ -70,4 +70,31 @@ describe('el anfitrión sube UNA foto base y cada jugador la evoluciona por sepa
     expect(chain).toHaveLength(3); // foto base + 2 ediciones
     expect(chain.map((v) => v.origin)).toEqual(['uploaded', 'edit', 'edit']);
   });
+
+  it('al finalizar con ediciones pendientes la imagen final llega después (y mientras tanto figura como «generando»)', async () => {
+    const host = newHost();
+    const { room_code } = await createGame(ctx, host, { name: 'Final pendiente', players: [{ name: 'Ana' }, { name: 'Beto' }] });
+    await uploadInitialImageForAll(ctx, room_code, host, await png(1, 2, 3), { current: true, new: false });
+    await act(ctx, room_code, host, { type: 'game.start' });
+    const s0 = await getHostState(ctx, room_code, host);
+    const ana = playerByName(s0, 'Ana');
+    const item = s0.items[0]!;
+    const a = await act(ctx, room_code, host, { type: 'auction.announce', item_id: item.id });
+    await act(ctx, room_code, host, { type: 'auction.bid', auction_id: a.snapshot.auction!.id, player_id: ana.id, amount_cents: 100, idempotency_key: key() });
+    await act(ctx, room_code, host, { type: 'auction.award', auction_id: a.snapshot.auction!.id, expected_winner_id: ana.id, expected_price_cents: 100, idempotency_key: key() });
+    await act(ctx, room_code, host, { type: 'game.finish' }); // se finaliza ANTES de que la edición termine
+    let s = await getHostState(ctx, room_code, host);
+    expect(playerByName(s, 'Ana').generating.some((g) => g.kind === 'edit')).toBe(true);
+    expect(playerByName(s, 'Ana').current_image!.id).toBe(playerByName(s, 'Ana').initial_image!.id);
+    const recording: ImageGenerationProvider = {
+      id: 'demo', capabilities: { edit: true },
+      generateInitialScene: async () => { throw new Error('n/a'); }, generateItemImage: async () => { throw new Error('n/a'); },
+      editScene: async () => ({ bytes: await png(9, 9, 9), mime: 'image/png', prompt: 'final', model: 'rec' }),
+    };
+    await processImageJobs({ ...ctx, provider: recording }, { gameId: s0.game.id });
+    s = await getHostState(ctx, room_code, host);
+    const after = playerByName(s, 'Ana');
+    expect(after.generating).toHaveLength(0);
+    expect(after.current_image!.id).not.toBe(after.initial_image!.id); // «Después» ya es la imagen final
+  });
 });

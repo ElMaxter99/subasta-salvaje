@@ -5,6 +5,7 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useToast } from '@/components/ui/toast';
 import { inputCls } from './bits';
 import type { HostCtx } from './host-context';
+import { PendingImagesNotice } from './pending-images';
 
 /** Confirmación fuerte (escribir FINALIZAR) para terminar la partida. Compartida por Resumen y Ajustes. */
 export function FinishGameDialog({ ctx, open, onClose }: { ctx: HostCtx; open: boolean; onClose: () => void }) {
@@ -34,6 +35,9 @@ export function FinishGameDialog({ ctx, open, onClose }: { ctx: HostCtx; open: b
       <p>
         No se podrá reanudar: se cancela cualquier subasta en curso (sin cobrar) y la TV muestra los resultados. Escribe <b>FINALIZAR</b> para confirmar.
       </p>
+      <div className="mt-3">
+        <PendingImagesNotice ctx={ctx} />
+      </div>
       <label htmlFor="finish-confirm" className="sr-only">
         Escribe FINALIZAR
       </label>
