@@ -9,6 +9,7 @@ import { themeLabel } from '@/lib/domain/themes';
 import { AuctionStage } from './auction-stage';
 import { AwardOverlay } from './award-overlay';
 import { PlayerCard } from './player-card';
+import { CompactInvite } from './join-invite';
 import { FinalResults } from './results-view';
 import { useFullscreenControls } from './use-fullscreen';
 import './screen.css';
@@ -60,6 +61,8 @@ export function ScreenView({ roomCode, initial, runtime }: { roomCode: string; i
   const { cols, rows } = gridFor(players.length);
   const leaderId = live && live.status !== 'awarded' ? live.current_bidder_id : null;
   const dense = rows > 1;
+  const mobile = game.play_mode === 'mobile';
+  const presence = mobile ? (game.status === 'lobby' ? 'lobby' : 'game') : null;
   const maxChips = cols >= 5 ? 5 : cols === 4 ? 6 : 8;
 
   const controls = (
@@ -105,6 +108,8 @@ export function ScreenView({ roomCode, initial, runtime }: { roomCode: string; i
           </div>
         </div>
 
+        {mobile && game.status !== 'lobby' ? <CompactInvite roomCode={roomCode} /> : null}
+
         <div className="flex items-center gap-3" aria-live="polite">
           {generating ? (
             <span className="flex items-center gap-2 rounded-full bg-violet px-4 py-1.5 text-[1.2rem] font-black text-white">
@@ -138,7 +143,7 @@ export function ScreenView({ roomCode, initial, runtime }: { roomCode: string; i
                     className="min-h-0"
                     style={{ width: `calc((100% - ${(cols - 1) * 1}rem) / ${cols})`, maxWidth: rows === 1 ? '28rem' : undefined }}
                   >
-                    <PlayerCard player={p} leading={p.id === leaderId} maxChips={maxChips} dense={dense} />
+                    <PlayerCard player={p} leading={p.id === leaderId} maxChips={maxChips} dense={dense} presence={presence} />
                   </div>
                 ))}
               </div>

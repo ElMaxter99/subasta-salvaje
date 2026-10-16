@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Flag, History, Minus, Plus, Trophy, Tv } from 'lucide-react';
+import { Flag, History, Minus, Plus, Smartphone, Trophy, Tv } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useToast } from '@/components/ui/toast';
 import { formatEuros, parseEurosToCents } from '@/lib/domain/money';
-import type { RankingRule } from '@/lib/domain/types';
+import type { PlayMode, RankingRule } from '@/lib/domain/types';
 import { Card, Dot, Notice, inputCls } from './bits';
 import type { HostCtx } from './host-context';
 
@@ -16,6 +16,11 @@ const RULES: { id: RankingRule; label: string; hint: string }[] = [
   { id: 'balance', label: 'Más dinero', hint: 'Gana quien conserve más saldo.' },
   { id: 'items', label: 'Más elementos', hint: 'Gana quien compre más elementos.' },
   { id: 'votes', label: 'Votación del público', hint: 'Gana quien reciba más votos del público (los apuntas tú).' },
+];
+
+const MODES: { id: PlayMode; label: string; hint: string }[] = [
+  { id: 'host', label: 'Pujas del anfitrión', hint: 'Los jugadores pujan en voz alta y tú registras cada puja desde tu panel. No necesitan móvil ni cuenta.' },
+  { id: 'mobile', label: 'Cada jugador desde su móvil', hint: 'Los jugadores se unen con el código de sala (o un QR), eligen su nombre y pujan ellos mismos. Tú sigues anunciando, cerrando y adjudicando.' },
 ];
 
 export function SettingsPanel({ ctx }: { ctx: HostCtx }) {
@@ -67,6 +72,28 @@ export function SettingsPanel({ ctx }: { ctx: HostCtx }) {
           </div>
           <p className="text-xs text-white/55">No se puede cambiar mientras hay una subasta abierta.</p>
         </form>
+      </Card>
+
+      <Card title="Modalidad de juego" icon={<Smartphone className="size-5 text-gold" aria-hidden />}>
+        <div role="radiogroup" aria-label="Modalidad de juego" className="grid gap-2 sm:grid-cols-2">
+          {MODES.map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              role="radio"
+              aria-checked={game.play_mode === m.id}
+              disabled={finished || busy !== null}
+              onClick={() => game.play_mode !== m.id && run(`mode-${m.id}`, { type: 'game.set_mode', play_mode: m.id }, `Modalidad: ${m.label}`)}
+              className={`rounded-2xl border-2 p-3 text-left transition disabled:opacity-60 ${game.play_mode === m.id ? 'border-gold bg-gold/10' : 'border-white/10 bg-night-700 hover:bg-night-600'}`}
+            >
+              <b className="block">{m.label}</b>
+              <span className="text-sm text-white/65">{m.hint}</span>
+            </button>
+          ))}
+        </div>
+        <p className="mt-3 text-sm text-white/70">
+          Puedes cambiarla en cualquier momento. En modo móviles aparece el código/QR para unirse y puedes seguir registrando pujas a mano; al volver al modo anfitrión, los móviles ya no pueden pujar.
+        </p>
       </Card>
 
       <Card title="Clasificación" icon={<Trophy className="size-5 text-gold" aria-hidden />}>

@@ -9,6 +9,7 @@ import { formatEuros } from '@/lib/domain/money';
 import { themeLabel } from '@/lib/domain/themes';
 import { Card, Dot, Notice, Pill, STATUS_LABEL } from './bits';
 import type { HostCtx } from './host-context';
+import { JoinCard } from './join-card';
 
 function Check({ ok, children }: { ok: boolean; children: React.ReactNode }) {
   return (
@@ -31,6 +32,8 @@ export function OverviewPanel({ ctx, goTo }: { ctx: HostCtx; goTo: (s: 'jugadore
   const ready = players.length >= 2 && items.length >= 1;
   const live = auction && (auction.status === 'open' || auction.status === 'closed') ? auction : null;
   const maxBid = live && live.current_bid_cents > 0 ? live.current_bid_cents : null;
+  const mobile = game.play_mode === 'mobile';
+  const connected = players.filter((p) => p.claimed).length;
   const failedJobs = snapshot.jobs.filter((j) => j.status === 'failed').length;
 
   return (
@@ -86,6 +89,8 @@ export function OverviewPanel({ ctx, goTo }: { ctx: HostCtx; goTo: (s: 'jugadore
         </div>
       </Card>
 
+      <JoinCard ctx={ctx} />
+
       {game.status === 'lobby' ? (
         <Card title="Antes de empezar">
           <ul className="space-y-2">
@@ -104,6 +109,11 @@ export function OverviewPanel({ ctx, goTo }: { ctx: HostCtx; goTo: (s: 'jugadore
             <Check ok={imagesOk}>
               Imagen inicial de cada jugador ({withImage}/{players.length}). Recomendado.
             </Check>
+            {mobile ? (
+              <Check ok={players.length > 0 && connected === players.length}>
+                Jugadores conectados ({connected}/{players.length}). Informativo: puedes empezar aunque falte alguno{connected < players.length ? ' (los que no se conecten solo podrán pujar si tú registras sus pujas)' : ''}.
+              </Check>
+            ) : null}
           </ul>
         </Card>
       ) : null}

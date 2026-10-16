@@ -125,6 +125,7 @@ function LiveAuction({ ctx, auction, onAward, onUndo, onCancel }: { ctx: HostCtx
 
       {open && playing ? (
         <Card title="Registrar puja" icon={<Gavel className="size-5 text-gold" aria-hidden />}>
+          {snapshot.game.play_mode === 'mobile' ? <p className="mb-3 rounded-xl bg-violet/10 px-3 py-2 text-sm font-semibold text-violet-soft">📱 Los jugadores pujan desde su móvil; también puedes registrar pujas a mano.</p> : null}
           <BidPad ctx={ctx} auction={auction} />
         </Card>
       ) : null}

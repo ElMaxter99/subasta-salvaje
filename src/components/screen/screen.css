@@ -56,8 +56,8 @@
   50% { box-shadow: 0 0 0 0.2rem var(--leader, #fbbf24), 0 0 2.6rem 0.6rem color-mix(in srgb, var(--leader, #fbbf24) 70%, transparent); }
 }
 
-.ss-price-pop { animation: ss-price-pop 0.55s cubic-bezier(0.2, 1.3, 0.4, 1) both; }
-.ss-bid-in { animation: ss-bid-in 0.45s ease-out both; }
+.ss-price-pop { animation: ss-price-pop 0.4s cubic-bezier(0.2, 1.3, 0.4, 1) both; }
+.ss-bid-in { animation: ss-bid-in 0.3s ease-out both; }
 .ss-fade-in { animation: ss-fade-in 0.9s ease-in-out both; }
 .ss-ring { animation: ss-ring 1.2s ease-out 2; }
 .ss-flash { animation: ss-flash 1.1s ease-out both; }
@@ -76,5 +76,6 @@
 @media (prefers-reduced-motion: reduce) {
   .ss-confetti { display: none; }
   .ss-ribbon { animation: none; }
+  .ss-price-pop, .ss-bid-in, .ss-ring, .ss-flash { animation: none; }
   .ss-bounce, .ss-leader, .ss-shimmer { animation: none; }
 }

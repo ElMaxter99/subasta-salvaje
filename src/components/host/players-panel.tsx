@@ -2,7 +2,7 @@
 
 import { useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowDown, ArrowUp, History, Pencil, Plus, Sparkles, Trash2, Upload, Wallet } from 'lucide-react';
+import { ArrowDown, ArrowUp, History, Pencil, Plus, Smartphone, Sparkles, Trash2, Upload, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useToast } from '@/components/ui/toast';
@@ -13,6 +13,7 @@ import type { Player } from '@/lib/domain/types';
 import { Card, Dot, Notice, Pill, Thumb, inputCls } from './bits';
 import type { HostCtx } from './host-context';
 import { InitialImageCard } from './initial-image-card';
+import { JoinCard } from './join-card';
 
 const MAX_BYTES = 8 * 1024 * 1024;
 const TYPES = ['image/png', 'image/jpeg', 'image/webp'];
@@ -37,6 +38,7 @@ export function PlayersPanel({ ctx }: { ctx: HostCtx }) {
   const [color, setColor] = useState<string | null>(null);
   const [budget, setBudget] = useState('');
   const [removing, setRemoving] = useState<Player | null>(null);
+  const [releasing, setReleasing] = useState<Player | null>(null);
   const budgetCents = parseEurosToCents(budget);
   const demoProvider = ctx.runtime.aiProvider === 'demo' || !ctx.runtime.aiConfigured;
 
@@ -86,11 +88,13 @@ export function PlayersPanel({ ctx }: { ctx: HostCtx }) {
         <Notice tone="warn">{ctx.runtime.mode === 'demo' ? 'Modo demo: las imágenes iniciales son de muestra, no están generadas por IA.' : 'IA no configurada: las imágenes iniciales quedan en cola hasta configurarla. Puedes subir una foto propia.'}</Notice>
       ) : null}
 
+      <JoinCard ctx={ctx} />
+
       {lobby ? <InitialImageCard ctx={ctx} /> : null}
 
       <ul className="space-y-3">
         {players.map((p, i) => (
-          <PlayerRow key={p.id} ctx={ctx} player={p} index={i} total={players.length} onMove={move} onRemove={() => setRemoving(p)} />
+          <PlayerRow key={p.id} ctx={ctx} player={p} index={i} total={players.length} onMove={move} onRemove={() => setRemoving(p)} onRelease={() => setReleasing(p)} />
         ))}
       </ul>
 
@@ -121,6 +125,23 @@ export function PlayersPanel({ ctx }: { ctx: HostCtx }) {
       )}
 
       <ConfirmDialog
+        open={!!releasing}
+        title="Liberar móvil"
+        confirmLabel="Sí, liberar"
+        variant="danger"
+        loading={busy === 'player-release'}
+        onCancel={() => setReleasing(null)}
+        onConfirm={async () => {
+          if (releasing) await run('player-release', { type: 'player.release', player_id: releasing.id }, `Casilla de ${releasing.name} liberada`);
+          setReleasing(null);
+        }}
+      >
+        <p>
+          Se desvinculará el móvil de <b>{releasing?.name}</b> y la casilla quedará libre para que alguien la reclame de nuevo. Úsalo si el jugador cambió de móvil o perdió la sesión. No se pierde saldo ni compras.
+        </p>
+      </ConfirmDialog>
+
+      <ConfirmDialog
         open={!!removing}
         title="Eliminar jugador"
         confirmLabel="Sí, eliminar"
@@ -140,7 +161,7 @@ export function PlayersPanel({ ctx }: { ctx: HostCtx }) {
   );
 }
 
-function PlayerRow({ ctx, player: p, index, total, onMove, onRemove }: { ctx: HostCtx; player: Player; index: number; total: number; onMove: (i: number, d: -1 | 1) => void; onRemove: () => void }) {
+function PlayerRow({ ctx, player: p, index, total, onMove, onRemove, onRelease }: { ctx: HostCtx; player: Player; index: number; total: number; onMove: (i: number, d: -1 | 1) => void; onRemove: () => void; onRelease: () => void }) {
   const { snapshot, busy, run, exec, roomCode } = ctx;
   const toast = useToast();
   const lobby = snapshot.game.status === 'lobby';
@@ -170,6 +191,7 @@ function PlayerRow({ ctx, player: p, index, total, onMove, onRemove }: { ctx: Ho
           </h3>
           <p className="text-lg font-bold text-gold">{formatEuros(p.balance_cents)}</p>
           <div className="mt-1 flex flex-wrap gap-1.5">
+            {snapshot.game.play_mode === 'mobile' ? p.claimed ? <Pill tone="teal">📱 Conectado</Pill> : <Pill>Libre</Pill> : null}
             <Pill>{p.purchases.length} {p.purchases.length === 1 ? 'elemento' : 'elementos'}</Pill>
             {p.generating.length > 0 ? <Pill tone="violet">Imagen en preparación</Pill> : p.current_image ? <Pill tone="teal">Imagen lista{p.current_image.provider === 'demo' ? ' (muestra)' : p.current_image.provider === 'catalog' ? ' (galería)' : ''}</Pill> : <Pill tone="rose">Sin imagen</Pill>}
           </div>
@@ -224,6 +246,11 @@ function PlayerRow({ ctx, player: p, index, total, onMove, onRemove }: { ctx: Ho
                 <Upload className="size-4" aria-hidden /> Subir imagen
               </Button>
             </>
+          ) : null}
+          {snapshot.game.play_mode === 'mobile' && p.claimed ? (
+            <Button size="md" variant="ghost" disabled={busy !== null} onClick={onRelease}>
+              <Smartphone className="size-4" aria-hidden /> Liberar móvil
+            </Button>
           ) : null}
           <Button size="md" variant="ghost" disabled={busy !== null} onClick={() => setEditing((v) => !v)}>
             <Pencil className="size-4" aria-hidden /> Editar

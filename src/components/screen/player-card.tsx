@@ -8,7 +8,7 @@ import { awardOverlay } from './award-overlay';
 import { HouseImage } from './house-image';
 import './screen.css';
 
-export function PlayerCard({ player, leading, maxChips, dense }: { player: Player; leading: boolean; maxChips: number; dense: boolean }) {
+export function PlayerCard({ player, leading, maxChips, dense, presence = null }: { player: Player; leading: boolean; maxChips: number; dense: boolean; presence?: 'lobby' | 'game' | null }) {
   const imageId = player.current_image?.id ?? null;
   const [seenId, setSeenId] = useState(imageId);
   const [updatedKey, setUpdatedKey] = useState(0);
@@ -49,7 +49,7 @@ export function PlayerCard({ player, leading, maxChips, dense }: { player: Playe
       style={{ '--leader': player.color } as React.CSSProperties}
       className={`relative flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border-2 bg-night-800 transition-colors duration-500 ${
         leading ? 'ss-leader border-transparent' : 'border-white/10'
-      } ${updatedKey ? 'ss-ring' : ''}`}
+      } ${presence === 'lobby' && !player.claimed ? 'opacity-60' : ''} ${updatedKey ? 'ss-ring' : ''}`}
     >
       <div className="relative min-h-0 flex-1">
         <HouseImage image={player.current_image} alt={`Casa de ${player.name}`} className="absolute inset-0" />
@@ -75,6 +75,22 @@ export function PlayerCard({ player, leading, maxChips, dense }: { player: Playe
         {leading ? (
           <span className="absolute right-2 top-2 flex items-center gap-1.5 rounded-full bg-gold px-3 py-1 text-[1.05rem] font-black uppercase tracking-wide text-night-950 shadow-lg">
             <Crown className="size-5" aria-hidden /> Va ganando
+          </span>
+        ) : null}
+
+        {presence === 'lobby' ? (
+          <span
+            className={`absolute right-2 top-2 rounded-full px-3 py-1 text-[1.1rem] font-black ${player.claimed ? 'bg-teal text-night-950 shadow-lg' : 'bg-night-950/80 text-white/60'}`}
+          >
+            {player.claimed ? '📱 Conectado' : 'Esperando…'}
+          </span>
+        ) : null}
+        {presence === 'game' && !leading ? (
+          <span
+            title={player.claimed ? 'Móvil conectado' : 'Móvil sin conectar'}
+            className={`absolute right-2 top-2 size-3 rounded-full ${player.claimed ? 'bg-teal' : 'bg-white/25'}`}
+          >
+            <span className="sr-only">{player.claimed ? 'Móvil conectado' : 'Móvil sin conectar'}</span>
           </span>
         ) : null}
 

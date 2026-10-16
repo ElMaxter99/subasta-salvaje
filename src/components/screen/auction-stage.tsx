@@ -3,6 +3,7 @@
 import { Gavel, Hourglass, Users } from 'lucide-react';
 import type { Auction, GameInfo, Player, PublicSnapshot } from '@/lib/domain/types';
 import { formatEuros } from '@/lib/domain/money';
+import { LobbyInvite } from './join-invite';
 import './screen.css';
 
 function ItemVisual({ item }: { item: Auction['item'] }) {
@@ -110,7 +111,9 @@ function IdleStage({ snap }: { snap: PublicSnapshot }) {
   const winner = award ? players.find((p) => p.id === award.player_id) : null;
   return (
     <div className="flex h-full flex-col items-center justify-center gap-[1.5rem] text-center" aria-live="polite">
-      {lobby ? <LobbyMessage game={game} count={players.length} /> : (
+      {lobby && game.play_mode === 'mobile' ? (
+        <LobbyInvite roomCode={game.room_code} connected={players.filter((p) => p.claimed).length} total={players.length} />
+      ) : lobby ? <LobbyMessage game={game} count={players.length} /> : (
         <>
           <div className="ss-bounce text-[7rem] leading-none" aria-hidden>
             <Hourglass className="mx-auto size-[7rem] text-gold" />
