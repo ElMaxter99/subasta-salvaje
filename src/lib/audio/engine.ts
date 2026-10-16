@@ -101,7 +101,8 @@ export async function arm(): Promise<void> {
 export function setPrefs(p: Partial<AudioPrefs>): void {
   prefs = { ...prefs, ...p, volume: Math.min(1, Math.max(0, p.volume ?? prefs.volume)) };
   save();
-  if (prefs.enabled) void arm(); else if (!prefs.enabled) musicStop();
+  if (prefs.enabled) void arm(); else musicStop();
+  if (prefs.enabled && prefs.music) resumeMusic(); else musicPause();
   applyVolumes();
   emit();
 }
@@ -109,7 +110,8 @@ export function setPrefs(p: Partial<AudioPrefs>): void {
 /** Lo que permite el anfitrión (interruptores de la partida). Afecta solo a este dispositivo cuando es la TV. */
 export function setGate(g: { effects: boolean; music: boolean }): void {
   gate = g;
-  if (!g.music) musicStop();
+  // La música se PAUSA (se recuerda la escena) en vez de cancelarse: al volver a permitirla, retoma sola.
+  if (!g.music) musicPause(); else resumeMusic();
   applyVolumes();
 }
 
@@ -217,9 +219,12 @@ export function setMusicScene(next: MusicScene): void {
   scene = next;
   step = 0;
   if (!next) return musicStop();
-  if (!ctx || !armed || timer) { if (ctx && armed) nextTime = ctx.currentTime + 0.05; return; }
+  if (!ctx || !armed || !gate.music || timer) { if (ctx && armed) nextTime = ctx.currentTime + 0.05; return; }
   nextTime = ctx.currentTime + 0.05;
   timer = setInterval(schedule, 80);
+}
+function musicPause() {
+  if (timer) { clearInterval(timer); timer = null; }
 }
 function musicStop() {
   scene = null;
@@ -227,5 +232,5 @@ function musicStop() {
 }
 /** Reanuda el planificador cuando se arma el contexto con una escena ya pedida. */
 export function resumeMusic(): void {
-  if (scene && ctx && armed && !timer) { nextTime = ctx.currentTime + 0.05; timer = setInterval(schedule, 80); }
+  if (scene && ctx && armed && gate.music && prefs.music && prefs.enabled && !timer) { nextTime = ctx.currentTime + 0.05; timer = setInterval(schedule, 80); }
 }
