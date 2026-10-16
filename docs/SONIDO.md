@@ -13,7 +13,7 @@ Los sonidos salen de **comparar cada instantánea con la anterior** (nada suena 
 
 ## Control del anfitrión
 En el panel (`host/sound-controls.tsx`):
-- **TV → Sonido / Música:** interruptores **de la partida** (`games.sound_enabled`, `games.music_enabled`; acción `game.set_sound` → `ss_set_sound`, migraciones `3000`/`3100`). La TV los lee en su siguiente actualización (≈1–2 s) y silencia efectos o música aunque tenga el sonido activo localmente. Sirve para hablar o controlar algo sin tocar la tele.
+- **TV → Sonido / Música (visible en todas las secciones del panel, también en móvil):** interruptores **de la partida** (`games.sound_enabled`, `games.music_enabled`; acción `game.set_sound` → `ss_set_sound`, migraciones `3000`/`3100`). La TV los lee en su siguiente actualización (≈1–2 s) y silencia efectos o música aunque tenga el sonido activo localmente. Sirve para hablar o controlar algo sin tocar la tele.
 - **Este dispositivo:** silencio, volumen (el del propio panel).
 En cada dispositivo (TV, panel, móvil) hay además un botón de **silencio, música (en la TV) y volumen**, guardados en `localStorage` por rol (`ss_audio_tv|host|play`).
 
@@ -24,3 +24,4 @@ Los navegadores bloquean el audio hasta el primer gesto del usuario. Mientras ta
 - **Cómo suena de verdad.** El contenedor no tiene salida de audio: los tests comprueban el flujo (interruptores, persistencia, estado), no el sonido. Las melodías, los volúmenes y el equilibrio entre música y efectos hay que **afinarlos escuchando la app** (constantes en `engine.ts`: `SCENES`, ganancias de `play()`).
 - La sincronía depende del sondeo/Realtime actual de cada dispositivo (no hay reloj de audio compartido).
 - Los interruptores de la partida solo mandan sobre la **TV**; los móviles son personales.
+La TV muestra «Silenciado por el anfitrión» cuando este apaga el sonido (e2e `sound.spec.ts`).

@@ -8,7 +8,7 @@ import { useAudioState } from '@/lib/audio/use-audio';
  * Sonido de ESTE dispositivo: silenciar/activar, música (si aplica) y volumen.
  * Con el sonido activado pero el navegador sin permiso (hasta el primer gesto) muestra «Activar sonido».
  */
-export function SoundToggle({ music = false, className = '', big = false }: { music?: boolean; className?: string; big?: boolean }) {
+export function SoundToggle({ music = false, className = '', big = false, mutedByHost = false }: { music?: boolean; className?: string; big?: boolean; mutedByHost?: boolean }) {
   const a = useAudioState();
   const waiting = a.enabled && !a.armed;
   const btn = `inline-flex items-center gap-2 rounded-xl border border-white/15 bg-night-800 font-bold hover:border-gold ${big ? 'px-5 py-2.5 text-[1.2rem]' : 'px-3 py-2 text-sm'}`;
@@ -24,6 +24,11 @@ export function SoundToggle({ music = false, className = '', big = false }: { mu
           {a.enabled ? 'Sonido' : 'Silencio'}
         </button>
       )}
+      {mutedByHost ? (
+        <span className="inline-flex items-center gap-2 rounded-xl border border-rose/40 bg-rose/10 px-3 py-2 text-sm font-bold text-rose" role="status" data-testid="muted-by-host">
+          <VolumeX className="size-4" aria-hidden /> Silenciado por el anfitrión
+        </span>
+      ) : null}
       {music && a.enabled ? (
         <button type="button" onClick={() => setPrefs({ music: !a.music })} aria-pressed={a.music} className={btn} data-testid="music-switch">
           <Music className={`size-4 ${a.music ? 'text-gold' : 'text-white/50'}`} aria-hidden /> Música {a.music ? 'sí' : 'no'}

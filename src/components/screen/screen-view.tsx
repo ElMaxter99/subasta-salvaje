@@ -73,10 +73,10 @@ export function ScreenView({ roomCode, initial, runtime }: { roomCode: string; i
   const maxChips = cols >= 5 ? 5 : cols === 4 ? 6 : 8;
 
   const audio = useAudioState();
-  const needsSound = audio.enabled && !audio.armed; // «Activar sonido» siempre visible hasta que el navegador lo permita
+  const needsSound = (audio.enabled && !audio.armed) || game.sound_enabled === false; // «Activar sonido» siempre visible hasta que el navegador lo permita
   const controls = (
     <div className={`absolute right-4 top-[5.9rem] z-30 flex items-center gap-3 transition-opacity duration-500 ${fs.visible || needsSound ? 'opacity-100' : 'pointer-events-none opacity-0'}`}>
-      <SoundToggle music className="rounded-xl bg-night-950/80 p-1" />
+      <SoundToggle music mutedByHost={game.sound_enabled === false} className="rounded-xl bg-night-950/80 p-1" />
       <button
         type="button"
         onClick={fs.toggle}

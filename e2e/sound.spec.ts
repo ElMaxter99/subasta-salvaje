@@ -23,6 +23,7 @@ test('sonido: el anfitrión silencia la TV desde su panel; la TV pide activar el
   await sw.click();
   await expect(sw).toHaveAttribute('aria-pressed', 'false');
   await expect.poll(async () => (await state()).game.sound_enabled).toBe(false);
+  await expect(tv.getByTestId('muted-by-host')).toBeVisible({ timeout: 20_000 }); // la TV avisa de que la silenció el anfitrión
   await page.getByTestId('tv-music-switch').click();
   await expect.poll(async () => (await state()).game.music_enabled).toBe(false);
   // Persiste al recargar
