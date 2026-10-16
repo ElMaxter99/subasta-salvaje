@@ -38,3 +38,11 @@ Referencia oficial: el logo de **Subasta Salvaje** (personaje 3D con corona y ma
 
 ## Dónde se aplica
 Inicio (logo + hero con la mascota nueva), login/unirse/setup/nueva partida/móvil (logo), TV y panel del anfitrión (logo en la cabecera; las mascotas son las antiguas), historial y errores (Loader con la cabeza nueva).
+
+## Mini héroe vectorial (tamaños muy pequeños)
+Dibujo propio, simplificado y vectorial del héroe (casco blanco, visor oscuro, ojos dorados sonrientes y corona) para 16–64 px.
+- **Fuente única:** `src/lib/brand/mini-hero.ts` (`miniHeroSvg(mood, {body, tile})`, ≈ 0,8 KB por SVG, sin ids, degradados ni imágenes). `npm run brand:mini` regenera `public/assets/brand/mini-hero/{happy,sad,wow,wink,cheer,angry}[-body].svg` y `favicon.svg`; `tests/mini-hero.test.ts` comprueba que los archivos coinciden con el generador.
+- **Gestos:** `happy`, `sad` (inclinado y con lágrima), `wow` (ojos redondos y boca), `wink`, `cheer` (con destellos) y `angry`. Los ids heredados (`expr-*`, `pose-*`) se traducen con `moodFor()`.
+- **Componente:** `<MiniHero mood body title />` (`src/components/mascot/mini-hero.tsx`), tamaño con `height` (1em por defecto).
+- **Uso:** `<Mascot size="xs">` dibuja el mini héroe en vez de la imagen (cabecera de la TV, móvil del jugador, panel del anfitrión, superadmin, títulos pequeños). Para volver a las imágenes antiguas en `xs`, pon `MINI_HERO_XS = false` en `mascot.tsx`.
+- **Límites:** es una **estilización**, no un recorte del logo: sin el degradado 3D, el brillo ni el cuerpo detallado (la versión `-body` es solo una silueta con sudadera, útil desde ~32 px). A 16 px se lee como «cabeza con corona».

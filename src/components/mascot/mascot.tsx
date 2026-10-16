@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import type { CSSProperties, ElementType, ReactNode } from 'react';
 import { MASCOT_ASSETS, MASCOT_BG, type MascotId } from './assets';
+import { MiniHero, moodFor } from './mini-hero';
 import brand from '../../../public/assets/brand/inventory.json';
 
 /** Altura del recurso (rem). Se puede sustituir con clases responsive, p. ej. `className="[--mh:12rem] md:[--mh:22rem]"`. */
@@ -12,6 +13,8 @@ const SIZES = {
   xl: '[--mh:30rem]',
 } as const;
 export type MascotSize = keyof typeof SIZES;
+/** true = en tamaño `xs` las mascotas heredadas se dibujan con el mini héroe vectorial. */
+export const MINI_HERO_XS = true;
 export type MascotMotion = 'none' | 'bob' | 'pop' | 'wiggle';
 
 /**
@@ -22,6 +25,18 @@ export type MascotMotion = 'none' | 'bob' | 'pop' | 'wiggle';
  */
 export function Mascot({ variant, size = 'md', tile, motion = 'none', alt, className = '', priority }: { variant: MascotId; size?: MascotSize; tile?: boolean; motion?: MascotMotion; alt?: string; className?: string; priority?: boolean }) {
   const a = MASCOT_ASSETS[variant];
+  // Tamaño mínimo (xs): en vez de la imagen se usa el mini héroe vectorial (docs/MARCA.md). Quita MINI_HERO_XS para volver a las imágenes.
+  if (MINI_HERO_XS && size === 'xs' && !variant.startsWith('item-')) {
+    return (
+      <span
+        className={`ss-mascot inline-block h-[var(--mh)] shrink-0 ${SIZES[size]} ${motion === 'bob' ? 'ss-mascot-bob' : motion === 'pop' ? 'ss-mascot-pop' : motion === 'wiggle' ? 'ss-mascot-wiggle ss-hover-wiggle' : ''} ${className}`}
+        style={{ aspectRatio: '1 / 1' }}
+        data-mascot={variant}
+      >
+        <MiniHero mood={moodFor(variant)} title={alt} style={{ height: '100%' }} />
+      </span>
+    );
+  }
   const style = { aspectRatio: `${a.width} / ${a.height}`, ...(tile ? { background: MASCOT_BG } : {}) } as CSSProperties;
   return (
     <span
