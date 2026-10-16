@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { validateProviderOutput } from '@/lib/ai/image-validation';
 import { ProviderError, type GeneratedImage, type ImageGenerationProvider } from '@/lib/ai/types';
-import { quotaConfig } from '@/lib/config/env';
+import { effectiveQuota, getSettings } from './settings';
 import { redactSecrets } from '@/lib/security/redact';
 import { emptySceneFor } from '@/lib/domain/themes';
 import { extensionForMime } from '@/lib/storage/types';
@@ -48,8 +48,11 @@ export async function processImageJobs(
   const result: ProcessResult = { processed: 0, succeeded: 0, failed: 0 };
   // Proveedor por MODO de la partida: «stickers» (pegatinas, local, sin IA) o «ai» (proveedor real configurado).
   // Sin `ctx.stickers` (pruebas) se usa `ctx.provider` para todo.
-  if (!ctx.provider && !ctx.stickers) return { ...result, skipped: 'provider_not_configured' };
-  const modes = ctx.stickers ? ['stickers', ...(ctx.provider ? ['ai'] : [])] : null;
+  // Interruptor global de IA (superadmin): apagado = solo se procesan trabajos del modo pegatinas; los de IA quedan en cola.
+  const aiOn = (await getSettings(ctx.db)).ai_enabled;
+  const realProvider = aiOn ? ctx.provider : null;
+  if (!realProvider && !ctx.stickers) return { ...result, skipped: 'provider_not_configured' };
+  const modes = ctx.stickers ? ['stickers', ...(realProvider ? ['ai'] : [])] : null;
 
   const maxJobs = opts.maxJobs ?? 10;
   const deadline = Date.now() + (opts.deadlineMs ?? 240_000);
@@ -174,7 +177,7 @@ async function runJob(ctx: Ctx, provider: ImageGenerationProvider, job: ClaimedJ
 /** Reserva atómica de UNA llamada al proveedor real. El proveedor `demo` no consume ni tiene límite. */
 async function reserveQuota(ctx: Ctx, provider: ImageGenerationProvider, job: ClaimedJob): Promise<void> {
   if (provider.id === 'demo') return;
-  const q = quotaConfig();
+  const q = effectiveQuota(await getSettings(ctx.db));
   const r = await ctx.db.rpc<{ ok: boolean; reason?: 'game' | 'day'; used?: number; limit?: number }>('ss_reserve_image_quota', {
     job_id: job.job_id,
     provider: provider.id,

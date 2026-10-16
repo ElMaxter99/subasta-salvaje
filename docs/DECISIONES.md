@@ -35,3 +35,9 @@ Formato: **decisión** — por qué — alternativas descartadas. Añade aquí c
 24. **Asset pack vectorial** (no 3D) porque no hay generador de imágenes; documentado como limitación.
 25. **Documentación en español** y viva: README (usuario), `docs/` (memoria técnica), `CLAUDE.md`/`AGENTS.md` (agentes).
 26. **La imagen inicial «generada para todos» es una sola imagen compartida** (job `base`) — el propietario quiere la misma casa base para todos, vengan cuando vengan; además cuesta una sola generación. Generación individual por jugador se mantiene como opción.
+27. **Superadmin único por correo (`SUPERADMIN_EMAILS`), sin MFA por ahora** — decisión del propietario: es el único administrador; MFA queda pendiente.
+28. **Registro abierto con interruptor + invitaciones por correo** — el cierre se aplica en la app (no se puede cerrar el alta de Supabase Auth desde aquí); quien ya tenía partidas conserva el acceso.
+29. **Borrar un usuario borra todo lo relacionado** (cuenta de Auth, partidas, archivos); el historial de uso de IA se conserva sin datos personales para no falsear cuotas.
+30. **Dashboard de auditoría, sin alertas** — solo estadísticas de cuota de IA y peso de Supabase.
+31. **Borrado automático a los 7 días sin actividad, configurable en `/admin`** (antes 12 h): sustituye la retención por versiones; ajustes en BD con prioridad sobre el entorno.
+32. **`image_usage` desvinculada de `games`** — con la FK en cascada, borrar una partida devolvía cuota diaria y borraba el historial.

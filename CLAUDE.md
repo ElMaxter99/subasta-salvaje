@@ -11,7 +11,7 @@ con emojis (sin IA) o edición por IA. Idioma del producto, comentarios y docs: 
 ## Stack
 Next.js 16 App Router (`proxy.ts`, `after()`, route handlers) · TypeScript estricto · Tailwind 4 · Zod 4 · Supabase
 (Postgres, Auth, Realtime Broadcast, Storage) · PGlite (Postgres WASM) para demo y tests · sharp · Vitest · Playwright.
-Despliegue: Vercel (+ cron). Node ≥ 20.
+Despliegue: Vercel (+ cron). Node ≥ 20. Panel de superadmin en `/admin` (ver `docs/PLAN-SUPERADMIN.md`, `README`).
 
 ## Comandos
 ```bash

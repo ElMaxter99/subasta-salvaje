@@ -2,7 +2,8 @@ import { randomUUID } from 'node:crypto';
 import { DomainError } from '@/lib/domain/errors';
 import { PLAYER_COLORS, actionSchema, createGameSchema, roomCodeSchema, type CreateGameInput, type GameAction } from '@/lib/domain/schemas';
 import { getThemePreset } from '@/lib/domain/themes';
-import { gameTtlHours, getImageProviderId, quotaConfig } from '@/lib/config/env';
+import { getImageProviderId } from '@/lib/config/env';
+import { effectiveQuota, effectiveTtlHours, getSettings } from './settings';
 import type { GameSummary, HostSnapshot, ImageUsage, PublicSnapshot } from '@/lib/domain/types';
 import { validateImage } from '@/lib/ai/image-validation';
 import { extensionForMime } from '@/lib/storage/types';
@@ -27,10 +28,17 @@ function parseOrThrow<T>(result: { success: true; data: T } | { success: false }
   return result.data;
 }
 
+/** La IA exige: proveedor configurado, interruptor global del superadmin encendido y permiso de ese anfitrión. */
+async function assertAiAllowed(ctx: Ctx, hostId: string): Promise<void> {
+  if (!getImageProviderId() || !(await getSettings(ctx.db)).ai_enabled) throw new DomainError('ai_not_available');
+  const r = await ctx.db.rpc<{ allowed: boolean }>('ss_host_ai_allowed', { host_id: hostId });
+  if (!r.allowed) throw new DomainError('ai_disabled_for_user');
+}
+
 /** Crea la partida. Si no se envía catálogo se usa el de la plantilla de temática. */
 export async function createGame(ctx: Ctx, hostId: string, rawInput: unknown): Promise<{ room_code: string }> {
   const input: CreateGameInput = parseOrThrow(createGameSchema.safeParse(rawInput));
-  if (input.image_mode === 'ai' && !getImageProviderId()) throw new DomainError('ai_not_available');
+  if (input.image_mode === 'ai') await assertAiAllowed(ctx, hostId);
   await purgeExpiredGames(ctx).catch(() => undefined);
   const items = input.items ?? (getThemePreset(input.theme) ?? getThemePreset('free'))!.items;
   const players = input.players.map((p, i) => ({ ...p, color: p.color ?? PLAYER_COLORS[i % PLAYER_COLORS.length] }));
@@ -46,8 +54,9 @@ export async function getPublicState(ctx: Ctx, roomCode: string): Promise<Public
 export async function getHostState(ctx: Ctx, roomCode: string, hostId: string): Promise<HostSnapshot> {
   const snap = await ctx.db.rpc<HostSnapshot>('ss_get_state', { room_code: room(roomCode), view: 'host', host_id: hostId });
   const used = await ctx.db.rpc<{ game_used: number; day_used: number }>('ss_image_usage', { room_code: room(roomCode) });
-  const provider = getImageProviderId();
-  const q = quotaConfig();
+  const settings = await getSettings(ctx.db);
+  const provider = settings.ai_enabled ? getImageProviderId() : null;
+  const q = effectiveQuota(settings);
   // Sólo las partidas en modo IA consumen (y tienen) cuota; el modo pegatinas es local y gratuito.
   const limited = provider !== null && snap.game.image_mode === 'ai';
   const usage: ImageUsage = {
@@ -59,7 +68,7 @@ export async function getHostState(ctx: Ctx, roomCode: string, hostId: string): 
     day_limit: limited ? q.perDay : null,
   };
   const activity = await ctx.db.rpc<{ updated_at: string | null }>('ss_game_activity', { room_code: room(roomCode) });
-  const expires_at = activity.updated_at ? new Date(Date.parse(activity.updated_at) + gameTtlHours() * 3600_000).toISOString() : null;
+  const expires_at = activity.updated_at ? new Date(Date.parse(activity.updated_at) + effectiveTtlHours(settings) * 3600_000).toISOString() : null;
   return { ...attachUrls(snap, ctx.storage), usage, expires_at };
 }
 
@@ -148,7 +157,7 @@ export interface ActionResult {
 export async function performAction(ctx: Ctx, roomCode: string, hostId: string, rawAction: unknown): Promise<ActionResult> {
   const code = room(roomCode);
   const action = parseOrThrow(actionSchema.safeParse(rawAction));
-  if (action.type === 'game.set_image_mode' && action.image_mode === 'ai' && !getImageProviderId()) throw new DomainError('ai_not_available');
+  if (action.type === 'game.set_image_mode' && action.image_mode === 'ai') await assertAiAllowed(ctx, hostId);
   if (action.type === 'image.set_initial_all') return setInitialFromCatalog(ctx, code, hostId, action.catalog_id, { current: action.scope_current, new: action.scope_new });;
   const { fn, params } = toRpc(action);
   const result = await ctx.db.rpc<Record<string, unknown>>(fn, { ...params, room_code: code, host_id: hostId });
@@ -262,7 +271,7 @@ async function removeGameFiles(ctx: Ctx, gameId: string): Promise<void> {
 
 /** Borra las partidas sin actividad desde hace más de GAME_TTL_HOURS (12 por defecto). Idempotente y segura en paralelo. */
 export async function purgeExpiredGames(ctx: Ctx, opts: { limit?: number } = {}): Promise<{ deleted: number }> {
-  const hours = gameTtlHours();
+  const hours = effectiveTtlHours(await getSettings(ctx.db));
   const expired = await ctx.db.rpc<{ id: string; room_code: string }[]>('ss_expired_games', { hours, limit: opts.limit ?? 5 });
   let deleted = 0;
   for (const g of expired) {

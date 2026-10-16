@@ -221,7 +221,9 @@ Notas: las rutas que generan imágenes declaran `maxDuration = 300`. Si tu proye
 | `OPENAI_API_KEY` | Con `openai` | **solo servidor** | Alternativa de pago. |
 | `OPENAI_IMAGE_MODEL` / `_SIZE` / `_QUALITY` / `_INPUT_FIDELITY` / `OPENAI_BASE_URL` | No | servidor | Ajustes del proveedor. |
 | `ALLOWED_HOST_EMAILS` | Recomendada | servidor | Correos autorizados como anfitrión (evita gasto de IA por terceros). |
-| `GAME_TTL_HOURS` | No (12) | servidor | Horas de inactividad tras las que una partida se borra sola. |
+| `GAME_TTL_HOURS` | No (168) | servidor | Horas de inactividad tras las que una partida se borra sola (7 días). El superadmin lo cambia en caliente desde `/admin`. |
+| `SUPERADMIN_EMAILS` | Para usar `/admin` | servidor | Correo(s) del superadmin (con el correo confirmado). Sin ella `/admin` da 404. En modo demo el anfitrión local es superadmin. |
+| `SUPABASE_PLAN_DB_MB` / `SUPABASE_PLAN_STORAGE_MB` | No (500 / 1024) | servidor | Topes del plan de Supabase que muestran las barras del panel (solo informativos). |
 | `CRON_SECRET` | Recomendada | servidor | Protege `/api/jobs/process`. |
 | `FORCE_DEMO_MODE`, `ALLOW_DEMO_MODE`, `DEMO_DATA_DIR`, `WORKER_INTERVAL_MS` | No | servidor | Desarrollo / worker. |
 
@@ -255,7 +257,7 @@ En el panel (*Jugadores → Imagen de partida para todos*, solo en la sala de es
 
 - **Finalizar:** desde *Resumen*, al **pausar** la partida aparece «Finalizar partida» junto a «Reanudar» (también está en *Ajustes → Zona de peligro*). Pide escribir `FINALIZAR`, cancela cualquier subasta en curso sin cobrar y la TV muestra los resultados.
 - **Borrar:** *Ajustes → Borrar partida* (solo el anfitrión propietario, en cualquier estado). Pide escribir `BORRAR` y elimina **para siempre** la partida con jugadores, pujas, compras, historial, trabajos y **todas sus imágenes de Storage**. La TV y los móviles pasan a mostrar «Esta partida ya no existe».
-- **Borrado automático:** una partida se borra sola tras **12 h sin actividad** (cambia el plazo con `GAME_TTL_HOURS`, de 1 a 720). «Actividad» es cualquier acción en la partida (pujar, adjudicar, ajustes…), no el tiempo desde que se creó; mirar la TV no cuenta. El panel de Ajustes muestra cuándo caducará. Se ejecuta de dos formas: limpieza oportunista al crear o listar partidas (no necesita cron) y `GET /api/jobs/purge` (protegido con `CRON_SECRET`; `vercel.json` lo programa una vez al día a las 04:30 UTC). Si pasa más tiempo sin que nadie use la app, las partidas caducadas se borran en cuanto alguien cree o liste partidas o se ejecute el cron. Las migraciones borran en orden de dependencias (`ss_wipe_game`); si falla la limpieza de archivos de Storage, la partida ya está borrada y solo quedan archivos huérfanos (se registra en los logs).
+- **Borrado automático:** una partida se borra sola tras **7 días sin actividad** (168 h; el superadmin lo cambia en `/admin → Ajustes`, o con `GAME_TTL_HOURS`, de 1 h a 90 días). «Actividad» es cualquier acción en la partida (pujar, adjudicar, ajustes…), no el tiempo desde que se creó; mirar la TV no cuenta. El panel de Ajustes muestra cuándo caducará. Se ejecuta de dos formas: limpieza oportunista al crear o listar partidas (no necesita cron) y `GET /api/jobs/purge` (protegido con `CRON_SECRET`; `vercel.json` lo programa una vez al día a las 04:30 UTC). Si pasa más tiempo sin que nadie use la app, las partidas caducadas se borran en cuanto alguien cree o liste partidas o se ejecute el cron. Las migraciones borran en orden de dependencias (`ss_wipe_game`); si falla la limpieza de archivos de Storage, la partida ya está borrada y solo quedan archivos huérfanos (se registra en los logs).
 
 ## Adjudicación automática
 
@@ -280,6 +282,16 @@ Requieren las migraciones `…1800` y `…1900` (ver `docs/PENDIENTE.md`).
   - **Doble o mitad:** al adjudicar se sortea (50 %) si el ganador paga la **mitad** de su puja o el **doble** (limitado a su saldo). `purchases.price_cents` guarda lo realmente cobrado y la TV muestra el resultado. El sorteo usa `random()` de PostgreSQL en el servidor, nunca el navegador.
   - **Impuesto al más rico:** el jugador con más saldo paga el 20 % (a la baja) y se reparte a partes iguales entre los demás; los céntimos sobrantes se quedan con el primer pagador, así que la suma de saldos no cambia. Si hay empate en el máximo pagan todos los empatados. Solo entre subastas (no con una puja abierta) y con clave de idempotencia. La TV lo anuncia unos segundos.
 - **Galería final con votación** (solo en partidas «cada jugador desde su móvil»). Al finalizar, cada móvil ve las casas de los demás y vota la mejor (un voto por jugador, **no se puede votar a uno mismo**, se puede cambiar hasta el cierre). La TV y la página de resultados muestran el progreso («N votos»); el recuento solo lo ve el anfitrión hasta que pulsa **«Cerrar votación y revelar»**, momento en que se publican los votos por casa y el ganador (empates: se muestran todos). Es independiente de la clasificación «votación del público» (que apunta el anfitrión a mano). Los móviles conservan su identidad tras finalizar solo para esto: no pueden pujar, y el token desaparece con la partida (borrado a las 12 h).
+
+## Panel de superadmin (`/admin`)
+Solo para el correo de `SUPERADMIN_EMAILS` (confirmado); cualquier otra persona recibe un **404**. Requiere las migraciones `…2200` y `…2300`.
+- **Resumen:** barras de peso de la base de datos y del almacenamiento frente a los topes del plan (configurables, solo informativas: **sin alertas**), peso por tabla, contadores y la **cuota de IA** (hoy/mes/total, 14 días, por proveedor y quién más la usa). Tráfico de salida y mensajes de Realtime no son medibles desde la app: se consultan en el panel de Supabase.
+- **Usuarios:** lista de anfitriones (incluye cuentas de Supabase sin perfil), bloquear/desbloquear, dar o quitar la IA a un usuario (sus partidas en modo IA pasan a pegatinas), **invitaciones** y **borrado total** (cuenta de Auth, partidas, jugadores, pujas, imágenes y archivos; hay que escribir el correo para confirmar). El superadmin no puede bloquearse ni borrarse.
+- **Partidas:** todas, con dueño, peso, IA usada y última actividad; borrar una o «purgar caducadas ahora».
+- **Ajustes (en caliente, sin redeploy):** registro **abierto/cerrado** (cerrado: solo entra quien tenga invitación o ya tuviera partidas; la pantalla de registro de Supabase sigue existiendo pero esas cuentas no pueden entrar), **borrado automático** en días (por defecto 7), **interruptor global de IA** y topes de cuota por partida/día (ganan a las variables de entorno).
+- **Auditoría:** registro inmutable de todo lo anterior (quién, qué, cuándo).
+- El uso de IA (`image_usage`) se conserva al borrar partidas o usuarios: borrar no «devuelve» cuota ni borra el historial de gasto.
+- **Pendiente (MFA):** la autenticación en dos pasos del superadmin está anotada en `docs/PENDIENTE.md`; hasta entonces protege la cuenta con una contraseña larga.
 
 ## Bucket con SVG (opcional)
 El bucket `game-images` admite `image/svg+xml` solo para el modo pegatinas y la galería de imágenes iniciales (los escribe únicamente el servidor, con texto escapado). Si usas solo un proveedor real y subes tus propias imágenes, puedes quitarlo: `update storage.buckets set allowed_mime_types = array['image/png','image/jpeg','image/webp'] where id = 'game-images';`

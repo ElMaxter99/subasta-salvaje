@@ -10,10 +10,46 @@ export interface HostIdentity {
   id: string;
   email: string | null;
   demo: boolean;
+  /** Superadmin: correo en SUPERADMIN_EMAILS (confirmado) o, en modo demo, el anfitrión local. */
+  superadmin?: boolean;
 }
 
-/** Supabase Auth en producción; cookie de anfitrión de demostración en modo demo. */
-export async function getHostIdentity(): Promise<HostIdentity | null> {
+export type HostDenial = 'blocked' | 'closed';
+
+/** Correos de superadmin (variable de entorno SUPERADMIN_EMAILS, separados por comas). */
+export function superadminEmails(env: NodeJS.ProcessEnv = process.env): string[] {
+  return (env.SUPERADMIN_EMAILS ?? '').split(',').map((e) => e.trim().toLowerCase()).filter(Boolean);
+}
+
+// Caché corta del veredicto de acceso por usuario: evita una consulta a la BD en cada petición.
+// Un bloqueo del superadmin se aplica al instante en este proceso (se vacía la caché) y en <20 s en los demás.
+const ACCESS_TTL_MS = 20_000;
+const accessCache = new Map<string, { at: number; denial: HostDenial | null }>();
+export function clearHostAccessCache(): void {
+  accessCache.clear();
+}
+
+async function hostDenial(user: { id: string; email: string | null }): Promise<HostDenial | null> {
+  const hit = accessCache.get(user.id);
+  if (hit && Date.now() - hit.at < ACCESS_TTL_MS) return hit.denial;
+  const { getContext } = await import('@/lib/services/context');
+  const ctx = await getContext();
+  const r = await ctx.db.rpc<{ allowed: boolean; reason?: HostDenial }>('ss_host_access', { user_id: user.id, email: user.email });
+  const denial = r.allowed ? null : (r.reason ?? 'closed');
+  if (accessCache.size > 500) accessCache.clear();
+  accessCache.set(user.id, { at: Date.now(), denial });
+  return denial;
+}
+
+export interface HostResolution {
+  identity: HostIdentity | null;
+  /** Hay sesión de Supabase pero no se permite el acceso (cuenta bloqueada o registro cerrado sin invitación). */
+  denial: HostDenial | null;
+  email: string | null;
+}
+
+/** Resuelve quién es el anfitrión y si tiene acceso. */
+export async function resolveHost(): Promise<HostResolution> {
   const mode = getRuntimeMode();
   const store = await cookies();
   if (mode === 'supabase') {
@@ -32,21 +68,39 @@ export async function getHostIdentity(): Promise<HostIdentity | null> {
       },
     });
     const { data, error } = await supabase.auth.getUser();
-    if (error || !data.user) return null;
+    if (error || !data.user) return { identity: null, denial: null, email: null };
+    const email = data.user.email ?? null;
     // Opcional: restringe quién puede ser anfitrión (evita que cualquiera con la URL gaste créditos de IA).
     const allowed = process.env.ALLOWED_HOST_EMAILS?.split(',').map((e) => e.trim().toLowerCase()).filter(Boolean);
-    if (allowed?.length && !allowed.includes((data.user.email ?? '').toLowerCase())) return null;
-    return { id: data.user.id, email: data.user.email ?? null, demo: false };
+    const superadmin = Boolean(email && data.user.email_confirmed_at && superadminEmails().includes(email.toLowerCase()));
+    if (!superadmin && allowed?.length && !allowed.includes((email ?? '').toLowerCase())) return { identity: null, denial: 'closed', email };
+    // El superadmin nunca queda fuera (ni por bloqueo ni por registro cerrado).
+    const denial = superadmin ? null : await hostDenial({ id: data.user.id, email });
+    if (denial) return { identity: null, denial, email };
+    if (superadmin) await hostDenial({ id: data.user.id, email }).catch(() => undefined); // registra su perfil
+    return { identity: { id: data.user.id, email, demo: false, superadmin }, denial: null, email };
   }
   if (mode === 'demo') {
     const v = store.get(DEMO_COOKIE)?.value;
-    if (v && UUID.test(v)) return { id: v, email: null, demo: true };
+    if (v && UUID.test(v)) return { identity: { id: v, email: null, demo: true, superadmin: true }, denial: null, email: null };
   }
-  return null;
+  return { identity: null, denial: null, email: null };
+}
+
+/** Supabase Auth en producción; cookie de anfitrión de demostración en modo demo. */
+export async function getHostIdentity(): Promise<HostIdentity | null> {
+  return (await resolveHost()).identity;
 }
 
 export async function requireHost(): Promise<HostIdentity> {
   const id = await getHostIdentity();
   if (!id) throw new DomainError('unauthenticated');
+  return id;
+}
+
+/** Solo el superadmin. Cualquier otro (o sin sesión) recibe «no encontrado» para no revelar que el panel existe. */
+export async function requireSuperadmin(): Promise<HostIdentity> {
+  const id = await getHostIdentity();
+  if (!id?.superadmin) throw new DomainError('game_not_found');
   return id;
 }

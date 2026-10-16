@@ -59,12 +59,12 @@ describe('borrar partida (anfitrión)', () => {
 });
 
 describe('borrado automático por inactividad', () => {
-  it('borra las partidas sin actividad desde hace más de 12 h (y sus archivos) y respeta las recientes', async () => {
+  it('borra las partidas sin actividad desde hace más de 7 días (y sus archivos) y respeta las recientes', async () => {
     const host = newHost();
     const old = await playedGame(host);
     const fresh = await playedGame(host);
-    await ctx.db.pg.query("update games set updated_at = now() - interval '13 hours' where id = $1", [old.gameId]);
-    await ctx.db.pg.query("update games set updated_at = now() - interval '11 hours' where id = $1", [fresh.gameId]);
+    await ctx.db.pg.query("update games set updated_at = now() - interval '8 days' where id = $1", [old.gameId]);
+    await ctx.db.pg.query("update games set updated_at = now() - interval '6 days' where id = $1", [fresh.gameId]);
     expect(await purgeExpiredGames(ctx)).toEqual({ deleted: 1 });
     await expect(getPublicState(ctx, old.room)).rejects.toMatchObject({ code: 'game_not_found' });
     expect([...ctx.storage.files.keys()].some((k) => k.startsWith(`games/${old.gameId}/`))).toBe(false);
@@ -93,13 +93,13 @@ describe('borrado automático por inactividad', () => {
   it('crear o listar partidas también limpia las caducadas (sin depender del cron) y muestra cuándo caducará', async () => {
     const host = newHost();
     const old = await playedGame(host);
-    await ctx.db.pg.query("update games set updated_at = now() - interval '20 hours' where id = $1", [old.gameId]);
+    await ctx.db.pg.query("update games set updated_at = now() - interval '9 days' where id = $1", [old.gameId]);
     await listGames(ctx, host);
     await expect(getPublicState(ctx, old.room)).rejects.toMatchObject({ code: 'game_not_found' });
     const g = await playedGame(host);
     const s = await getHostState(ctx, g.room, host);
     const hours = (Date.parse(s.expires_at!) - Date.now()) / 3600_000;
-    expect(hours).toBeGreaterThan(11.9);
-    expect(hours).toBeLessThanOrEqual(12.01);
+    expect(hours).toBeGreaterThan(167.9);
+    expect(hours).toBeLessThanOrEqual(168.01);
   });
 });

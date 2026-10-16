@@ -21,7 +21,8 @@ Orden de las migraciones (carpeta `supabase/migrations`): `…0000_core` → `�
 → `…1000`/`…1100` (adjudicación automática) → `…1200`/`…1300` (modo de imágenes) → `…1400`/`…1500` (borrado de partidas)
 → `…1600`/`…1700` (imagen inicial para jugadores actuales y nuevos)
 → `…1800`/`…1900` (eventos sorpresa, deshacer adjudicación y galería con votación; renombra `ss_get_state` a `ss_get_state_base` y crea la tabla `gallery_votes`)
-→ `…2000`/`…2100` (imagen base única y compartida generada con IA/pegatinas) Si alguna se aplicó a mano en el SQL Editor, marca antes
+→ `…2000`/`…2100` (imagen base única y compartida generada con IA/pegatinas)
+→ `…2200`/`…2300` (panel de superadmin: ajustes, perfiles, invitaciones, auditoría; `image_usage` deja de borrarse con la partida) Si alguna se aplicó a mano en el SQL Editor, marca antes
 esas versiones con `npx supabase migration repair --status applied <versión>`.
 Después de cada migración nueva, vuelve a probar a mano: crear partida, pujar, adjudicar (el saldo baja una sola vez) y borrar.
 
@@ -31,7 +32,8 @@ Después de cada migración nueva, vuelve a probar a mano: crear partida, pujar,
 - [ ] `CRON_SECRET` (cadena larga aleatoria) para `/api/jobs/process` y `/api/jobs/purge`.
 - [ ] IA (opcional): `IMAGE_PROVIDER=cloudflare`, `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`. Sin ellas solo existe el modo pegatinas.
 - [ ] Límites de IA (opcionales): `IMAGE_QUOTA_PER_GAME` (10), `IMAGE_QUOTA_PER_DAY` (50), interruptor `IMAGE_AI_DISABLED=true`.
-- [ ] `GAME_TTL_HOURS` (opcional, 12) para el borrado automático por inactividad.
+- [ ] `GAME_TTL_HOURS` (opcional, 168 = 7 días) para el borrado automático por inactividad; el superadmin lo cambia luego en `/admin → Ajustes`.
+- [ ] `SUPERADMIN_EMAILS=tu@correo.com` (necesaria para usar `/admin`; la cuenta debe tener el correo confirmado en Supabase Auth).
 - [ ] Tras cambiar variables: *Deployments → Redeploy*. Comprueba `/api/health` (debe dar `ok: true`) y `/setup`.
 
 ## 4. Supabase Auth y Storage
@@ -50,3 +52,7 @@ Después de cada migración nueva, vuelve a probar a mano: crear partida, pujar,
 - Supabase real: Realtime (Broadcast), Storage (subida/borrado, incluido SVG), claves `sb_publishable_/sb_secret_`.
 - Cloudflare Workers AI real (generación y, sobre todo, edición con referencias < 512 px).
 - Plan de Vercel: `maxDuration = 300` en las rutas que procesan imágenes; si el plan no lo admite, bájalo (ver README).
+
+## 8. Pendiente para más adelante (decidido por el propietario)
+- [ ] **MFA/TOTP obligatorio para el superadmin** (Supabase Auth MFA). Hasta entonces: contraseña larga y única. Al implementarlo, `requireSuperadmin()` debe exigir `aal2`.
+- [ ] Ideas del plan de superadmin no incluidas por ahora: alertas (descartadas: solo dashboard), conversión de imágenes a WebP y retención por versiones, detección de archivos huérfanos en el bucket, cuotas de IA por usuario (hoy: global + permiso por usuario), exportación CSV de la auditoría.

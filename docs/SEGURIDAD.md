@@ -5,6 +5,7 @@
   `public/anon/authenticated` y concedido solo a `service_role` (cada migración `_security_` lo repite). Solo el servidor (clave `service_role`) habla con la BD.
 - **Anfitrión:** autenticado con Supabase Auth (cookies SSR). `ALLOWED_HOST_EMAILS` restringe quién puede crear/gestionar partidas (recomendado: el registro es abierto
   y cada anfitrión puede gastar cuota de IA). Cada función `ss_*` de anfitrión comprueba `host_id` (`not_host`).
+- **Superadmin (`/admin`, `/api/admin/*`):** correo en `SUPERADMIN_EMAILS` y confirmado; se comprueba en el servidor en CADA petición (`requireSuperadmin`, 404 para el resto), con `assertSameOrigin` y límite de tasa; todas las acciones quedan en `admin_audit`. **MFA pendiente** (`PENDIENTE.md` §8). Acceso de anfitriones: `ss_host_access` (bloqueo / registro cerrado / invitaciones) con caché de 20 s por proceso.
 - **Jugadores (móvil):** sin cuenta. Token aleatorio de 32 bytes en cookie `ss_p_<SALA>`; en BD solo su `sha256`. La identidad nunca viaja en el cuerpo. Un token por casilla.
   Límites de tasa por IP/sala y por jugador (`lib/auth/rate-limit.ts`, `limit()` en las rutas) **antes** de consultar la BD; `assertSameOrigin` contra CSRF.
 - **Entradas:** Zod en el borde y comprobaciones en SQL; subida de imágenes validada por bytes y tamaño; SVG solo de proveedores/galería propios.

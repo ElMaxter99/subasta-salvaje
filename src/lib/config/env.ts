@@ -99,8 +99,8 @@ export function getSupabaseConfig(env: NodeJS.ProcessEnv = process.env) {
   };
 }
 
-/** Horas de INACTIVIDAD tras las que una partida se borra sola (por defecto 12; mínimo 1). */
+/** Horas de INACTIVIDAD tras las que una partida se borra sola (por defecto 168 = 7 días; mínimo 1). El superadmin puede cambiarlo en caliente. */
 export function gameTtlHours(env: NodeJS.ProcessEnv = process.env): number {
   const n = Number(env.GAME_TTL_HOURS);
-  return Number.isInteger(n) && n >= 1 && n <= 24 * 30 ? n : 12;
+  return Number.isInteger(n) && n >= 1 && n <= 24 * 90 ? n : 168;
 }

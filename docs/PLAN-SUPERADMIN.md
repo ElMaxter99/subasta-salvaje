@@ -1,6 +1,6 @@
 # Plan: panel de superadmin (`/admin`)
 
-Estado: **propuesta, sin implementar**. Objetivo: que el propietario controle usuarios (anfitriones), partidas, acceso/gasto de IA y el **peso** de lo guardado
+Estado: **implementado en lo acordado** (fases 0–4: acceso, peso/resumen, partidas, usuarios e invitaciones, ajustes de IA, auditoría). Decisiones del propietario: único superadmin; registro abierto con interruptor e invitaciones; borrar usuario = borrar todo; solo dashboard (sin alertas); partidas se borran a los 7 días (configurable); **MFA pendiente**. No implementado: WebP/retención por versiones, huérfanos, cuotas por usuario, CSV (ver `PENDIENTE.md` §8). Objetivo: que el propietario controle usuarios (anfitriones), partidas, acceso/gasto de IA y el **peso** de lo guardado
 (Supabase free tier), sin entrar al dashboard de Supabase ni tocar variables de entorno.
 
 ## 1. Qué hay hoy (punto de partida)

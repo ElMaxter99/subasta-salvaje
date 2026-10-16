@@ -4,7 +4,7 @@
 Estados: `lobby` → `active` ⇄ `paused` → `finished`. Código de sala de 6 caracteres (sin 0/O/1/I). Hasta **12 jugadores**; mínimo 2 y
 1 elemento para empezar. Presupuesto inicial y puja mínima configurables (céntimos). Regla de clasificación opcional: `none`, `balance`
 (más dinero), `items` (más elementos), `votes` (votos del público apuntados a mano por el anfitrión con `votes.adjust`).
-Temáticas con catálogo de elementos de ejemplo (`domain/themes.ts`). **Borrado automático** a las `GAME_TTL_HOURS` (12) sin actividad
+Temáticas con catálogo de elementos de ejemplo (`domain/themes.ts`). **Borrado automático** a los 7 días (168 h, ajuste `game_ttl_hours` del superadmin; respaldo `GAME_TTL_HOURS`) sin actividad
 (`/api/jobs/purge`); el anfitrión también puede borrarla desde Ajustes (irreversible). Se puede **finalizar desde pausa**.
 
 ## Modos de juego (`play_mode`)
@@ -47,3 +47,9 @@ de móvil **se conservan** tras finalizar (solo sirven para votar/ver); en parti
 `image_mode`: `stickers` (por defecto, local, sin IA) | `ai` (proveedor real, con cuotas). Imagen inicial: subida, galería (`catalog`), generada, o ninguna. **La generada es UNA sola imagen base compartida** (job `base`, `ss_complete_image_job` asigna el mismo archivo a todos los jugadores del lobby y a los nuevos vía `new_player_image`); la generación por jugador (`image.request_initial`) es opcional y da casas distintas;
 aplicable a jugadores **actuales y/o nuevos** (`scope_current`, `scope_new`; `games.new_player_image`) y solo en `lobby`. Cada compra encadena una versión
 nueva (`image_versions.parent_version_id`); el anfitrión puede restaurar versiones (sin tocar saldos). Detalle en `IMAGENES-IA.md`.
+
+## Acceso de anfitriones y superadmin (migración 2200)
+- Cada anfitrión tiene un `host_profiles` (se crea en su primer acceso). **Registro abierto** (por defecto): cualquiera con cuenta entra. **Cerrado**: solo con invitación (`host_invites`, por correo) o si ya tenía partidas. **Bloqueado**: no entra ni gestiona nada (sus datos se conservan).
+- `SUPERADMIN_EMAILS` (correo confirmado) → `/admin`; nunca queda fuera por bloqueo o registro cerrado. En modo demo el anfitrión local es superadmin.
+- IA: debe estar configurada (`IMAGE_PROVIDER`), encendida (`ai_enabled` global) y permitida para ese anfitrión (`host_profiles.ai_enabled`); si no, `ai_not_available` / `ai_disabled_for_user`. Con la IA apagada los trabajos de partidas en modo IA quedan en cola.
+- Cuotas efectivas: ajuste del superadmin > variables de entorno > 10 por partida / 50 al día. `image_usage` guarda `host_id` y NO se borra con la partida.

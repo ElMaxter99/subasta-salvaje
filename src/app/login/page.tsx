@@ -3,7 +3,8 @@ import { DemoLoginButton } from '@/components/landing/landing-actions';
 import { LoginForm } from '@/components/landing/login-form';
 import { DemoBanner } from '@/components/ui/status';
 import { Logo } from '@/components/ui/logo';
-import { getHostIdentity } from '@/lib/auth/host';
+import { resolveHost } from '@/lib/auth/host';
+import { SignOutButton } from '@/components/landing/landing-actions';
 import { getRuntimeMode } from '@/lib/config/env';
 import { getRuntimeInfo } from '@/lib/services/context';
 
@@ -18,7 +19,8 @@ function safeNext(next: string | undefined): string {
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
   const next = safeNext((await searchParams).next);
   if (getRuntimeMode() === 'unconfigured') redirect('/setup');
-  if (await getHostIdentity()) redirect(next);
+  const { identity, denial, email } = await resolveHost();
+  if (identity) redirect(next);
   const runtime = getRuntimeInfo();
   return (
     <>
@@ -30,6 +32,15 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
             <h1 className="font-display text-2xl">Acceso del anfitrión</h1>
             <p className="mt-1 text-sm text-white/70">Solo el anfitrión necesita cuenta. Los jugadores no se registran.</p>
           </div>
+          {denial ? (
+            <div role="alert" className="space-y-3 rounded-2xl border border-rose/40 bg-rose/10 p-4 text-sm" data-testid="host-denied">
+              <p className="font-bold text-rose">{denial === 'blocked' ? 'Tu cuenta está bloqueada.' : 'El registro está cerrado.'}</p>
+              <p className="text-white/80">
+                {denial === 'blocked' ? 'Contacta con el administrador para recuperar el acceso.' : `La cuenta ${email ?? ''} no tiene invitación. Pide al administrador que te invite con este mismo correo.`}
+              </p>
+              <SignOutButton demo={false} supabaseUrl={runtime.supabaseUrl} supabaseAnonKey={runtime.supabaseAnonKey} />
+            </div>
+          ) : null}
           {runtime.mode === 'demo' ? (
             <div className="space-y-3">
               <p className="text-sm text-white/70">Modo demo: no hace falta cuenta. Se crea una identidad local en este navegador.</p>

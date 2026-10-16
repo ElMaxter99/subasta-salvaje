@@ -13,7 +13,9 @@
 | `IMAGE_EDIT_COMPOSE` (`false` desactiva el plan B) | edición por composición |
 | `OPENAI_API_KEY`, `OPENAI_IMAGE_*`, `OPENAI_BASE_URL` | OpenAI (de pago, opcional) |
 | `IMAGE_QUOTA_PER_GAME` (10), `IMAGE_QUOTA_PER_DAY` (50) | cuotas propias |
-| `GAME_TTL_HOURS` (12) | borrado por inactividad |
+| `GAME_TTL_HOURS` (168) | borrado por inactividad (respaldo; el superadmin lo cambia en caliente) |
+| `SUPERADMIN_EMAILS` | superadmin (`/admin`) |
+| `SUPABASE_PLAN_DB_MB`, `SUPABASE_PLAN_STORAGE_MB` | topes informativos del panel |
 | `DEMO_DATA_DIR`, `WORKER_INTERVAL_MS` | demo local / worker |
 
 ## Despliegue en Vercel

@@ -6,7 +6,7 @@
  *   PG_TEST_URL=postgres://postgres@localhost:5432/postgres npx vitest run tests/postgres-real.test.ts
  * Crean y borran una base de datos temporal propia: no tocan la que indiques.
  */
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import pg from 'pg';
@@ -44,25 +44,10 @@ describe.skipIf(!URL_)('PostgreSQL real', () => {
       end $$;
       create schema auth; create schema storage;
       create table storage.buckets (id text primary key, name text, public boolean, file_size_limit bigint, allowed_mime_types text[]);
+      create table storage.objects (id uuid primary key default gen_random_uuid(), bucket_id text, name text, metadata jsonb);
       grant usage on schema public to anon, authenticated;`);
-    await pool.query(mig('20260101000000_core.sql'));
-    await pool.query(mig('20260101000200_initial_all.sql'));
-    await pool.query(mig('20260101000100_security.sql'));
-    await pool.query(mig('20260101000300_security_initial_all.sql'));
-    await pool.query(mig('20260101000400_mobile_players.sql'));
-    await pool.query(mig('20260101000500_security_mobile_players.sql'));
-    await pool.query(mig('20260101000600_mobile_hardening.sql'));
-    await pool.query(mig('20260101000700_security_mobile_hardening.sql'));
-    await pool.query(mig('20260101000800_join_policy_quota.sql'));
-    await pool.query(mig('20260101000900_security_join_policy_quota.sql'));
-    await pool.query(mig('20260101001000_auto_award.sql'));
-    await pool.query(mig('20260101001100_security_auto_award.sql'));
-    await pool.query(mig('20260101001200_image_mode.sql'));
-    await pool.query(mig('20260101001300_security_image_mode.sql'));
-    await pool.query(mig('20260101001400_delete_games.sql'));
-    await pool.query(mig('20260101001500_security_delete_games.sql'));
-    await pool.query(mig('20260101001600_initial_image_scopes.sql'));
-    await pool.query(mig('20260101001700_security_initial_image_scopes.sql'));
+    // Todas las migraciones, en orden de nombre (las `_security_` incluidas, como hace `supabase db push`).
+    for (const f of readdirSync(path.join(process.cwd(), 'supabase', 'migrations')).filter((x) => x.endsWith('.sql')).sort()) await pool.query(mig(f));
     const db: Db = {
       async rpc<T>(fn: string, params: Record<string, unknown>) {
         try {
@@ -222,6 +207,61 @@ describe.skipIf(!URL_)('PostgreSQL real', () => {
         expect(s.versions.filter((v) => v.origin === 'edit')).toHaveLength(2);
         expect(s.players.reduce((n, p) => n + p.balance_cents, 0)).toBe(2 * 2000 - 400);
       }
+    });
+  });
+  describe('funciones nuevas (eventos, deshacer, base compartida, superadmin)', () => {
+    it('superadmin: resumen con el esquema storage, ajustes, acceso y borrado de usuario en Postgres real', async () => {
+      await pool.query("insert into storage.objects (bucket_id, name, metadata) values ('game-images', 'games/x/a.png', '{\"size\": 1234}'), ('game-images', 'games/x/b.png', '{\"size\": 100}')");
+      const o = await ctx.db.rpc<{ db_bytes: number; storage: { bucket_bytes: number; bucket_objects: number }; ai: { per_day: unknown[] } }>('ss_admin_overview', {});
+      expect(Number(o.db_bytes)).toBeGreaterThan(0);
+      expect(Number(o.storage.bucket_bytes)).toBe(1334);
+      expect(Number(o.storage.bucket_objects)).toBe(2);
+      expect(o.ai.per_day).toHaveLength(14);
+      const uid = randomUUID();
+      expect((await ctx.db.rpc<{ allowed: boolean }>('ss_host_access', { user_id: uid, email: 'pg@x.es' })).allowed).toBe(true);
+      await ctx.db.rpc('ss_settings_set', { key: 'signups_open', value: false, actor: 'root' });
+      expect(await ctx.db.rpc('ss_host_access', { user_id: randomUUID(), email: 'otro@x.es' })).toMatchObject({ allowed: false, reason: 'closed' });
+      await ctx.db.rpc('ss_settings_set', { key: 'signups_open', value: true, actor: 'root' });
+      const r = await ctx.db.rpc<{ game_ids: string[] }>('ss_admin_delete_user', { user_id: uid, actor: 'root' });
+      expect(r.game_ids).toEqual([]);
+      const users = await ctx.db.rpc<{ users: { user_id: string }[] }>('ss_admin_users', {});
+      expect(users.users.some((u) => u.user_id === uid)).toBe(false);
+    });
+
+    it('galería, deshacer adjudicación y evento doble o mitad funcionan con concurrencia real', async () => {
+      const host = randomUUID();
+      const { room_code } = await createGame(ctx, host, { name: 'PG nuevas', play_mode: 'mobile', players: [{ name: 'Ana' }, { name: 'Beto' }] });
+      let s = await getHostState(ctx, room_code, host);
+      await performAction(ctx, room_code, host, { type: 'game.start' });
+      const item = s.items[0]!;
+      const a = await performAction(ctx, room_code, host, { type: 'auction.announce', item_id: item.id, wild_event: 'double' });
+      const ana = s.players[0]!;
+      await performAction(ctx, room_code, host, { type: 'auction.bid', auction_id: a.snapshot.auction!.id, player_id: ana.id, amount_cents: 400, idempotency_key: randomUUID() });
+      const award = { type: 'auction.award', auction_id: a.snapshot.auction!.id, expected_winner_id: ana.id, expected_price_cents: 400 };
+      await Promise.all([performAction(ctx, room_code, host, { ...award, idempotency_key: randomUUID() }), performAction(ctx, room_code, host, { ...award, idempotency_key: randomUUID() })]);
+      s = await getHostState(ctx, room_code, host);
+      const charged = s.players.find((p) => p.id === ana.id)!.purchases[0]!.price_cents;
+      expect([200, 800]).toContain(charged);
+      expect(s.stats.purchases_count).toBe(1);
+      const pid = s.players.find((p) => p.id === ana.id)!.purchases[0]!.purchase_id;
+      const key = randomUUID();
+      await Promise.all([1, 2].map(() => performAction(ctx, room_code, host, { type: 'auction.undo_award', purchase_id: pid, idempotency_key: key })));
+      s = await getHostState(ctx, room_code, host);
+      expect(s.players.find((p) => p.id === ana.id)!.balance_cents).toBe(2000); // devuelto una sola vez
+      await performAction(ctx, room_code, host, { type: 'game.finish' });
+      await performAction(ctx, room_code, host, { type: 'gallery.close' });
+      expect((await getHostState(ctx, room_code, host)).gallery?.closed).toBe(true);
+    });
+
+    it('imagen base compartida: un solo trabajo y el mismo archivo para todos', async () => {
+      const host = randomUUID();
+      const { room_code } = await createGame(ctx, host, { name: 'PG base', players: [{ name: 'Ana' }, { name: 'Beto' }, { name: 'Carla' }] });
+      await performAction(ctx, room_code, host, { type: 'image.generate_initial_all', scope_current: true, scope_new: true });
+      await performAction(ctx, room_code, host, { type: 'image.generate_initial_all', scope_current: true, scope_new: true });
+      const gid = (await getHostState(ctx, room_code, host)).game.id;
+      expect((await processImageJobs(ctx, { gameId: gid })).succeeded).toBe(1);
+      const s = await getHostState(ctx, room_code, host);
+      expect(new Set(s.players.map((p) => p.current_image!.storage_path)).size).toBe(1);
     });
   });
 });

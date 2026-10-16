@@ -31,6 +31,9 @@ export default async function Home() {
           </span>
           {identity ? (
             <div className="flex items-center gap-2 text-sm text-white/70">
+              {identity.superadmin ? (
+                <Link href="/admin" className="rounded-lg bg-violet/25 px-3 py-1.5 text-sm font-bold text-violet-soft hover:bg-violet/40">Superadmin</Link>
+              ) : null}
               <span>{identity.email ?? 'Anfitrión demo'}</span>
               <SignOutButton demo={identity.demo} supabaseUrl={runtime.supabaseUrl} supabaseAnonKey={runtime.supabaseAnonKey} />
             </div>

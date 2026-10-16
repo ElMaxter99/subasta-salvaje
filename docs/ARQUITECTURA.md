@@ -49,21 +49,21 @@ Cada cambio funcional = una migración portable + otra `_security_` (permisos). 
 `0000_core` → `0100_security` → `0200/0300` imagen inicial común → `0400/0500` modo móviles → `0600/0700` endurecimiento →
 `0800/0900` política de altas y cuota de imágenes → `1000/1100` adjudicación automática → `1200/1300` modo de imágenes →
 `1400/1500` borrado de partidas → `1600/1700` imagen inicial para actuales/nuevos → `1800/1900` eventos sorpresa, deshacer
-adjudicación y galería (`ss_get_state` pasa a envoltorio sobre `ss_get_state_base`; tabla `gallery_votes`) → `2000/2100` imagen base compartida (job `base`).
+adjudicación y galería (`ss_get_state` pasa a envoltorio sobre `ss_get_state_base`; tabla `gallery_votes`) → `2000/2100` imagen base compartida (job `base`) → `2200/2300` superadmin (`app_settings`, `host_profiles`, `host_invites`, `admin_audit`; funciones `ss_settings_*`, `ss_host_access`, `ss_host_ai_allowed`, `ss_admin_*`; `image_usage` sin FK a `games`).
 PGlite lleva un registro `ss_migrations` y aplica solo las pendientes (`LEGACY_MARKERS` cubre bases locales antiguas).
 **Nunca edites una migración ya publicada** (el propietario las aplica con `npx supabase db push`); crea una nueva.
 Tras migrar en Supabase: `notify pgrst, 'reload schema';`.
 
 ## Tablas
 `games`, `players`, `auction_items`, `auctions`, `bids`, `purchases`, `image_versions`, `image_jobs`, `game_events`,
-`idempotency_keys`, `image_usage` (cuota diaria/partida), `gallery_votes`, `ss_migrations` (solo PGlite). RLS activada con
+`idempotency_keys`, `image_usage` (cuota diaria/partida; sobrevive al borrado de partidas), `gallery_votes`, `app_settings`, `host_profiles`, `host_invites`, `admin_audit`, `ss_migrations` (solo PGlite). RLS activada con
 política *deny-all* para `anon`/`authenticated`: toda lectura/escritura pasa por el servidor con `service_role`.
 
 ## Rutas
 Páginas: `/` (lista), `/login`, `/new-game`, `/join`, `/setup`, `/game/[code]/{host,screen,play,results,history}`.
 API: `/api/games` (+`[code]`, `/actions`, `/initial-image`, `/jobs`), `/api/play/[code]/{join,bid,vote,leave,me}`,
 `/api/public/games/[code]`, `/api/jobs/{process,purge}` (cron, `CRON_SECRET`), `/api/catalog/initial/[id]`, `/api/health`,
-`/api/runtime`, `/api/auth/demo`, `/api/dev/seed` (solo demo), `/api/demo-images/*`.
+`/api/runtime`, `/api/auth/demo`, `/admin/*` + `/api/admin/{settings,users,invites,games}` (solo superadmin), `/api/dev/seed` (solo demo), `/api/demo-images/*`.
 
 ## Cola de imágenes y worker
 `image_jobs` (`initial`|`edit`|`item`) con reclamación atómica (`ss_claim_image_job`, lease), reintentos con espera, un trabajo
