@@ -4,10 +4,10 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Flag, History, Minus, Plus, Smartphone, Trophy, Tv } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { ConfirmDialog } from '@/components/ui/confirm-dialog';
-import { useToast } from '@/components/ui/toast';
 import { formatEuros, parseEurosToCents } from '@/lib/domain/money';
 import type { ImageMode, JoinPolicy, PlayMode, RankingRule } from '@/lib/domain/types';
+import { DeleteGameCard } from './delete-game-card';
+import { FinishGameDialog } from './finish-dialog';
 import { Card, Dot, Notice, inputCls } from './bits';
 import type { HostCtx } from './host-context';
 
@@ -37,12 +37,10 @@ const IMAGE_MODES: { id: ImageMode; label: string; hint: string }[] = [
 export function SettingsPanel({ ctx }: { ctx: HostCtx }) {
   const { snapshot, busy, run, roomCode } = ctx;
   const { game, players } = snapshot;
-  const toast = useToast();
   const finished = game.status === 'finished';
   const [name, setName] = useState(game.name);
   const [minBid, setMinBid] = useState('');
   const [finishOpen, setFinishOpen] = useState(false);
-  const [typed, setTyped] = useState('');
   const minCents = parseEurosToCents(minBid);
 
   return (
@@ -216,32 +214,16 @@ export function SettingsPanel({ ctx }: { ctx: HostCtx }) {
       ) : (
         <Card title="Zona de peligro" className="border-rose/40">
           <p className="mb-3 text-sm text-white/75">Al finalizar, la partida se cierra para siempre: se cancela cualquier subasta en curso (sin cobrar) y la TV pasa a mostrar los resultados.</p>
-          <Button variant="danger" size="lg" disabled={game.status === 'lobby' || busy !== null} onClick={() => { setTyped(''); setFinishOpen(true); }}>
+          <Button variant="danger" size="lg" disabled={game.status === 'lobby' || busy !== null} onClick={() => setFinishOpen(true)}>
             <Flag className="size-5" aria-hidden /> Finalizar partida
           </Button>
           {game.status === 'lobby' ? <p className="mt-2 text-xs text-white/55">Disponible cuando la partida haya empezado.</p> : null}
         </Card>
       )}
 
-      <ConfirmDialog
-        open={finishOpen}
-        title="¿Finalizar la partida?"
-        confirmLabel="Finalizar definitivamente"
-        variant="danger"
-        loading={busy === 'finish'}
-        onCancel={() => setFinishOpen(false)}
-        onConfirm={async () => {
-          if (typed.trim().toUpperCase() !== 'FINALIZAR') return toast.error('Escribe FINALIZAR para confirmar.');
-          const res = await run('finish', { type: 'game.finish' }, 'Partida finalizada');
-          if (res) setFinishOpen(false);
-        }}
-      >
-        <p>No se podrá reanudar. Escribe <b>FINALIZAR</b> para confirmar.</p>
-        <label htmlFor="finish-confirm" className="sr-only">
-          Escribe FINALIZAR
-        </label>
-        <input id="finish-confirm" className={`${inputCls} mt-2`} value={typed} onChange={(e) => setTyped(e.target.value)} autoComplete="off" placeholder="FINALIZAR" />
-      </ConfirmDialog>
+      <FinishGameDialog ctx={ctx} open={finishOpen} onClose={() => setFinishOpen(false)} />
+
+      <DeleteGameCard ctx={ctx} />
     </div>
   );
 }

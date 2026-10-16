@@ -6,6 +6,7 @@ import { Gavel, History, ImageIcon, LayoutDashboard, Package, Settings, Users } 
 import { ConnectionBadge, DemoBanner } from '@/components/ui/status';
 import { ToastProvider } from '@/components/ui/toast';
 import { Logo } from '@/components/ui/logo';
+import { GameGone } from '@/components/ui/game-gone';
 import { useLiveGame } from '@/lib/client/use-live-game';
 import type { HostSnapshot, RuntimeInfo } from '@/lib/domain/types';
 import { AuctionPanel } from './auction-panel';
@@ -44,7 +45,7 @@ export function HostView(props: Props) {
 }
 
 function HostInner({ roomCode, initial, runtime, identity }: Props) {
-  const { snapshot, connection, apply, refresh } = useLiveGame<HostSnapshot>({ roomCode, initial, runtime, view: 'host' });
+  const { snapshot, connection, apply, refresh, gone } = useLiveGame<HostSnapshot>({ roomCode, initial, runtime, view: 'host' });
   const { busy, run, exec } = useHostRunner(roomCode, apply, refresh);
   const [section, setSection] = useState<SectionId>(initial.game.status === 'active' || initial.game.status === 'paused' ? 'subasta' : 'resumen');
   const tabRefs = useRef<Record<string, HTMLButtonElement | null>>({});
@@ -66,6 +67,7 @@ function HostInner({ roomCode, initial, runtime, identity }: Props) {
 
   const statusTone = game.status === 'active' ? 'teal' : game.status === 'paused' ? 'gold' : game.status === 'finished' ? 'rose' : 'violet';
 
+  if (gone) return <GameGone roomCode={roomCode} />;
   return (
     <div className="min-h-screen pb-24 md:pb-8">
       <DemoBanner runtime={runtime} />

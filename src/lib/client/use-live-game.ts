@@ -28,6 +28,7 @@ const FALLBACK_POLL_MS = 3000;
 export function useLiveGame<T extends PublicSnapshot = PublicSnapshot>({ roomCode, initial, runtime, view }: Options<T>) {
   const [snapshot, setSnapshot] = useState<T>(initial);
   const [connection, setConnection] = useState<ConnectionState>(runtime.mode === 'supabase' ? 'polling' : 'polling');
+  const [gone, setGone] = useState(false);
   const [lastSync, setLastSync] = useState<number>(() => Date.now());
   const versionRef = useRef(initial.version);
   const inflight = useRef<Promise<void> | null>(null);
@@ -47,6 +48,10 @@ export function useLiveGame<T extends PublicSnapshot = PublicSnapshot>({ roomCod
     inflight.current = (async () => {
       try {
         const res = await fetch(url, { cache: 'no-store' });
+        if (res.status === 404) {
+          setGone(true); // la partida ya no existe (borrada por el anfitrión o por inactividad)
+          return;
+        }
         if (!res.ok) throw new Error(String(res.status));
         const data = (await res.json()) as { snapshot: T };
         apply(data.snapshot);
@@ -133,7 +138,7 @@ export function useLiveGame<T extends PublicSnapshot = PublicSnapshot>({ roomCod
     };
   }, [refresh, runtime.mode, view]);
 
-  return { snapshot, connection, lastSync, refresh, apply: apply as (s: T) => void };
+  return { snapshot, connection, lastSync, gone, refresh, apply: apply as (s: T) => void };
 }
 
 export type LiveHost = ReturnType<typeof useLiveGame<HostSnapshot>>;

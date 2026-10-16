@@ -2,7 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { DomainError } from '@/lib/domain/errors';
 import { PLAYER_COLORS, actionSchema, createGameSchema, roomCodeSchema, type CreateGameInput, type GameAction } from '@/lib/domain/schemas';
 import { getThemePreset } from '@/lib/domain/themes';
-import { getImageProviderId, quotaConfig } from '@/lib/config/env';
+import { gameTtlHours, getImageProviderId, quotaConfig } from '@/lib/config/env';
 import type { GameSummary, HostSnapshot, ImageUsage, PublicSnapshot } from '@/lib/domain/types';
 import { validateImage } from '@/lib/ai/image-validation';
 import { extensionForMime } from '@/lib/storage/types';
@@ -30,6 +30,7 @@ function parseOrThrow<T>(result: { success: true; data: T } | { success: false }
 export async function createGame(ctx: Ctx, hostId: string, rawInput: unknown): Promise<{ room_code: string }> {
   const input: CreateGameInput = parseOrThrow(createGameSchema.safeParse(rawInput));
   if (input.image_mode === 'ai' && !getImageProviderId()) throw new DomainError('ai_not_available');
+  await purgeExpiredGames(ctx).catch(() => undefined);
   const items = input.items ?? (getThemePreset(input.theme) ?? getThemePreset('free'))!.items;
   const players = input.players.map((p, i) => ({ ...p, color: p.color ?? PLAYER_COLORS[i % PLAYER_COLORS.length] }));
   const res = await ctx.db.rpc<{ room_code: string }>('ss_create_game', { ...input, players, items, host_id: hostId });
@@ -56,10 +57,13 @@ export async function getHostState(ctx: Ctx, roomCode: string, hostId: string): 
     day_used: limited ? used.day_used : 0,
     day_limit: limited ? q.perDay : null,
   };
-  return { ...attachUrls(snap, ctx.storage), usage };
+  const activity = await ctx.db.rpc<{ updated_at: string | null }>('ss_game_activity', { room_code: room(roomCode) });
+  const expires_at = activity.updated_at ? new Date(Date.parse(activity.updated_at) + gameTtlHours() * 3600_000).toISOString() : null;
+  return { ...attachUrls(snap, ctx.storage), usage, expires_at };
 }
 
 export async function listGames(ctx: Ctx, hostId: string): Promise<GameSummary[]> {
+  await purgeExpiredGames(ctx).catch(() => undefined); // limpieza oportunista (no depende del cron)
   return ctx.db.rpc<GameSummary[]>('ss_list_games', { host_id: hostId });
 }
 
@@ -217,4 +221,34 @@ export async function autoAwardTick(ctx: Ctx, roomCode: string): Promise<boolean
   const snap = await ctx.db.rpc<{ version: number }>('ss_get_state', { room_code: code, view: 'public' });
   await ctx.publisher.publish(code, snap.version);
   return true;
+}
+
+/** Borra una partida y sus archivos de Storage. Sólo el anfitrión propietario. Irreversible. */
+export async function deleteGame(ctx: Ctx, roomCode: string, hostId: string): Promise<void> {
+  const res = await ctx.db.rpc<{ game_id: string }>('ss_delete_game', { room_code: room(roomCode), host_id: hostId });
+  await removeGameFiles(ctx, res.game_id);
+  await ctx.publisher.publish(room(roomCode), Number.MAX_SAFE_INTEGER); // los clientes releen y ven que ya no existe
+}
+
+async function removeGameFiles(ctx: Ctx, gameId: string): Promise<void> {
+  try {
+    await ctx.storage.deletePrefix(`games/${gameId}/`);
+  } catch (e) {
+    // La BD ya no tiene la partida: un fallo de Storage sólo deja archivos huérfanos (se registra).
+    console.error('[purge] no se pudieron borrar los archivos de', gameId, (e as Error).message);
+  }
+}
+
+/** Borra las partidas sin actividad desde hace más de GAME_TTL_HOURS (12 por defecto). Idempotente y segura en paralelo. */
+export async function purgeExpiredGames(ctx: Ctx, opts: { limit?: number } = {}): Promise<{ deleted: number }> {
+  const hours = gameTtlHours();
+  const expired = await ctx.db.rpc<{ id: string; room_code: string }[]>('ss_expired_games', { hours, limit: opts.limit ?? 5 });
+  let deleted = 0;
+  for (const g of expired) {
+    const r = await ctx.db.rpc<{ deleted: boolean; game_id?: string }>('ss_purge_expired_game', { game_id: g.id, hours });
+    if (!r.deleted) continue;
+    deleted++;
+    await removeGameFiles(ctx, g.id);
+  }
+  return { deleted };
 }

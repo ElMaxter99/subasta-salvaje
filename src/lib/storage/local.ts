@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { mimeForPath, type ImageStorage } from './types';
 
@@ -19,6 +19,11 @@ export function createLocalStorage(root = path.join(process.cwd(), '.demo-data',
       const bytes = await readFile(resolve(storagePath));
       return { bytes: new Uint8Array(bytes), mime: mimeForPath(storagePath) };
     },
+    async deletePrefix(prefix) {
+      const dir = resolve(prefix.replace(/\/$/, ''));
+      await rm(dir, { recursive: true, force: true });
+      return 1;
+    },
     publicUrl(storagePath) {
       return `/api/demo-images/${storagePath.split('/').map(encodeURIComponent).join('/')}`;
     },
@@ -36,6 +41,11 @@ export function createMemoryStorage(): ImageStorage & { files: Map<string, { byt
       const f = files.get(p);
       if (!f) throw new Error('archivo no encontrado');
       return f;
+    },
+    async deletePrefix(prefix) {
+      let n = 0;
+      for (const k of [...files.keys()]) if (k.startsWith(prefix)) { files.delete(k); n++; }
+      return n;
     },
     publicUrl: (p) => `memory://${p}`,
   };

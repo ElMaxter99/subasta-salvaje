@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, Coins, Gavel, Medal, Package, Trophy, TrendingUp, Ban } from 'lucide-react';
 import type { Player, PublicSnapshot, RankingRule, RuntimeInfo } from '@/lib/domain/types';
+import { GameGone } from '@/components/ui/game-gone';
 import { useLiveGame } from '@/lib/client/use-live-game';
 import { ConnectionBadge, DemoBanner } from '@/components/ui/status';
 import { formatEuros } from '@/lib/domain/money';
@@ -212,8 +213,9 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
 
 /** Ruta pública /game/[code]/results (solo lectura). */
 export function ResultsView({ roomCode, initial, runtime }: { roomCode: string; initial: PublicSnapshot; runtime: RuntimeInfo }) {
-  const { snapshot, connection } = useLiveGame({ roomCode, initial, runtime, view: 'public' });
+  const { snapshot, connection, gone } = useLiveGame({ roomCode, initial, runtime, view: 'public' });
   const finished = snapshot.game.status === 'finished';
+  if (gone) return <GameGone roomCode={roomCode} />;
   return (
     <main className="min-h-dvh bg-night-950 text-white">
       <DemoBanner runtime={runtime} />

@@ -195,6 +195,8 @@ export interface ImageUsage {
 
 export interface HostSnapshot extends PublicSnapshot {
   usage?: ImageUsage;
+  /** Momento en que la partida se borrará sola si no hay más actividad. */
+  expires_at?: string | null;
   host_id: string;
   jobs: ImageJob[];
   versions: ImageVersion[];

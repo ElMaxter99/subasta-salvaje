@@ -1,5 +1,14 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
-  "crons": [{ "path": "/api/jobs/process", "schedule": "0 4 * * *" }]
+  "crons": [
+    {
+      "path": "/api/jobs/process",
+      "schedule": "0 4 * * *"
+    },
+    {
+      "path": "/api/jobs/purge",
+      "schedule": "30 4 * * *"
+    }
+  ]
 }

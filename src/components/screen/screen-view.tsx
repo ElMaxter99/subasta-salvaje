@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { Maximize2, Minimize2, Pause, Loader2 } from 'lucide-react';
 import type { PublicSnapshot, RuntimeInfo } from '@/lib/domain/types';
+import { GameGone } from '@/components/ui/game-gone';
 import { useLiveGame } from '@/lib/client/use-live-game';
 import { ConnectionBadge } from '@/components/ui/status';
 import { themeLabel } from '@/lib/domain/themes';
@@ -37,7 +38,7 @@ function statusPill(snap: PublicSnapshot): { label: string; tone: string } {
 }
 
 export function ScreenView({ roomCode, initial, runtime }: { roomCode: string; initial: PublicSnapshot; runtime: RuntimeInfo }) {
-  const { snapshot, connection } = useLiveGame({ roomCode, initial, runtime, view: 'public' });
+  const { snapshot, connection, gone } = useLiveGame({ roomCode, initial, runtime, view: 'public' });
   const fs = useFullscreenControls();
 
   // Escala toda la UI (rem) con la pantalla: 16px a 1920×1080.
@@ -79,6 +80,7 @@ export function ScreenView({ roomCode, initial, runtime }: { roomCode: string; i
     </div>
   );
 
+  if (gone) return <GameGone roomCode={roomCode} />;
   if (finished) {
     return (
       <main className={`relative h-dvh w-screen overflow-hidden bg-night-950 text-white ${fs.visible ? '' : 'cursor-none'}`}>

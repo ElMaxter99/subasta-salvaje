@@ -7,6 +7,7 @@ import { Logo } from '@/components/ui/logo';
 import { DemoBanner } from '@/components/ui/status';
 import { ToastProvider, useToast } from '@/components/ui/toast';
 import { ApiError, fetchMe, leaveGameRequest } from '@/lib/client/api';
+import { GameGone } from '@/components/ui/game-gone';
 import { useLiveGame } from '@/lib/client/use-live-game';
 import type { PublicSnapshot, RuntimeInfo } from '@/lib/domain/types';
 
@@ -20,7 +21,7 @@ export function PlayView(props: { roomCode: string; initial: PublicSnapshot; run
 
 function PlayInner({ roomCode, initial, runtime, initialPlayerId }: { roomCode: string; initial: PublicSnapshot; runtime: RuntimeInfo; initialPlayerId: string | null }) {
   const toast = useToast();
-  const { snapshot, connection, apply, refresh } = useLiveGame({ roomCode, initial, runtime, view: 'public' });
+  const { snapshot, connection, apply, refresh, gone } = useLiveGame({ roomCode, initial, runtime, view: 'public' });
   const [playerId, setPlayerId] = useState<string | null>(initialPlayerId);
   const [notice, setNotice] = useState<string | null>(null);
   const [leaving, setLeaving] = useState(false);
@@ -63,6 +64,7 @@ function PlayInner({ roomCode, initial, runtime, initialPlayerId }: { roomCode: 
     }
   }
 
+  if (gone) return <GameGone roomCode={roomCode} />;
   if (playerId && me) {
     return (
       <>

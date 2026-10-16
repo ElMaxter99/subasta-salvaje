@@ -2,13 +2,14 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { CheckCircle2, Circle, Pause, Play, Rocket } from 'lucide-react';
+import { CheckCircle2, Circle, Flag, Pause, Play, Rocket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { formatEuros } from '@/lib/domain/money';
 import { themeLabel } from '@/lib/domain/themes';
 import { Card, Dot, Notice, Pill, STATUS_LABEL } from './bits';
 import type { HostCtx } from './host-context';
+import { FinishGameDialog } from './finish-dialog';
 import { JoinCard } from './join-card';
 
 function Check({ ok, children }: { ok: boolean; children: React.ReactNode }) {
@@ -27,6 +28,7 @@ export function OverviewPanel({ ctx, goTo }: { ctx: HostCtx; goTo: (s: 'jugadore
   const { snapshot, runtime, busy, run, roomCode } = ctx;
   const { game, players, items, auction } = snapshot;
   const [confirmStart, setConfirmStart] = useState(false);
+  const [finishOpen, setFinishOpen] = useState(false);
   const withImage = players.filter((p) => p.current_image).length;
   const imagesOk = players.length > 0 && withImage === players.length;
   const ready = players.length >= 2 && items.length >= 1;
@@ -81,6 +83,12 @@ export function OverviewPanel({ ctx, goTo }: { ctx: HostCtx; goTo: (s: 'jugadore
               <Play className="size-6" aria-hidden /> Reanudar
             </Button>
           ) : null}
+          {game.status === 'paused' ? (
+            <Button variant="danger" size="lg" disabled={busy !== null} onClick={() => setFinishOpen(true)}>
+              <Flag className="size-5" aria-hidden /> Finalizar partida
+            </Button>
+          ) : null}
+          <FinishGameDialog ctx={ctx} open={finishOpen} onClose={() => setFinishOpen(false)} />
           {game.status === 'finished' ? (
             <Link href={`/game/${roomCode}/results`} className="inline-flex min-h-14 items-center justify-center rounded-2xl bg-gold px-5 text-lg font-bold text-night-950">
               Ver resultados

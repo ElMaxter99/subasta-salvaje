@@ -6,6 +6,8 @@ export interface StoredImage {
 export interface ImageStorage {
   put(storagePath: string, bytes: Uint8Array, mime: string): Promise<void>;
   get(storagePath: string): Promise<StoredImage>;
+  /** Borra TODOS los archivos bajo un prefijo (p. ej. `games/<id>/`). Devuelve cuántos borró. */
+  deletePrefix(prefix: string): Promise<number>;
   /** URL pública para el navegador. */
   publicUrl(storagePath: string): string;
 }

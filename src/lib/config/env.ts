@@ -92,3 +92,9 @@ export function getSupabaseConfig(env: NodeJS.ProcessEnv = process.env) {
     bucket: env.SUPABASE_STORAGE_BUCKET?.trim() || 'game-images',
   };
 }
+
+/** Horas de INACTIVIDAD tras las que una partida se borra sola (por defecto 12; mínimo 1). */
+export function gameTtlHours(env: NodeJS.ProcessEnv = process.env): number {
+  const n = Number(env.GAME_TTL_HOURS);
+  return Number.isInteger(n) && n >= 1 && n <= 24 * 30 ? n : 12;
+}

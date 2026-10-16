@@ -91,3 +91,8 @@ export async function fetchMe(roomCode: string): Promise<string | null> {
   const res = await parse<{ player_id: string | null }>(await fetch(`/api/play/${roomCode}/me`, { cache: 'no-store' }));
   return res.player_id;
 }
+
+/** Borra la partida (irreversible). Sólo el anfitrión propietario. */
+export async function deleteGameRequest(roomCode: string): Promise<void> {
+  await parse(await fetch(`/api/games/${roomCode}`, { method: 'DELETE' }));
+}

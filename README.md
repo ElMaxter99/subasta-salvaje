@@ -103,6 +103,7 @@ npx supabase status          # muestra API URL, anon key y service_role key → 
    7. `supabase/migrations/20260101000800_join_policy_quota.sql` y `20260101000900_security_join_policy_quota.sql` (política de altas de los móviles y cuota de generaciones).
    8. `supabase/migrations/20260101001000_auto_award.sql` y `20260101001100_security_auto_award.sql` (adjudicación automática).
    9. `supabase/migrations/20260101001200_image_mode.sql` y `20260101001300_security_image_mode.sql` (modo de imágenes: pegatinas o IA).
+   10. `supabase/migrations/20260101001400_delete_games.sql` y `20260101001500_security_delete_games.sql` (borrado de partidas).
 
    Con la CLI: `npx supabase link --project-ref TU_REF` y `npx supabase db push`. Si ya aplicaste archivos a mano en el SQL Editor, antes marca esas versiones: `npx supabase migration repair --status applied 20260101000000 20260101000100 …`.
 
@@ -211,6 +212,7 @@ Notas: las rutas que generan imágenes declaran `maxDuration = 300`. Si tu proye
 | `OPENAI_API_KEY` | Con `openai` | **solo servidor** | Alternativa de pago. |
 | `OPENAI_IMAGE_MODEL` / `_SIZE` / `_QUALITY` / `_INPUT_FIDELITY` / `OPENAI_BASE_URL` | No | servidor | Ajustes del proveedor. |
 | `ALLOWED_HOST_EMAILS` | Recomendada | servidor | Correos autorizados como anfitrión (evita gasto de IA por terceros). |
+| `GAME_TTL_HOURS` | No (12) | servidor | Horas de inactividad tras las que una partida se borra sola. |
 | `CRON_SECRET` | Recomendada | servidor | Protege `/api/jobs/process`. |
 | `FORCE_DEMO_MODE`, `ALLOW_DEMO_MODE`, `DEMO_DATA_DIR`, `WORKER_INTERVAL_MS` | No | servidor | Desarrollo / worker. |
 
@@ -236,6 +238,12 @@ PG_TEST_URL=postgres://postgres@localhost:5432/postgres npx vitest run tests/pos
 Con varias conexiones simultáneas comprueba: 16 adjudicaciones a la vez → una compra y un cobro; pujas y reintentos en paralelo; varios workers sobre varias partidas sin deadlocks ni trabajos duplicados. Además aplica **ambas migraciones con los roles `anon`/`authenticated`/`service_role`** (esquemas `auth`/`storage` simulados) y verifica que `anon` no puede leer tablas ni ejecutar funciones `ss_*` (tampoco las futuras) y que el bucket tiene los límites esperados. Lo que NO se ha podido probar sin un proyecto real: el comportamiento exacto de PostgREST/Realtime/Storage de Supabase y la API real de OpenAI.
 
 <a id="seguridad"></a>
+## Finalizar y borrar partidas
+
+- **Finalizar:** desde *Resumen*, al **pausar** la partida aparece «Finalizar partida» junto a «Reanudar» (también está en *Ajustes → Zona de peligro*). Pide escribir `FINALIZAR`, cancela cualquier subasta en curso sin cobrar y la TV muestra los resultados.
+- **Borrar:** *Ajustes → Borrar partida* (solo el anfitrión propietario, en cualquier estado). Pide escribir `BORRAR` y elimina **para siempre** la partida con jugadores, pujas, compras, historial, trabajos y **todas sus imágenes de Storage**. La TV y los móviles pasan a mostrar «Esta partida ya no existe».
+- **Borrado automático:** una partida se borra sola tras **12 h sin actividad** (cambia el plazo con `GAME_TTL_HOURS`, de 1 a 720). «Actividad» es cualquier acción en la partida (pujar, adjudicar, ajustes…), no el tiempo desde que se creó; mirar la TV no cuenta. El panel de Ajustes muestra cuándo caducará. Se ejecuta de dos formas: limpieza oportunista al crear o listar partidas (no necesita cron) y `GET /api/jobs/purge` (protegido con `CRON_SECRET`; `vercel.json` lo programa una vez al día a las 04:30 UTC). Si pasa más tiempo sin que nadie use la app, las partidas caducadas se borran en cuanto alguien cree o liste partidas o se ejecute el cron. Las migraciones borran en orden de dependencias (`ss_wipe_game`); si falla la limpieza de archivos de Storage, la partida ya está borrada y solo quedan archivos huérfanos (se registra en los logs).
+
 ## Adjudicación automática
 
 Para que el anfitrión pueda jugar sin pulsar «Adjudicar» en cada ronda, en el panel (*Subasta → Adjudicación automática*) se puede activar y configurar:
