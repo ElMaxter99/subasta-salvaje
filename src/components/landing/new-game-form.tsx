@@ -21,7 +21,8 @@ const label = 'mb-1 block text-sm font-bold 2xl:text-lg';
 const card = 'space-y-4 rounded-3xl border border-white/10 bg-night-800/70 p-4 sm:p-6';
 
 const STEPS: (StepInfo & { mascot: MascotId; say: string; title: string; hint: string })[] = [
-  { id: 'modo', label: 'Cómo jugáis', mascot: 'expr-feliz', say: '¡Empezamos!', title: '¿Cómo vais a jugar?', hint: 'Elige quién puja y cómo se van transformando las casas.' },
+  { id: 'modo', label: 'Quién puja', mascot: 'expr-feliz', say: '¡Empezamos!', title: '¿Quién va a pujar?', hint: 'Elige si pujáis en voz alta o cada jugador desde su móvil.' },
+  { id: 'casas', label: 'Las casas', mascot: 'expr-sorprendido', say: '¡Magia!', title: '¿Cómo cambian las casas?', hint: 'Cada compra transforma la casa del jugador: con pegatinas gratis o con inteligencia artificial.' },
   { id: 'partida', label: 'Partida', mascot: 'expr-guino', say: 'Ponle nombre', title: 'Dale personalidad a la partida', hint: 'El nombre sale en la tele y la temática decide los elementos que se subastan.' },
   { id: 'reglas', label: 'Reglas', mascot: 'expr-pensativo', say: 'Ojo al dinero', title: 'Dinero y reglas', hint: 'Cuánto tiene cada jugador, la puja más baja posible y cómo se decide quién gana.' },
   { id: 'jugadores', label: 'Jugadores', mascot: 'expr-sorprendido', say: '¿Quién viene?', title: '¿Quién juega?', hint: 'Mínimo 2 para empezar. Podrás cambiarlos en la sala de espera.' },
@@ -83,18 +84,18 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
 
   /** Mensaje de error del paso `i`, o null si es válido. */
   function validate(i: number): string | null {
-    if (i === 1) {
+    if (i === 2) {
       if (!name.trim()) return 'Escribe un nombre para la partida.';
       if (!themeValue) return 'Escribe la temática.';
     }
-    if (i === 2) {
+    if (i === 3) {
       if (parseEurosToCents(budget) === null) return 'El presupuesto no es válido (usa por ejemplo 20 o 12,50).';
       const m = parseEurosToCents(minBid);
       if (m === null || m < 1) return 'La puja mínima no es válida.';
       if (integerBids && m % 100 !== 0) return 'Con pujas en euros enteros, la puja mínima también debe ser un euro entero (1, 2, 3…).';
       if (!Number.isInteger(roundsValue) || roundsValue < 1 || roundsValue > 500) return 'El máximo de rondas debe ser un número entre 1 y 500.';
     }
-    if (i === 3 && new Set(names.map((n) => n.toLowerCase())).size !== names.length) return 'Hay nombres de jugador repetidos.';
+    if (i === 4 && new Set(names.map((n) => n.toLowerCase())).size !== names.length) return 'Hay nombres de jugador repetidos.';
     return null;
   }
 
@@ -192,6 +193,11 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
                 <Choice name="play_mode" value="host" checked={playMode === 'host'} onChange={() => setPlayMode('host')} title="Pujas del anfitrión" desc="Los jugadores pujan en voz alta y tú registras cada puja desde tu panel. No necesitan móvil ni cuenta." />
                 <Choice name="play_mode" value="mobile" checked={playMode === 'mobile'} onChange={() => setPlayMode('mobile')} title="Cada jugador desde su móvil" tag="Recomendado en grupo" desc="Los jugadores se unen con el código de sala (o un QR), eligen su nombre y pujan ellos mismos. Tú sigues anunciando, cerrando y adjudicando." />
               </fieldset>
+            </>
+          ) : null}
+
+          {step === 1 ? (
+            <>
               <fieldset className={card}>
                 <legend className="px-2 font-display text-xl 2xl:text-3xl">Cómo cambian las casas</legend>
                 <Choice name="image_mode" value="stickers" checked={imageMode === 'stickers'} onChange={() => setImageMode('stickers')} title="🎨 Pegatinas con emojis" tag="Gratis" desc="Cada compra añade el emoji del elemento a la casa del jugador. Ilustraciones locales: sin IA, gratis e instantáneo." />
@@ -208,7 +214,7 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
             </>
           ) : null}
 
-          {step === 1 ? (
+          {step === 2 ? (
             <section className={card}>
               <div>
                 <label htmlFor="name" className={label}>Nombre de la partida</label>
@@ -231,7 +237,7 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
             </section>
           ) : null}
 
-          {step === 2 ? (
+          {step === 3 ? (
             <section className={card}>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
@@ -270,7 +276,7 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
             </section>
           ) : null}
 
-          {step === 3 ? (
+          {step === 4 ? (
             <section className={card}>
               <div className="rounded-2xl border border-teal/40 bg-teal/10 p-4 text-sm 2xl:text-lg" data-testid="players-help">
                 <p className="font-bold text-teal">No hace falta añadir jugadores ahora</p>
@@ -305,21 +311,21 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
             </section>
           ) : null}
 
-          {step === 4 ? (
+          {step === 5 ? (
             <div className="grid gap-3 md:grid-cols-2">
-              {summaryRow('Cómo jugáis', 0, (
-                <>
-                  <p className="font-bold">{playMode === 'host' ? 'Pujas del anfitrión' : 'Cada jugador desde su móvil'}</p>
-                  <p className="text-white/70">{imageMode === 'stickers' ? '🎨 Pegatinas con emojis (sin IA)' : '✨ Con inteligencia artificial'}</p>
-                </>
+              {summaryRow('Quién puja', 0, (
+                <p className="font-bold">{playMode === 'host' ? 'Pujas del anfitrión' : 'Cada jugador desde su móvil'}</p>
               ))}
-              {summaryRow('Partida', 1, (
+              {summaryRow('Las casas', 1, (
+                <p className="font-bold">{imageMode === 'stickers' ? '🎨 Pegatinas con emojis (sin IA)' : '✨ Con inteligencia artificial'}</p>
+              ))}
+              {summaryRow('Partida', 2, (
                 <>
                   <p className="font-bold">{name.trim() || '—'}</p>
                   <p className="text-white/70">{preset ? `${preset.emoji} ${preset.label}` : `✏️ ${themeValue || '—'}`}</p>
                 </>
               ))}
-              {summaryRow('Reglas', 2, (
+              {summaryRow('Reglas', 3, (
                 <>
                   <p>
                     Presupuesto <b className="text-gold">{formatEuros(parseEurosToCents(budget) ?? 0)}</b> · puja mínima <b className="text-gold">{formatEuros(parseEurosToCents(minBid) ?? 0)}</b>
@@ -328,7 +334,7 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
                   <p className="text-white/70">{RANKING_LABEL[ranking]}</p>
                 </>
               ))}
-              {summaryRow('Jugadores', 3, (
+              {summaryRow('Jugadores', 4, (
                 names.length === 0 ? (
                   <p className="text-white/70">Sin jugadores todavía: {playMode === 'mobile' ? 'podrás añadirlos en el panel o se darán de alta ellos mismos desde el móvil.' : 'podrás añadirlos en el panel (pestaña Jugadores).'}</p>
                 ) : (

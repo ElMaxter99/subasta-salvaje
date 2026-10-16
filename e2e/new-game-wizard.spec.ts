@@ -27,10 +27,17 @@ test('asistente de nueva partida: pasos, validación, resumen editable y creaci�
     expect(box.height, `${vp.name}: botón demasiado pequeño`).toBeGreaterThanOrEqual(44);
 
     // Indicador de pasos propio de cada tamaño
-    if (vp.name === 'movil') await expect(page.getByText('Paso 1 de 5')).toBeVisible();
-    else await expect(page.getByRole('navigation', { name: /Pasos/ }).getByRole('listitem')).toHaveCount(5);
+    if (vp.name === 'movil') await expect(page.getByText('Paso 1 de 6')).toBeVisible();
+    else await expect(page.getByRole('navigation', { name: /Pasos/ }).getByRole('listitem')).toHaveCount(6);
     await page.screenshot({ path: info.outputPath(`wizard-${vp.name}-1.png`) });
 
+    // Los dos primeros pasos (quién puja / cómo cambian las casas) son pantallas distintas y cortas
+    await expect(page.getByRole('radio', { name: /Cada jugador desde su móvil/ })).toBeVisible();
+    await expect(page.getByRole('radio', { name: /Pegatinas con emojis/ })).toHaveCount(0);
+    await nav.click();
+    await expect(page.getByTestId('wizard-step-2')).toBeVisible();
+    await expect(page.getByRole('radio', { name: /Pegatinas con emojis/ })).toBeVisible();
+    await expect(page.getByRole('radio', { name: /Cada jugador desde su móvil/ })).toHaveCount(0);
     // Validación: nombre vacío no deja avanzar
     await nav.click();
     await page.getByLabel('Nombre de la partida').fill('');
@@ -38,7 +45,7 @@ test('asistente de nueva partida: pasos, validación, resumen editable y creaci�
     await expect(page.getByTestId('wizard-error')).toContainText('nombre');
     await page.getByLabel('Nombre de la partida').fill(`Partida ${vp.name}`);
     await nav.click();
-    await expect(page.getByTestId('wizard-step-3')).toBeVisible();
+    await expect(page.getByTestId('wizard-step-4')).toBeVisible();
     await page.getByLabel('Presupuesto inicial (€)').fill('abc');
     await nav.click();
     await expect(page.getByTestId('wizard-error')).toContainText('presupuesto');
@@ -63,16 +70,16 @@ test('asistente de nueva partida: pasos, validación, resumen editable y creaci�
     await expect(page.getByTestId('wizard-error')).toContainText('repetidos');
     await page.getByLabel('Nombre del jugador 2').fill('Beto');
     await page.getByLabel('Nombre del jugador 2').press('Enter'); // Enter avanza, no crea
-    await expect(page.getByTestId('wizard-step-5')).toBeVisible();
+    await expect(page.getByTestId('wizard-step-6')).toBeVisible();
     await expect(page.getByText('Ana')).toBeVisible();
     await expect(page.getByText(/5 rondas máximo/)).toBeVisible();
-    await page.screenshot({ path: info.outputPath(`wizard-${vp.name}-5.png`) });
+    await page.screenshot({ path: info.outputPath(`wizard-${vp.name}-6.png`) });
 
     // Editar desde el resumen y volver
     await page.getByRole('button', { name: 'Editar Reglas' }).click();
     await expect(page.getByLabel('Presupuesto inicial (€)')).toHaveValue('30');
     await page.getByRole('button', { name: /Atrás/ }).click();
-    await expect(page.getByTestId('wizard-step-2')).toBeVisible();
+    await expect(page.getByTestId('wizard-step-3')).toBeVisible();
     await ctx.close();
   }
 
