@@ -6,7 +6,9 @@ Subasta creativa multijugador para noches de juegos. Cada jugador parte de una c
   - `/game/[código]/screen` — pantalla pública 16:9 para la tele (solo lectura, sin controles).
   - `/game/[código]/host` — panel privado del anfitrión (móvil / tablet / portátil), protegido con login.
 - Más: `/` (landing), `/new-game`, `/login`, `/game/[código]/history` (versiones de imagen y restauración, protegido), `/game/[código]/results` (resultados), `/setup` (diagnóstico de configuración).
-- Las pujas las registra el anfitrión (los jugadores no necesitan cuenta ni móvil).
+- **Dos modalidades** (se eligen al crear la partida y se pueden cambiar en Ajustes):
+  - **Pujas del anfitrión:** los jugadores pujan en voz alta y el anfitrión las registra. No necesitan cuenta ni móvil.
+  - **Cada jugador desde su móvil:** los jugadores entran con el código de sala (o escaneando el QR que muestran la TV y el panel) en `/join` o `/game/[código]/play`, eligen su nombre y pujan ellos mismos. El anfitrión sigue anunciando, cerrando y adjudicando (y puede seguir pujando por voz).
 
 ## Índice
 
@@ -196,6 +198,10 @@ PG_TEST_URL=postgres://postgres@localhost:5432/postgres npx vitest run tests/pos
 Con varias conexiones simultáneas comprueba: 16 adjudicaciones a la vez → una compra y un cobro; pujas y reintentos en paralelo; varios workers sobre varias partidas sin deadlocks ni trabajos duplicados. Además aplica **ambas migraciones con los roles `anon`/`authenticated`/`service_role`** (esquemas `auth`/`storage` simulados) y verifica que `anon` no puede leer tablas ni ejecutar funciones `ss_*` (tampoco las futuras) y que el bucket tiene los límites esperados. Lo que NO se ha podido probar sin un proyecto real: el comportamiento exacto de PostgREST/Realtime/Storage de Supabase y la API real de OpenAI.
 
 <a id="seguridad"></a>
+## Modo móviles: identidad de los jugadores
+
+Los jugadores **no tienen cuenta**. Al unirse (reclamar un nombre libre o entrar con uno nuevo en la sala de espera) el servidor genera un token aleatorio que va en una cookie `httpOnly` del móvil; en la base de datos solo se guarda su hash SHA-256 y la vista pública solo expone si la casilla está ocupada (`claimed`). Las pujas del móvil pasan por `POST /api/play/[código]/bid`, que identifica al jugador por esa cookie y aplica **las mismas reglas SQL** que las del anfitrión (saldo, mínimo, subasta abierta, idempotencia) más una: no puedes pujar contra ti mismo. Quien llega primero reclama la casilla; si alguien se equivoca o cambia de móvil, el anfitrión pulsa «Liberar móvil». El código de sala da acceso de juego: compártelo solo con quien quieras que participe.
+
 ## Seguridad
 
 - Sin secretos en el cliente; `service_role` y `OPENAI_API_KEY` solo en servidor.
