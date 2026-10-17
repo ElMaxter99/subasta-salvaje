@@ -102,6 +102,7 @@ export const EXTRA_CREDITS: ExtraCredit[] = [
 export const PROJECT_ASSET_NOTES: string[] = [
   'Logotipo y mascota (public/assets/brand/ y public/assets/mascot/): imágenes generadas con herramientas de IA generativa para esta aplicación y aportadas por su autor, ElMaxter99; las versiones recortadas se generan a partir de esos originales. No hay ninguna marca registrada. Se publican bajo los mismos términos MIT que el código, en la medida en que existan derechos sobre ellas (el estatus de las obras generadas con IA varía según la jurisdicción).',
   'Mini héroe vectorial, favicon simplificado y paquete de recursos subasta-salvaje-assets/: dibujos vectoriales propios del proyecto generados por scripts (no son renders 3D ni imágenes de IA).',
+  'Imágenes de las partidas del sistema (repositorio público ElMaxter99/subasta-salvaje-public, servidas por jsDelivr): ilustran partidas predefinidas dentro del juego, sin ánimo de lucro. Pueden proceder de terceros; pertenecen a sus titulares, no se reclama ningún derecho sobre ellas ni se concede licencia, y se retiran a petición de su titular (issue en ese repositorio o contacto con @ElMaxter99 en GitHub).',
   'Herramientas de desarrollo con IA: el proyecto se ha construido con la ayuda de Claude Code (Anthropic).',
 ];
 

@@ -202,7 +202,7 @@ export function SystemTemplatesPanel({ templates, cdnHosts, uploadsEnabled = fal
               {uploadsEnabled ? (
                 <>
                   <p className="font-bold">Arrastra aquí las imágenes (o <label className="cursor-pointer underline">elígelas<input type="file" multiple accept="image/png,image/jpeg,image/webp" className="sr-only" aria-label="Elegir imágenes" onChange={(e) => { void handleFiles(Array.from(e.target.files ?? [])); e.target.value = ''; }} /></label>)</p>
-                  <p className="mt-1 text-xs text-white/60">Se reducen al formato interno y se suben a tu repositorio de fotos (no a Supabase). Se asignan por el nombre del archivo: <code>portada.jpg</code>, <code>casa.jpg</code> o el título de un elemento (<code>sombrilla-roja.jpg</code>).</p>
+                  <p className="mt-1 text-xs text-white/60">Se reducen al formato interno y se suben a tu repositorio de fotos (no a Supabase). Sube solo imágenes que puedas usar y anota su origen en FUENTES.md del repositorio de fotos. Se asignan por el nombre del archivo: <code>portada.jpg</code>, <code>casa.jpg</code> o el título de un elemento (<code>sombrilla-roja.jpg</code>).</p>
                 </>
               ) : (
                 <p className="text-white/70" data-testid="uploads-disabled">La subida de imágenes no está configurada: define <code>GITHUB_ASSETS_REPO</code> y <code>GITHUB_ASSETS_TOKEN</code> en Vercel (ver docs/PLANTILLAS-SISTEMA.md). Mientras tanto puedes pegar enlaces https en el JSON.</p>

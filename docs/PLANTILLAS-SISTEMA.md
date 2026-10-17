@@ -31,6 +31,13 @@ Las imágenes se asignan por el **nombre del archivo**: `portada.jpg` → portad
 ### Alternativa manual
 `npm run assets:normalize -- ./mis-fotos --kind=item` deja `.webp` listos para subirlos tú a cualquier alojamiento público (GitHub+jsDelivr) y pegar los enlaces. **No uses R2** (pide método de pago) ni Dropbox/Drive (enlaces que cambian, sin CDN).
 
+## Derechos de las fotos (léelo)
+El repositorio de fotos (`ElMaxter99/subasta-salvaje-public`) se plantea como **almacén sin ánimo de lucro** que solo alimenta las partidas predefinidas; su README lo dice y explica cómo retirar una imagen a petición de su titular. Si las imágenes salen de buscadores o webs, **siguen siendo de sus titulares**: esa declaración no concede ningún derecho ni evita por sí sola una reclamación, aunque no haya ánimo de lucro. Para reducir el riesgo:
+- Prefiere imágenes con licencia libre (Wikimedia Commons, Unsplash, Pexels, Pixabay: lee su licencia concreta) o **generadas con IA**; evita fotos de personas.
+- Anota el origen en `FUENTES.md` del repositorio de fotos (permite atribuir y retirar con rapidez).
+- Atiende pronto las peticiones de retirada (issue en el repositorio o contacto por GitHub): es lo que promete el README.
+La página de Créditos de la app incluye una nota equivalente.
+
 ## Cómo se usan las fotos
 Al crear la partida se **copian** a su almacenamiento (Supabase) pasando por `normalizeImage` y se borran con la partida. El juego no depende de que el CDN esté disponible durante la partida, y si una foto falla se avisa sin bloquear nada. La portada de la tarjeta sí se carga directamente desde el CDN (solo es decorativa; si falla se oculta).
 
