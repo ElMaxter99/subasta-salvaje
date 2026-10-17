@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from 'next';
+import { SiteAnalytics } from '@/components/analytics';
+import { analyticsDisabled } from '@/lib/analytics';
 import { siteUrl } from '@/lib/seo/site';
 import './globals.css';
 
@@ -35,7 +37,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Fuentes propias (public/assets/fonts, definidas en globals.css): se precarga solo la de títulos */}
         <link rel="preload" href="/assets/fonts/baloo2.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        {analyticsDisabled() ? null : <SiteAnalytics />}
+      </body>
     </html>
   );
 }

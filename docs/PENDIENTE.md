@@ -64,6 +64,10 @@ Después de cada migración nueva, vuelve a probar a mano: crear partida, pujar,
 - [ ] Para ver las neuronas de Cloudflare, el token (`CLOUDFLARE_API_TOKEN`) necesita además el permiso **Account → Account Analytics → Read** (créalo con *Edit* o añade el permiso al token y rota si procede). Abre `/admin/ia`: si Cloudflare rechaza la consulta (nombres de campo sin verificar), el panel muestra el error; cópiamelo y lo ajusto.
 - [ ] Contrasta con el panel de Cloudflare que las neuronas coinciden y usa «Neuronas / llamada» para fijar `IMAGE_QUOTA_PER_DAY` o el tope diario de Cloudflare en Ajustes.
 
+## 5e. Vercel Web Analytics
+- [ ] Actívalo en Vercel → tu proyecto → *Analytics → Enable* (sin eso el script devuelve 404 y no se mide nada) y redespliega. Solo mide en producción. Apágalo cuando quieras con `NEXT_PUBLIC_DISABLE_ANALYTICS=true`.
+- [ ] **Revisión legal tuya:** los textos de `/privacidad` y `/cookies` dicen que es una analítica sin cookies, según la documentación de Vercel (no verificado aquí). Si tu criterio o el de tu asesor exige consentimiento previo para cualquier analítica, desactívala con la variable o añade el banner antes de activarla.
+
 ## 6. Cron externo (opcional pero recomendado en producción)
 - [ ] El cron de `vercel.json` es diario (límite del plan *Hobby*). Para que los trabajos de imagen y el borrado se procesen con más frecuencia, programa en GitHub Actions o cron-job.org una llamada cada minuto a `/api/jobs/process` con la cabecera `Authorization: Bearer <CRON_SECRET>`.
 

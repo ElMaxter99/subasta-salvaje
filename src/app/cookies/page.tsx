@@ -8,7 +8,7 @@ export default function CookiesPage() {
     <LegalPage title="Política de cookies y almacenamiento local" intro="Inventario real de lo que la aplicación guarda en tu navegador.">
       <section>
         <h2>Resumen</h2>
-        <p>Todo lo que se guarda es <strong>técnico y necesario</strong> para que la aplicación funcione (sesión, identidad del jugador en una sala) o para recordar una preferencia que tú ajustas (sonido). Todo es <strong>propio</strong>: no hay cookies de terceros, analítica ni publicidad.</p>
+        <p>Todo lo que se guarda es <strong>técnico y necesario</strong> para que la aplicación funcione (sesión, identidad del jugador en una sala) o para recordar una preferencia que tú ajustas (sonido). Todo es <strong>propio</strong>: no hay cookies de terceros ni publicidad. Las estadísticas de visitas (Vercel Web Analytics) no usan cookies ni almacenamiento local; se describen en la <a href="/privacidad">política de privacidad</a>.</p>
       </section>
       <section>
         <h2>Inventario</h2>
@@ -44,7 +44,7 @@ export default function CookiesPage() {
       <section>
         <h2>¿Hace falta banner de consentimiento?</h2>
         <p>Con el inventario anterior, según nuestra interpretación prudente de la normativa (LSSI-CE y guía de la AEPD), las cookies estrictamente necesarias para prestar el servicio solicitado o para comunicar entre el dispositivo y la red quedan exoneradas del consentimiento, y las preferencias que tú mismo ajustas (sonido) son una función que has pedido. Por eso <strong>no se muestra banner</strong>. Esta conclusión debe validarla un profesional.</p>
-        <p>Si en el futuro se añade analítica, publicidad o cualquier cookie no técnica, habrá que: (1) añadirla a este inventario, (2) no cargarla hasta recibir consentimiento previo, (3) ofrecer un banner con «Aceptar» y «Rechazar» al mismo nivel y un modo de cambiar la decisión, y (4) actualizar la <a href="/privacidad">política de privacidad</a>.</p>
+        <p>Si en el futuro se añade publicidad, analítica con cookies o cualquier cookie no técnica, habrá que: (1) añadirla a este inventario, (2) no cargarla hasta recibir consentimiento previo, (3) ofrecer un banner con «Aceptar» y «Rechazar» al mismo nivel y un modo de cambiar la decisión, y (4) actualizar la <a href="/privacidad">política de privacidad</a>.</p>
       </section>
       <section>
         <h2>Cómo borrarlas</h2>

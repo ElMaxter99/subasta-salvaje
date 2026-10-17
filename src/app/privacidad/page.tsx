@@ -18,6 +18,7 @@ export default function PrivacyPage() {
           <li><strong>Jugadores:</strong> solo un alias o nombre que elige el anfitrión o el propio jugador. No hay cuenta ni correo de jugador. En el modo «móviles» se guarda en el dispositivo una cookie técnica con un token para reconocerlo (ver <a href="/cookies">Cookies</a>).</li>
           <li><strong>Pujas y compras:</strong> importes ficticios, quién pujó y qué se adjudicó.</li>
           <li><strong>Imágenes:</strong> la «casa» de cada jugador y sus versiones sucesivas, generadas por IA o por pegatinas.</li>
+          <li><strong>Estadísticas de visitas:</strong> la aplicación usa Vercel Web Analytics para contar visitas a páginas. Según Vercel, funciona sin cookies ni almacenamiento en tu dispositivo y no identifica a las personas; registra la página visitada, de dónde vienes, país, dispositivo y navegador. Antes de enviar nada, la aplicación quita de la dirección el código de la partida y todo lo que sigue a «?», no mide el panel de administración y respeta «No rastrear» y «Global Privacy Control» de tu navegador.</li>
           <li><strong>Registros técnicos:</strong> la plataforma de alojamiento puede registrar direcciones IP y peticiones por seguridad y para limitar abusos (límites de uso por IP). Los registros de la aplicación se depuran de secretos.</li>
         </ul>
         <p>La base jurídica es la ejecución del servicio que solicitas y el interés legítimo en mantenerlo seguro. No se toman decisiones automatizadas con efectos jurídicos sobre las personas.</p>
@@ -37,7 +38,7 @@ export default function PrivacyPage() {
       </section>
       <section>
         <h2>Lo que NO hacemos</h2>
-        <p>No usamos analítica, publicidad, seguimiento entre sitios ni píxeles de terceros, no vendemos datos y no cargamos fuentes ni scripts desde servidores de terceros (las tipografías se sirven desde la propia aplicación). Comprobado en el código en la fecha de la última actualización; si esto cambia, esta política se actualizará.</p>
+        <p>No usamos publicidad, seguimiento entre sitios ni píxeles de terceros, no vendemos datos y no cargamos fuentes ni scripts desde servidores de terceros (las tipografías y el script de estadísticas se sirven desde la propia aplicación). Las únicas estadísticas son las de visitas descritas arriba. Comprobado en el código en la fecha de la última actualización; si esto cambia, esta política se actualizará.</p>
       </section>
       <section>
         <h2>Conservación y borrado</h2>

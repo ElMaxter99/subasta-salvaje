@@ -174,6 +174,7 @@ Plantilla sin valores: [`.env.example`](.env.example). Nunca subas `.env*` al re
 | `SUPERADMIN_REQUIRE_MFA` | No | servidor | `true` = el panel `/admin` exige verificación en dos pasos (TOTP de Supabase Auth). Antes hay que activar MFA/TOTP en Supabase. Sin probar contra Supabase real; si algo falla, quita la variable. |
 | `SUPERADMIN_EMAILS` | Para usar `/admin` | servidor | Correo(s) del superadmin (con el correo confirmado). Sin ella `/admin` da 404. En modo demo el anfitrión local es superadmin. |
 | `SUPABASE_PLAN_DB_MB` / `SUPABASE_PLAN_STORAGE_MB` | No (500 / 1024) | servidor | Topes del plan de Supabase que muestran las barras del panel (solo informativos). |
+| `NEXT_PUBLIC_DISABLE_ANALYTICS` | No | cliente | `true` desactiva Vercel Web Analytics (ver «Analítica»). |
 | `RESEND_API_KEY` | Opcional (con `MAIL_FROM`) | **solo servidor** | Clave de Resend (`re_…`) para que la app envíe sus propios correos con su marca (confirmación, recuperación, invitaciones). Sin ella, el registro es solo por invitación y la recuperación usa el correo de Supabase. |
 | `MAIL_FROM` | Con `RESEND_API_KEY` | servidor | Remitente de un dominio verificado en Resend, p. ej. `Subasta Salvaje <no-reply@tudominio.com>`. |
 | `MAIL_REPLY_TO` | No | servidor | Dirección de respuesta. |
@@ -501,6 +502,8 @@ Notas: las rutas que generan imágenes declaran `maxDuration = 300`. Si tu proye
 Operaciones, migraciones en Supabase y diagnóstico: [`docs/OPERACIONES.md`](docs/OPERACIONES.md). Tareas manuales del propietario: [`docs/PENDIENTE.md`](docs/PENDIENTE.md).
 
 ## Seguridad y honestidad
+
+- **Analítica (Vercel Web Analytics).** Cuenta visitas a páginas sin cookies ni almacenamiento local (según Vercel; no verificado aquí). Antes de enviar cada evento se quita el código de la partida y la consulta de la URL, no se mide `/admin` y se respeta «No rastrear». Solo mide en producción y hay que activarlo en Vercel → *Analytics*; se apaga con `NEXT_PUBLIC_DISABLE_ANALYTICS=true`. Está descrito en `/privacidad` y `/cookies`; la valoración legal final es tuya (`docs/PENDIENTE.md` §5e).
 
 - Sin secretos en el cliente; `service_role` y `OPENAI_API_KEY` solo en servidor.
 - RLS activado en todas las tablas sin permisos para `anon`/`authenticated`; `EXECUTE` de las funciones revocado a `PUBLIC/anon/authenticated`.
