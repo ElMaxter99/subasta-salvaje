@@ -43,6 +43,17 @@
   0% { transform: translate3d(0, -12vh, 0) rotate(0deg); opacity: 1; }
   100% { transform: translate3d(var(--dx, 0), 112vh, 0) rotate(var(--rot, 720deg)); opacity: 0.9; }
 }
+@keyframes ss-unsold-emoji {
+  0% { transform: translateY(0) rotate(0); filter: none; }
+  18% { transform: translateY(-0.4rem) rotate(-7deg); }
+  34% { transform: translateY(0) rotate(7deg); }
+  50% { transform: translateY(0) rotate(-4deg); filter: grayscale(0.4); }
+  100% { transform: translateY(2.2rem) rotate(18deg) scale(0.85); filter: grayscale(1) brightness(0.7); }
+}
+@keyframes ss-unsold-tumble {
+  0% { transform: translateX(-20vw) rotate(0); }
+  100% { transform: translateX(120vw) rotate(1440deg); }
+}
 @keyframes ss-emoji-bounce {
   0%, 100% { transform: translateY(0) scale(1); }
   50% { transform: translateY(-0.6rem) scale(1.08); }
@@ -65,6 +76,8 @@
 .ss-award-card { animation: ss-award-card 0.9s cubic-bezier(0.2, 1.2, 0.4, 1) both; }
 .ss-award-bg { animation: ss-award-bg 5.4s ease-in-out both; }
 .ss-confetti { animation: ss-confetti var(--dur, 4s) linear var(--delay, 0s) infinite; }
+.ss-unsold-emoji { animation: ss-unsold-emoji 3.6s ease-in-out 0.5s both; }
+.ss-unsold-tumble { animation: ss-unsold-tumble 5.2s linear 0.3s both; }
 .ss-bounce { animation: ss-emoji-bounce 1.4s ease-in-out infinite; }
 .ss-leader { animation: ss-leader-glow 1.8s ease-in-out infinite; }
 .ss-shimmer {
@@ -78,4 +91,6 @@
   .ss-ribbon { animation: none; }
   .ss-price-pop, .ss-bid-in, .ss-ring, .ss-flash { animation: none; }
   .ss-bounce, .ss-leader, .ss-shimmer { animation: none; }
+  .ss-unsold-emoji, .ss-unsold-tumble { animation: none; }
+  .ss-unsold-tumble { display: none; }
 }

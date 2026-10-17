@@ -53,8 +53,8 @@ test('modo móviles: unirse con el código, pujar desde el móvil, adjudicar y s
   expect((await host.post(`/api/games/${code}/actions`, { data: { type: 'auction.announce', item_id: item.id } })).ok()).toBeTruthy();
 
   // Ana puja desde su móvil con el botón rápido y Beto la supera con importe manual
-  await ana.p.getByRole('button', { name: /más 1 €/ }).first().click();
-  // Primera puja de la subasta: «+1 €» es una puja de 1 €, no de 2 €
+  await ana.p.getByRole('button', { name: /más 1 Ohro/ }).first().click();
+  // Primera puja de la subasta: «+1 Ohro» es una puja de 1 Ohro, no de 2 €
   await expect.poll(async () => (await state()).auction?.current_bid_cents).toBe(100);
   expect((await state()).auction.current_bidder_id).toBe(anaId);
   await beto.p.getByRole('textbox').first().fill('4');

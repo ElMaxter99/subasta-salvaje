@@ -1,12 +1,12 @@
 import { z } from 'zod';
 import { MAX_PLAYERS } from './limits';
-import { formatEuros } from './money';
+import { formatOhros } from './money';
 import { THEME_PRESETS } from './themes';
 import type { HostSnapshot } from './types';
 
 /**
  * Plantilla de partida: un archivo JSON que el anfitrión rellena FUERA de la app (o exporta de una partida) y sube para crear la
- * partida ya configurada. Las claves están en español y los importes en euros (más fáciles de escribir a mano).
+ * partida ya configurada. Las claves están en español y los importes en Ohros (más fáciles de escribir a mano).
  * Es entrada NO confiable: se valida entera con Zod y nunca se interpreta como HTML ni se ejecuta.
  */
 export const TEMPLATE_FORMAT = 'subasta-salvaje/plantilla@1';
@@ -31,8 +31,8 @@ export const templateSchema = z.object({
   tematica: text('la temática debe ser un texto').transform(clean).pipe(z.string().min(1, 'falta la temática').max(120, 'la temática supera los 120 caracteres')),
   reglas: z
     .object({
-      presupuesto: z.number({ error: 'el presupuesto debe ser un número en euros' }).min(0, 'el presupuesto no puede ser negativo').max(1_000_000, 'el presupuesto es demasiado alto').optional(),
-      puja_minima: z.number({ error: 'la puja mínima debe ser un número en euros' }).min(0.01, 'la puja mínima debe ser al menos 0,01 €').max(1_000_000, 'la puja mínima es demasiado alta').optional(),
+      presupuesto: z.number({ error: 'el presupuesto debe ser un número en Ohros' }).min(0, 'el presupuesto no puede ser negativo').max(1_000_000, 'el presupuesto es demasiado alto').optional(),
+      puja_minima: z.number({ error: 'la puja mínima debe ser un número en Ohros' }).min(0.01, 'la puja mínima debe ser al menos 0,01 Ohros').max(1_000_000, 'la puja mínima es demasiado alta').optional(),
       rondas_maximas: z.number({ error: 'las rondas deben ser un número' }).int('las rondas deben ser un número entero').min(1, 'las rondas deben ser al menos 1').max(500, 'las rondas no pueden pasar de 500').optional(),
       pujas_enteras: z.boolean({ error: '«pujas_enteras» debe ser true o false' }).optional(),
       clasificacion: z.enum(['ninguna', 'saldo', 'elementos', 'votos'], { error: '«clasificacion» debe ser ninguna, saldo, elementos o votos' }).optional(),
@@ -115,7 +115,7 @@ export function parseTemplate(raw: string, opts: { zip?: boolean } = {}): Templa
   if (new Set(names).size !== names.length) return { ok: false, errors: ['jugadores: hay nombres repetidos.'] };
   const whole = t.reglas.pujas_enteras ?? true;
   if (whole && t.reglas.puja_minima !== undefined && Math.round(t.reglas.puja_minima * 100) % 100 !== 0) {
-    return { ok: false, errors: ['reglas.puja_minima: con «pujas_enteras» activadas la puja mínima debe ser un euro entero (1, 2, 3…); pon «pujas_enteras»: false para admitir céntimos.'] };
+    return { ok: false, errors: ['reglas.puja_minima: con «pujas_enteras» activadas la puja mínima debe ser un Ohro entero (1, 2, 3…); pon «pujas_enteras»: false para admitir céntimos.'] };
   }
   for (const [campo, url] of [['portada', t.portada], ['casa_inicial', t.casa_inicial]] as const) {
     if (url && !/^https:\/\//i.test(url)) return { ok: false, errors: [`${campo}: debe ser una URL https://.`] };
@@ -217,5 +217,5 @@ export function templateFromSnapshot(s: Pick<HostSnapshot, 'game' | 'players' | 
 /** Texto resumido para mostrar en la interfaz. */
 export function templateSummary(t: Template): string {
   const r = t.reglas;
-  return `${t.catalogo?.length ?? 0} elementos · ${t.jugadores.length} jugadores${r.presupuesto !== undefined ? ` · ${formatEuros(Math.round(r.presupuesto * 100))} cada uno` : ''}`;
+  return `${t.catalogo?.length ?? 0} elementos · ${t.jugadores.length} jugadores${r.presupuesto !== undefined ? ` · ${formatOhros(Math.round(r.presupuesto * 100))} cada uno` : ''}`;
 }

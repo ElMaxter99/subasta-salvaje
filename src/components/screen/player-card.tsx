@@ -3,10 +3,11 @@
 import { useEffect, useState } from 'react';
 import { Crown, Hammer } from 'lucide-react';
 import type { Player } from '@/lib/domain/types';
-import { formatEuros } from '@/lib/domain/money';
+import { formatOhros } from '@/lib/domain/money';
 import { awardOverlay } from './award-overlay';
 import { HouseImage } from './house-image';
 import './screen.css';
+import { Ohros } from '@/components/ui/ohros';
 
 export function PlayerCard({ player, leading, maxChips, dense, presence = null }: { player: Player; leading: boolean; maxChips: number; dense: boolean; presence?: 'lobby' | 'game' | null }) {
   const imageId = player.current_image?.id ?? null;
@@ -60,7 +61,7 @@ export function PlayerCard({ player, leading, maxChips, dense, presence = null }
             {shown.map((p) => (
               <li
                 key={p.purchase_id}
-                title={`${p.name} · ${formatEuros(p.price_cents)}`}
+                title={`${p.name} · ${formatOhros(p.price_cents)}`}
                 className={`flex items-center justify-center rounded-lg bg-night-950/80 leading-none backdrop-blur ${dense ? 'size-8 text-[1.3rem]' : 'size-10 text-[1.7rem]'}`}
               >
                 {p.emoji ?? '📦'}
@@ -119,7 +120,7 @@ export function PlayerCard({ player, leading, maxChips, dense, presence = null }
           {player.name}
         </h3>
         <p className={`shrink-0 font-display leading-none tabular-nums text-white ${dense ? 'text-[1.7rem]' : 'text-[2.2rem]'}`} aria-label={`Saldo de ${player.name}`}>
-          {formatEuros(player.balance_cents)}
+          <Ohros cents={player.balance_cents} />
         </p>
       </div>
     </article>

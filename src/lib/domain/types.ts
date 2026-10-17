@@ -2,7 +2,8 @@
 
 export type GameStatus = 'lobby' | 'active' | 'paused' | 'finished';
 export type AuctionStatus = 'open' | 'closed' | 'awarded' | 'cancelled';
-export type ItemStatus = 'available' | 'in_auction' | 'sold';
+/** `lost` = subasta sin ninguna puja: el elemento no vuelve a salir. */
+export type ItemStatus = 'available' | 'in_auction' | 'sold' | 'lost';
 export type RankingRule = 'none' | 'balance' | 'items' | 'votes';
 /** host = el anfitrión registra todas las pujas; mobile = cada jugador se une con el código y puja desde su móvil. */
 export type PlayMode = 'host' | 'mobile';
@@ -97,6 +98,14 @@ export interface Auction {
   bids: Bid[];
 }
 
+/** Elemento que nadie quiso (subasta sin pujas). */
+export interface LastUnsold {
+  event_id: number;
+  item_name: string;
+  emoji: string | null;
+  at: string;
+}
+
 export interface LastAward {
   purchase_id: string;
   player_id: string;
@@ -123,7 +132,7 @@ export interface GameInfo {
   /** Adjudicación automática: por tiempo desde la última puja, o al instante si nadie más puede superar la puja. */
   auto_award_enabled: boolean;
   auto_award_seconds: number;
-  /** Pujas solo en euros enteros. */
+  /** Pujas solo en Ohros enteros. */
   integer_bids?: boolean;
   /** Máximo de jugadores de la partida (1..10, por defecto 10). */
   max_players?: number;
@@ -211,6 +220,8 @@ export interface PublicSnapshot {
   items: AuctionItem[];
   auction: Auction | null;
   last_award: LastAward | null;
+  /** Última subasta que terminó sin pujas (la TV muestra una animación una sola vez). */
+  last_unsold?: LastUnsold | null;
   stats: GameStats;
   gallery?: Gallery;
   /** Último impuesto al más rico (para avisar en la pantalla). */

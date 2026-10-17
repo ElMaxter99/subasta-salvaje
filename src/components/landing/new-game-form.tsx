@@ -21,10 +21,11 @@ import { adminPost } from '@/lib/client/admin-api';
 import { commitTemplateImagesRequest, stageTemplateImageRequest, type StagedTemplateImage } from '@/lib/client/template-upload';
 import { SystemTemplateStep, slugFromTitle, type SystemMeta } from '@/components/admin/system-template-step';
 import { ApiError, uploadItemImage } from '@/lib/client/api';
-import { formatEuros, parseEurosToCents } from '@/lib/domain/money';
+import { parseOhrosToCents } from '@/lib/domain/money';
 import { PLAYER_COLORS } from '@/lib/domain/schemas';
 import { THEME_PRESETS, getThemePreset } from '@/lib/domain/themes';
 import { Stepper, type StepInfo } from './new-game-stepper';
+import { Ohros } from '@/components/ui/ohros';
 
 const CUSTOM = CUSTOM_THEME;
 /** `2xl` (≥1536 px, p. ej. una TV a 1080p con zoom del navegador) agranda campos y botones para leer a distancia. */
@@ -200,11 +201,12 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
       if (!themeValue) return 'Escribe la temática.';
     }
     if (i === 3) {
-      if (parseEurosToCents(budget) === null) return 'El presupuesto no es válido (usa por ejemplo 20 o 12,50).';
-      const m = parseEurosToCents(minBid);
+      if (parseOhrosToCents(budget) === null) return 'El presupuesto no es válido (usa por ejemplo 20 o 12,50).';
+      const m = parseOhrosToCents(minBid);
       if (m === null || m < 1) return 'La puja mínima no es válida.';
-      if (integerBids && m % 100 !== 0) return 'Con pujas en euros enteros, la puja mínima también debe ser un euro entero (1, 2, 3…).';
+      if (integerBids && m % 100 !== 0) return 'Con pujas en Ohros enteros, la puja mínima también debe ser un Ohro entero (1, 2, 3…).';
       if (!Number.isInteger(roundsValue) || roundsValue < 1 || roundsValue > 500) return 'El máximo de rondas debe ser un número entre 1 y 500.';
+      if (roundsValue > defaultRounds) return `El máximo de rondas no puede superar los ${defaultRounds} elementos del catálogo.`;
     }
     if (systemEditor && i === 5) {
       if (!meta.title.trim()) return 'Escribe el título de la tarjeta.';
@@ -265,12 +267,12 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
       const { room_code } = await createGameRequest({
         name: name.trim(),
         theme: themeValue,
-        initial_budget_cents: parseEurosToCents(budget),
-        min_bid_cents: parseEurosToCents(minBid),
+        initial_budget_cents: parseOhrosToCents(budget),
+        min_bid_cents: parseOhrosToCents(minBid),
         ranking_rule: ranking,
         play_mode: playMode,
         image_mode: imageMode,
-        max_rounds: roundsValue,
+        max_rounds: Math.min(roundsValue, defaultRounds), // nunca más rondas que elementos en el catálogo (el catálogo pudo cambiar después)
         max_players: maxPlayers,
         integer_bids: integerBids,
         players: names.map((n, i) => ({ name: n, color: PLAYER_COLORS[i % PLAYER_COLORS.length] })),
@@ -504,12 +506,12 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
             <section className={card}>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
-                  <label htmlFor="budget" className={label}>Presupuesto inicial (€)</label>
+                  <label htmlFor="budget" className={label}>Presupuesto inicial (Ohros)</label>
                   <input id="budget" inputMode="decimal" value={budget} onChange={(e) => setBudget(e.target.value)} className={field} />
                   <p className="mt-1 text-xs text-white/55 2xl:text-base">Lo que tiene cada jugador al empezar.</p>
                 </div>
                 <div>
-                  <label htmlFor="minbid" className={label}>Puja mínima (€)</label>
+                  <label htmlFor="minbid" className={label}>Puja mínima (Ohros)</label>
                   <input id="minbid" inputMode="decimal" value={minBid} onChange={(e) => setMinBid(e.target.value)} className={field} />
                   <p className="mt-1 text-xs text-white/55 2xl:text-base">La primera puja de cada subasta no puede ser menor.</p>
                 </div>
@@ -518,13 +520,13 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
                 <div>
                   <label htmlFor="rounds" className={label}>Máximo de rondas</label>
                   <input id="rounds" inputMode="numeric" value={maxRounds} placeholder={String(defaultRounds)} onChange={(e) => setMaxRounds(e.target.value.replace(/\D/g, '').slice(0, 3))} className={field} />
-                  <p className="mt-1 text-xs text-white/55 2xl:text-base">Por defecto, los {defaultRounds} elementos del catálogo. Al jugarse todas las rondas la partida termina sola.</p>
+                  <p className="mt-1 text-xs text-white/55 2xl:text-base">Por defecto, los {defaultRounds} elementos del catálogo (ese es también el máximo). Al jugarse todas las rondas la partida termina sola.</p>
                 </div>
                 <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-white/10 bg-night-900 p-3 sm:mt-6 has-[:focus-visible]:ring-4 has-[:focus-visible]:ring-gold/50">
                   <input type="checkbox" checked={integerBids} onChange={(e) => setIntegerBids(e.target.checked)} className="mt-1 size-5 shrink-0 accent-[#fbbf24] 2xl:size-6" />
                   <span>
-                    <span className="block font-bold 2xl:text-xl">Solo pujas en euros enteros</span>
-                    <span className="block text-sm text-white/65 2xl:text-lg">{integerBids ? '1, 2, 3, 4… €.' : 'Se podrá pujar también 1,50 €, 2,25 €…'} Puedes cambiarlo luego en Ajustes.</span>
+                    <span className="block font-bold 2xl:text-xl">Solo pujas en Ohros enteros</span>
+                    <span className="block text-sm text-white/65 2xl:text-lg">{integerBids ? '1, 2, 3, 4… Ohros.' : 'Se podrá pujar también 1,50 Ohros, 2,25 Ohros…'} Puedes cambiarlo luego en Ajustes.</span>
                   </span>
                 </label>
               </div>
@@ -609,9 +611,9 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
               {summaryRow('Reglas', 3, (
                 <>
                   <p>
-                    Presupuesto <b className="text-gold">{formatEuros(parseEurosToCents(budget) ?? 0)}</b> · puja mínima <b className="text-gold">{formatEuros(parseEurosToCents(minBid) ?? 0)}</b>
+                    Presupuesto <b className="text-gold"><Ohros cents={parseOhrosToCents(budget) ?? 0} /></b> · puja mínima <b className="text-gold"><Ohros cents={parseOhrosToCents(minBid) ?? 0} /></b>
                   </p>
-                  <p className="text-white/70">{roundsValue} {roundsValue === 1 ? 'ronda' : 'rondas'} máximo · {integerBids ? 'pujas en euros enteros' : 'se admiten céntimos'}</p>
+                  <p className="text-white/70">{roundsValue} {roundsValue === 1 ? 'ronda' : 'rondas'} máximo · {integerBids ? 'pujas en Ohros enteros' : 'se admiten céntimos'}</p>
                   <p className="text-white/70">{RANKING_LABEL[ranking]}</p>
                 </>
               ))}

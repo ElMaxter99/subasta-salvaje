@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatEuros, parseEurosToCents } from '@/lib/domain/money';
+import { formatOhros, parseOhrosToCents } from '@/lib/domain/money';
 import { computeHighlights, computeRanking } from '@/lib/domain/ranking';
 import { actionSchema, createGameSchema } from '@/lib/domain/schemas';
 import { rateLimit } from '@/lib/auth/rate-limit';
@@ -15,14 +15,21 @@ const player = (name: string, balance: number, items: number, votes = 0): Player
 
 describe('dinero', () => {
   it('convierte texto a céntimos con precisión y rechaza entradas inválidas', () => {
-    expect(parseEurosToCents('12')).toBe(1200);
-    expect(parseEurosToCents('12,5')).toBe(1250);
-    expect(parseEurosToCents('0.07')).toBe(7);
-    expect(parseEurosToCents('1,234')).toBeNull();
-    expect(parseEurosToCents('-3')).toBeNull();
-    expect(parseEurosToCents('abc')).toBeNull();
-    expect(formatEuros(1250)).toMatch(/12,50/);
-    expect(formatEuros(2000)).toMatch(/20/);
+    expect(parseOhrosToCents('12')).toBe(1200);
+    expect(parseOhrosToCents('12,5')).toBe(1250);
+    expect(parseOhrosToCents('0.07')).toBe(7);
+    expect(parseOhrosToCents('1,234')).toBeNull();
+    expect(parseOhrosToCents('-3')).toBeNull();
+    expect(parseOhrosToCents('abc')).toBeNull();
+    expect(formatOhros(1250)).toMatch(/12,50/);
+    expect(formatOhros(2000)).toMatch(/20/);
+    // La moneda del juego: 1 Ohro, 2 Ohros (también 0 y los decimales en plural)
+    expect(formatOhros(100)).toBe('1 Ohro');
+    expect(formatOhros(200)).toBe('2 Ohros');
+    expect(formatOhros(0)).toBe('0 Ohros');
+    expect(formatOhros(150)).toBe('1,50 Ohros');
+    expect(parseOhrosToCents('12 Ohros')).toBe(1200);
+    expect(parseOhrosToCents('1 ohro')).toBe(100);
   });
 });
 
@@ -50,7 +57,7 @@ describe('validación de entradas', () => {
     expect(actionSchema.safeParse({ ...base, amount_cents: -1 }).success).toBe(false);
     expect(actionSchema.safeParse({ ...base, amount_cents: 150, idempotency_key: 'x' }).success).toBe(false);
   });
-  it('aplica valores por defecto al crear partida (presupuesto 20 €)', () => {
+  it('aplica valores por defecto al crear partida (presupuesto 20 Ohros)', () => {
     expect(createGameSchema.parse({ name: 'x' }).initial_budget_cents).toBe(2000);
     expect(createGameSchema.safeParse({ name: '' }).success).toBe(false);
     expect(createGameSchema.safeParse({ name: 'x', players: Array.from({ length: 13 }, (_, i) => ({ name: `p${i}` })) }).success).toBe(false);

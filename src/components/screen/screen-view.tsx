@@ -11,6 +11,7 @@ import { ConnectionBadge } from '@/components/ui/status';
 import { themeLabel } from '@/lib/domain/themes';
 import { AuctionStage } from './auction-stage';
 import { AwardOverlay } from './award-overlay';
+import { UnsoldOverlay } from './unsold-overlay';
 import { PlayerCard } from './player-card';
 import { WildTaxBanner } from './wild-tax-banner';
 import { MascotCue } from './mascot-cue';
@@ -179,6 +180,7 @@ export function ScreenView({ roomCode, initial, runtime }: { roomCode: string; i
       ) : null}
 
       <AwardOverlay award={snapshot.last_award} players={players} />
+      <UnsoldOverlay unsold={snapshot.last_unsold} />
       <WildTaxBanner snapshot={snapshot} />
       {controls}
     </main>

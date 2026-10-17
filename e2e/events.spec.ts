@@ -33,7 +33,7 @@ test('eventos sorpresa, deshacer adjudicación y galería con votación', async 
   // Puja a ciegas: el móvil de Beto no ve el importe de Ana
   let s = await state();
   expect((await act({ type: 'auction.announce', item_id: s.items[0].id, wild_event: 'blind' })).ok()).toBeTruthy();
-  await ana.p.getByRole('button', { name: /más 5 €/ }).first().click();
+  await ana.p.getByRole('button', { name: /más 5 Ohros/ }).first().click();
   await expect(beto.p.getByTestId('current-bid')).toHaveText(/¿¿/);
   await expect(beto.p.getByText(/1 puja hecha/)).toBeVisible();
   s = await state();
@@ -41,7 +41,7 @@ test('eventos sorpresa, deshacer adjudicación y galería con votación', async 
   const tv = await context.newPage();
   await tv.goto(`/game/${code}/screen`);
   await expect(tv.getByTestId('wild-badge')).toBeVisible();
-  await expect(tv.getByText('¿¿ ?? €')).toBeVisible();
+  await expect(tv.getByText('¿¿ ??')).toBeVisible();
 
   // Adjudica y deshace desde el panel del anfitrión
   const a = s.auction;

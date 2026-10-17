@@ -24,9 +24,9 @@ Una plantilla es un archivo **JSON** que el anfitrión rellena fuera de la app (
 | `formato` | sí | exactamente `subasta-salvaje/plantilla@1` |
 | `nombre` | sí | 1–80 caracteres |
 | `tematica` | sí | id o nombre de una temática (`Casa`, `Isla desierta`…) o texto libre (→ «Otra») |
-| `reglas.presupuesto` / `puja_minima` | no | euros (admite decimales); por defecto 20 y 1 |
+| `reglas.presupuesto` / `puja_minima` | no | Ohros (admite decimales); por defecto 20 y 1 |
 | `reglas.rondas_maximas` | no | 1–500; por defecto = elementos del catálogo |
-| `reglas.pujas_enteras` | no | `true` (por defecto) / `false`; con `true` la puja mínima debe ser un euro entero |
+| `reglas.pujas_enteras` | no | `true` (por defecto) / `false`; con `true` la puja mínima debe ser un Ohro entero |
 | `reglas.clasificacion` | no | `ninguna`, `saldo`, `elementos`, `votos` |
 | `reglas.modo_juego` | no | `anfitrion` (por defecto) o `movil` |
 | `reglas.modo_imagenes` | no | `pegatinas` (por defecto) o `ia` (sin IA configurada se cambia a pegatinas) |

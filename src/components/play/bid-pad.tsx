@@ -6,8 +6,9 @@ import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useToast } from '@/components/ui/toast';
 import { ApiError, newIdempotencyKey, playerBidRequest } from '@/lib/client/api';
-import { formatEuros, parseEurosToCents, wholeUp } from '@/lib/domain/money';
+import { formatOhros, parseOhrosToCents, wholeUp } from '@/lib/domain/money';
 import type { PublicSnapshot } from '@/lib/domain/types';
+import { Ohros } from '@/components/ui/ohros';
 
 const QUICK = [100, 200, 500, 1000];
 
@@ -28,7 +29,7 @@ export function BidPad({
   /** Puja actual, o la mínima si aún no hay pujas. */
   baseCents: number;
   minBidCents: number;
-  /** Solo euros enteros (por defecto sí). */
+  /** Solo Ohros enteros (por defecto sí). */
   integerBids?: boolean;
   balanceCents: number;
   leading: boolean;
@@ -43,7 +44,7 @@ export function BidPad({
 
   const noFunds = balanceCents < minBidCents || balanceCents <= 0;
   const locked = leading || noFunds;
-  const manual = parseEurosToCents(text);
+  const manual = parseOhrosToCents(text);
   const manualBad = text.trim() !== '' && manual === null;
   const manualFraction = integerBids && manual !== null && manual % 100 !== 0;
 
@@ -59,7 +60,7 @@ export function BidPad({
       const r = await playerBidRequest(roomCode, auctionId, amount, key);
       keyRef.current = null;
       navigator.vibrate?.(40);
-      toast.success(`Puja de ${formatEuros(amount)} enviada`);
+      toast.success(`Puja de ${formatOhros(amount)} enviada`);
       setText('');
       onSnapshot(r.snapshot);
     } catch (e) {
@@ -98,9 +99,9 @@ export function BidPad({
               className="!px-1 !text-xl"
               disabled={locked || busy || amount > balanceCents}
               onClick={() => request(amount)}
-              aria-label={`Pujar ${formatEuros(amount)} (más ${formatEuros(d)})`}
+              aria-label={`Pujar ${formatOhros(amount)} (más ${formatOhros(d)})`}
             >
-              +{d / 100} €
+              +<Ohros cents={d} />
             </Button>
           );
         })}
@@ -114,7 +115,7 @@ export function BidPad({
       >
         <div className="min-w-0 flex-1">
           <label htmlFor="bid-amount" className="sr-only">
-            Importe de la puja en euros
+            Importe de la puja en Ohros
           </label>
           <input
             id="bid-amount"
@@ -126,7 +127,7 @@ export function BidPad({
             onChange={(e) => setText(e.target.value)}
             onFocus={(e) => window.setTimeout(() => e.target.scrollIntoView({ block: 'center', behavior: 'smooth' }), 300)}
             aria-invalid={manualBad || undefined}
-            placeholder={`Otro importe (€) · mín. ${formatEuros(wholeUp(baseCents > 0 ? baseCents + 1 : minBidCents, integerBids))}`}
+            placeholder={`Otro importe (Ohros) · mín. ${formatOhros(wholeUp(baseCents > 0 ? baseCents + 1 : minBidCents, integerBids))}`}
             className="min-h-14 w-full rounded-2xl border border-white/20 bg-night-950 px-4 text-lg text-white placeholder:text-sm placeholder:text-white/40 disabled:opacity-45"
           />
         </div>
@@ -136,19 +137,19 @@ export function BidPad({
       </form>
       {manualBad || manualFraction ? (
         <p role="alert" className="text-sm font-semibold text-rose">
-          {manualFraction ? 'En esta partida solo se puede pujar en euros enteros (1, 2, 3…).' : `Escribe un importe válido, por ejemplo ${integerBids ? '12' : '12 o 12,5'}.`}
+          {manualFraction ? 'En esta partida solo se puede pujar en Ohros enteros (1, 2, 3…).' : `Escribe un importe válido, por ejemplo ${integerBids ? '12' : '12 o 12,5'}.`}
         </p>
       ) : null}
       <ConfirmDialog
         open={confirm !== null}
-        title={confirm !== null ? `¿Pujar ${formatEuros(confirm)}?` : ''}
+        title={confirm !== null ? `¿Pujar ${formatOhros(confirm)}?` : ''}
         confirmLabel="Sí, pujar"
         variant="success"
         loading={busy}
         onConfirm={() => confirm !== null && void send(confirm)}
         onCancel={() => setConfirm(null)}
       >
-        Es la mitad o más de tu saldo ({formatEuros(balanceCents)}).
+        Es la mitad o más de tu saldo (<Ohros cents={balanceCents} />).
       </ConfirmDialog>
     </div>
   );

@@ -24,7 +24,7 @@ export const createGameSchema = z.object({
   image_mode: z.enum(['stickers', 'ai']).default('stickers'),
   /** Máximo de rondas (por defecto, todos los elementos del catálogo). Al agotarse la partida termina sola. */
   max_rounds: z.number().int().min(1).max(500).optional(),
-  /** Pujas solo en euros enteros (por defecto sí). */
+  /** Pujas solo en Ohros enteros (por defecto sí). */
   integer_bids: z.boolean().default(true),
   players: z.array(z.object({ name, color: color.optional() })).max(MAX_PLAYERS).default([]),
   /** Máximo de jugadores de la partida (1..MAX_PLAYERS; por defecto MAX_PLAYERS). Lo vuelve a comprobar SQL. */
@@ -69,6 +69,7 @@ export const actionSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('item.clear_image'), item_id: uuid }),
   // Subasta
   z.object({ type: z.literal('auction.announce'), item_id: uuid, wild_event: z.enum(['none', 'blind', 'double']).optional() }),
+  z.object({ type: z.literal('auction.announce_random'), wild_event: z.enum(['none', 'blind', 'double']).optional() }),
   z.object({ type: z.literal('auction.bid'), auction_id: uuid, player_id: uuid, amount_cents: cents, idempotency_key: idempotencyKey }),
   z.object({ type: z.literal('auction.undo_bid'), auction_id: uuid, bid_id: uuid }),
   z.object({ type: z.literal('auction.close'), auction_id: uuid }),

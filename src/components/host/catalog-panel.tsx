@@ -11,7 +11,7 @@ import { EmojiInput } from '@/components/ui/emoji-input';
 import { Card, Notice, Pill, Thumb, inputCls } from './bits';
 import type { HostCtx } from './host-context';
 
-const STATUS = { available: ['Disponible', 'teal'], in_auction: ['En subasta', 'gold'], sold: ['Vendido', 'violet'] } as const;
+const STATUS = { available: ['Disponible', 'teal'], in_auction: ['En subasta', 'gold'], sold: ['Vendido', 'violet'], lost: ['Sin pujas · perdido', 'rose'] } as const;
 
 function ItemForm({ initial, submitLabel, busyKey, ctx, onSubmit, onCancel }: { initial?: AuctionItem; submitLabel: string; busyKey: string; ctx: HostCtx; onSubmit: (v: { name: string; description: string; emoji: string | null }) => Promise<boolean>; onCancel?: () => void }) {
   const [name, setName] = useState(initial?.name ?? '');

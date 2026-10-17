@@ -6,12 +6,13 @@ import { AutoAwardCard } from './auto-award-card';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { newIdempotencyKey } from '@/lib/client/api';
-import { formatEuros } from '@/lib/domain/money';
+import { formatOhros } from '@/lib/domain/money';
 import type { Auction, WildEvent } from '@/lib/domain/types';
 import { BidPad } from './bid-pad';
 import { WildCard } from './wild-card';
 import { Card, Dot, Notice, Pill, Thumb, fmtTime } from './bits';
 import { playerById, type HostCtx } from './host-context';
+import { Ohros } from '@/components/ui/ohros';
 
 interface AwardDraft {
   key: string;
@@ -63,7 +64,7 @@ export function AuctionPanel({ ctx }: { ctx: HostCtx }) {
       >
         {live?.bids[0] ? (
           <p>
-            Se anulará la puja de <b>{playerById(snapshot, live.bids[0].player_id)?.name}</b> por <b>{formatEuros(live.bids[0].amount_cents)}</b>. La puja volverá a la anterior.
+            Se anulará la puja de <b>{playerById(snapshot, live.bids[0].player_id)?.name}</b> por <b><Ohros cents={live.bids[0].amount_cents} /></b>. La puja volverá a la anterior.
           </p>
         ) : null}
       </ConfirmDialog>
@@ -80,9 +81,15 @@ export function AuctionPanel({ ctx }: { ctx: HostCtx }) {
           setCancelOpen(false);
         }}
       >
-        <p>
-          El elemento <b>{live?.item.name}</b> vuelve al catálogo y las pujas se descartan. <b>No se descuenta dinero a nadie.</b>
-        </p>
+        {live && live.bids.length === 0 ? (
+          <p>
+            Nadie ha pujado por <b>{live.item.name}</b>: se da por <b>perdido</b> (no lo quiere nadie) y <b>no volverá a salir</b> en otra ronda. La TV lo anunciará. <b>No se descuenta dinero a nadie.</b>
+          </p>
+        ) : (
+          <p>
+            El elemento <b>{live?.item.name}</b> vuelve al catálogo y las pujas se descartan. <b>No se descuenta dinero a nadie.</b>
+          </p>
+        )}
       </ConfirmDialog>
     </div>
   );
@@ -117,7 +124,7 @@ function LiveAuction({ ctx, auction, onAward, onUndo, onCancel }: { ctx: HostCtx
           <div>
             <p className="text-xs font-bold uppercase tracking-wide text-white/60">Puja actual</p>
             <p className="font-display text-4xl text-gold sm:text-5xl" aria-live="polite">
-              {hasBids ? formatEuros(auction.current_bid_cents) : '—'}
+              {hasBids ? <Ohros cents={auction.current_bid_cents} /> : '—'}
             </p>
           </div>
           <div>
@@ -156,7 +163,7 @@ function LiveAuction({ ctx, auction, onAward, onUndo, onCancel }: { ctx: HostCtx
                   </span>
                   <span className="flex items-center gap-3">
                     <span className="text-xs text-white/50">{fmtTime(b.created_at)}</span>
-                    <b className={i === 0 ? 'text-gold' : ''}>{formatEuros(b.amount_cents)}</b>
+                    <b className={i === 0 ? 'text-gold' : ''}><Ohros cents={b.amount_cents} /></b>
                   </span>
                 </li>
               );
@@ -197,7 +204,7 @@ function AwardDialog({ ctx, draft, onClose }: { ctx: HostCtx; draft: AwardDraft 
     <ConfirmDialog
       open={!!draft}
       title="¿Adjudicar y cobrar?"
-      confirmLabel={draft ? `Cobrar ${formatEuros(draft.price)} y adjudicar` : 'Adjudicar'}
+      confirmLabel={draft ? `Cobrar ${formatOhros(draft.price)} y adjudicar` : 'Adjudicar'}
       variant="success"
       loading={ctx.busy === 'award'}
       onCancel={onClose}
@@ -221,11 +228,11 @@ function AwardDialog({ ctx, draft, onClose }: { ctx: HostCtx; draft: AwardDraft 
           </p>
           <dl className="grid grid-cols-2 gap-2 rounded-2xl bg-night-950 p-3 text-sm">
             <dt className="text-white/60">Importe</dt>
-            <dd className="text-right font-bold text-gold">{formatEuros(draft.price)}</dd>
+            <dd className="text-right font-bold text-gold"><Ohros cents={draft.price} /></dd>
             <dt className="text-white/60">Saldo actual</dt>
-            <dd className="text-right font-bold">{formatEuros(winner.balance_cents)}</dd>
+            <dd className="text-right font-bold"><Ohros cents={winner.balance_cents} /></dd>
             <dt className="text-white/60">Saldo resultante</dt>
-            <dd className={`text-right font-bold ${after < 0 ? 'text-rose' : 'text-teal'}`}>{formatEuros(after)}</dd>
+            <dd className={`text-right font-bold ${after < 0 ? 'text-rose' : 'text-teal'}`}><Ohros cents={after} /></dd>
           </dl>
           {changed ? <p className="rounded-xl bg-rose/20 p-2 text-sm font-bold text-rose">La puja ha cambiado mientras confirmabas. Cancela y revisa los datos antes de adjudicar.</p> : <p className="text-sm text-white/60">El cobro se hace una sola vez, aunque pulses dos veces.</p>}
         </div>
@@ -238,6 +245,7 @@ function NextItem({ ctx }: { ctx: HostCtx }) {
   const { snapshot, busy, run } = ctx;
   const { auction, game } = snapshot;
   const available = snapshot.items.filter((i) => i.status === 'available').sort((a, b) => a.sort_order - b.sort_order);
+  const lostCount = snapshot.items.filter((i) => i.status === 'lost').length;
   const playing = game.status === 'active';
   const lastAwarded = auction?.status === 'awarded' ? auction : null;
   const winner = playerById(snapshot, lastAwarded?.winner_id);
@@ -252,11 +260,11 @@ function NextItem({ ctx }: { ctx: HostCtx }) {
             {lastAwarded.item.emoji} {lastAwarded.item.name}
           </p>
           <p className="text-white/80">
-            Para <b style={{ color: winner?.color }}>{winner?.name}</b> por <b className="text-gold">{formatEuros(lastAwarded.wild_note?.charged_cents ?? lastAwarded.final_price_cents ?? 0)}</b>. Su imagen se está actualizando (mira «Imágenes»).
+            Para <b style={{ color: winner?.color }}>{winner?.name}</b> por <b className="text-gold"><Ohros cents={lastAwarded.wild_note?.charged_cents ?? lastAwarded.final_price_cents ?? 0} /></b>. Su imagen se está actualizando (mira «Imágenes»).
           </p>
           {lastAwarded.wild_note ? (
             <p className="mt-1 text-sm font-semibold text-violet-soft">
-              🎲 Doble o mitad: {lastAwarded.wild_note.outcome === 'half' ? '¡le ha tocado la mitad!' : '¡le ha tocado pagar el doble!'} (puja de {formatEuros(lastAwarded.wild_note.bid_cents)})
+              🎲 Doble o mitad: {lastAwarded.wild_note.outcome === 'half' ? '¡le ha tocado la mitad!' : '¡le ha tocado pagar el doble!'} (puja de <Ohros cents={lastAwarded.wild_note.bid_cents} />)
             </p>
           ) : null}
           <Button className="mt-3 w-full" variant="secondary" size="lg" disabled={busy !== null} loading={busy === 'clear'} onClick={() => run('clear', { type: 'auction.clear' }, 'Pantalla despejada')}>
@@ -280,6 +288,19 @@ function NextItem({ ctx }: { ctx: HostCtx }) {
       <TaxCard ctx={ctx} />
 
       <Card title={`Elementos disponibles (${available.length})`} icon={<Megaphone className="size-5 text-gold" aria-hidden />}>
+        <div className="mb-3 flex flex-wrap items-center gap-3">
+          <Button
+            variant="secondary"
+            size="lg"
+            disabled={!playing || busy !== null || available.length === 0}
+            loading={busy === 'announce-random'}
+            onClick={() => run('announce-random', { type: 'auction.announce_random', ...(wild === 'auto' ? {} : { wild_event: wild }) }, 'Elemento al azar anunciado en la TV')}
+            data-testid="announce-random"
+          >
+            🎲 Anunciar uno al azar
+          </Button>
+          <p className="text-xs text-white/60">Elige al azar uno de los elementos disponibles del catálogo y lo anuncia en la TV.{lostCount > 0 ? ` ${lostCount} sin pujas (perdido${lostCount === 1 ? '' : 's'}): no vuelven a salir.` : ''}</p>
+        </div>
         <fieldset className="mb-3">
           <legend className="text-xs font-bold uppercase tracking-wide text-white/60">Evento de la próxima subasta</legend>
           <div className="mt-1 flex flex-wrap gap-2">
@@ -343,7 +364,7 @@ function LastAwardCard({ ctx }: { ctx: HostCtx }) {
     <>
       <Card title="Última adjudicación" icon={<Undo2 className="size-5 text-gold" aria-hidden />}>
         <p className="text-white/80">
-          {last.emoji} <b>{last.item_name}</b> para <b style={{ color: player?.color }}>{player?.name}</b> por <b className="text-gold">{formatEuros(last.price_cents)}</b>.
+          {last.emoji} <b>{last.item_name}</b> para <b style={{ color: player?.color }}>{player?.name}</b> por <b className="text-gold"><Ohros cents={last.price_cents} /></b>.
         </p>
         <Button className="mt-3 w-full sm:w-auto" variant="secondary" disabled={busy !== null || running} onClick={() => { setKey(newIdempotencyKey()); setOpen(true); }}>
           <Undo2 className="size-4" aria-hidden /> Deshacer esta adjudicación
@@ -367,7 +388,7 @@ function LastAwardCard({ ctx }: { ctx: HostCtx }) {
       >
         <div className="space-y-3">
           <p>
-            Se devolverán <b>{formatEuros(last.price_cents)}</b> a <b>{player?.name}</b>, <b>{last.item_name}</b> volverá al catálogo y su imagen volverá a la versión anterior. Solo se puede deshacer la última adjudicación.
+            Se devolverán <b><Ohros cents={last.price_cents} /></b> a <b>{player?.name}</b>, <b>{last.item_name}</b> volverá al catálogo y su imagen volverá a la versión anterior. Solo se puede deshacer la última adjudicación.
           </p>
           <label className="block text-sm font-semibold">
             Motivo (opcional)
@@ -408,7 +429,7 @@ function TaxCard({ ctx }: { ctx: HostCtx }) {
         }}
       >
         <p>
-          Pagará <b>{payers.map((p) => p.name).join(' y ')}</b> (el 20 % de {formatEuros(max)}): en total <b>{formatEuros(pool)}</b>, que se reparte entre el resto. La pantalla de la TV lo anunciará.
+          Pagará <b>{payers.map((p) => p.name).join(' y ')}</b> (el 20 % de <Ohros cents={max} />): en total <b><Ohros cents={pool} /></b>, que se reparte entre el resto. La pantalla de la TV lo anunciará.
         </p>
       </ConfirmDialog>
     </>

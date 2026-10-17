@@ -8,13 +8,14 @@ import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useToast } from '@/components/ui/toast';
 import { uploadInitialImage } from '@/lib/client/api';
-import { formatEuros, parseEurosToCents } from '@/lib/domain/money';
+import { formatOhros, parseOhrosToCents } from '@/lib/domain/money';
 import { PLAYER_COLORS } from '@/lib/domain/schemas';
 import type { Player } from '@/lib/domain/types';
 import { Card, Dot, Notice, Pill, Thumb, inputCls } from './bits';
 import type { HostCtx } from './host-context';
 import { InitialImageCard } from './initial-image-card';
 import { JoinCard } from './join-card';
+import { Ohros } from '@/components/ui/ohros';
 
 const MAX_BYTES = 25 * 1024 * 1024; // el original puede ser grande: se reduce en el navegador antes de subirlo
 const TYPES = ['image/png', 'image/jpeg', 'image/webp'];
@@ -41,7 +42,7 @@ export function PlayersPanel({ ctx }: { ctx: HostCtx }) {
   const [budget, setBudget] = useState('');
   const [removing, setRemoving] = useState<Player | null>(null);
   const [releasing, setReleasing] = useState<Player | null>(null);
-  const budgetCents = parseEurosToCents(budget);
+  const budgetCents = parseOhrosToCents(budget);
   const aiMode = game.image_mode === 'ai';
 
   async function add() {
@@ -74,15 +75,15 @@ export function PlayersPanel({ ctx }: { ctx: HostCtx }) {
           >
             <div className="flex-1">
               <label htmlFor="budget" className="sr-only">
-                Presupuesto inicial en euros
+                Presupuesto inicial en Ohros
               </label>
-              <input id="budget" className={inputCls} inputMode="decimal" placeholder={`Ahora: ${formatEuros(game.initial_budget_cents)} · nuevo importe en €`} value={budget} onChange={(e) => setBudget(e.target.value)} />
+              <input id="budget" className={inputCls} inputMode="decimal" placeholder={`Ahora: ${formatOhros(game.initial_budget_cents)} · nuevo importe en Ohros`} value={budget} onChange={(e) => setBudget(e.target.value)} />
             </div>
             <Button type="submit" variant="secondary" disabled={budgetCents === null || busy !== null} loading={busy === 'budget'}>
               Guardar
             </Button>
           </form>
-          <p className="mt-2 text-sm text-white/60">Cada jugador recibe {formatEuros(game.initial_budget_cents)}. Cambiarlo reinicia el saldo de todos (solo antes de empezar).</p>
+          <p className="mt-2 text-sm text-white/60">Cada jugador recibe <Ohros cents={game.initial_budget_cents} />. Cambiarlo reinicia el saldo de todos (solo antes de empezar).</p>
         </Card>
       ) : null}
 
@@ -192,7 +193,7 @@ function PlayerRow({ ctx, player: p, index, total, onMove, onRemove, onRelease }
             <Dot color={p.color} />
             <span className="truncate">{p.name}</span>
           </h3>
-          <p className="text-lg font-bold text-gold">{formatEuros(p.balance_cents)}</p>
+          <p className="text-lg font-bold text-gold"><Ohros cents={p.balance_cents} /></p>
           <div className="mt-1 flex flex-wrap gap-1.5">
             {snapshot.game.play_mode === 'mobile' ? p.claimed ? <Pill tone="teal">📱 Conectado</Pill> : <Pill>Libre</Pill> : null}
             <Pill>{p.purchases.length} {p.purchases.length === 1 ? 'elemento' : 'elementos'}</Pill>

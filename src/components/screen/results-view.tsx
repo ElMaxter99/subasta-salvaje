@@ -7,7 +7,7 @@ import type { Gallery, Player, PublicSnapshot, RankingRule, RuntimeInfo } from '
 import { GameGone } from '@/components/ui/game-gone';
 import { useLiveGame } from '@/lib/client/use-live-game';
 import { ConnectionBadge, DemoBanner } from '@/components/ui/status';
-import { formatEuros } from '@/lib/domain/money';
+import { formatOhros } from '@/lib/domain/money';
 import { joinedPlayers } from '@/lib/domain/players';
 import { computeHighlights, computePodium, computeRanking, rankingRuleLabel } from '@/lib/domain/ranking';
 import { Podium } from './podium';
@@ -16,9 +16,10 @@ import { Confetti } from './award-overlay';
 import { ItemIcon, Mascot, Sparkles } from '@/components/mascot/mascot';
 import { HouseImage } from './house-image';
 import './screen.css';
+import { Ohros } from '@/components/ui/ohros';
 
 function scoreLabel(rule: RankingRule, p: Player): string {
-  if (rule === 'balance') return formatEuros(p.balance_cents);
+  if (rule === 'balance') return formatOhros(p.balance_cents);
   if (rule === 'items') return `${p.purchases.length} ${p.purchases.length === 1 ? 'elemento' : 'elementos'}`;
   return `${p.votes} ${p.votes === 1 ? 'voto' : 'votos'}`;
 }
@@ -97,7 +98,7 @@ function ResultCard({ player, rank, scoreText, tv, dense, votes = null, galleryW
             <span className="truncate">{player.name}</span>
           </h3>
           <p className={`shrink-0 font-display tabular-nums ${tv ? (dense ? 'text-[1.6rem]' : 'text-[2.1rem]') : 'text-2xl'}`} aria-label={`Saldo restante de ${player.name}`}>
-            {formatEuros(player.balance_cents)}
+            <Ohros cents={player.balance_cents} />
           </p>
         </div>
         {scoreText ? <p className={`font-bold text-gold ${tv ? 'text-[1.1rem]' : 'text-sm'}`}>{scoreText}</p> : null}
@@ -107,17 +108,17 @@ function ResultCard({ player, rank, scoreText, tv, dense, votes = null, galleryW
             <li key={p.purchase_id} className={`flex items-center gap-1 rounded-lg bg-night-950/70 px-1.5 py-0.5 ${tv ? 'text-[1.05rem]' : 'text-sm'}`}>
               <span aria-hidden>{p.emoji ?? '📦'}</span>
               {tv && dense ? null : <span className="max-w-[10rem] truncate font-semibold">{p.name}</span>}
-              {tv && dense ? <span className="sr-only">{p.name}</span> : <span className="tabular-nums text-white/60">{formatEuros(p.price_cents)}</span>}
+              {tv && dense ? <span className="sr-only">{p.name}</span> : <span className="tabular-nums text-white/60"><Ohros cents={p.price_cents} /></span>}
             </li>
           ))}
         </ul>
-        {!tv && spent > 0 ? <p className="mt-1 text-xs text-white/55">Gastado: {formatEuros(spent)}</p> : null}
+        {!tv && spent > 0 ? <p className="mt-1 text-xs text-white/55">Gastado: <Ohros cents={spent} /></p> : null}
       </div>
     </article>
   );
 }
 
-function StatTile({ icon, label, value, tv }: { icon: React.ReactNode; label: string; value: string; tv: boolean }) {
+function StatTile({ icon, label, value, tv }: { icon: React.ReactNode; label: string; value: React.ReactNode; tv: boolean }) {
   return (
     <div className={`flex items-center gap-3 rounded-2xl border border-white/10 bg-night-800/90 ${tv ? 'px-4 py-2' : 'px-4 py-3'}`}>
       <span className="text-gold">{icon}</span>
@@ -185,14 +186,14 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
   const tiles = (
     <>
       <StatTile tv={tv} icon={<Package className="size-6" aria-hidden />} label="Elementos subastados" value={String(stats.purchases_count)} />
-      <StatTile tv={tv} icon={<Coins className="size-6" aria-hidden />} label="Dinero gastado" value={formatEuros(stats.total_spent_cents)} />
+      <StatTile tv={tv} icon={<Coins className="size-6" aria-hidden />} label="Dinero gastado" value=<Ohros cents={stats.total_spent_cents} /> />
       <StatTile tv={tv} icon={<Gavel className="size-6" aria-hidden />} label="Pujas totales" value={String(stats.bids_count)} />
       <StatTile tv={tv} icon={<Ban className="size-6" aria-hidden />} label="Subastas canceladas" value={String(stats.cancelled_auctions)} />
       {hl.mostExpensive ? (
-        <StatTile tv={tv} icon={<TrendingUp className="size-6" aria-hidden />} label={`Más caro · ${hl.mostExpensive.itemName} (${hl.mostExpensive.playerName})`} value={formatEuros(hl.mostExpensive.priceCents)} />
+        <StatTile tv={tv} icon={<TrendingUp className="size-6" aria-hidden />} label={`Más caro · ${hl.mostExpensive.itemName} (${hl.mostExpensive.playerName})`} value=<Ohros cents={hl.mostExpensive.priceCents} /> />
       ) : null}
       {hl.biggestSpender ? (
-        <StatTile tv={tv} icon={<Coins className="size-6" aria-hidden />} label={`Quien más gastó · ${hl.biggestSpender.playerName}`} value={formatEuros(hl.biggestSpender.spentCents)} />
+        <StatTile tv={tv} icon={<Coins className="size-6" aria-hidden />} label={`Quien más gastó · ${hl.biggestSpender.playerName}`} value=<Ohros cents={hl.biggestSpender.spentCents} /> />
       ) : null}
       {hl.mostItems ? (
         <StatTile tv={tv} icon={<Trophy className="size-6" aria-hidden />} label={`Más elementos · ${hl.mostItems.playerName}`} value={`${hl.mostItems.count}`} />

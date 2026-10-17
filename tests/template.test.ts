@@ -57,7 +57,7 @@ describe('plantillas de partida', () => {
     expect(ok({ ...base, catalogo: Array.from({ length: 101 }, (_, i) => ({ titulo: `E${i}` })) }).ok).toBe(false);
     expect(ok({ ...base, jugadores: Array.from({ length: 13 }, (_, i) => `J${i}`) }).ok).toBe(false);
     expect(ok({ ...base, jugadores: ['Ana', 'ana'] })).toMatchObject({ ok: false, errors: [expect.stringContaining('repetidos')] });
-    expect(ok({ ...base, reglas: { puja_minima: 1.5 } })).toMatchObject({ ok: false, errors: [expect.stringContaining('euro entero')] });
+    expect(ok({ ...base, reglas: { puja_minima: 1.5 } })).toMatchObject({ ok: false, errors: [expect.stringContaining('Ohro entero')] });
     expect(ok({ ...base, reglas: { puja_minima: 1.5, pujas_enteras: false } }).ok).toBe(true);
   });
 

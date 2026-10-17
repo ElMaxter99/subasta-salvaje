@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import type { LastAward, Player } from '@/lib/domain/types';
-import { formatEuros } from '@/lib/domain/money';
 import { Mascot } from '@/components/mascot/mascot';
 import './screen.css';
+import { Ohros } from '@/components/ui/ohros';
 
 /** Instante (ms) hasta el que el overlay de adjudicación tapa la pantalla; lo usan las tarjetas para no animar «Casa actualizada» por debajo. */
 export const awardOverlay = { until: 0 };
@@ -75,7 +75,7 @@ export function AwardOverlay({ award, players }: { award: LastAward | null; play
         <p className="text-[2.4rem] font-bold text-white/90">
           para <span className="font-display" style={{ color }}>{winner?.name ?? 'un jugador'}</span>
         </p>
-        <p className="font-display text-[4.5rem] leading-none tabular-nums text-gold">{formatEuros(active.price_cents)}</p>
+        <p className="font-display text-[4.5rem] leading-none tabular-nums text-gold"><Ohros cents={active.price_cents} /></p>
       </div>
       <Mascot variant="pose-adjudica" size="md" tile motion="pop" className="relative" />
     </div>

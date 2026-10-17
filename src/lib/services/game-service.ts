@@ -136,6 +136,8 @@ function toRpc(action: GameAction): { fn: string; params: Record<string, unknown
       return { fn: 'ss_item_op', params: { op: type.split('.')[1], ...rest } };
     case 'auction.announce':
       return { fn: 'ss_announce', params: rest };
+    case 'auction.announce_random':
+      return { fn: 'ss_announce_random', params: rest };
     case 'auction.bid':
       return { fn: 'ss_place_bid', params: rest };
     case 'auction.undo_bid':

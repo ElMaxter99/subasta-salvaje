@@ -3,10 +3,10 @@
 import { Gavel, Hourglass } from 'lucide-react';
 import type { Auction, GameInfo, Player, PublicSnapshot } from '@/lib/domain/types';
 import { useAutoAwardCountdown, useCountdownTo } from '@/lib/client/auto-award';
-import { formatEuros } from '@/lib/domain/money';
 import { LobbyInvite } from './join-invite';
 import { Mascot } from '@/components/mascot/mascot';
 import './screen.css';
+import { Ohros } from '@/components/ui/ohros';
 
 function ItemVisual({ item }: { item: Auction['item'] }) {
   return (
@@ -62,11 +62,11 @@ function ActiveAuction({ snap, auction, players, compact }: { snap: PublicSnapsh
             key={price}
             className={`ss-price-pop font-display leading-none tabular-nums text-gold drop-shadow-[0_0_2rem_rgb(251_191_36/0.45)] ${compact ? 'text-[10rem]' : 'text-[13rem]'}`}
           >
-            {blind ? '¿¿ ?? €' : formatEuros(price)}
+            {blind ? '¿¿ ??' : <Ohros cents={price} />}
           </p>
           {awarded && auction.wild_note ? (
             <p className="mt-2 inline-flex items-center gap-3 rounded-2xl bg-violet px-5 py-2 font-display text-[2rem] text-white" data-testid="wild-result">
-              🎲 {auction.wild_note.outcome === 'half' ? '¡Mitad de precio!' : '¡Pagas el doble!'} Pujó {formatEuros(auction.wild_note.bid_cents)} · paga {formatEuros(auction.wild_note.charged_cents)}
+              🎲 {auction.wild_note.outcome === 'half' ? '¡Mitad de precio!' : '¡Pagas el doble!'} Pujó <Ohros cents={auction.wild_note.bid_cents} /> · paga <Ohros cents={auction.wild_note.charged_cents} />
             </p>
           ) : null}
           {closed ? (
@@ -118,7 +118,7 @@ function ActiveAuction({ snap, auction, players, compact }: { snap: PublicSnapsh
                 style={{ borderColor: p?.color ?? '#888' }}
               >
                 <span className="truncate text-[1.5rem] font-bold" style={{ color: p?.color }}>{p?.name ?? 'Jugador'}</span>
-                <span className="shrink-0 font-display text-[1.7rem] tabular-nums text-white">{formatEuros(b.amount_cents)}</span>
+                <span className="shrink-0 font-display text-[1.7rem] tabular-nums text-white"><Ohros cents={b.amount_cents} /></span>
               </li>
             );
           })}
@@ -157,7 +157,7 @@ function IdleStage({ snap }: { snap: PublicSnapshot }) {
               Último adjudicado: <span className="mr-1">{award.emoji ?? '🎁'}</span>
               <strong className="text-white">{award.item_name}</strong> para{' '}
               <strong style={{ color: winner?.color }}>{winner?.name ?? 'un jugador'}</strong> por{' '}
-              <strong className="font-display tabular-nums text-gold">{formatEuros(award.price_cents)}</strong>
+              <strong className="font-display tabular-nums text-gold"><Ohros cents={award.price_cents} /></strong>
             </p>
           ) : null}
         </>

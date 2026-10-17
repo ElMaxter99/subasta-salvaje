@@ -46,17 +46,17 @@ test('asistente de nueva partida: pasos, validación, resumen editable y creaci�
     await page.getByLabel('Nombre de la partida').fill(`Partida ${vp.name}`);
     await nav.click();
     await expect(page.getByTestId('wizard-step-4')).toBeVisible();
-    await page.getByLabel('Presupuesto inicial (€)').fill('abc');
+    await page.getByLabel('Presupuesto inicial (Ohros)').fill('abc');
     await nav.click();
     await expect(page.getByTestId('wizard-error')).toContainText('presupuesto');
-    await page.getByLabel('Presupuesto inicial (€)').fill('30');
+    await page.getByLabel('Presupuesto inicial (Ohros)').fill('30');
     // Rondas por defecto = catálogo (12 en «Casa») y pujas enteras por defecto
     await expect(page.getByLabel('Máximo de rondas')).toHaveAttribute('placeholder', '12');
-    await expect(page.getByRole('checkbox', { name: /Solo pujas en euros enteros/ })).toBeChecked();
-    await page.getByLabel('Puja mínima (€)').fill('1,5');
+    await expect(page.getByRole('checkbox', { name: /Solo pujas en Ohros enteros/ })).toBeChecked();
+    await page.getByLabel('Puja mínima (Ohros)').fill('1,5');
     await nav.click();
-    await expect(page.getByTestId('wizard-error')).toContainText('euros enteros');
-    await page.getByLabel('Puja mínima (€)').fill('1');
+    await expect(page.getByTestId('wizard-error')).toContainText('Ohros enteros');
+    await page.getByLabel('Puja mínima (Ohros)').fill('1');
     await page.getByLabel('Máximo de rondas').fill('5');
     await nav.click();
     // Jugadores: ninguno por defecto y explicación de que se pueden crear luego
@@ -77,7 +77,7 @@ test('asistente de nueva partida: pasos, validación, resumen editable y creaci�
 
     // Editar desde el resumen y volver
     await page.getByRole('button', { name: 'Editar Reglas' }).click();
-    await expect(page.getByLabel('Presupuesto inicial (€)')).toHaveValue('30');
+    await expect(page.getByLabel('Presupuesto inicial (Ohros)')).toHaveValue('30');
     await page.getByRole('button', { name: /Atrás/ }).click();
     await expect(page.getByTestId('wizard-step-3')).toBeVisible();
     await ctx.close();

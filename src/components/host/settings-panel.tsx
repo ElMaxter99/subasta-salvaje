@@ -5,7 +5,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { Flag, History, RotateCcw, Minus, Plus, Smartphone, Trophy, Tv } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { formatEuros, parseEurosToCents } from '@/lib/domain/money';
+import { parseOhrosToCents } from '@/lib/domain/money';
 import type { ImageMode, JoinPolicy, PlayMode, RankingRule } from '@/lib/domain/types';
 import { TemplateExportCard } from './template-export-card';
 import { DeleteGameCard } from './delete-game-card';
@@ -13,6 +13,7 @@ import { FinishGameDialog } from './finish-dialog';
 import { ResetGameDialog } from './reset-dialog';
 import { Card, Dot, Notice, inputCls } from './bits';
 import type { HostCtx } from './host-context';
+import { Ohros } from '@/components/ui/ohros';
 
 const RULES: { id: RankingRule; label: string; hint: string }[] = [
   { id: 'none', label: 'Ninguna', hint: 'Sin clasificación: solo se muestran los resultados.' },
@@ -47,7 +48,7 @@ export function SettingsPanel({ ctx }: { ctx: HostCtx }) {
   const [maxPlayers, setMaxPlayers] = useState(String(game.max_players ?? MAX_PLAYERS));
   const [finishOpen, setFinishOpen] = useState(false);
   const [resetOpen, setResetOpen] = useState(false);
-  const minCents = parseEurosToCents(minBid);
+  const minCents = parseOhrosToCents(minBid);
 
   return (
     <div className="space-y-4">
@@ -77,10 +78,10 @@ export function SettingsPanel({ ctx }: { ctx: HostCtx }) {
           }}
         >
           <label htmlFor="min-bid" className="text-sm font-semibold text-white/80">
-            Puja mínima (ahora {formatEuros(game.min_bid_cents)})
+            Puja mínima (ahora <Ohros cents={game.min_bid_cents} />)
           </label>
           <div className="flex gap-2">
-            <input id="min-bid" className={inputCls} inputMode="decimal" placeholder="Nuevo importe en €" value={minBid} disabled={finished} onChange={(e) => setMinBid(e.target.value)} />
+            <input id="min-bid" className={inputCls} inputMode="decimal" placeholder="Nuevo importe en Ohros" value={minBid} disabled={finished} onChange={(e) => setMinBid(e.target.value)} />
             <Button type="submit" variant="secondary" disabled={finished || !minCents || busy !== null} loading={busy === 'minbid'}>
               Guardar
             </Button>
@@ -117,7 +118,7 @@ export function SettingsPanel({ ctx }: { ctx: HostCtx }) {
           onSubmit={(e) => {
             e.preventDefault();
             const n = Number(rounds);
-            if (Number.isInteger(n) && n >= 1) void run('rounds', { type: 'game.set_rules', max_rounds: n }, 'Máximo de rondas actualizado');
+            if (Number.isInteger(n) && n >= 1 && n <= snapshot.items.length) void run('rounds', { type: 'game.set_rules', max_rounds: n }, 'Máximo de rondas actualizado');
           }}
         >
           <label htmlFor="max-rounds" className="text-sm font-semibold text-white/80">
@@ -125,11 +126,11 @@ export function SettingsPanel({ ctx }: { ctx: HostCtx }) {
           </label>
           <div className="flex gap-2">
             <input id="max-rounds" className={inputCls} inputMode="numeric" value={rounds} disabled={finished} onChange={(e) => setRounds(e.target.value.replace(/\D/g, '').slice(0, 3))} />
-            <Button type="submit" variant="secondary" disabled={finished || !rounds || Number(rounds) < 1 || Number(rounds) === game.total_rounds || busy !== null} loading={busy === 'rounds'}>
+            <Button type="submit" variant="secondary" disabled={finished || !rounds || Number(rounds) < 1 || Number(rounds) > snapshot.items.length || Number(rounds) === game.total_rounds || busy !== null} loading={busy === 'rounds'}>
               Guardar
             </Button>
           </div>
-          <p className="text-xs text-white/55">Al jugarse todas las rondas la partida termina sola (no puede ser menor que las rondas ya jugadas).</p>
+          <p className="text-xs text-white/55">Al jugarse todas las rondas la partida termina sola. Mínimo: las rondas ya jugadas ({game.rounds_completed}); máximo: los {snapshot.items.length} elementos del catálogo.</p>
         </form>
         <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-2xl border border-white/10 bg-night-900 p-3">
           <input
@@ -137,11 +138,11 @@ export function SettingsPanel({ ctx }: { ctx: HostCtx }) {
             className="mt-1 size-5 accent-[#fbbf24]"
             checked={game.integer_bids !== false}
             disabled={finished || busy !== null}
-            onChange={(e) => run('integer', { type: 'game.set_rules', integer_bids: e.target.checked }, e.target.checked ? 'Solo se puja en euros enteros' : 'Ahora se pueden pujar céntimos (1,50 €)')}
+            onChange={(e) => run('integer', { type: 'game.set_rules', integer_bids: e.target.checked }, e.target.checked ? 'Solo se puja en Ohros enteros' : 'Ahora se pueden pujar décimas (1,50 Ohros)')}
           />
           <span>
-            <b className="block">Solo pujas en euros enteros</b>
-            <span className="text-sm text-white/65">Activado: 1, 2, 3… €. Desactivado: también 1,50 €, 2,25 €… (se aplica a las próximas pujas).</span>
+            <b className="block">Solo pujas en Ohros enteros</b>
+            <span className="text-sm text-white/65">Activado: 1, 2, 3… Ohros. Desactivado: también 1,50 Ohros, 2,25 Ohros… (se aplica a las próximas pujas).</span>
           </span>
         </label>
       </Card>

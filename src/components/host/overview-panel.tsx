@@ -4,7 +4,6 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { CheckCircle2, Circle, Flag, Pause, Play, Rocket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { formatEuros } from '@/lib/domain/money';
 import { themeLabel } from '@/lib/domain/themes';
 import { Card, Dot, Notice, Pill, STATUS_LABEL } from './bits';
 import type { HostCtx } from './host-context';
@@ -13,6 +12,7 @@ import { AutoRunCard } from './auto-run-card';
 import { GalleryCard } from './gallery-card';
 import { PendingImagesNotice } from './pending-images';
 import { JoinCard } from './join-card';
+import { Ohros } from '@/components/ui/ohros';
 
 function Check({ ok, children }: { ok: boolean; children: React.ReactNode }) {
   return (
@@ -63,7 +63,7 @@ export function OverviewPanel({ ctx, goTo }: { ctx: HostCtx; goTo: (s: 'jugadore
           </div>
           <div className="text-right">
             <p className="text-xs font-bold uppercase tracking-wide text-white/60">Puja máxima actual</p>
-            <p className="font-display text-3xl text-gold">{maxBid ? formatEuros(maxBid) : '—'}</p>
+            <p className="font-display text-3xl text-gold">{maxBid ? <Ohros cents={maxBid} /> : '—'}</p>
             <p className="text-sm text-white/70">{live ? live.item.name : 'Sin subasta en curso'}</p>
           </div>
         </div>
@@ -145,7 +145,7 @@ export function OverviewPanel({ ctx, goTo }: { ctx: HostCtx; goTo: (s: 'jugadore
                 <span className="truncate">{p.name}</span>
                 {live?.current_bidder_id === p.id ? <Pill tone="gold">líder</Pill> : null}
               </span>
-              <span className="shrink-0 text-lg font-bold text-gold">{formatEuros(p.balance_cents)}</span>
+              <span className="shrink-0 text-lg font-bold text-gold"><Ohros cents={p.balance_cents} /></span>
             </li>
           ))}
           {players.length === 0 ? <li className="text-white/60">Aún no hay jugadores.</li> : null}

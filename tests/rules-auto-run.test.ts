@@ -176,7 +176,7 @@ describe('subasta automática', () => {
     expect((await getHostState(ctx, room, host)).game.status).toBe('finished'); // máximo de rondas
   });
 
-  it('una subasta sin pujas se salta (el elemento pasa al final) y si nadie puja en toda una vuelta se detiene sola', async () => {
+  it('una subasta sin pujas deja el elemento PERDIDO (no vuelve a salir); si se pierden todos, la partida termina sola', async () => {
     const host = newHost();
     const room = await lobby(host);
     await act(ctx, room, host, { type: 'game.start' });
@@ -189,20 +189,59 @@ describe('subasta automática', () => {
     await autoAwardTick(ctx, room);
     let s = await getHostState(ctx, room, host);
     expect(s.auction).toBeNull(); // la subasta sin pujas se cancela y se sigue
-    expect(s.events.some((e) => e.event_type === 'auto_run_skipped')).toBe(true);
+    expect(s.items.find((i) => i.name === 'Elemento 1')!.status).toBe('lost'); // perdido: nadie lo quiso
+    expect(s.events.some((e) => e.event_type === 'auction_unsold')).toBe(true);
+    expect(s.last_unsold).toMatchObject({ item_name: 'Elemento 1' }); // la TV anima «¡Nadie lo quiere!»
     expect(s.game.auto_run_enabled).toBe(true);
-    const order = [...s.items].sort((a, b) => a.sort_order - b.sort_order).map((i) => i.name);
-    expect(order[order.length - 1]).toBe('Elemento 1'); // pasó al final
-    // Repite hasta dar la vuelta entera (4 elementos)
+    // El siguiente anuncio ya no es el perdido
+    await back(gid, "update auctions set closed_at = now() - interval '10 seconds' where game_id = $1");
+    await autoAwardTick(ctx, room);
+    expect((await getHostState(ctx, room, host)).auction?.item.name).toBe('Elemento 2');
+    // Se pierden también los demás (3 más) y, sin elementos disponibles, la partida termina
     for (let i = 0; i < 3; i++) {
-      await back(gid, "update auctions set closed_at = now() - interval '10 seconds' where game_id = $1");
-      await autoAwardTick(ctx, room);
       await back(gid, "update auctions set opened_at = now() - interval '20 seconds' where game_id = $1 and status = 'open'");
+      await autoAwardTick(ctx, room);
+      await back(gid, "update auctions set closed_at = now() - interval '10 seconds' where game_id = $1");
       await autoAwardTick(ctx, room);
     }
     s = await getHostState(ctx, room, host);
-    expect(s.game.auto_run_enabled).toBe(false);
-    expect(s.events.some((e) => e.event_type === 'auto_run_stopped')).toBe(true);
+    expect(s.items.every((i) => i.status === 'lost')).toBe(true);
+    expect(s.game.status).toBe('finished');
+  });
+
+  it('cancelar a mano: sin pujas el elemento queda perdido; con pujas vuelve al catálogo', async () => {
+    const host = newHost();
+    const room = await lobby(host);
+    await act(ctx, room, host, { type: 'game.start' });
+    const s0 = await getHostState(ctx, room, host);
+    const a = await act(ctx, room, host, { type: 'auction.announce', item_id: s0.items[0]!.id });
+    await act(ctx, room, host, { type: 'auction.cancel', auction_id: a.snapshot.auction!.id });
+    expect((await getHostState(ctx, room, host)).items.find((i) => i.id === s0.items[0]!.id)!.status).toBe('lost');
+    await expect(act(ctx, room, host, { type: 'auction.announce', item_id: s0.items[0]!.id })).rejects.toMatchObject({ code: 'item_not_available' });
+    const b = await act(ctx, room, host, { type: 'auction.announce', item_id: s0.items[1]!.id });
+    const pid = s0.players[0]!.id;
+    await act(ctx, room, host, { type: 'auction.bid', auction_id: b.snapshot.auction!.id, player_id: pid, amount_cents: 100, idempotency_key: key() });
+    await act(ctx, room, host, { type: 'auction.cancel', auction_id: b.snapshot.auction!.id });
+    expect((await getHostState(ctx, room, host)).items.find((i) => i.id === s0.items[1]!.id)!.status).toBe('available');
+  });
+
+  it('anunciar al azar elige un elemento disponible (nunca uno perdido o vendido) y no hay rondas por encima del catálogo', async () => {
+    const host = newHost();
+    const room = await lobby(host);
+    await act(ctx, room, host, { type: 'game.start' });
+    const s0 = await getHostState(ctx, room, host);
+    // Pierde 3 de los 4 elementos: el único disponible es el que debe salir
+    for (const it of s0.items.slice(0, 3)) {
+      const a = await act(ctx, room, host, { type: 'auction.announce', item_id: it.id });
+      await act(ctx, room, host, { type: 'auction.cancel', auction_id: a.snapshot.auction!.id });
+    }
+    const r = await act(ctx, room, host, { type: 'auction.announce_random' });
+    expect(r.snapshot.auction!.item.id).toBe(s0.items[3]!.id);
+    await act(ctx, room, host, { type: 'auction.cancel', auction_id: r.snapshot.auction!.id });
+    await expect(act(ctx, room, host, { type: 'auction.announce_random' })).rejects.toMatchObject({ code: 'no_items_left' });
+    // Rondas máximas: entre 1 y el número de elementos del catálogo
+    await expect(act(ctx, room, host, { type: 'game.set_rules', max_rounds: 5 })).rejects.toMatchObject({ code: 'rounds_above_catalog' });
+    await act(ctx, room, host, { type: 'game.set_rules', max_rounds: 4 });
   });
 
   it('sin elementos disponibles termina la partida; en pausa no avanza; desactivarla la detiene', async () => {

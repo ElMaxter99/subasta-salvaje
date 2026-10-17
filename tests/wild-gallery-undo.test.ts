@@ -127,7 +127,7 @@ describe('eventos sorpresa', () => {
     const a = await act(ctx, room, host, { type: 'auction.announce', item_id: s.items[0]!.id });
     expect(['blind', 'double']).toContain(a.snapshot.auction!.wild_event);
     await act(ctx, room, host, { type: 'auction.cancel', auction_id: a.snapshot.auction!.id });
-    const b = await act(ctx, room, host, { type: 'auction.announce', item_id: s.items[0]!.id, wild_event: 'none' });
+    const b = await act(ctx, room, host, { type: 'auction.announce', item_id: s.items[1]!.id, wild_event: 'none' }); // el cancelado sin pujas queda perdido
     expect(b.snapshot.auction!.wild_event).toBeNull();
   });
 
