@@ -97,6 +97,7 @@ La colección con alfa real (`public/assets/mascot-vector/`) es vectorial. Para 
 ## 5i. Edición de imágenes con IA (Pollinations)
 - [ ] Aplica las migraciones `…5200`/`…5300` (modelo de cada versión en el historial) y `…5400`/`…5500` (jugadores activos y `joined`).
 - [ ] Vuelve a probar dos compras seguidas en una partida con IA: el historial (Detalles) muestra ahora IA, modelo y tipo, y el prompt pide que la compra anterior siga visible y la nueva vaya a otra zona. **No verificado contra Pollinations real**: si la 2.ª compra sigue tapando la 1.ª, copia las dos imágenes y los prompts; la alternativa fiable es la composición (collage), que conserva la imagen anterior píxel a píxel.
+- [ ] Con la guardia de zona (`region-guard.ts`) lo anterior se conserva fuera de la zona del objeto nuevo; **sin probar con el modelo real**. Haz dos o tres compras seguidas y revisa en el historial (Detalles → «guardia de zona» en el prompt) que se conservan y que los objetos nuevos no salen recortados; si recorta, dímelo y ajusto el tamaño de las zonas.
 - [ ] Si Pollinations rechaza el tamaño con la proporción de la casa (p. ej. `1024x576`), fija `POLLINATIONS_IMAGE_SIZE=1024x768` y avisa.
 
 ## 5j. Imágenes por enlace

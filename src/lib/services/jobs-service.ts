@@ -1,3 +1,4 @@
+import { preserveOutsideZone } from '@/lib/ai/region-guard';
 import { fetchImageBytes } from '@/lib/security/safe-fetch';
 import { isExternalRef, isHostedImage, mimeFromExtension } from '@/lib/storage/hosted';
 import { randomUUID } from 'node:crypto';
@@ -137,7 +138,7 @@ async function generate(ctx: Ctx, provider: ImageGenerationProvider, job: Claime
       itemImage = undefined; // la foto ya no existe: se edita sólo con el texto, sin fallar
     }
   }
-  return provider.editScene({
+  const edited = await provider.editScene({
     base: { bytes: base.bytes, mime: job.base_mime_type ?? base.mime },
     ...(itemImage ? { itemImage } : {}),
     theme: job.theme,
@@ -146,6 +147,13 @@ async function generate(ctx: Ctx, provider: ImageGenerationProvider, job: Claime
     itemEmoji,
     previousItems,
   });
+  // Red de seguridad: con compras anteriores, lo que hubiera fuera de la zona del objeto nuevo se conserva tal cual (los modelos de
+  // edición a veces «pierden» lo anterior). La composición (collage) ya lo conserva por construcción.
+  if (previousItems.length > 0 && !edited.model.endsWith('+compose') && (job.base_mime_type ?? base.mime) !== 'image/svg+xml') {
+    const g = await preserveOutsideZone(base.bytes, edited.bytes, previousItems.length);
+    if (g.applied) return { ...edited, bytes: g.bytes, mime: 'image/png', prompt: `${edited.prompt} [guardia de zona: ${g.note}]` };
+  }
+  return edited;
 }
 
 async function jobContext(ctx: Ctx, job: ClaimedJob): Promise<{ itemEmoji: string | null; previousItems: string[]; itemImagePath: string | null }> {

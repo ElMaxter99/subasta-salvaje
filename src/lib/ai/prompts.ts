@@ -28,7 +28,7 @@ export function regionFor(index: number): string {
  * dice solo que añadan uno. Se pide explícitamente no taparlo ni sustituirlo y se sugiere una zona distinta.
  */
 function previousClause(input: EditSceneInput): string {
-  if (input.previousItems.length === 0) return 'The scene is still empty apart from its original architecture.';
+  if (input.previousItems.length === 0) return `The scene is still empty apart from its original architecture. Put the new object preferably in the ${regionFor(0)} part of the scene.`;
   return `Image 0 ALREADY contains ${input.previousItems.length === 1 ? 'this purchased object' : 'these purchased objects'}: ${input.previousItems.join(', ')}. ${input.previousItems.length === 1 ? 'It stays' : 'They all stay'} fully visible in the final image, with the same position, size and appearance: the new object must NOT replace, cover, overlap or hide ${input.previousItems.length === 1 ? 'it' : 'any of them'}. Put the new object in a different, empty spot, preferably in the ${regionFor(input.previousItems.length)} part of the scene.`;
 }
 
