@@ -105,10 +105,10 @@ async function generate(ctx: Ctx, provider: ImageGenerationProvider, job: Claime
       itemEmoji,
     });
   }
-  if (!job.base_storage_path) throw new ProviderError('No hay imagen base para editar', false);
+  if (!job.base_storage_path) throw new ProviderError('No hay imagen base para editar', false, false);
   const base = await ctx.storage.get(job.base_storage_path);
   if (provider.id === 'openai' && (job.base_mime_type ?? base.mime) === 'image/svg+xml') {
-    throw new ProviderError('La imagen base es un SVG de la galería/demo y OpenAI sólo edita PNG, JPEG o WebP. Sube una imagen PNG/JPG o genera la inicial con IA.', false);
+    throw new ProviderError('La imagen base es un SVG de la galería/demo y OpenAI sólo edita PNG, JPEG o WebP. Sube una imagen PNG/JPG o genera la inicial con IA.', false, false);
   }
   // Foto del elemento del catálogo (subida por el anfitrión o generada): se MEZCLA con la casa del ganador.
   let itemImage: { bytes: Uint8Array; mime: string } | undefined;
@@ -146,12 +146,13 @@ async function jobContext(ctx: Ctx, job: ClaimedJob): Promise<{ itemEmoji: strin
 }
 
 async function runJob(ctx: Ctx, provider: ImageGenerationProvider, job: ClaimedJob, workerId: string): Promise<boolean> {
+  let reserved = false;
   try {
     // Sin capacidad de edición no se gasta cuota: se falla con un mensaje claro y la imagen anterior se conserva.
     if (job.kind === 'edit' && !provider.capabilities.edit) {
       throw new ProviderError('El proveedor configurado sólo genera imágenes nuevas y no puede editar la casa existente. Se conserva la imagen anterior.', false);
     }
-    await reserveQuota(ctx, provider, job);
+    reserved = await reserveQuota(ctx, provider, job);
     const image = await generate(ctx, provider, job);
     const mime = validateProviderOutput(image, provider.id === 'demo');
     const folder = job.kind === 'item' ? `items/${job.item_id}` : job.kind === 'base' ? 'shared' : `players/${job.player_id}`;
@@ -170,6 +171,10 @@ async function runJob(ctx: Ctx, provider: ImageGenerationProvider, job: ClaimedJ
     return true;
   } catch (err) {
     const retryable = err instanceof ProviderError ? err.retryable : true;
+    // Si el proveedor NO llegó a gastar nada (sin conexión, credenciales, cuota suya agotada…), se devuelve la unidad reservada.
+    if (reserved && err instanceof ProviderError && !err.consumed) {
+      await ctx.db.rpc('ss_release_image_quota', { job_id: job.job_id }).catch((e) => console.error('[jobs] no se pudo devolver la cuota', redactSecrets(String(e))));
+    }
     const message = err instanceof Error ? err.message : String(err);
     try {
       const failed = await ctx.db.rpc<{ room_code: string }>('ss_fail_image_job', {
@@ -188,8 +193,8 @@ async function runJob(ctx: Ctx, provider: ImageGenerationProvider, job: ClaimedJ
 }
 
 /** Reserva atómica de UNA llamada al proveedor real. El proveedor `demo` no consume ni tiene límite. */
-async function reserveQuota(ctx: Ctx, provider: ImageGenerationProvider, job: ClaimedJob): Promise<void> {
-  if (provider.id === 'demo') return;
+async function reserveQuota(ctx: Ctx, provider: ImageGenerationProvider, job: ClaimedJob): Promise<boolean> {
+  if (provider.id === 'demo') return false;
   const q = effectiveQuota(await getSettings(ctx.db));
   const r = await ctx.db.rpc<{ ok: boolean; reason?: 'game' | 'day'; used?: number; limit?: number }>('ss_reserve_image_quota', {
     job_id: job.job_id,
@@ -197,7 +202,7 @@ async function reserveQuota(ctx: Ctx, provider: ImageGenerationProvider, job: Cl
     game_limit: q.perGame,
     day_limit: q.perDay,
   });
-  if (r.ok) return;
+  if (r.ok) return true;
   throw new ProviderError(
     r.reason === 'game'
       ? `Cuota de generaciones de esta partida alcanzada (${r.used}/${r.limit}). La partida sigue con la imagen anterior. Sube IMAGE_QUOTA_PER_GAME o reintenta el trabajo más tarde.`

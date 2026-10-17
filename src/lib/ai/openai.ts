@@ -43,7 +43,7 @@ export function createOpenAiProvider(cfg: OpenAiProviderConfig): ImageGeneration
         signal: AbortSignal.timeout(timeout),
       });
     } catch (e) {
-      throw new ProviderError(`No se pudo contactar con OpenAI: ${(e as Error).message}`, true);
+      throw new ProviderError(`No se pudo contactar con OpenAI: ${(e as Error).message}`, true, false);
     }
     const text = await res.text();
     if (!res.ok) {
@@ -58,7 +58,8 @@ export function createOpenAiProvider(cfg: OpenAiProviderConfig): ImageGeneration
       }
       const retryable = res.status === 429 || res.status >= 500 || res.status === 408;
       const moderation = code === 'moderation_blocked' || /safety system/i.test(detail);
-      throw new ProviderError(`OpenAI ${res.status}${code ? ` (${code})` : ''}: ${detail}`, retryable && !moderation);
+      // 401/403/429: rechazada antes de ejecutarse (no se cobra); el resto (moderación, 5xx…) se cuenta por prudencia.
+      throw new ProviderError(`OpenAI ${res.status}${code ? ` (${code})` : ''}: ${detail}`, retryable && !moderation, ![401, 403, 429].includes(res.status));
     }
     let json: { data?: { b64_json?: string }[] };
     try {

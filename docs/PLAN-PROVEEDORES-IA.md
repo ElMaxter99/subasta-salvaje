@@ -174,6 +174,13 @@ Superadmin (cumple el aviso de `PLAN-SUPERADMIN.md`: «el panel no puede elegir 
 - Alternativa más simple: un pequeño servicio propio (FastAPI/diffusers) con dos endpoints; más código fuera de este repo, por lo que se descarta para la primera fase.
 
 ### 4.9 Ahorro de cuota gratuita sin proveedor nuevo (fase 0)
+> **Estado (17-10-2026): hecho lo implementable sin servicio real.** (1) **Devolución de cuota local** cuando el proveedor no gastó nada
+> (`ProviderError.consumed`, migración `…3600`/`…3700` con `ss_release_image_quota`): sin conexión, 401/403, 4xx/429 y «cuota diaria agotada» de Cloudflare
+> (y 401/403/429 de OpenAI) ya no agotan el contador local de 50/día; ante la duda (5xx, moderación, respuesta rota) se sigue contando.
+> (2) **`npm run ai:measure`** para medir con tus credenciales (el propietario lo ejecuta; **no probado contra el servicio real**).
+> (3) El tamaño de salida de la edición ya es configurable (`CLOUDFLARE_EDIT_WIDTH/HEIGHT`; probar 768×512 con `ai:measure --edit --size=768x512`).
+> **Pendiente:** medir neuronas reales y fijar `IMAGE_QUOTA_PER_DAY`; caché de resultados idénticos (mismo base+elemento, p. ej. deshacer y rehacer) — no implementada
+> porque ahorra poco frente a su complejidad (columna de clave de caché en `image_versions`); el resto de las fases (cadena de proveedores, autoalojado, Pollinations) sigue pendiente de las decisiones del propietario.
 - Reutilizar la **imagen base compartida** (ya existe) y la foto del elemento (subida o generada una vez): una generación por elemento, no por compra.
 - Elegir la salida de menor tamaño (klein: 1024×768 es lo adecuado; probar 768×512 si la calidad lo permite) para reducir neuronas por tile.
 - Cachear resultados idénticos (mismo base+elemento) por hash dentro de la misma partida (p. ej. «deshacer y rehacer»).

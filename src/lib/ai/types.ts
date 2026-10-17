@@ -14,6 +14,12 @@ export class ProviderError extends Error {
     message: string,
     /** true si tiene sentido reintentar (red, 429, 5xx). false si es un rechazo definitivo (moderación, 400). */
     public readonly retryable: boolean,
+    /**
+     * ¿La llamada llegó a gastar cuota/créditos del proveedor? `false` cuando se sabe que NO (sin conexión, credenciales rechazadas,
+     * cuota del proveedor agotada, entrada mal preparada): entonces se devuelve la unidad reservada en el contador local.
+     * Por defecto `true` (prudente: ante la duda se cuenta).
+     */
+    public readonly consumed: boolean = true,
   ) {
     super(message);
     this.name = 'ProviderError';

@@ -24,7 +24,8 @@
     "brand:mini": "node scripts/brand/build-mini-hero.mjs",
     "emails:build": "node scripts/emails/build-emails.mjs",
     "legal:credits": "node scripts/legal/build-credits.mjs",
-    "docs:screens": "node scripts/docs/screenshots.mjs"
+    "docs:screens": "node scripts/docs/screenshots.mjs",
+    "ai:measure": "node scripts/ai/measure-cloudflare.mjs"
   },
   "engines": {
     "node": ">=20"

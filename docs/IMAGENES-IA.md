@@ -51,3 +51,9 @@ el contador (`ai-usage-chip.tsx`, pestaña Imágenes). Al agotarse: error claro,
 ## Prompts (`ai/prompts.ts`)
 Inicial: escena VACÍA con cámara fija. Edición: añadir exactamente UN elemento conservando composición, cámara y objetos previos (se listan). Objeto: aislado
 (`isolated` ⇒ fondo blanco liso). Siempre «sin texto, letras ni marcas de agua».
+
+## Cuota local: devolución cuando no se gastó nada (fase 0 del plan de proveedores)
+Cada trabajo reserva UNA unidad en `image_usage` antes de llamar al proveedor. Si la llamada falla y se sabe que **no gastó** cuota del proveedor
+(`ProviderError.consumed === false`: sin conexión, credenciales rechazadas, 4xx/429 o cuota diaria agotada de Cloudflare, 401/403/429 de OpenAI, o la
+entrada se preparó mal antes de llamar), el servicio llama a `ss_release_image_quota` y la unidad se **devuelve** (borra una fila del trabajo; idempotente).
+Los fallos dudosos (5xx, moderación, respuesta sin imagen) se siguen contando. Los reintentos reservan otra unidad como siempre. **No se ha probado contra Cloudflare/OpenAI reales.**

@@ -25,7 +25,7 @@ Orden de las migraciones (carpeta `supabase/migrations`): `…0000_core` → `�
 → `…2200`/`…2300` (panel de superadmin: ajustes, perfiles, invitaciones, auditoría; `image_usage` deja de borrarse con la partida)
 → `…2400`/`…2500` (foto propia de los elementos del catálogo)
 → `…2600`/`…2700` (rondas máximas, pujas enteras, imagen inicial obligatoria y subasta automática)
-→ `…2800`/`…2900` (puerta de alta: `ss_signup_allowed`; el formulario de la app ya no permite crear cuenta con el registro cerrado) → `…3000`/`…3100` (sonido: interruptores de efectos y música de la TV) → `…3200`/`…3300` (cierre automático de la votación de la galería) → `…3400`/`…3500` (plantillas guardadas del anfitrión: tabla `host_templates`) Si alguna se aplicó a mano en el SQL Editor, marca antes
+→ `…2800`/`…2900` (puerta de alta: `ss_signup_allowed`; el formulario de la app ya no permite crear cuenta con el registro cerrado) → `…3000`/`…3100` (sonido: interruptores de efectos y música de la TV) → `…3200`/`…3300` (cierre automático de la votación de la galería) → `…3400`/`…3500` (plantillas guardadas del anfitrión: tabla `host_templates`) → `…3600`/`…3700` (devolución de cuota de IA cuando el proveedor no gastó nada) Si alguna se aplicó a mano en el SQL Editor, marca antes
 esas versiones con `npx supabase migration repair --status applied <versión>`.
 Después de cada migración nueva, vuelve a probar a mano: crear partida, pujar, adjudicar (el saldo baja una sola vez) y borrar.
 
@@ -60,6 +60,7 @@ Después de cada migración nueva, vuelve a probar a mano: crear partida, pujar,
 - Plan de Vercel: `maxDuration = 300` en las rutas que procesan imágenes; si el plan no lo admite, bájalo (ver README).
 
 ## 8. Pendiente para más adelante (decidido por el propietario)
+- [ ] **Medir el coste real de Cloudflare** con `npm run ai:measure -- --yes --edit` (gasta cuota gratuita real; compara el uso en el panel de Cloudflare antes y después) y ajustar `IMAGE_QUOTA_PER_DAY`. Después, decidir sobre más proveedores según `docs/PLAN-PROVEEDORES-IA.md` (GPU propia, Pollinations, opcionales de pago con tope).
 - [ ] **Afinar el sonido escuchándolo** (melodías, volúmenes, tic-tac): ver `docs/SONIDO.md`. Fases pendientes del plan: ajuste de música por partida en el asistente y pulir con uso real.
 - [ ] **MFA/TOTP obligatorio para el superadmin** (Supabase Auth MFA). Hasta entonces: contraseña larga y única. Al implementarlo, `requireSuperadmin()` debe exigir `aal2`.
 - [ ] Ideas del plan de superadmin no incluidas por ahora: alertas (descartadas: solo dashboard), conversión de imágenes a WebP y retención por versiones, detección de archivos huérfanos en el bucket, cuotas de IA por usuario (hoy: global + permiso por usuario), exportación CSV de la auditoría.

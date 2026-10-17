@@ -48,7 +48,7 @@ export function createCloudflareProvider(cfg: CloudflareProviderOptions): ImageG
         signal: AbortSignal.timeout(timeout),
       });
     } catch (e) {
-      throw new ProviderError(`No se pudo contactar con Cloudflare: ${redactSecrets((e as Error).message)}`, true);
+      throw new ProviderError(`No se pudo contactar con Cloudflare: ${redactSecrets((e as Error).message)}`, true, false);
     }
 
     const contentType = res.headers.get('content-type') ?? '';
@@ -66,13 +66,14 @@ export function createCloudflareProvider(cfg: CloudflareProviderOptions): ImageG
       const detail = redactSecrets(first?.message ?? text.slice(0, 300));
       // Cuota gratuita agotada: no tiene sentido reintentar y NO se pasa a un proveedor de pago.
       if (/daily free allocation|neurons|exceeded.*(quota|allocation)/i.test(detail)) {
-        throw new ProviderError(`Cloudflare: cuota diaria gratuita agotada (${detail}). La partida sigue con la imagen anterior; se renueva a las 00:00 UTC. No se activa ningún plan de pago automáticamente.`, false);
+        throw new ProviderError(`Cloudflare: cuota diaria gratuita agotada (${detail}). La partida sigue con la imagen anterior; se renueva a las 00:00 UTC. No se activa ningún plan de pago automáticamente.`, false, false);
       }
       if (res.status === 401 || res.status === 403) {
-        throw new ProviderError(`Cloudflare ${res.status}: ${detail}. Revisa CLOUDFLARE_API_TOKEN (permiso Workers AI) y que tu plan admita este modelo.`, false);
+        throw new ProviderError(`Cloudflare ${res.status}: ${detail}. Revisa CLOUDFLARE_API_TOKEN (permiso Workers AI) y que tu plan admita este modelo.`, false, false);
       }
       const retryable = res.status === 429 || res.status >= 500 || res.status === 408;
-      throw new ProviderError(`Cloudflare ${res.status}${first?.code ? ` (código ${first.code})` : ''}: ${detail}`, retryable);
+      // 429 y 400–499: el proveedor rechazó la petición sin ejecutarla (no gasta neuronas); 5xx/408: no se sabe, se cuenta.
+      throw new ProviderError(`Cloudflare ${res.status}${first?.code ? ` (código ${first.code})` : ''}: ${detail}`, retryable, res.status >= 400 && res.status < 500 && res.status !== 408 ? false : true);
     }
     // Respuesta típica: { result: { image: "<base64>" }, success: true }. También se admite { image } sin envoltorio.
     const b64 = json?.result?.image ?? json?.image;
@@ -105,7 +106,7 @@ export function createCloudflareProvider(cfg: CloudflareProviderOptions): ImageG
       try {
         ref = await resize(input.base.bytes);
       } catch (e) {
-        throw new ProviderError(`No se pudo preparar la imagen de referencia: ${(e as Error).message}`, false);
+        throw new ProviderError(`No se pudo preparar la imagen de referencia: ${(e as Error).message}`, false, false);
       }
       const form = new FormData();
       form.set('prompt', prompt);
@@ -115,7 +116,7 @@ export function createCloudflareProvider(cfg: CloudflareProviderOptions): ImageG
       if (input.itemImage) {
         // Segunda referencia: la foto del elemento (el modelo admite hasta 4 imágenes; cada una < 512 px).
         const item = await toReferencePng(input.itemImage, REF_MAX_SIDE).catch((e) => {
-          throw e instanceof ProviderError ? e : new ProviderError(String(e), false);
+          throw e instanceof ProviderError ? e : new ProviderError(String(e), false, false);
         });
         form.set('input_image_1', new Blob([item as BlobPart], { type: 'image/png' }), 'item.png');
       }

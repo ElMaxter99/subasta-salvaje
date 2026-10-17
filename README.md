@@ -143,6 +143,7 @@ npm run dev            # http://localhost:3000  → modo demo si no hay .env.loc
 | `npm run assets:build` | Regenera `subasta-salvaje-assets/` |
 | `npm run mascot:extract` | Regenera los recortes de `public/assets/mascot/` |
 | `npm run brand:build` / `brand:mini` | Regenera logo e iconos de marca / el mini héroe vectorial |
+| `npm run ai:measure` | Mide con TUS credenciales de Cloudflare 1 generación (y con `--edit`, 1 edición) para calcular cuánta cuota gratuita gasta cada llamada; sin `--yes` solo muestra qué haría (gasta cuota real: ejecútalo tú) |
 | `npm run emails:build` | Genera las plantillas de correo de Supabase Auth |
 | `node scripts/docs/screenshots.mjs` | Regenera las capturas de `docs/img/` (ver [Mantener este README al día](#mantener-este-readme-al-día)) |
 

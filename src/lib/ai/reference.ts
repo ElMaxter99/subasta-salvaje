@@ -13,6 +13,6 @@ export async function toReferencePng(img: ImageData, maxSide: number): Promise<U
       .toBuffer();
     return new Uint8Array(out);
   } catch (e) {
-    throw new ProviderError(`No se pudo preparar la imagen de referencia: ${(e as Error).message}`, false);
+    throw new ProviderError(`No se pudo preparar la imagen de referencia: ${(e as Error).message}`, false, false);
   }
 }
