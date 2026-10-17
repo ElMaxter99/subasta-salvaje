@@ -111,17 +111,18 @@ test('arrastrar y soltar: las imágenes se suben al repositorio de fotos (simula
     await page.getByLabel('Elegir imágenes').setInputFiles(await file('portada.jpg', '#cc3333'));
     await expect(page.getByText('Pon primero el identificador')).toBeVisible();
 
+    await page.getByLabel('Título', { exact: true }).fill(`Subida ${stamp}`);
     await page.getByLabel('Identificador').fill(`subida-${stamp}`);
     await page.getByLabel('Elegir imágenes').setInputFiles([await file('portada.jpg', '#cc3333'), await file('Casa-Inicial.jpg', '#33cc33'), await file('piscina-infinita.jpg', '#3333cc'), await file('IMG_0001.jpg', '#cccc33')]);
     const list = page.getByTestId('upload-list');
-    await expect(list.getByText('Portada')).toBeVisible({ timeout: 60_000 });
-    await expect(list.getByText('Casa inicial')).toBeVisible();
-    await expect(list.getByText(/Elemento · Piscina infinita/)).toBeVisible();
+    await expect(list.getByText(/^Portada · \d+×\d+/)).toBeVisible({ timeout: 60_000 });
+    await expect(list.getByText(/^Casa inicial · \d+×\d+/)).toBeVisible();
+    await expect(list.getByText(/^Elemento · Piscina infinita · \d+×\d+/)).toBeVisible();
     await expect(list.getByText('No encaja con la portada')).toBeVisible();
 
     // La imagen suelta se asigna a mano a un elemento
     await list.getByLabel('Asignar IMG_0001.jpg').selectOption({ label: 'Elemento · Sofá gigante' });
-    await expect(list.getByText(/Elemento · Sofá gigante/)).toBeVisible({ timeout: 60_000 });
+    await expect(list.getByText(/^Elemento · Sofá gigante · \d+×\d+/)).toBeVisible({ timeout: 60_000 });
 
     // El JSON ahora lleva los enlaces fijados al commit y nada se guardó en Supabase (solo llamadas al repositorio simulado)
     const json = JSON.parse(await page.getByLabel('Plantilla JSON', { exact: true }).inputValue()) as { portada: string; casa_inicial: string; catalogo: { titulo: string; foto?: string }[] };
