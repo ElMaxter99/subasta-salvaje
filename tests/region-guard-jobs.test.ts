@@ -23,7 +23,7 @@ describe('una edición que «pierde» lo anterior no puede borrarlo de la casa',
       async editScene() {
         call++;
         // 1.ª: añade un cuadrado ROJO a la izquierda (zona de la 1.ª compra). 2.ª: repinta todo sin el rojo y añade uno AZUL al centro.
-        const bytes = call === 1 ? await withSquare(gray(), 20, 250, 80, 80, '#ff0000') : await withSquare(gray(), 300, 230, 100, 100, '#0000ff');
+        const bytes = call === 1 ? await withSquare(gray(), 70, 230, 90, 90, '#ff0000') : await withSquare(gray(), 300, 230, 100, 100, '#0000ff');
         return { bytes, mime: 'image/png', prompt: `edit ${call}`, model: 'modelo-de-prueba' };
       },
     };
@@ -47,10 +47,11 @@ describe('una edición que «pierde» lo anterior no puede borrarlo de la casa',
     expect(mine.map((v) => v.origin)).toEqual(['uploaded', 'edit', 'edit']);
     expect(mine[2]!.parent_version_id).toBe(mine[1]!.id);
     expect(mine[2]!.prompt_used).toContain('guardia de zona');
+    expect(mine[2]!.prompt_used).toContain('se restauró lo anterior');
     const final = ctx.storage.files.get(mine[2]!.storage_path!)!;
     const { data, info } = await sharp(Buffer.from(final.bytes)).removeAlpha().raw().toBuffer({ resolveWithObject: true });
     const at = (x: number, y: number) => [0, 1, 2].map((k) => data[(y * info.width + x) * 3 + k]!);
-    const [r1, g1] = at(60, 290); // el objeto de la 1.ª compra sigue ahí (rojo)
+    const [r1, g1] = at(110, 270); // el objeto de la 1.ª compra sigue ahí (rojo)
     expect(r1).toBeGreaterThan(200);
     expect(g1).toBeLessThan(60);
     const [, , b2] = at(350, 280); // y el de la 2.ª también (azul)

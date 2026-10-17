@@ -1,6 +1,6 @@
 import sharp from 'sharp';
 import { describe, expect, it } from 'vitest';
-import { preserveOutsideZone, zoneBox } from '@/lib/ai/region-guard';
+import { applyEditGuard, preserveOutsideZone, restoreLostCores, zoneBox } from '@/lib/ai/region-guard';
 
 const W = 640, H = 360;
 const canvas = (rects: { x: number; y: number; w: number; h: number; c: string }[], w = W, h = H) =>
@@ -79,5 +79,36 @@ describe('guardia de zona: lo anterior no puede desaparecer', () => {
     const r = await preserveOutsideZone(base, out, 1);
     expect(r.applied).toBe(true);
     expect((await sharp(Buffer.from(r.bytes)).metadata()).width).toBe(1280);
+  });
+});
+
+describe('guardia «cores» (por defecto, edición creativa): solo restaura lo anterior que el modelo pierde', () => {
+  const pikachu = { x: 80, y: 250, w: 70, h: 70, c: '#ff0000' }; // objeto de la 1.ª compra, dentro de su núcleo
+
+  it('si el modelo cambia el objeto anterior por otra cosa se restaura, y el resto de la edición creativa se respeta', async () => {
+    const base = await canvas([pikachu]);
+    // El modelo «creativo» añade agua azul abajo a la derecha y una persona, y de paso cambió el rojo por una ensalada verde
+    const edited = await canvas([{ x: 80, y: 250, w: 70, h: 70, c: '#00ff00' }, { x: 300, y: 200, w: 300, h: 140, c: '#0000ff' }]);
+    const r = await restoreLostCores(base, edited, 1);
+    expect(r.applied).toBe(true);
+    expect(await px(r.bytes, 115, 285)).toEqual([255, 0, 0]); // el objeto anterior vuelve
+    expect(await px(r.bytes, 450, 270)).toEqual([0, 0, 255]); // el agua de la edición creativa se respeta
+  });
+
+  it('si el objeto anterior sigue ahí no se toca nada, aunque el modelo transforme el resto', async () => {
+    const base = await canvas([pikachu]);
+    const edited = await canvas([pikachu, { x: 300, y: 200, w: 300, h: 140, c: '#0000ff' }]);
+    const r = await restoreLostCores(base, edited, 1);
+    expect(r.applied).toBe(false);
+    expect(r.note).toMatch(/se conserva/);
+  });
+
+  it('sin compras anteriores, con otra proporción o si el modelo rehízo casi toda la imagen no interviene; «off» tampoco', async () => {
+    const base = await canvas([pikachu]);
+    expect((await restoreLostCores(base, await canvas([]), 0)).applied).toBe(false);
+    expect((await restoreLostCores(base, await canvas([], 400, 300), 1)).applied).toBe(false);
+    expect((await restoreLostCores(base, await canvas([{ x: 0, y: 0, w: 640, h: 360, c: '#ffffff' }]), 1)).note).toMatch(/rehízo casi toda/);
+    expect((await applyEditGuard('off', base, await canvas([]), 1)).applied).toBe(false);
+    expect((await applyEditGuard('zone', base, await canvas([{ x: 300, y: 230, w: 100, h: 100, c: '#0000ff' }]), 1)).applied).toBe(true);
   });
 });

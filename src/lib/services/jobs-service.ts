@@ -1,4 +1,5 @@
-import { preserveOutsideZone } from '@/lib/ai/region-guard';
+import { applyEditGuard } from '@/lib/ai/region-guard';
+import { imageEditGuard } from '@/lib/config/env';
 import { fetchImageBytes } from '@/lib/security/safe-fetch';
 import { isExternalRef, isHostedImage, mimeFromExtension } from '@/lib/storage/hosted';
 import { randomUUID } from 'node:crypto';
@@ -147,10 +148,10 @@ async function generate(ctx: Ctx, provider: ImageGenerationProvider, job: Claime
     itemEmoji,
     previousItems,
   });
-  // Red de seguridad: con compras anteriores, lo que hubiera fuera de la zona del objeto nuevo se conserva tal cual (los modelos de
-  // edición a veces «pierden» lo anterior). La composición (collage) ya lo conserva por construcción.
+  // Red de seguridad: con compras anteriores, si el modelo «pierde» un objeto añadido antes se restaura (modo por defecto `cores`; ver
+  // IMAGE_EDIT_GUARD). La composición (collage) ya lo conserva por construcción.
   if (previousItems.length > 0 && !edited.model.endsWith('+compose') && (job.base_mime_type ?? base.mime) !== 'image/svg+xml') {
-    const g = await preserveOutsideZone(base.bytes, edited.bytes, previousItems.length);
+    const g = await applyEditGuard(imageEditGuard(), base.bytes, edited.bytes, previousItems.length);
     if (g.applied) return { ...edited, bytes: g.bytes, mime: 'image/png', prompt: `${edited.prompt} [guardia de zona: ${g.note}]` };
   }
   return edited;
@@ -158,7 +159,7 @@ async function generate(ctx: Ctx, provider: ImageGenerationProvider, job: Claime
 
 async function jobContext(ctx: Ctx, job: ClaimedJob): Promise<{ itemEmoji: string | null; previousItems: string[]; itemImagePath: string | null }> {
   // Datos secundarios (emoji y elementos previos) leídos de la instantánea pública.
-  const snap = await ctx.db.rpc<{ items: { id: string; emoji: string | null; image_path: string | null }[]; players: { id: string; purchases: { purchase_id: string; name: string }[] }[] }>(
+  const snap = await ctx.db.rpc<{ items: { id: string; emoji: string | null; image_path: string | null }[]; players: { id: string; purchases: { purchase_id: string; name: string; created_at: string }[] }[] }>(
     'ss_get_state',
     { room_code: job.room_code, view: 'public' },
   );
@@ -166,7 +167,12 @@ async function jobContext(ctx: Ctx, job: ClaimedJob): Promise<{ itemEmoji: strin
   const itemEmoji = item?.emoji ?? null;
   const itemImagePath = item?.image_path ?? null;
   const player = snap.players.find((p) => p.id === job.player_id);
-  const previousItems = (player?.purchases ?? []).filter((p) => p.purchase_id !== job.purchase_id).map((p) => p.name);
+  // Solo las compras ANTERIORES a esta: si hay trabajos atrasados, las posteriores aún no están en la imagen (el prompt no debe decir que sí).
+  const all = player?.purchases ?? [];
+  const mine = all.find((p) => p.purchase_id === job.purchase_id);
+  const previousItems = all
+    .filter((p) => p.purchase_id !== job.purchase_id && (!mine || p.created_at < mine.created_at || (p.created_at === mine.created_at && p.purchase_id < mine.purchase_id)))
+    .map((p) => p.name);
   return { itemEmoji, previousItems, itemImagePath };
 }
 

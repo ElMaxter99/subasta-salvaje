@@ -178,6 +178,7 @@ Plantilla sin valores: [`.env.example`](.env.example). Nunca subas `.env*` al re
 | `IMAGE_QUOTA_PER_GAME`, `IMAGE_QUOTA_PER_DAY` | No (10 / 50) | servidor | Límite de generaciones reales por partida y por día. |
 | `IMAGE_AI_DISABLED` | No | servidor | `true` = interruptor de seguridad: apaga toda la IA real. |
 | `OPENAI_API_KEY` | Con `openai` | **solo servidor** | Alternativa de pago. |
+| `IMAGE_EDIT_GUARD` | No | servidor | Red de seguridad de las ediciones con IA: `cores` (por defecto: si el modelo «pierde» un objeto añadido antes, se restaura solo ese trozo), `zone` (estricta: conserva lo anterior fuera de la zona del objeto nuevo) u `off`. Ver [`docs/PROMPTS-IA.md`](docs/PROMPTS-IA.md). |
 | `OPENAI_IMAGE_MODEL` / `_SIZE` / `_QUALITY` / `_INPUT_FIDELITY` / `OPENAI_BASE_URL` | No | servidor | Ajustes del proveedor. |
 | `ALLOWED_HOST_EMAILS` | Recomendada | servidor | Correos autorizados como anfitrión (evita gasto de IA por terceros). |
 | `GAME_TTL_HOURS` | No (168) | servidor | Horas de inactividad tras las que una partida se borra sola (7 días). El superadmin lo cambia en caliente desde `/admin`. |

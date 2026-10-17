@@ -99,7 +99,7 @@ export function createPollinationsProvider(cfg: PollinationsProviderOptions): Im
       if (!cfg.editModel) {
         throw new ProviderError('Pollinations no tiene modelo de edición configurado (POLLINATIONS_EDIT_MODEL). Se conserva la imagen anterior.', false, false, 'unsupported');
       }
-      const prompt = (input.itemImage ? buildEditPrompt(input) : `Image 0 is the existing scene. ${buildEditPrompt(input)}`).slice(0, MAX_PROMPT);
+      const prompt = buildEditPrompt(input).slice(0, MAX_PROMPT);
       const form = new FormData();
       form.set('prompt', prompt);
       form.set('model', cfg.editModel);

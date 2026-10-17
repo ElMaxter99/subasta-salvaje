@@ -41,34 +41,47 @@ describe('el historial guarda el modelo de IA de cada versión', () => {
   });
 });
 
-describe('prompt de edición: la base puede ser cualquier cosa y el resultado debe ser natural y divertido', () => {
-  it('no asume que la base es una casa: cubre lugares, comida/bebida, objetos y seres vivos, y pide una sola imagen coherente (sin collage ni halos)', () => {
+describe('prompt de edición: la base puede ser cualquier cosa y se EDITA con el elemento (no solo se añade)', () => {
+  it('no asume una casa: cubre lugares, comida/bebida, objetos, animales y personas, y pide una edición creativa y coherente (sin collage ni halos)', () => {
     const p = buildEditPrompt({ ...input, theme: 'batido de leche', previousItems: [] });
-    expect(p).toMatch(/can be anything \(a house, a room, a drink, a food/);
-    expect(p).toMatch(/if the base is a food, a drink or an object, use the element as something that is added to it/);
-    expect(p).toMatch(/if the base is a living being/);
-    expect(p).toMatch(/ONE coherent photograph or picture in the style of the base, not a collage/);
-    expect(p).toMatch(/no white or dark halos/);
+    expect(p).toMatch(/can be anything \(a place, a room, a drink, a food, an object, an animal, a person\)/);
+    expect(p).toMatch(/Do not just paste the element on top: EDIT the base so the combination makes sense and is fun/);
+    expect(p).toMatch(/a boat needs water and a person can sit in it/);
+    expect(p).toMatch(/ingredient is poured into the drink/);
+    expect(p).toMatch(/ONE coherent photo in the style of the base, not a collage/);
+    expect(p).toMatch(/cut-out edges or halos/);
     expect(p).toMatch(/never floating/);
-    expect(p).toMatch(/Final check: the base picture is unchanged except for the one added element/);
-    expect(p).toMatch(/Do NOT redraw, restyle or remove anything/);
+    expect(p).toMatch(/Keep the base identity .*edit it, do not replace it/);
+    expect(p).toMatch(/Final check: clearly the same base picture, edited so the new element is naturally part of it/);
+  });
+});
+
+describe('longitud del prompt', () => {
+  it('cabe en el límite de los proveedores (~2000 caracteres) incluso con nombres largos y muchas compras, sin perder el final', () => {
+    const base = { ...input, itemName: 'N'.repeat(120), itemDescription: 'D'.repeat(400) };
+    const prev = Array.from({ length: 12 }, (_, i) => `Elemento muy largo número ${i} con nombre extenso extenso`);
+    for (const p of [buildEditPrompt({ ...base, previousItems: prev }), buildBlendPrompt({ ...base, previousItems: prev, itemImage: { bytes: new Uint8Array(), mime: 'image/png' } })]) {
+      expect(p.length).toBeLessThanOrEqual(2000);
+      expect(p).toMatch(/Final check/);
+      expect(p).toMatch(/No text, letters, numbers, logos or watermarks anywhere\.$/); // el final no se corta
+    }
   });
 });
 
 describe('prompt de edición: lo ya comprado debe seguir visible', () => {
-  it('pide no tapar ni sustituir lo anterior, lo nombra y sugiere una zona distinta', () => {
+  it('pide no tapar ni sustituir lo anterior (aunque el entorno cambie), lo nombra y sugiere una zona distinta', () => {
     const first = buildEditPrompt({ ...input, previousItems: [] });
-    expect(first).toContain('Nothing has been added to the base picture yet');
+    expect(first).toContain('Nothing has been added yet');
     expect(first).toContain(regionFor(0));
     const second = buildEditPrompt({ ...input, previousItems: ['Pikachu'] });
     expect(second).toMatch(/ALREADY contains this element, added in earlier rounds: Pikachu/);
-    expect(second).toMatch(/must NOT replace, cover, overlap or hide it/);
+    expect(second).toMatch(/never replaced, covered or hidden \(the scene around it may change\)/);
     expect(second).toContain(regionFor(1));
     const blend = buildBlendPrompt({ ...input, previousItems: ['Pikachu', 'Barca vieja'], itemImage: { bytes: new Uint8Array(), mime: 'image/png' } });
     expect(blend).toMatch(/these elements, added in earlier rounds: Pikachu, Barca vieja/);
-    expect(blend).toMatch(/They all stay fully visible/);
-    expect(blend).toMatch(/Final check: Pikachu, Barca vieja are still clearly visible exactly where they were, nothing existing was replaced by something else/);
-    expect(blend).toMatch(/leave out the background and the unrelated people or scenery/);
+    expect(blend).toMatch(/They all stay clearly visible and recognizable/);
+    expect(blend).toMatch(/Final check: Pikachu, Barca vieja still clearly visible, nothing added earlier removed or replaced/);
+    expect(blend).toMatch(/only the object, not its background or unrelated people/);
     expect(new Set([0, 1, 2, 3].map(regionFor)).size).toBe(4); // cada compra apunta a una zona distinta
   });
 });

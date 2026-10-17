@@ -349,12 +349,12 @@ describe('proveedor OpenAI (HTTP simulado, sin red real)', () => {
     await expect(mk(401).generateInitialScene(input)).rejects.toMatchObject({ retryable: false });
   });
 
-  it('el prompt de edición exige conservar la escena y añadir sólo el nuevo elemento', () => {
+  it('el prompt de edición pide EDITAR la base (no pegar), conservar su identidad y lo ya añadido', () => {
     const p = buildEditPrompt({ base: { bytes: new Uint8Array(), mime: 'image/png' }, theme: 'house', itemName: 'Piscina', itemDescription: 'azul', itemEmoji: null, previousItems: ['Sofá', 'Chimenea'] });
-    expect(p).toMatch(/exactly ONE new element/);
-    expect(p).toMatch(/Do NOT redraw/);
+    expect(p).toMatch(/EDIT the base so the combination makes sense/);
+    expect(p).toMatch(/edit it, do not replace it/);
     expect(p).toContain('Sofá, Chimenea');
-    expect(p).toMatch(/Do not add any text/);
+    expect(p).toMatch(/No text, letters/);
   });
 
   it('valida el formato real de la imagen por sus bytes', () => {

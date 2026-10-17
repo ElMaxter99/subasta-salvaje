@@ -3,7 +3,7 @@ import type { EditSceneInput, InitialSceneInput, ItemImageInput } from './types'
 
 const STYLE =
   'Polished stylized 3D diorama render, warm cinematic lighting, rich colors, clean readable composition, 3:2 landscape framing.';
-const NO_TEXT = 'Do not add any text, letters, numbers, captions, logos or watermarks anywhere in the image.';
+const NO_TEXT = 'No text, letters, numbers, logos or watermarks anywhere.';
 
 export function buildInitialScenePrompt(input: InitialSceneInput): string {
   return [
@@ -28,41 +28,59 @@ export function regionFor(index: number): string {
  * si se les dice solo que añadan uno. Se pide explícitamente no taparlo ni sustituirlo. La zona sugerida solo se pide si la imagen
  * base es un lugar con espacio libre (la guardia de `region-guard.ts` usa esa misma zona); si no, el modelo decide cómo integrarlo.
  */
-function previousClause(input: EditSceneInput): string {
+function previousClause(input: EditSceneInput, compact = false): string {
   const n = input.previousItems.length;
-  const zone = `If the base is a place or a scene with free space, put the new element preferably in the ${regionFor(n)} part of it; otherwise integrate it wherever it makes the most natural and funny sense.`;
-  if (n === 0) return `Nothing has been added to the base picture yet. ${zone}`;
-  return `Image 0 ALREADY contains ${n === 1 ? 'this element' : 'these elements'}, added in earlier rounds: ${input.previousItems.join(', ')}. ${n === 1 ? 'It stays' : 'They all stay'} fully visible and recognizable in the final image, with the same look: the new element must NOT replace, cover, overlap or hide ${n === 1 ? 'it' : 'any of them'}. ${zone}`;
+  const zone = `If the base is a place with free space, put the new element preferably in the ${regionFor(n)} part; otherwise wherever makes most sense.`;
+  if (n === 0) return `Nothing has been added yet. ${zone}`;
+  return `Image 0 ALREADY contains ${n === 1 ? 'this element' : 'these elements'}, added in earlier rounds: ${namesList(input.previousItems, compact ? 2 : 5)}. ${n === 1 ? 'It stays' : 'They all stay'} clearly visible and recognizable, never replaced, covered or hidden (the scene around ${n === 1 ? 'it' : 'them'} may change). ${zone}`;
 }
 
-/** Recordatorio final (los modelos pesan más lo último): nada de lo anterior desaparece ni se cambia por otra cosa. */
-function finalCheck(input: EditSceneInput): string {
-  return input.previousItems.length === 0
-    ? 'Final check: the base picture is unchanged except for the one added element.'
-    : `Final check: ${input.previousItems.join(', ')} ${input.previousItems.length === 1 ? 'is' : 'are'} still clearly visible exactly where ${input.previousItems.length === 1 ? 'it was' : 'they were'}, nothing existing was replaced by something else, and the only difference from the base picture is the one new element.`;
+/** Lista de nombres acotada: los prompts no pueden pasar de ~2000 caracteres (límite de los proveedores) sin perder el final. */
+function namesList(names: string[], max = 5): string {
+  const clip = (t: string) => (t.length > 30 ? `${t.slice(0, 27)}…` : t);
+  const shown = names.slice(-max).map(clip).join(', ');
+  return names.length > max ? `${shown} and ${names.length - max} more` : shown;
 }
 
-/** Reglas comunes: la imagen base puede ser CUALQUIER cosa y el resultado debe ser una sola imagen coherente, natural y divertida. */
+/**
+ * Reglas comunes (cortas a propósito: el prompt completo debe caber en ~2000 caracteres). El juego NO es «pegar un objeto encima»: es
+ * EDITAR la imagen base para que la combinación tenga sentido y gracia. La base puede ser cualquier cosa y no hay contexto.
+ */
 const MIX_RULES = [
-  'Image 0 is the BASE picture of a funny photo-mixing game: it can be anything (a house, a room, a drink, a food, an object, an animal, a person, a landscape). You are given no further context, so decide by yourself from what you see.',
-  'Merge the new element into the base in the most natural, believable and funny way: if the base is a place or a scene, put the element in it as a real object that belongs there (same scale, perspective, lighting and cast shadows); if the base is a food, a drink or an object, use the element as something that is added to it (an ingredient, a topping, a decoration, an accessory) blended in naturally; if the base is a living being, the element becomes an accessory, a companion or a prop that interacts with it.',
-  'The final image must look like ONE coherent photograph or picture in the style of the base, not a collage: no sticker look, no cut-out edges, no white or dark halos around the element. The element must rest or attach to the scene in a physically believable way (on the floor, on a table, held, worn or mixed in as appropriate) with contact shadows, never floating or pasted on a wall unless that is natural for it. Keep the base picture\'s framing, aspect ratio, colors and style. Do NOT redraw, restyle or remove anything that was already there.',
+  'Image 0 is the BASE picture of a funny photo-mixing game; it can be anything (a place, a room, a drink, a food, an object, an animal, a person) and you get no context: decide from what you see.',
+  'Do not just paste the element on top: EDIT the base so the combination makes sense and is fun. You may change the surroundings and make the main subject interact with the element (a boat needs water and a person can sit in it; a hat is worn; an ingredient is poured into the drink and changes it). Pick the most natural, funniest idea.',
+  'The result must look like ONE coherent photo in the style of the base, not a collage: no sticker look, cut-out edges or halos, physically believable contact (shadows, reflections, scale, perspective, light), never floating.',
+  'Keep the base identity (same main subject, framing, aspect ratio, style): edit it, do not replace it.',
 ];
+
+function finalCheck(input: EditSceneInput, compact = false): string {
+  return input.previousItems.length === 0
+    ? 'Final check: clearly the same base picture, edited so the new element is naturally part of it.'
+    : `Final check: ${namesList(input.previousItems, compact ? 1 : 3)} still clearly visible, nothing added earlier removed or replaced, and clearly the same base picture, edited so the new element is naturally part of it.`;
+}
 
 /**
  * Prompt de edición acumulativa (sin foto del elemento: se describe con texto). Prioriza: la base puede ser cualquier cosa, integrar
  * de forma natural y divertida, conservar lo anterior, añadir SÓLO el nuevo elemento, sin texto.
  */
+const MAX_EDIT_PROMPT = 1950; // los proveedores cortan en ~2000 caracteres: el final (comprobación y «sin texto») no debe perderse
+
+/** Construye con el detalle normal y, si no cabe, reduce nombres y descripción hasta que quepa. */
+function fitted(build: (compact: boolean) => string): string {
+  const full = build(false);
+  return full.length <= MAX_EDIT_PROMPT ? full : build(true);
+}
+
 export function buildEditPrompt(input: EditSceneInput): string {
   if (input.itemImage) return buildBlendPrompt(input);
-  return [
-    `Add exactly ONE new element to image 0: "${input.itemName}" (${input.itemDescription || 'no further description'}).`,
+  return fitted((compact) => [
+    `The new element to combine with image 0 is "${input.itemName.slice(0, compact ? 40 : 60)}" (${(input.itemDescription || 'no further description').slice(0, compact ? 40 : 80)}).`,
     ...MIX_RULES,
-    previousClause(input),
-    'Add only that element and nothing else.',
-    finalCheck(input),
+    previousClause(input, compact),
+    'Add no other new object besides it and the surroundings it needs.',
+    finalCheck(input, compact),
     NO_TEXT,
-  ].join(' ');
+  ].join(' '));
 }
 
 /**
@@ -70,14 +88,14 @@ export function buildEditPrompt(input: EditSceneInput): string {
  * referencia (p. ej. un conejo rosa con un lazo azul sigue siendo rosa con lazo azul) pero integrado de forma natural y divertida.
  */
 export function buildBlendPrompt(input: EditSceneInput): string {
-  return [
-    `Image 1 is a reference picture of the new element "${input.itemName}" (${input.itemDescription || 'no further description'}). Add exactly ONE new element to image 0: the object shown in image 1, reproduced faithfully (its shape, colors, markings and distinctive details exactly as in the reference). Take only the object itself: leave out the background and the unrelated people or scenery of the reference photo unless they are clearly part of the element.`,
+  return fitted((compact) => [
+    `Image 1 is a reference photo of the new element "${input.itemName.slice(0, compact ? 40 : 60)}" (${(input.itemDescription || 'no further description').slice(0, compact ? 40 : 80)}): reproduce that object faithfully (shape, colors, markings) but only the object, not its background or unrelated people.`,
     ...MIX_RULES,
-    previousClause(input),
-    'Add only that element and nothing else.',
-    finalCheck(input),
+    previousClause(input, compact),
+    'Add no other new object besides it and the surroundings it needs.',
+    finalCheck(input, compact),
     NO_TEXT,
-  ].join(' ');
+  ].join(' '));
 }
 
 export function buildItemImagePrompt(input: ItemImageInput): string {

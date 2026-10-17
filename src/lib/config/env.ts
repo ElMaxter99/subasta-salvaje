@@ -221,3 +221,9 @@ export function gameTtlHours(env: NodeJS.ProcessEnv = process.env): number {
   const n = Number(env.GAME_TTL_HOURS);
   return Number.isInteger(n) && n >= 1 && n <= 24 * 90 ? n : 168;
 }
+
+/** Guardia de las ediciones con IA: `cores` (por defecto: restaura solo lo anterior que el modelo pierda), `zone` (estricta) u `off`. */
+export function imageEditGuard(env: NodeJS.ProcessEnv = process.env): 'cores' | 'zone' | 'off' {
+  const v = env.IMAGE_EDIT_GUARD?.trim().toLowerCase();
+  return v === 'zone' || v === 'off' ? v : 'cores';
+}
