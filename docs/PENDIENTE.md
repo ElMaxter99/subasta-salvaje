@@ -75,6 +75,7 @@ Después de cada migración nueva, vuelve a probar a mano: crear partida, pujar,
 
 ## 5g. Partidas del sistema
 - [ ] Aplica las migraciones `…4200`/`…4300` (tabla `system_templates`).
+- [ ] **Repositorio de fotos: `ElMaxter99/subasta-salvaje-public`** (ya creado e inicializado; rama por defecto `master` → `GITHUB_ASSETS_BRANCH=master`). Falta decidir la **licencia de las imágenes** (el README del repositorio lo deja explícito).
 - [ ] **Subida con arrastrar y soltar** (GitHub + jsDelivr; R2 descartado: pide tarjeta): crea un repositorio público de fotos con un primer commit, un token fino de GitHub solo para ese repositorio con *Contents: Read and write*, y define `GITHUB_ASSETS_REPO` y `GITHUB_ASSETS_TOKEN` (*Sensitive*) en Vercel (pasos en `docs/PLANTILLAS-SISTEMA.md`). **Sin probar contra GitHub real**: prueba arrastrando una imagen y comprueba que aparece el commit en el repositorio y que el enlace de jsDelivr abre. Opcional: `ASSET_CDN_HOSTS=cdn.jsdelivr.net`.
 - [ ] En `/admin/plantillas` crea una plantilla con fotos reales, pulsa «Comprobar imágenes» y publícala. **Sin probar contra un CDN real.**
 - [ ] Añadir a la política de privacidad/créditos el proveedor de fotos que elijas (nuevo tercero que sirve imágenes a los visitantes).

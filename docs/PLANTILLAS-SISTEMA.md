@@ -24,7 +24,8 @@ Las imágenes se asignan por el **nombre del archivo**: `portada.jpg` → portad
 ### Configuración (una vez)
 1. Crea un repositorio **público** solo para las fotos (p. ej. `subasta-salvaje-fotos`) con un primer commit (un README basta).
 2. En GitHub → *Settings → Developer settings → Fine-grained personal access tokens* crea un token **solo para ese repositorio** con el permiso **Contents: Read and write** (nada más) y una caducidad razonable. No lo pegues en el chat ni en el repositorio.
-3. En Vercel (solo servidor): `GITHUB_ASSETS_REPO=tu-usuario/subasta-salvaje-fotos`, `GITHUB_ASSETS_TOKEN=…` (*Sensitive*) y, si la rama no es `main`, `GITHUB_ASSETS_BRANCH`. Redespliega. `cdn.jsdelivr.net` se admite automáticamente en la lista de servidores si defines también `ASSET_CDN_HOSTS`.
+3. En Vercel (solo servidor): `GITHUB_ASSETS_REPO=tu-usuario/subasta-salvaje-fotos`, `GITHUB_ASSETS_TOKEN=…` (*Sensitive*) y, si la rama no es `main`, `GITHUB_ASSETS_BRANCH`.
+   **Repositorio real del proyecto:** `ElMaxter99/subasta-salvaje-public` (ya inicializado con su README, `plantillas/` y `.gitattributes`). Su rama por defecto es **`master`**, así que hay que definir `GITHUB_ASSETS_BRANCH=master`. Redespliega. `cdn.jsdelivr.net` se admite automáticamente en la lista de servidores si defines también `ASSET_CDN_HOSTS`.
 4. Si no defines esas variables, el editor lo indica y puedes seguir pegando enlaces https a mano en el JSON.
 
 ### Alternativa manual
