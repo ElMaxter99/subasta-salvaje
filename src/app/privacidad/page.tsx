@@ -38,7 +38,7 @@ export default function PrivacyPage() {
       </section>
       <section>
         <h2>Lo que NO hacemos</h2>
-        <p>No usamos publicidad, seguimiento entre sitios ni píxeles de terceros, no vendemos datos y no cargamos fuentes ni scripts desde servidores de terceros (las tipografías y el script de estadísticas se sirven desde la propia aplicación). Las únicas estadísticas son las de visitas descritas arriba. Comprobado en el código en la fecha de la última actualización; si esto cambia, esta política se actualizará.</p>
+        <p>No usamos publicidad, seguimiento entre sitios ni píxeles de terceros, no vendemos datos y no cargamos fuentes ni scripts desde servidores de terceros (las tipografías y el script de estadísticas se sirven desde la propia aplicación). La única excepción son las imágenes de portada de las «Partidas del sistema», que, si el propietario las aloja en un CDN externo, se cargan desde allí. Las únicas estadísticas son las de visitas descritas arriba. Comprobado en el código en la fecha de la última actualización; si esto cambia, esta política se actualizará.</p>
       </section>
       <section>
         <h2>Conservación y borrado</h2>

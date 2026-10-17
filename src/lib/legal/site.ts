@@ -110,6 +110,7 @@ export const SERVICE_PROVIDERS = [
   { name: 'Vercel', role: 'Alojamiento de la aplicación, tareas programadas y estadísticas de visitas (Vercel Web Analytics, sin cookies).', url: 'https://vercel.com/legal/privacy-policy' },
   { name: 'Cloudflare (Workers AI)', role: 'Generación y edición de imágenes con IA, solo si el anfitrión/propietario la configura.', url: 'https://www.cloudflare.com/privacypolicy/' },
   { name: 'Pollinations', role: 'Generación y edición de imágenes con IA, solo si el propietario lo configura (se envían el texto de la petición y, al editar, la imagen de la casa y del elemento).', url: 'https://pollinations.ai/' },
+  { name: 'jsDelivr (GitHub)', role: 'Red de entrega (CDN) de las fotos de las partidas del sistema, solo si el propietario las aloja ahí: tu navegador carga la portada de cada plantilla directamente desde allí (recibe tu IP y los datos habituales de una petición web).', url: 'https://www.jsdelivr.com/terms/privacy-policy-jsdelivr-com' },
   { name: 'Resend', role: 'Envío de los correos de la cuenta (confirmación, recuperación de contraseña, invitaciones), solo si el propietario lo configura.', url: 'https://resend.com/legal/privacy-policy' },
   { name: 'OpenAI', role: 'Generación y edición de imágenes con IA, solo si el propietario lo configura.', url: 'https://openai.com/policies/privacy-policy' },
 ] as const;
