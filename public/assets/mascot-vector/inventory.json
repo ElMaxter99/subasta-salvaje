@@ -1,0 +1,276 @@
+{
+  "source": "subasta-salvaje-assets/mascot (scripts/assets/build-assets.mjs)",
+  "note": "Colección vectorial (no 3D) con transparencia real, 512 px.",
+  "assets": [
+    {
+      "id": "expression-angry",
+      "group": "expression",
+      "name": "angry",
+      "file": "expression-angry.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 19736,
+      "transparency": "real"
+    },
+    {
+      "id": "expression-celebrating",
+      "group": "expression",
+      "name": "celebrating",
+      "file": "expression-celebrating.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 29658,
+      "transparency": "real"
+    },
+    {
+      "id": "expression-confused",
+      "group": "expression",
+      "name": "confused",
+      "file": "expression-confused.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 20920,
+      "transparency": "real"
+    },
+    {
+      "id": "expression-cool",
+      "group": "expression",
+      "name": "cool",
+      "file": "expression-cool.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 22230,
+      "transparency": "real"
+    },
+    {
+      "id": "expression-cry",
+      "group": "expression",
+      "name": "cry",
+      "file": "expression-cry.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 19928,
+      "transparency": "real"
+    },
+    {
+      "id": "expression-happy",
+      "group": "expression",
+      "name": "happy",
+      "file": "expression-happy.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 21676,
+      "transparency": "real"
+    },
+    {
+      "id": "expression-hype",
+      "group": "expression",
+      "name": "hype",
+      "file": "expression-hype.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 26282,
+      "transparency": "real"
+    },
+    {
+      "id": "expression-laughing",
+      "group": "expression",
+      "name": "laughing",
+      "file": "expression-laughing.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 21462,
+      "transparency": "real"
+    },
+    {
+      "id": "expression-love",
+      "group": "expression",
+      "name": "love",
+      "file": "expression-love.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 23728,
+      "transparency": "real"
+    },
+    {
+      "id": "expression-sad",
+      "group": "expression",
+      "name": "sad",
+      "file": "expression-sad.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 19752,
+      "transparency": "real"
+    },
+    {
+      "id": "expression-shy",
+      "group": "expression",
+      "name": "shy",
+      "file": "expression-shy.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 19776,
+      "transparency": "real"
+    },
+    {
+      "id": "expression-sleepy",
+      "group": "expression",
+      "name": "sleepy",
+      "file": "expression-sleepy.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 22686,
+      "transparency": "real"
+    },
+    {
+      "id": "expression-surprised",
+      "group": "expression",
+      "name": "surprised",
+      "file": "expression-surprised.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 21052,
+      "transparency": "real"
+    },
+    {
+      "id": "expression-thinking",
+      "group": "expression",
+      "name": "thinking",
+      "file": "expression-thinking.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 19018,
+      "transparency": "real"
+    },
+    {
+      "id": "expression-wink",
+      "group": "expression",
+      "name": "wink",
+      "file": "expression-wink.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 21170,
+      "transparency": "real"
+    },
+    {
+      "id": "pose-announcing-bid",
+      "group": "pose",
+      "name": "announcing_bid",
+      "file": "pose-announcing-bid.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 24460,
+      "transparency": "real"
+    },
+    {
+      "id": "pose-celebration",
+      "group": "pose",
+      "name": "celebration",
+      "file": "pose-celebration.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 27132,
+      "transparency": "real"
+    },
+    {
+      "id": "pose-countdown",
+      "group": "pose",
+      "name": "countdown",
+      "file": "pose-countdown.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 20354,
+      "transparency": "real"
+    },
+    {
+      "id": "pose-hammer-auction",
+      "group": "pose",
+      "name": "hammer_auction",
+      "file": "pose-hammer-auction.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 22618,
+      "transparency": "real"
+    },
+    {
+      "id": "pose-holding-coin",
+      "group": "pose",
+      "name": "holding_coin",
+      "file": "pose-holding-coin.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 22562,
+      "transparency": "real"
+    },
+    {
+      "id": "pose-pointing-up",
+      "group": "pose",
+      "name": "pointing_up",
+      "file": "pose-pointing-up.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 19578,
+      "transparency": "real"
+    },
+    {
+      "id": "pose-presenting-item",
+      "group": "pose",
+      "name": "presenting_item",
+      "file": "pose-presenting-item.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 22086,
+      "transparency": "real"
+    },
+    {
+      "id": "pose-sad-slump",
+      "group": "pose",
+      "name": "sad_slump",
+      "file": "pose-sad-slump.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 20736,
+      "transparency": "real"
+    },
+    {
+      "id": "pose-shrug",
+      "group": "pose",
+      "name": "shrug",
+      "file": "pose-shrug.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 23716,
+      "transparency": "real"
+    },
+    {
+      "id": "pose-thinking",
+      "group": "pose",
+      "name": "thinking",
+      "file": "pose-thinking.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 20820,
+      "transparency": "real"
+    },
+    {
+      "id": "pose-thumbs-up",
+      "group": "pose",
+      "name": "thumbs_up",
+      "file": "pose-thumbs-up.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 21384,
+      "transparency": "real"
+    },
+    {
+      "id": "pose-waving",
+      "group": "pose",
+      "name": "waving",
+      "file": "pose-waving.webp",
+      "width": 512,
+      "height": 512,
+      "bytes": 22564,
+      "transparency": "real"
+    }
+  ]
+}

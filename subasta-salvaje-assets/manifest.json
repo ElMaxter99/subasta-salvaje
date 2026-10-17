@@ -290,6 +290,139 @@
       "dimensions": "2048x2048"
     },
     {
+      "id": "mascot_expression_love",
+      "name": "Mascota · expresión love",
+      "category": "mascot",
+      "folder": "mascot/expressions",
+      "usage": "Cariño: valorar o votar una casa.",
+      "files": [
+        {
+          "file": "mascot/expressions/mascot_expression_love.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_expression_cool",
+      "name": "Mascota · expresión cool",
+      "category": "mascot",
+      "folder": "mascot/expressions",
+      "usage": "Presumir: ganar con estilo.",
+      "files": [
+        {
+          "file": "mascot/expressions/mascot_expression_cool.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_expression_laughing",
+      "name": "Mascota · expresión laughing",
+      "category": "mascot",
+      "folder": "mascot/expressions",
+      "usage": "Risa: momentos divertidos.",
+      "files": [
+        {
+          "file": "mascot/expressions/mascot_expression_laughing.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_expression_sleepy",
+      "name": "Mascota · expresión sleepy",
+      "category": "mascot",
+      "folder": "mascot/expressions",
+      "usage": "Sueño: esperando o sala inactiva.",
+      "files": [
+        {
+          "file": "mascot/expressions/mascot_expression_sleepy.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_expression_confused",
+      "name": "Mascota · expresión confused",
+      "category": "mascot",
+      "folder": "mascot/expressions",
+      "usage": "Duda: algo no cuadra.",
+      "files": [
+        {
+          "file": "mascot/expressions/mascot_expression_confused.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_expression_shy",
+      "name": "Mascota · expresión shy",
+      "category": "mascot",
+      "folder": "mascot/expressions",
+      "usage": "Vergüenza: tímido o cumplido.",
+      "files": [
+        {
+          "file": "mascot/expressions/mascot_expression_shy.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_expression_cry",
+      "name": "Mascota · expresión cry",
+      "category": "mascot",
+      "folder": "mascot/expressions",
+      "usage": "Llanto: perder la puja o error.",
+      "files": [
+        {
+          "file": "mascot/expressions/mascot_expression_cry.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
       "id": "mascot_pose_presenting_item",
       "name": "Mascota · pose presenting_item",
       "category": "mascot",
@@ -374,6 +507,139 @@
       "files": [
         {
           "file": "mascot/poses/mascot_pose_celebration.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_pose_waving",
+      "name": "Mascota · pose waving",
+      "category": "mascot",
+      "folder": "mascot/poses",
+      "usage": "Saludar: bienvenida a la sala o al jugador que entra.",
+      "files": [
+        {
+          "file": "mascot/poses/mascot_pose_waving.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_pose_thumbs_up",
+      "name": "Mascota · pose thumbs_up",
+      "category": "mascot",
+      "folder": "mascot/poses",
+      "usage": "Aprobar o confirmar (puja aceptada, todo listo).",
+      "files": [
+        {
+          "file": "mascot/poses/mascot_pose_thumbs_up.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_pose_pointing_up",
+      "name": "Mascota · pose pointing_up",
+      "category": "mascot",
+      "folder": "mascot/poses",
+      "usage": "Llamar la atención sobre un aviso o una regla.",
+      "files": [
+        {
+          "file": "mascot/poses/mascot_pose_pointing_up.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_pose_shrug",
+      "name": "Mascota · pose shrug",
+      "category": "mascot",
+      "folder": "mascot/poses",
+      "usage": "No lo sé / error suave / estado vacío.",
+      "files": [
+        {
+          "file": "mascot/poses/mascot_pose_shrug.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_pose_holding_coin",
+      "name": "Mascota · pose holding_coin",
+      "category": "mascot",
+      "folder": "mascot/poses",
+      "usage": "Saldo, precios y pujas.",
+      "files": [
+        {
+          "file": "mascot/poses/mascot_pose_holding_coin.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_pose_thinking",
+      "name": "Mascota · pose thinking",
+      "category": "mascot",
+      "folder": "mascot/poses",
+      "usage": "Pensando (cargando, la IA trabaja, decidir una puja).",
+      "files": [
+        {
+          "file": "mascot/poses/mascot_pose_thinking.png",
+          "format": "PNG"
+        }
+      ],
+      "width": 2048,
+      "height": 2048,
+      "transparent": true,
+      "padding_ok": true,
+      "color_space": "sRGB",
+      "dimensions": "2048x2048"
+    },
+    {
+      "id": "mascot_pose_sad_slump",
+      "name": "Mascota · pose sad_slump",
+      "category": "mascot",
+      "folder": "mascot/poses",
+      "usage": "Pérdida, partida terminada sin premio o error.",
+      "files": [
+        {
+          "file": "mascot/poses/mascot_pose_sad_slump.png",
           "format": "PNG"
         }
       ],

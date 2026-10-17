@@ -1,5 +1,5 @@
 import { arm, emblem, groundShadow, head, legs, shoe, torso, glove, crown } from './lib.mjs';
-import { confetti, hammer, megaphone, sparkle, speedLines, timer } from './props.mjs';
+import { coin, confetti, hammer, heart, megaphone, questionMark, sparkle, speedLines, tear, timer, zzz } from './props.mjs';
 
 const SL = [365, 520]; // hombro izquierdo (del espectador)
 const SR = [635, 520];
@@ -25,6 +25,20 @@ export function mascotFull({ expr = 'neutral', pose = 'stand' } = {}) {
       return `${base()}${arm(SL, [310, 610], [378, 700], { kind: 'fist' })}${placeHead({ expr: 'happy' })}${hammer({ x: 760, y: 330, s: 0.95, rot: 28 })}${arm(SR, [740, 470], [760, 340], { kind: 'fist', rot: 28 })}${speedLines({ x: 640, y: 120, s: 0.55, rot: 150 })}${sparkle({ x: 860, y: 240, s: 0.14 })}`;
     case 'celebration':
       return `${base(40, 170)}${arm(SL, [300, 410], [262, 290], { kind: 'fist', rot: -10 })}${arm(SR, [700, 410], [738, 290], { kind: 'fist', rot: 10 })}${placeHead({ expr: 'hype' })}${confetti({ x: 500, y: 420, spread: 440, count: 46 })}${sparkle({ x: 170, y: 170, s: 0.14 })}${sparkle({ x: 840, y: 190, s: 0.12, rot: 20 })}`;
+    case 'waving': // saluda con la mano abierta
+      return `${base()}${arm(SL, [335, 610], [348, 700], { kind: 'fist' })}${arm(SR, [735, 480], [790, 350], { kind: 'open', rot: 14 })}${placeHead({ expr: 'happy' })}${speedLines({ x: 850, y: 250, s: 0.4, rot: -80 })}${sparkle({ x: 880, y: 460, s: 0.1 })}`;
+    case 'thumbs_up':
+      return `${base()}${arm(SL, [335, 610], [348, 700], { kind: 'fist' })}${arm(SR, [740, 560], [800, 470], { kind: 'thumb', rot: 12 })}${placeHead({ expr: 'wink' })}${sparkle({ x: 850, y: 330, s: 0.12 })}`;
+    case 'pointing_up':
+      return `${base()}${arm(SL, [335, 610], [348, 700], { kind: 'fist' })}${arm(SR, [715, 470], [700, 330], { kind: 'point', rot: 0 })}${placeHead({ expr: 'happy' })}${sparkle({ x: 760, y: 180, s: 0.14 })}`;
+    case 'shrug':
+      return `${base()}${arm(SL, [296, 580], [244, 650], { kind: 'open', rot: -62 })}${arm(SR, [704, 580], [756, 650], { kind: 'open', rot: 62 })}${placeHead({ expr: 'confused' })}${questionMark({ x: 800, y: 230, s: 0.7, rot: 10 })}`;
+    case 'holding_coin':
+      return `${base()}${arm(SL, [335, 610], [348, 700], { kind: 'fist' })}${coin({ x: 770, y: 450, s: 1.1 })}${arm(SR, [712, 568], [770, 520], { kind: 'fist', rot: 30 })}${placeHead({ expr: 'happy' })}${sparkle({ x: 850, y: 380, s: 0.12 })}${sparkle({ x: 700, y: 400, s: 0.07, rot: 20 })}`;
+    case 'thinking':
+      return `${base()}${arm(SL, [335, 610], [348, 700], { kind: 'fist' })}${arm(SR, [690, 570], [585, 480], { kind: 'fist', rot: -30 })}${placeHead({ expr: 'thinking' })}${questionMark({ x: 780, y: 190, s: 0.6, rot: 14 })}`;
+    case 'sad_slump':
+      return `${groundShadow(500, 925, 215, 24, 0.5)}${legs()}${feet()}${torso()}${armsDown.join('')}<g transform="translate(${HEAD.x} ${HEAD.y + 24}) rotate(-5)">${head({ expr: 'cry', crownRot: -14 })}</g>`;
     default: // stand
       return `${base()}${armsDown.join('')}${placeHead({ expr })}`;
   }
@@ -42,6 +56,13 @@ export function mascotBust({ expr }) {
     angry: [arm([640, 530], [690, 600], [640, 650], { kind: 'fist', rot: -60 }, 60), arm([360, 530], [310, 600], [360, 650], { kind: 'fist', rot: 60 }, 60)],
     celebrating: [arm([640, 530], [740, 480], [790, 370], { kind: 'fist', rot: 20 }, 58), arm([360, 530], [260, 480], [210, 370], { kind: 'fist', rot: -20 }, 58)],
     hype: [arm([640, 530], [735, 500], [770, 400], { kind: 'fist', rot: 15 }, 58), arm([360, 530], [265, 500], [230, 400], { kind: 'fist', rot: -15 }, 58)],
+    love: [arm([640, 530], [720, 560], [758, 488], { kind: 'thumb', rot: 8 }, 60), arm([360, 530], [290, 560], [262, 500], { kind: 'thumb', rot: -8 }, 60)],
+    cool: [arm([640, 530], [725, 560], [760, 485], { kind: 'thumb', rot: 8 }, 60), arm([360, 530], [320, 610], [345, 690], { kind: 'fist' }, 60)],
+    laughing: [arm([640, 530], [690, 610], [620, 650], { kind: 'fist', rot: -70 }, 60), arm([360, 530], [310, 610], [380, 650], { kind: 'fist', rot: 70 }, 60)],
+    sleepy: [arm([640, 530], [670, 610], [655, 690], { kind: 'fist' }, 60), arm([360, 530], [330, 610], [345, 690], { kind: 'fist' }, 60)],
+    confused: [arm([640, 530], [700, 480], [668, 392], { kind: 'open', rot: -12 }, 56), arm([360, 530], [320, 610], [345, 690], { kind: 'fist' }, 60)],
+    shy: [arm([640, 530], [610, 600], [560, 560], { kind: 'fist', rot: -80 }, 58), arm([360, 530], [390, 600], [440, 560], { kind: 'fist', rot: 80 }, 58)],
+    cry: [arm([640, 530], [690, 470], [610, 392], { kind: 'fist', rot: -35 }, 56), arm([360, 530], [310, 470], [390, 392], { kind: 'fist', rot: 35 }, 56)],
   }[expr];
   const extras = {
     angry: `<g transform="translate(662 150)"><path d="M0 -26 L8 -8 L26 -2 L8 6 L0 24 L-8 6 L-26 -2 L-8 -8Z" fill="#F54DB7" stroke="#FFD1F0" stroke-width="3"/></g>`,
@@ -50,6 +71,13 @@ export function mascotBust({ expr }) {
     happy: `${sparkle({ x: 830, y: 250, s: 0.07 })}`,
     wink: `${sparkle({ x: 800, y: 260, s: 0.08 })}`,
     surprised: speedLines({ x: 730, y: 170, s: 0.35, rot: -60 }),
+    love: `${heart({ x: 800, y: 190, s: 0.42, rot: 12 })}${heart({ x: 180, y: 240, s: 0.28, rot: -14 })}${heart({ x: 860, y: 330, s: 0.2, rot: 20 })}`,
+    cool: `${sparkle({ x: 820, y: 220, s: 0.1 })}${sparkle({ x: 190, y: 300, s: 0.07, rot: 15 })}`,
+    laughing: `${tear({ x: 810, y: 300, s: 0.4, rot: 22 })}${tear({ x: 190, y: 300, s: 0.4, rot: -22 })}${sparkle({ x: 830, y: 150, s: 0.08 })}`,
+    sleepy: zzz({ x: 770, y: 170, s: 0.9 }),
+    confused: questionMark({ x: 770, y: 150, s: 0.6, rot: 12 }),
+    shy: `${sparkle({ x: 820, y: 210, s: 0.07 })}${heart({ x: 200, y: 220, s: 0.2, rot: -12 })}`,
+    cry: `${tear({ x: 820, y: 360, s: 0.35, rot: 14 })}${tear({ x: 180, y: 360, s: 0.35, rot: -14 })}`,
   }[expr] ?? '';
   const h = `<g transform="translate(${HEAD.x} ${HEAD.y})">${head({ expr: expr === 'focus' ? 'angry' : expr })}</g>`;
   const thinkHand = expr === 'thinking' ? '' : '';

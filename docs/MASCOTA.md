@@ -48,3 +48,17 @@ sala de espera de la TV (feliz), cabecera de la TV (cue contextual), overlay «�
   (recomendación del propietario), luego las poses. Basta con sustituir los `.webp` conservando nombres e `inventory.json` (`transparency: "real"`) y quitar `tile`.
 - Los recortes de la lámina no se pueden «reposar» (cambiar de pose) ni rehacer con otra expresión: cada variante es una imagen distinta.
 - El generador vectorial de `subasta-salvaje-assets/` (ver `ASSETS.md`) es una colección **distinta** (aproximación en SVG), no se ha mezclado con estos recortes.
+
+## Colección vectorial con transparencia real (`public/assets/mascot-vector/`)
+Para tener **poses independientes con transparencia real** sin depender de renders externos se exporta el generador vectorial
+de `subasta-salvaje-assets/` (SVG → PNG 2048 px con alfa real) a WebP de 512 px: `npm run mascot:vector`
+(`scripts/mascot/export-vector.mjs`). Salen 27 archivos (≈ 580 KB) `expression-<nombre>.webp` / `pose-<nombre>.webp` más
+`inventory.json` (`transparency: "real"`), con ≈ 75 % de píxeles transparentes y bordes suaves (lo comprueba `tests/mascot-vector.test.ts`).
+- 15 expresiones (nuevas: enamorada, guay, risa, dormida, confusa, tímida, llorando) y 12 poses (nuevas: saludando, pulgar arriba,
+  señalando, encogida de hombros, con moneda, pensando, derrumbada).
+- Componente: `<MascotVector id="pose-waving" size="md" motion="float" alt="…" />` (`src/components/mascot/mascot-vector.tsx`; ids en `VECTOR_MASCOTS`).
+- **Honestidad:** es un estilo **vectorial plano, distinto** de la mascota «3D» de la lámina; no se han mezclado. Aún no se usa en pantallas de juego.
+- **Renders 3D/IA reales** (el estilo de la mascota principal) no se pueden crear aquí. Camino previsto: generar cada pose con un modelo de imagen
+  sobre **fondo verde liso `#00ff00`** usando `mascot-main` como referencia y pasarla por `npm run mascot:chroma -- entrada.png --out salida.webp --size 1024`
+  (`scripts/mascot/chroma.mjs`: alfa por distancia a la clave, borde suave, eliminación del reflejo verde, recorte y margen).
+  La herramienta está probada con una imagen sintética, **no con renders reales**.

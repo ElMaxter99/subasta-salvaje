@@ -107,3 +107,24 @@ export function speedLines({ x = 0, y = 0, s = 1, rot = 0, color = 'url(#gPurple
   const line = (yy, len, w) => `<path d="M0 ${yy} Q${len * 0.5} ${yy - w} ${len} ${yy} Q${len * 0.5} ${yy + w} 0 ${yy}Z" fill="${color}"/>`;
   return `<g transform="translate(${x} ${y}) rotate(${rot}) scale(${s})">${line(-46, 260, 9)}${line(0, 340, 12)}${line(46, 220, 8)}</g>`;
 }
+
+/** Corazón rosa (origen en el centro). */
+export function heart({ x = 0, y = 0, s = 1, rot = 0 } = {}) {
+  return `<g transform="translate(${x} ${y}) rotate(${rot}) scale(${s})" filter="url(#fGlow)"><path d="M0 34 C-70 -16 -58 -82 -14 -74 C-4 -72 0 -62 0 -58 C0 -62 4 -72 14 -74 C58 -82 70 -16 0 34Z" fill="#F54DB7" stroke="#FFD1F0" stroke-width="5" stroke-linejoin="round"/><ellipse cx="-24" cy="-44" rx="12" ry="7" fill="#fff" opacity=".7" transform="rotate(-30 -24 -44)"/></g>`;
+}
+
+/** Signo de interrogación dorado. */
+export function questionMark({ x = 0, y = 0, s = 1, rot = 0 } = {}) {
+  return `<g transform="translate(${x} ${y}) rotate(${rot}) scale(${s})" filter="url(#fGlow)"><path d="M-34 -52 Q-34 -92 4 -92 Q42 -92 42 -56 Q42 -32 8 -14 Q-2 -6 -2 10" fill="none" stroke="#FFD83D" stroke-width="22" stroke-linecap="round"/><circle cx="-2" cy="52" r="14" fill="#FFD83D"/></g>`;
+}
+
+/** «Z z» de sueño. */
+export function zzz({ x = 0, y = 0, s = 1 } = {}) {
+  const z = (px, py, k) => `<path d="M${px - 24 * k} ${py - 24 * k} H${px + 24 * k} L${px - 24 * k} ${py + 24 * k} H${px + 24 * k}" fill="none" stroke="#C9B8FF" stroke-width="${12 * k}" stroke-linecap="round" stroke-linejoin="round"/>`;
+  return `<g transform="translate(${x} ${y}) scale(${s})" filter="url(#fGlow)">${z(0, 0, 1)}${z(60, -66, 0.72)}${z(104, -118, 0.5)}</g>`;
+}
+
+/** Gota (lágrima/sudor) cian. */
+export function tear({ x = 0, y = 0, s = 1, rot = 0 } = {}) {
+  return `<g transform="translate(${x} ${y}) rotate(${rot}) scale(${s})" filter="url(#fGlow)"><path d="M0 -40 Q34 6 22 26 Q10 44 0 44 Q-10 44 -22 26 Q-34 6 0 -40Z" fill="url(#gCyan)" stroke="#CFF6FF" stroke-width="4"/><ellipse cx="-8" cy="8" rx="5" ry="10" fill="#fff" opacity=".7"/></g>`;
+}

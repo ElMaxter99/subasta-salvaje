@@ -65,7 +65,7 @@ Rutas principales: `/` (inicio) · `/new-game` · `/login` · `/join` · `/game/
 - **Dos modalidades** (se eligen al crear la partida y se cambian en Ajustes mientras esté en la sala de espera):
   - **Pujas del anfitrión:** los jugadores pujan en voz alta y el anfitrión las registra; no necesitan cuenta ni móvil.
   - **Cada jugador desde su móvil:** entran con el código de sala o el QR, eligen nombre y pujan ellos mismos (sin cuenta: cookie `httpOnly` por jugador).
-- **Casas que evolucionan:** modo **pegatinas con emojis (sin IA)** por defecto, o modo **con IA** (Cloudflare Workers AI u OpenAI, con cuotas por partida y por día e interruptor de apagado). Nunca se activa un proveedor de pago por sí solo. La subasta nunca se bloquea por la IA.
+- **Casas que evolucionan:** modo **pegatinas con emojis (sin IA)** por defecto, o modo **con IA** (cadena de proveedores gratuitos: Cloudflare Workers AI, Pollinations, AI Horde y Hugging Face; OpenAI solo si es el único y lo pides, con cuotas por partida y por día e interruptor de apagado). Nunca se activa un proveedor de pago por sí solo. La subasta nunca se bloquea por la IA.
 - **Subasta automática y adjudicación automática** (por tiempo o instantánea), rondas máximas, pujas en euros enteros, **eventos sorpresa** (a ciegas, doble o mitad, impuesto al más rico) y **deshacer** la última adjudicación.
 - **Votación y podio:** galería final con voto de cada jugador (no se puede votar a uno mismo); la votación se cierra sola cuando todos los conectados han votado y la TV muestra el podio.
 - **Plantillas de partida** (JSON, CSV de catálogo o ZIP con fotos): importar, editar el catálogo, guardar y exportar. Ver [`docs/PLANTILLAS.md`](docs/PLANTILLAS.md).
@@ -105,6 +105,7 @@ Todas las capturas son **reales**, generadas con la app en **modo demo (pegatina
 |---|---|---|
 | Logo y mascota de marca | [`public/assets/brand/`](public/assets/brand/) | Ver [`docs/MARCA.md`](docs/MARCA.md) (limitaciones del logo raster) |
 | Expresiones, poses y objetos de la mascota | [`public/assets/mascot/`](public/assets/mascot/) | Recortes de la lámina de referencia; ver [`docs/MASCOTA.md`](docs/MASCOTA.md) |
+| Mascota vectorial con transparencia real (15 expresiones + 12 poses, WebP 512 px) | [`public/assets/mascot-vector/`](public/assets/mascot-vector/) | `npm run mascot:vector`; componente `<MascotVector>`; ver [`docs/MASCOTA.md`](docs/MASCOTA.md) |
 | Asset pack vectorial (mascota, props, UI, VFX) | [`subasta-salvaje-assets/`](subasta-salvaje-assets/) | Se regenera con `npm run assets:build`; **aún no integrado en la UI**, ver [`docs/ASSETS.md`](docs/ASSETS.md) |
 
 <table>
@@ -142,6 +143,8 @@ npm run dev            # http://localhost:3000  → modo demo si no hay .env.loc
 | `npm run scan:secrets` | Busca credenciales en archivos, historial de git y bundle del navegador |
 | `npm run assets:build` | Regenera `subasta-salvaje-assets/` |
 | `npm run mascot:extract` | Regenera los recortes de `public/assets/mascot/` |
+| `npm run mascot:vector` | Exporta la mascota vectorial (alfa real) a `public/assets/mascot-vector/` |
+| `npm run mascot:chroma` | Quita un fondo verde liso de un render (`-- entrada.png --out salida.webp`) |
 | `npm run brand:build` / `brand:mini` | Regenera logo e iconos de marca / el mini héroe vectorial |
 | `npm run ai:measure` | Mide con TUS credenciales de Cloudflare 1 generación (y con `--edit`, 1 edición) para calcular cuánta cuota gratuita gasta cada llamada; sin `--yes` solo muestra qué haría (gasta cuota real: ejecútalo tú) |
 | `npm run emails:build` | Genera las plantillas de correo de Supabase Auth |
@@ -435,6 +438,8 @@ Solo para el correo de `SUPERADMIN_EMAILS` (confirmado); cualquier otra persona 
 
 Recortada de la lámina de referencia (`public/assets/mascot/`, 24 archivos ≈ 380 KB) y mostrada con `<Mascot>`/`<EmptyState>` (`src/components/mascot/`): inicio, 404 y estados vacíos, sala de espera, cabecera de la TV (gestos según anuncio, puja, cuenta atrás y adjudicación), overlay «¡Adjudicado!» y pantalla final. Respeta `prefers-reduced-motion`.
 **Honestidad:** solo los objetos (corona, martillo, megáfono, temporizador, logo, moneda, brillo) tienen transparencia real; la mascota, las expresiones y las poses conservan el fondo oscuro de la lámina con bordes difuminados (el cuerpo azul marino no se separa del fondo), y su resolución es baja (≈150 px; la principal 555×665). Detalle, límites y qué falta en `docs/MASCOTA.md`. Se regeneran con `npm run mascot:extract`.
+
+**Poses independientes con transparencia real:** la colección vectorial (`public/assets/mascot-vector/`, `npm run mascot:vector`, componente `<MascotVector>`) trae 15 expresiones y 12 poses (saludando, pulgar arriba, pensando, con moneda…) con alfa real, pero en estilo vectorial plano, distinto del 3D de la lámina. Para futuros renders de IA sobre fondo verde existe `npm run mascot:chroma` (probado solo con una imagen sintética).
 
 Identidad visual completa (logo, tipografía, tokens, mini héroe vectorial): [`docs/MARCA.md`](docs/MARCA.md). Asset pack vectorial: [`docs/ASSETS.md`](docs/ASSETS.md).
 

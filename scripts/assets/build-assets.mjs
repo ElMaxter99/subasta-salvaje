@@ -48,9 +48,9 @@ const mascotAssets = [
   { id: 'mascot_half_body', name: 'Mascota · medio cuerpo', folder: 'mascot/base', kind: 'mascot', group: 'base_half', svg: () => mascotView('half_body'), usage: 'Avatares, cabeceras y tarjetas de diálogo.' },
   { id: 'mascot_head', name: 'Mascota · cabeza', folder: 'mascot/base', kind: 'mascot', group: 'base_head', svg: () => mascotView('head'), usage: 'Icono/avatar del anfitrión y reacciones pequeñas.' },
   // expresiones (mismo encuadre para las 8)
-  ...['happy', 'surprised', 'wink', 'thinking', 'sad', 'angry', 'celebrating', 'hype'].map((e) => ({ id: `mascot_expression_${e}`, name: `Mascota · expresión ${e}`, folder: 'mascot/expressions', kind: 'mascot', group: 'expressions', svg: () => mascotBust({ expr: e }), usage: `Reacción «${e}» del anfitrión en la TV y el móvil.` })),
-  // poses (mismo encuadre para las 5)
-  ...['presenting_item', 'announcing_bid', 'countdown', 'hammer_auction', 'celebration'].map((p) => ({ id: `mascot_pose_${p}`, name: `Mascota · pose ${p}`, folder: 'mascot/poses', kind: 'mascot', group: 'poses', svg: () => mascotFull({ pose: p }), usage: { presenting_item: 'Presentar el elemento que sale a subasta.', announcing_bid: 'Anunciar una puja nueva.', countdown: 'Cuenta atrás de adjudicación automática.', hammer_auction: 'Martillazo: adjudicado.', celebration: 'Celebración del ganador.' }[p] })),
+  ...['happy', 'surprised', 'wink', 'thinking', 'sad', 'angry', 'celebrating', 'hype', 'love', 'cool', 'laughing', 'sleepy', 'confused', 'shy', 'cry'].map((e) => ({ id: `mascot_expression_${e}`, name: `Mascota · expresión ${e}`, folder: 'mascot/expressions', kind: 'mascot', group: 'expressions', svg: () => mascotBust({ expr: e }), usage: { love: 'Cariño: valorar o votar una casa.', cool: 'Presumir: ganar con estilo.', laughing: 'Risa: momentos divertidos.', sleepy: 'Sueño: esperando o sala inactiva.', confused: 'Duda: algo no cuadra.', shy: 'Vergüenza: tímido o cumplido.', cry: 'Llanto: perder la puja o error.' }[e] ?? `Reacción «${e}» del anfitrión en la TV y el móvil.` })),
+  // poses (mismo encuadre para todas)
+  ...['presenting_item', 'announcing_bid', 'countdown', 'hammer_auction', 'celebration', 'waving', 'thumbs_up', 'pointing_up', 'shrug', 'holding_coin', 'thinking', 'sad_slump'].map((p) => ({ id: `mascot_pose_${p}`, name: `Mascota · pose ${p}`, folder: 'mascot/poses', kind: 'mascot', group: 'poses', svg: () => mascotFull({ pose: p }), usage: { presenting_item: 'Presentar el elemento que sale a subasta.', announcing_bid: 'Anunciar una puja nueva.', countdown: 'Cuenta atrás de adjudicación automática.', hammer_auction: 'Martillazo: adjudicado.', celebration: 'Celebración del ganador.', waving: 'Saludar: bienvenida a la sala o al jugador que entra.', thumbs_up: 'Aprobar o confirmar (puja aceptada, todo listo).', pointing_up: 'Llamar la atención sobre un aviso o una regla.', shrug: 'No lo sé / error suave / estado vacío.', holding_coin: 'Saldo, precios y pujas.', thinking: 'Pensando (cargando, la IA trabaja, decidir una puja).', sad_slump: 'Pérdida, partida terminada sin premio o error.' }[p] })),
 ];
 
 const single = (id, name, folder, kind, svg, usage, extra = {}) => ({ id, name, folder, kind, group: id, svg, usage, ...extra });
@@ -160,8 +160,8 @@ async function main() {
   };
   const idsOf = (arr) => arr.map((a) => a.id);
   await sheet(idsOf(mascotAssets.filter((a) => a.folder === 'mascot/base')), 'contact_sheet_mascot_base.png', 3);
-  await sheet(idsOf(mascotAssets.filter((a) => a.folder === 'mascot/expressions')), 'contact_sheet_expressions.png', 4);
-  await sheet(idsOf(mascotAssets.filter((a) => a.folder === 'mascot/poses')), 'contact_sheet_poses.png', 5);
+  await sheet(idsOf(mascotAssets.filter((a) => a.folder === 'mascot/expressions')), 'contact_sheet_expressions.png', 5);
+  await sheet(idsOf(mascotAssets.filter((a) => a.folder === 'mascot/poses')), 'contact_sheet_poses.png', 6);
   await sheet(idsOf([...propAssets, ...vfxAssets, ...uiAssets, ...brandAssets]), 'contact_sheet_props_ui_vfx_brand.png', 6, 240);
 
   console.log(`✔ ${manifest.length} assets en ${OUT}/ (${manifest.reduce((n, m) => n + m.files.length, 0)} archivos)`);
