@@ -40,7 +40,7 @@ export function SystemTemplatesPanel({ templates, cdnHosts }: { templates: Syste
         title="Partidas del sistema"
         hint={
           <>
-            Plantillas que los anfitriones ven en «Nueva partida → Partidas del sistema». Los <b>borradores</b> solo los ves tú. Las fotos van en un servicio externo (CDN) y se <b>copian a cada partida</b> al crearla.{' '}
+            Plantillas que los anfitriones ven en «Nueva partida → Partidas del sistema». Los <b>borradores</b> solo los ves tú. Las fotos van en un servicio externo (CDN) y las partidas <b>las usan por enlace, sin copiarlas</b> (solo se guardan las imágenes que genere la IA).{' '}
             {cdnHosts.length ? <>Servidores de fotos permitidos: <code>{cdnHosts.join(', ')}</code>.</> : <b className="text-gold-soft">ASSET_CDN_HOSTS no está definida: se acepta cualquier servidor https. Defínela en Vercel para restringirlo.</b>}
           </>
         }

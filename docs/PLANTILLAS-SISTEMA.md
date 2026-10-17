@@ -5,7 +5,7 @@ Plantillas creadas por el superadmin que cualquier anfitrión ve en **Nueva part
 ## Qué lleva una plantilla
 El mismo formato `subasta-salvaje/plantilla@1` (ver `PLANTILLAS.md`: reglas, jugadores, catálogo) más dos campos opcionales:
 - `portada`: URL https de la imagen de la tarjeta (1200×630).
-- `casa_inicial`: URL https de la **imagen inicial de la casa**; al crear la partida se copia y se aplica a los jugadores actuales y a los que se unan después.
+- `casa_inicial`: URL https de la **imagen inicial de la casa**; al crear la partida se aplica **por enlace** (sin copiarla) a los jugadores actuales y a los que se unan después.
 - `creditos`: autoría o fuente de las imágenes (≤ 200 caracteres; se muestra, en pequeño, en la tarjeta de «Partidas del sistema»).
 Cada elemento del catálogo puede llevar `foto` (URL https) y un `credito` opcional (≤ 120 caracteres; solo lo ves en el editor). En plantillas del sistema no se admiten rutas de ZIP.
 
@@ -49,7 +49,10 @@ El repositorio de fotos (`ElMaxter99/subasta-salvaje-public`) se plantea como **
 La página de Créditos de la app incluye una nota equivalente.
 
 ## Cómo se usan las fotos
-Al crear la partida se **copian** a su almacenamiento (Supabase) pasando por `normalizeImage` y se borran con la partida. El juego no depende de que el CDN esté disponible durante la partida, y si una foto falla se avisa sin bloquear nada. La portada de la tarjeta sí se carga directamente desde el CDN (solo es decorativa; si falla se oculta).
+Las imágenes que **ya están alojadas en nuestro repositorio de fotos** (enlaces de jsDelivr de `GITHUB_ASSETS_REPO`: las de plantillas del sistema y las de la biblioteca) **no se descargan ni se copian** al crear la partida: la foto del elemento y la casa inicial se guardan como **referencia (enlace)** y TV y móviles las cargan directamente desde el CDN. **Lo único que se guarda en el almacenamiento (Supabase) son las imágenes que genera la IA** al fusionarlas (la casa editada con cada compra). Cuando hay que editar con IA, el servidor lee la casa base y la foto del elemento **por enlace en ese momento** (solo de nuestro repositorio, con las defensas de `safe-fetch`).
+Las fotos de **otros servidores** (p. ej. una plantilla JSON de un anfitrión con enlaces cualesquiera) sí se descargan, se normalizan (`normalizeImage`) y se guardan con la partida, como antes. Si una foto falla se avisa sin bloquear nada. Se borran con la partida solo las copias propias: **nunca se borra nada del repositorio de fotos**.
+
+**Límites a tener en cuenta:** (1) si el CDN o el archivo dejan de estar disponibles, la partida pierde esa imagen (los enlaces van fijados a un commit, así que solo fallaría si se borra el repositorio o el CDN cae); (2) cada visitante (TV y móviles) hace peticiones a jsDelivr: está declarado en la política de privacidad; (3) la edición con IA añade una lectura por enlace por trabajo.
 
 ## Datos y seguridad
 Tabla `system_templates` (migraciones `…4200`/`…4300`, RLS cerrada); funciones `ss_system_template_*` y `ss_admin_system_template_*`; los anfitriones solo leen publicadas (`/api/system-templates`); las rutas de administración responden **404** a quien no sea superadmin. La validación fuerte es la misma de las plantillas de usuario (Zod).

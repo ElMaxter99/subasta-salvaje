@@ -1,7 +1,8 @@
 import { DomainError } from '@/lib/domain/errors';
 import { fetchImageBytes, SafeFetchError, type FetchImageOptions } from '@/lib/security/safe-fetch';
 import type { AppContext } from './context';
-import { getHostState, uploadInitialImageForAll, uploadItemImage } from './game-service';
+import { isHostedImage } from '@/lib/storage/hosted';
+import { getHostState, setInitialFromHosted, setItemImageFromHosted, uploadInitialImageForAll, uploadItemImage } from './game-service';
 
 type Ctx = Pick<AppContext, 'db' | 'storage' | 'publisher' | 'provider'>;
 
@@ -26,7 +27,8 @@ const REASON: Record<SafeFetchError['reason'], string> = {
 };
 
 /**
- * Descarga las fotos de una plantilla y las pone como foto de los elementos del catálogo de una partida YA creada.
+ * Pone las fotos de una plantilla como foto de los elementos del catálogo de una partida YA creada. Las que ya están en nuestro
+ * repositorio de fotos (GitHub + jsDelivr) se usan por ENLACE, sin descargarlas; solo se descargan las de otros servidores.
  * Un fallo de una foto NUNCA bloquea la partida: se devuelve la lista de las que fallaron. Sigue las mismas comprobaciones que
  * la subida manual (tipo real de imagen y 7 MB) y solo funciona para el anfitrión propietario.
  */
@@ -63,8 +65,13 @@ export async function importItemPhotos(
         continue;
       }
       try {
-        const bytes = await fetchImageBytes(job.url, opts);
-        await uploadItemImage(ctx, code, hostId, job.itemId, bytes); // valida el tipo real y el tamaño
+        if (isHostedImage(job.url)) {
+          // Ya está alojada en nuestro repositorio de fotos: se usa el enlace, sin descargarla ni guardar una copia.
+          await setItemImageFromHosted(ctx, code, hostId, job.itemId, job.url);
+        } else {
+          const bytes = await fetchImageBytes(job.url, opts);
+          await uploadItemImage(ctx, code, hostId, job.itemId, bytes); // valida el tipo real y el tamaño
+        }
         result.imported++;
       } catch (e) {
         const reason = e instanceof SafeFetchError ? REASON[e.reason] : e instanceof DomainError ? e.message : 'no se pudo guardar';
@@ -77,12 +84,16 @@ export async function importItemPhotos(
 }
 
 /**
- * Imagen inicial de la casa que trae una plantilla (URL https): se descarga con las mismas defensas, se normaliza al formato
+ * Imagen inicial de la casa que trae una plantilla: si ya está alojada en nuestro repositorio de fotos se usa por enlace; si no, se descarga con las mismas defensas, se normaliza al formato
  * interno y se aplica a los jugadores actuales y a los que se unan después. Un fallo NUNCA bloquea la partida.
  */
 export async function importInitialImage(ctx: Ctx, code: string, hostId: string, url: string, opts: FetchImageOptions = {}): Promise<{ ok: boolean; reason?: string }> {
   await getHostState(ctx, code, hostId); // permisos antes de descargar nada
   try {
+    if (isHostedImage(url)) {
+      await setInitialFromHosted(ctx, code, hostId, url, { current: true, new: true }); // ya alojada: sin descargarla ni copiarla
+      return { ok: true };
+    }
     const bytes = await fetchImageBytes(url, opts);
     await uploadInitialImageForAll(ctx, code, hostId, bytes, { current: true, new: true });
     return { ok: true };

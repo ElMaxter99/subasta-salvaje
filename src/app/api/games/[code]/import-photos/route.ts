@@ -15,7 +15,10 @@ const bodySchema = z
   })
   .refine((b) => b.photos.length > 0 || b.initial);
 
-/** Fotos de una plantilla: descarga cada URL (https, con defensas SSRF) y la pone en el elemento del catálogo. Solo el anfitrión propietario. */
+/**
+ * Fotos de una plantilla. Las ya alojadas en nuestro repositorio de fotos se usan por enlace (sin descargarlas); las de otros
+ * servidores se descargan (https, con defensas SSRF) y se normalizan. Solo el anfitrión propietario.
+ */
 export const POST = handle(async (req: Request, { params }: { params: Promise<{ code: string }> }) => {
   assertSameOrigin(req);
   const { code } = await params;

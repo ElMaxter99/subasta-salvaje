@@ -42,7 +42,7 @@ Una plantilla es un archivo **JSON** que el anfitrión rellena fuera de la app (
 - **Reglas de negocio:** la importación solo usa `createGame` y las funciones `ss_*` existentes; no hay lógica nueva de dinero.
 
 ## Fotos por URL (`POST /api/games/[code]/import-photos`)
-Tras crear la partida, el servidor descarga cada `foto` y la guarda como foto del elemento (la misma que la subida manual: se usa de referencia cuando alguien gana el elemento). Un fallo de una foto **nunca bloquea la partida**: el panel avisa de cuáles fallaron y puedes subirlas a mano en Catálogo.
+Tras crear la partida, cada `foto` pasa a ser la foto del elemento: si ya está alojada en nuestro repositorio de fotos se usa **por enlace, sin descargarla** (ver `PLANTILLAS-SISTEMA.md`); si es de otro servidor, el servidor la descarga y la guarda (la misma que la subida manual: se usa de referencia cuando alguien gana el elemento). Un fallo de una foto **nunca bloquea la partida**: el panel avisa de cuáles fallaron y puedes subirlas a mano en Catálogo.
 Defensas (`src/lib/security/safe-fetch.ts`, con tests): solo `https`, sin credenciales ni puertos raros, sin IP literales ni nombres internos (`localhost`, `.local`, `.internal`); conexión **anclada a la IP ya comprobada** (anti DNS rebinding); se rechazan IP privadas, de bucle, enlace local, CGNAT y metadatos de nube (IPv4 e IPv6); máx. 3 redirecciones, cada una revalidada; 8 s por descarga, 7 MB y comprobación del tipo real de imagen; 3 descargas a la vez, 45 s en total y 6 importaciones cada 10 min por anfitrión; solo el anfitrión propietario.
 
 ## CSV y ZIP (fase 3)

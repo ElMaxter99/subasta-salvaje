@@ -35,8 +35,8 @@ duplicar nada.
 ## Usarlo al configurar una partida
 En el asistente de «Nueva partida» (y en el editor del superadmin), en el **Resumen → catálogo**: **«De la biblioteca»** abre un modal flotante
 (móvil y escritorio) con colecciones y buscador; marcas productos o «Marcar todos» y se **añaden al catálogo** de esa partida (los nombres que ya
-están se omiten; máximo 100 elementos). Las fotos son enlaces https que se copian a la partida al crearla (necesitan `ASSET_CDN_HOSTS` con
-`cdn.jsdelivr.net` si la defines). La portada, la casa inicial y la foto de cada elemento de una plantilla del sistema también se eligen de la biblioteca («De la biblioteca» en la Ficha y en el editor de catálogo) o se suben. Cualquier anfitrión con sesión puede **leer** el catálogo general (`GET /api/library/items`); solo el superadmin
+están se omiten; máximo 100 elementos). Las fotos se usan **por enlace, sin descargarlas ni copiarlas** (solo se guardan las imágenes que genere la IA); necesitan `ASSET_CDN_HOSTS` con
+`cdn.jsdelivr.net` si la defines. La portada, la casa inicial y la foto de cada elemento de una plantilla del sistema también se eligen de la biblioteca («De la biblioteca» en la Ficha y en el editor de catálogo) o se suben. Cualquier anfitrión con sesión puede **leer** el catálogo general (`GET /api/library/items`); solo el superadmin
 lo gestiona.
 
 ## Configuración

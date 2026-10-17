@@ -1,3 +1,5 @@
+import { fetchImageBytes } from '@/lib/security/safe-fetch';
+import { isExternalRef, isHostedImage, mimeFromExtension } from '@/lib/storage/hosted';
 import { randomUUID } from 'node:crypto';
 import { validateProviderOutput } from '@/lib/ai/image-validation';
 import { normalizeImage } from '@/lib/images/normalize';
@@ -88,6 +90,20 @@ async function providerFor(ctx: Ctx, job: ClaimedJob): Promise<ImageGenerationPr
   return snap.game.image_mode === 'ai' && ctx.provider ? ctx.provider : ctx.stickers;
 }
 
+/**
+ * Lee una imagen guardada. Las de nuestro repositorio de fotos (referencias `https://…` de plantillas) no se copiaron a la partida:
+ * se leen por enlace en el momento de usarlas (solo de NUESTRO repositorio). Las demás, del almacenamiento de la partida.
+ */
+async function readStored(ctx: Ctx, ref: string): Promise<{ bytes: Uint8Array; mime: string }> {
+  if (!isExternalRef(ref)) return ctx.storage.get(ref);
+  if (!isHostedImage(ref)) throw new ProviderError('La imagen de referencia no está en el repositorio de fotos.', false, false);
+  try {
+    return { bytes: await fetchImageBytes(ref), mime: mimeFromExtension(ref) };
+  } catch (e) {
+    throw new ProviderError(`No se pudo leer la imagen alojada: ${e instanceof Error ? e.message : 'error de red'}`, true);
+  }
+}
+
 async function generate(ctx: Ctx, provider: ImageGenerationProvider, job: ClaimedJob): Promise<GeneratedImage> {
   if (job.kind === 'initial' || job.kind === 'base') {
     // `base` = la imagen de partida COMPARTIDA: una sola generación que se asigna a todos los jugadores.
@@ -107,7 +123,7 @@ async function generate(ctx: Ctx, provider: ImageGenerationProvider, job: Claime
     });
   }
   if (!job.base_storage_path) throw new ProviderError('No hay imagen base para editar', false, false);
-  const base = await ctx.storage.get(job.base_storage_path);
+  const base = await readStored(ctx, job.base_storage_path);
   if (provider.id === 'openai' && (job.base_mime_type ?? base.mime) === 'image/svg+xml') {
     throw new ProviderError('La imagen base es un SVG de la galería/demo y OpenAI sólo edita PNG, JPEG o WebP. Sube una imagen PNG/JPG o genera la inicial con IA.', false, false);
   }
@@ -115,7 +131,7 @@ async function generate(ctx: Ctx, provider: ImageGenerationProvider, job: Claime
   let itemImage: { bytes: Uint8Array; mime: string } | undefined;
   if (itemImagePath) {
     try {
-      const stored = await ctx.storage.get(itemImagePath);
+      const stored = await readStored(ctx, itemImagePath);
       itemImage = { bytes: stored.bytes, mime: stored.mime };
     } catch {
       itemImage = undefined; // la foto ya no existe: se edita sólo con el texto, sin fallar

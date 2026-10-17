@@ -120,7 +120,7 @@ export function LibraryItems({ selectedImageIds, onClearSelection }: { selectedI
         </div>
       </Section>
 
-      <Section title={`Productos del catálogo general (${total})`} hint="Al configurar una partida, «Importar de la biblioteca» en el catálogo los copia a esa partida.">
+      <Section title={`Productos del catálogo general (${total})`} hint="Al configurar una partida, «Importar de la biblioteca» en el catálogo los añade a su catálogo (las fotos se usan por enlace, sin copiarlas).">
         <div className="mb-3 grid gap-2 md:grid-cols-3">
           <input aria-label="Buscar productos" placeholder="Buscar…" value={q} onChange={(e) => setQ(e.target.value)} className={input} />
           <select aria-label="Filtrar productos por colección" value={collection} onChange={(e) => setCollection(e.target.value)} className={input}>

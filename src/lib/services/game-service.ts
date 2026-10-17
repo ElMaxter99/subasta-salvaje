@@ -12,6 +12,7 @@ import type { AppContext } from './context';
 import { catalogSceneSvg } from '@/lib/ai/catalog-scenes';
 import { attachUrls } from './urls';
 import { redactSecrets } from '@/lib/security/redact';
+import { isExternalRef, isHostedImage, mimeFromExtension } from '@/lib/storage/hosted';
 
 type Ctx = Pick<AppContext, 'db' | 'storage' | 'publisher'>;
 
@@ -234,7 +235,33 @@ async function setItemImage(ctx: Ctx, code: string, hostId: string, itemId: stri
   const storagePath = bytes ? `games/${before.game.id}/items/${itemId}/${randomUUID()}.${extensionForMime(mime)}` : null;
   if (bytes && storagePath) await ctx.storage.put(storagePath, bytes, mime);
   const result = await ctx.db.rpc<{ old_path: string | null }>('ss_set_item_image', { room_code: code, host_id: hostId, item_id: itemId, storage_path: storagePath });
-  if (result.old_path) await ctx.storage.deletePrefix(result.old_path).catch(() => undefined); // la foto anterior ya no hace falta
+  if (result.old_path && !isExternalRef(result.old_path)) await ctx.storage.deletePrefix(result.old_path).catch(() => undefined); // la foto anterior ya no hace falta (nunca se borra nada del repositorio de fotos)
+  const snapshot = await getHostState(ctx, code, hostId);
+  await ctx.publisher.publish(code, snapshot.version);
+  return { result, snapshot };
+}
+
+/** Foto de un elemento YA alojada en el repositorio de fotos: se usa su enlace, sin descargarla ni copiarla. */
+export async function setItemImageFromHosted(ctx: Ctx, roomCode: string, hostId: string, itemId: string, url: string): Promise<ActionResult> {
+  if (!isHostedImage(url)) throw new DomainError('invalid_input', 'La imagen no está en el repositorio de fotos.');
+  const code = room(roomCode);
+  const result = await ctx.db.rpc<{ old_path: string | null }>('ss_set_item_image', { room_code: code, host_id: hostId, item_id: itemId, storage_path: url });
+  if (result.old_path && !isExternalRef(result.old_path)) await ctx.storage.deletePrefix(result.old_path).catch(() => undefined);
+  const snapshot = await getHostState(ctx, code, hostId);
+  await ctx.publisher.publish(code, snapshot.version);
+  return { result, snapshot };
+}
+
+/** Imagen inicial YA alojada en el repositorio de fotos: se aplica por enlace (sin copiarla) a los jugadores actuales y a los futuros. */
+export async function setInitialFromHosted(ctx: Ctx, roomCode: string, hostId: string, url: string, scope: InitialScope = { current: true, new: true }): Promise<ActionResult> {
+  if (!isHostedImage(url)) throw new DomainError('invalid_input', 'La imagen no está en el repositorio de fotos.');
+  const code = room(roomCode);
+  const before = await getHostState(ctx, code, hostId);
+  if (before.game.status !== 'lobby') throw new DomainError('game_already_started');
+  const result = await ctx.db.rpc<Record<string, unknown>>('ss_apply_initial_image', {
+    room_code: code, host_id: hostId, kind: 'file', storage_path: url, mime_type: mimeFromExtension(url), bytes: null, provider: 'template',
+    scope_current: scope.current, scope_new: scope.new,
+  });
   const snapshot = await getHostState(ctx, code, hostId);
   await ctx.publisher.publish(code, snapshot.version);
   return { result, snapshot };

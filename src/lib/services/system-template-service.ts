@@ -4,6 +4,7 @@ import { validateImage } from '@/lib/ai/image-validation';
 import { assetCdnHosts, githubAssetsConfig, urlAllowedByCdn } from '@/lib/config/env';
 import { IMAGE_SPECS, normalizeImage, NormalizeError, type ImageKind } from '@/lib/images/normalize';
 import { slugify } from '@/lib/domain/template-assets';
+import { hostedRepoPath } from '@/lib/storage/hosted';
 import { AssetUploadError, createGithubAssets, type GithubBatchAssets, type UploadedAsset } from '@/lib/storage/github-assets';
 import { DomainError } from '@/lib/domain/errors';
 import { parseTemplate, TEMPLATE_LIMITS, type Template } from '@/lib/domain/template';
@@ -226,13 +227,7 @@ const stagedTemplateSchema = z.object({
   bytes: z.number().int().positive(),
 });
 
-/** Ruta dentro del repositorio de fotos a partir de un enlace de jsDelivr de ESE repositorio (o null si el enlace es de otro sitio). */
-export function repoPathFromUrl(url: string | null | undefined): string | null {
-  const cfg = githubAssetsConfig();
-  if (!url || !cfg) return null;
-  const m = new RegExp(`^https://cdn\\.jsdelivr\\.net/gh/${cfg.repo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}@[^/]+/(.+)$`).exec(url);
-  return m ? m[1]! : null;
-}
+export const repoPathFromUrl = hostedRepoPath;
 
 const commitSchema = z.object({
   slug: z.string().trim().max(60).default(''),

@@ -99,6 +99,10 @@ La colección con alfa real (`public/assets/mascot-vector/`) es vectorial. Para 
 - [ ] Vuelve a probar dos compras seguidas en una partida con IA: el historial (Detalles) muestra ahora IA, modelo y tipo, y el prompt pide que la compra anterior siga visible y la nueva vaya a otra zona. **No verificado contra Pollinations real**: si la 2.ª compra sigue tapando la 1.ª, copia las dos imágenes y los prompts; la alternativa fiable es la composición (collage), que conserva la imagen anterior píxel a píxel.
 - [ ] Si Pollinations rechaza el tamaño con la proporción de la casa (p. ej. `1024x576`), fija `POLLINATIONS_IMAGE_SIZE=1024x768` y avisa.
 
+## 5j. Imágenes por enlace
+- [ ] Las partidas creadas con una plantilla del sistema ya no copian sus fotos: TV y móviles las cargan de jsDelivr y la IA las lee por enlace. Requiere `GITHUB_ASSETS_REPO` definida en Vercel (sin ella se descargan como antes). **Sin probar contra jsDelivr real.** Revisa en una partida real que la casa y las fotos se ven y que una edición con IA lee la base.
+- [ ] Revisa el texto de `/privacidad` (jsDelivr recibe ahora también las peticiones de TV y móviles).
+
 ## 6. Cron externo (opcional pero recomendado en producción)
 - [ ] El cron de `vercel.json` es diario (límite del plan *Hobby*). Para que los trabajos de imagen y el borrado se procesen con más frecuencia, programa en GitHub Actions o cron-job.org una llamada cada minuto a `/api/jobs/process` con la cabecera `Authorization: Bearer <CRON_SECRET>`.
 

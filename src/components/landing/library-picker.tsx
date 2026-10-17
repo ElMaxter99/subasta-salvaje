@@ -10,7 +10,7 @@ type CatalogItem = LoadedCatalog[number];
 
 const field = 'w-full rounded-xl border border-white/15 bg-night-900 px-3 py-2 text-base';
 
-/** Convierte un producto de la biblioteca en un elemento del catálogo de la partida (la foto es un enlace https que se copia al crear la partida). */
+/** Convierte un producto de la biblioteca en un elemento del catálogo de la partida (la foto es un enlace a la imagen ya alojada: la partida la usa tal cual, sin copiarla). */
 export function libraryToCatalogItem(it: LibraryItem): CatalogItem {
   return { name: it.name, description: it.description, emoji: it.emoji, photoUrl: it.photo_url, photoPath: null, photoFile: null, credito: it.photo_credit || it.credit || null };
 }
