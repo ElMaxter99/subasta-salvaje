@@ -49,6 +49,8 @@ describe('prompt de edición: la base puede ser cualquier cosa y el resultado de
     expect(p).toMatch(/if the base is a living being/);
     expect(p).toMatch(/ONE coherent photograph or picture in the style of the base, not a collage/);
     expect(p).toMatch(/no white or dark halos/);
+    expect(p).toMatch(/never floating/);
+    expect(p).toMatch(/Final check: the base picture is unchanged except for the one added element/);
     expect(p).toMatch(/Do NOT redraw, restyle or remove anything/);
   });
 });
@@ -65,6 +67,8 @@ describe('prompt de edición: lo ya comprado debe seguir visible', () => {
     const blend = buildBlendPrompt({ ...input, previousItems: ['Pikachu', 'Barca vieja'], itemImage: { bytes: new Uint8Array(), mime: 'image/png' } });
     expect(blend).toMatch(/these elements, added in earlier rounds: Pikachu, Barca vieja/);
     expect(blend).toMatch(/They all stay fully visible/);
+    expect(blend).toMatch(/Final check: Pikachu, Barca vieja are still clearly visible exactly where they were, nothing existing was replaced by something else/);
+    expect(blend).toMatch(/leave out the background and the unrelated people or scenery/);
     expect(new Set([0, 1, 2, 3].map(regionFor)).size).toBe(4); // cada compra apunta a una zona distinta
   });
 });

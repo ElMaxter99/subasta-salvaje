@@ -29,6 +29,16 @@ describe('guardia de zona: lo anterior no puede desaparecer', () => {
     expect(box.left).toBeLessThan(280);
   });
 
+  it('un objeto anterior que cae DENTRO de la zona del nuevo también se conserva (caso real: el modelo lo cambió por otra cosa)', async () => {
+    const insideBox = { x: 110, y: 250, w: 60, h: 60, c: '#ff0000' }; // núcleo de la 1.ª compra, solapado con la zona de la 2.ª
+    const base = await canvas([insideBox]);
+    const replaced = await canvas([{ x: 110, y: 250, w: 60, h: 60, c: '#00ff00' }, { x: 300, y: 230, w: 100, h: 100, c: '#0000ff' }]); // cambió el rojo por verde y añadió el azul
+    const r = await preserveOutsideZone(base, replaced, 1);
+    expect(r.applied).toBe(true);
+    expect(await px(r.bytes, 140, 280)).toEqual([255, 0, 0]); // el objeto anterior sigue intacto
+    expect(await px(r.bytes, 350, 280)).toEqual([0, 0, 255]); // el nuevo, en su zona
+  });
+
   it('el fondo fuera de la zona queda idéntico al de la imagen anterior aunque el modelo lo haya retocado', async () => {
     const base = await canvas([previous]);
     const retouched = await canvas([{ x: 0, y: 0, w: 640, h: 60, c: '#101010' }, { x: 280, y: 220, w: 100, h: 100, c: '#0000ff' }]); // cambió el cielo

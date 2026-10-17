@@ -9,7 +9,10 @@ Objetivo del juego: partir de **una imagen base cualquiera** (una casa, un batid
 3. **Lo ya añadido sigue visible**: se nombra («Image 0 ALREADY contains …: Pikachu») y se prohíbe sustituirlo, taparlo o esconderlo.
 4. **Con foto del elemento** (imagen 1): se reproduce fielmente (forma, colores, marcas) **sin su fondo original**.
 5. **Zona sugerida solo si la base es un lugar con espacio libre** («preferably in the foreground center part»); si no, el modelo decide. Esa zona (`regionFor` / `slotFor`) es la misma que usa la guardia de zona.
-6. Solo un elemento por ronda y sin texto, letras, logotipos ni marcas de agua.
+6. **Físicamente creíble**: el elemento descansa o se acopla a la escena (suelo, mesa, en la mano, puesto, mezclado) con sombras de contacto, nunca flotando ni pegado a una pared salvo que sea natural.
+7. **Solo el objeto de la foto de referencia**, sin su fondo ni las personas o el paisaje ajenos, salvo que sean claramente parte del elemento.
+8. **Comprobación final** (los modelos pesan más lo último): lo anterior sigue visible donde estaba, nada existente se ha cambiado por otra cosa y la única diferencia con la base es el elemento nuevo.
+9. Solo un elemento por ronda y sin texto, letras, logotipos ni marcas de agua.
 
 ## Guardia de zona (`src/lib/ai/region-guard.ts`)
 Los modelos de edición económicos a veces «pierden» lo anterior (la barca sustituyó al Pikachu). Con compras previas, la imagen final conserva la anterior **píxel a píxel fuera de la zona del objeto nuevo** (borde suave). **No se aplica** si: el objeto no está en su zona, el modelo devolvió otra proporción, o cambió más del 40 % de la imagen (una **mezcla**, como salsa en un batido: ahí cambiar «todo» es lo correcto). Queda anotado en el prompt de la versión («guardia de zona»).

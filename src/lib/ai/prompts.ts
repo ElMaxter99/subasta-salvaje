@@ -35,11 +35,18 @@ function previousClause(input: EditSceneInput): string {
   return `Image 0 ALREADY contains ${n === 1 ? 'this element' : 'these elements'}, added in earlier rounds: ${input.previousItems.join(', ')}. ${n === 1 ? 'It stays' : 'They all stay'} fully visible and recognizable in the final image, with the same look: the new element must NOT replace, cover, overlap or hide ${n === 1 ? 'it' : 'any of them'}. ${zone}`;
 }
 
+/** Recordatorio final (los modelos pesan más lo último): nada de lo anterior desaparece ni se cambia por otra cosa. */
+function finalCheck(input: EditSceneInput): string {
+  return input.previousItems.length === 0
+    ? 'Final check: the base picture is unchanged except for the one added element.'
+    : `Final check: ${input.previousItems.join(', ')} ${input.previousItems.length === 1 ? 'is' : 'are'} still clearly visible exactly where ${input.previousItems.length === 1 ? 'it was' : 'they were'}, nothing existing was replaced by something else, and the only difference from the base picture is the one new element.`;
+}
+
 /** Reglas comunes: la imagen base puede ser CUALQUIER cosa y el resultado debe ser una sola imagen coherente, natural y divertida. */
 const MIX_RULES = [
   'Image 0 is the BASE picture of a funny photo-mixing game: it can be anything (a house, a room, a drink, a food, an object, an animal, a person, a landscape). You are given no further context, so decide by yourself from what you see.',
   'Merge the new element into the base in the most natural, believable and funny way: if the base is a place or a scene, put the element in it as a real object that belongs there (same scale, perspective, lighting and cast shadows); if the base is a food, a drink or an object, use the element as something that is added to it (an ingredient, a topping, a decoration, an accessory) blended in naturally; if the base is a living being, the element becomes an accessory, a companion or a prop that interacts with it.',
-  'The final image must look like ONE coherent photograph or picture in the style of the base, not a collage: no sticker look, no cut-out edges, no white or dark halos around the element, no floating objects. Keep the base picture\'s framing, aspect ratio, colors and style. Do NOT redraw, restyle or remove anything that was already there.',
+  'The final image must look like ONE coherent photograph or picture in the style of the base, not a collage: no sticker look, no cut-out edges, no white or dark halos around the element. The element must rest or attach to the scene in a physically believable way (on the floor, on a table, held, worn or mixed in as appropriate) with contact shadows, never floating or pasted on a wall unless that is natural for it. Keep the base picture\'s framing, aspect ratio, colors and style. Do NOT redraw, restyle or remove anything that was already there.',
 ];
 
 /**
@@ -53,6 +60,7 @@ export function buildEditPrompt(input: EditSceneInput): string {
     ...MIX_RULES,
     previousClause(input),
     'Add only that element and nothing else.',
+    finalCheck(input),
     NO_TEXT,
   ].join(' ');
 }
@@ -63,10 +71,11 @@ export function buildEditPrompt(input: EditSceneInput): string {
  */
 export function buildBlendPrompt(input: EditSceneInput): string {
   return [
-    `Image 1 is a reference picture of the new element "${input.itemName}" (${input.itemDescription || 'no further description'}). Add exactly ONE new element to image 0: the object shown in image 1, reproduced faithfully (its shape, colors, markings and distinctive details exactly as in the reference, without its original background).`,
+    `Image 1 is a reference picture of the new element "${input.itemName}" (${input.itemDescription || 'no further description'}). Add exactly ONE new element to image 0: the object shown in image 1, reproduced faithfully (its shape, colors, markings and distinctive details exactly as in the reference). Take only the object itself: leave out the background and the unrelated people or scenery of the reference photo unless they are clearly part of the element.`,
     ...MIX_RULES,
     previousClause(input),
     'Add only that element and nothing else.',
+    finalCheck(input),
     NO_TEXT,
   ].join(' ');
 }
