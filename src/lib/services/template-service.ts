@@ -1,7 +1,7 @@
 import { DomainError } from '@/lib/domain/errors';
 import { fetchImageBytes, SafeFetchError, type FetchImageOptions } from '@/lib/security/safe-fetch';
 import type { AppContext } from './context';
-import { getHostState, uploadItemImage } from './game-service';
+import { getHostState, uploadInitialImageForAll, uploadItemImage } from './game-service';
 
 type Ctx = Pick<AppContext, 'db' | 'storage' | 'publisher' | 'provider'>;
 
@@ -74,4 +74,19 @@ export async function importItemPhotos(
   }
   await Promise.all(Array.from({ length: Math.min(3, jobs.length) }, worker));
   return result;
+}
+
+/**
+ * Imagen inicial de la casa que trae una plantilla (URL https): se descarga con las mismas defensas, se normaliza al formato
+ * interno y se aplica a los jugadores actuales y a los que se unan después. Un fallo NUNCA bloquea la partida.
+ */
+export async function importInitialImage(ctx: Ctx, code: string, hostId: string, url: string, opts: FetchImageOptions = {}): Promise<{ ok: boolean; reason?: string }> {
+  await getHostState(ctx, code, hostId); // permisos antes de descargar nada
+  try {
+    const bytes = await fetchImageBytes(url, opts);
+    await uploadInitialImageForAll(ctx, code, hostId, bytes, { current: true, new: true });
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, reason: e instanceof SafeFetchError ? REASON[e.reason] : e instanceof DomainError ? e.message : 'no se pudo guardar' };
+  }
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Download, FileUp, Trash2 } from 'lucide-react';
-import { ApiError, deleteTemplateRequest, getTemplateRequest, listTemplatesRequest, type SavedTemplateSummary } from '@/lib/client/api';
+import { ApiError, deleteTemplateRequest, getSystemTemplateRequest, getTemplateRequest, listSystemTemplatesRequest, listTemplatesRequest, type SavedTemplateSummary, type SystemTemplateCard } from '@/lib/client/api';
 import { Button } from '@/components/ui/button';
 import { downloadText } from '@/lib/client/download';
 import { blankTemplate, parseTemplate, templateSummary, templateToForm } from '@/lib/domain/template';
@@ -24,10 +24,12 @@ export function TemplateImport({ onTemplate, onCatalog }: { onTemplate: (values:
   const [loaded, setLoaded] = useState<string | null>(null);
   const [saved, setSaved] = useState<SavedTemplateSummary[]>([]);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
+  const [system, setSystem] = useState<SystemTemplateCard[]>([]);
 
   useEffect(() => {
     let alive = true;
     listTemplatesRequest().then((l) => alive && setSaved(l)).catch(() => undefined); // sin sesión o sin plantillas: no se muestra nada
+    listSystemTemplatesRequest().then((l) => alive && setSystem(l)).catch(() => undefined);
     return () => { alive = false; };
   }, []);
 
@@ -43,6 +45,21 @@ export function TemplateImport({ onTemplate, onCatalog }: { onTemplate: (values:
       onTemplate({ ...v, items: v.items ? v.items.map((i) => ({ ...i, photoFile: null })) : null });
     } catch (e) {
       setErrors([e instanceof ApiError ? e.message : 'No se pudo cargar la plantilla.']);
+    }
+  }
+
+  async function loadSystem(t: SystemTemplateCard) {
+    setErrors([]);
+    setWarnings([]);
+    try {
+      const r = parseTemplate(JSON.stringify((await getSystemTemplateRequest(t.id)).data));
+      if (!r.ok) return setErrors(r.errors);
+      setWarnings(r.warnings);
+      setLoaded(`Partida del sistema «${t.title}» cargada: ${templateSummary(r.template)}.`);
+      const v = templateToForm(r.template);
+      onTemplate({ ...v, items: v.items ? v.items.map((i) => ({ ...i, photoFile: null })) : null });
+    } catch (e) {
+      setErrors([e instanceof ApiError ? e.message : 'No se pudo cargar la partida del sistema.']);
     }
   }
 
@@ -109,6 +126,27 @@ export function TemplateImport({ onTemplate, onCatalog }: { onTemplate: (values:
           <Download className="size-5" aria-hidden /> Descargar plantilla vacía
         </Button>
       </div>
+      {system.length > 0 ? (
+        <div className="space-y-2" data-testid="system-templates">
+          <h4 className="text-sm font-bold uppercase tracking-wide text-white/60 2xl:text-base">Partidas del sistema</h4>
+          <ul className="grid gap-3 sm:grid-cols-2">
+            {system.map((t) => (
+              <li key={t.id} className="flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-night-900" data-testid="system-template-card">
+                {t.cover_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element -- portada alojada en el CDN del propietario
+                  <img src={t.cover_url} alt="" loading="lazy" referrerPolicy="no-referrer" className="aspect-[1200/630] w-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                ) : null}
+                <div className="flex flex-1 flex-col gap-1 p-3">
+                  <span className="font-bold">{t.title}</span>
+                  {t.description ? <span className="text-sm text-white/70">{t.description}</span> : null}
+                  <span className="text-xs text-white/60">{t.items} elementos · {t.players} jugadores{t.has_initial_image ? ' · con casa inicial' : ''}</span>
+                  <Button type="button" size="sm" variant="primary" className="mt-auto self-start" onClick={() => void loadSystem(t)} aria-label={`Usar la partida del sistema ${t.title}`}>Usar</Button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
       {saved.length > 0 ? (
         <div className="space-y-2" data-testid="saved-templates">
           <h4 className="text-sm font-bold uppercase tracking-wide text-white/60 2xl:text-base">Mis plantillas</h4>

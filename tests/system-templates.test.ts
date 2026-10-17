@@ -3,7 +3,9 @@ import sharp from 'sharp';
 import { assetCdnHosts, urlAllowedByCdn } from '@/lib/config/env';
 import type { Transport } from '@/lib/security/safe-fetch';
 import { checkTemplateImages, deleteSystemTemplate, getSystemTemplate, listSystemTemplates, saveSystemTemplate, setSystemTemplateStatus } from '@/lib/services/system-template-service';
-import { makeCtx, type TestCtx } from './helpers';
+import { createGame, getHostState } from '@/lib/services/game-service';
+import { importInitialImage } from '@/lib/services/template-service';
+import { makeCtx, newHost, type TestCtx } from './helpers';
 
 let ctx: TestCtx;
 let webp: Uint8Array;
@@ -108,5 +110,30 @@ describe('plantillas del sistema (SQL + servicio)', () => {
     } finally {
       delete process.env.ASSET_CDN_HOSTS;
     }
+  });
+});
+
+describe('imagen inicial de la casa que trae la plantilla', () => {
+  it('se descarga, se normaliza (WebP) y se aplica a los jugadores actuales y a los nuevos', async () => {
+    const host = newHost();
+    const { room_code } = await createGame(ctx, host, { name: 'Con casa', integer_bids: false, players: [{ name: 'Ana' }, { name: 'Beto' }] });
+    const r = await importInitialImage(ctx, room_code, host, 'https://cdn.ejemplo.com/casa.png', { transport: serve({ '/casa.png': { bytes: bigPng, type: 'image/png' } }) });
+    expect(r).toEqual({ ok: true });
+    const snap = await getHostState(ctx, room_code, host);
+    expect(snap.players.every((p) => p.current_image?.provider === 'upload')).toBe(true);
+    expect(new Set(snap.players.map((p) => p.current_image!.storage_path)).size).toBe(1); // un solo archivo compartido
+    const stored = ctx.storage.files.get(snap.players[0]!.current_image!.storage_path!)!;
+    expect(stored.mime).toBe('image/webp');
+    expect(stored.bytes.length).toBeLessThan(300_000);
+    expect((await sharp(Buffer.from(stored.bytes)).metadata()).width).toBeLessThanOrEqual(1536);
+  });
+
+  it('un fallo (404, dirección interna o no es imagen) devuelve el motivo y no rompe la partida; solo el propietario', async () => {
+    const host = newHost();
+    const { room_code } = await createGame(ctx, host, { name: 'Sin casa', integer_bids: false, players: [{ name: 'Ana' }] });
+    expect(await importInitialImage(ctx, room_code, host, 'https://cdn.ejemplo.com/no.png', { transport: serve({}) })).toMatchObject({ ok: false });
+    expect(await importInitialImage(ctx, room_code, host, 'https://127.0.0.1/c.png', { transport: serve({}) })).toMatchObject({ ok: false, reason: 'dirección no permitida' });
+    expect((await getHostState(ctx, room_code, host)).players[0]!.current_image).toBeFalsy();
+    await expect(importInitialImage(ctx, room_code, newHost(), 'https://cdn.ejemplo.com/casa.png', { transport: serve({}) })).rejects.toMatchObject({ code: 'not_host' });
   });
 });

@@ -68,6 +68,7 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
   const [integerBids, setIntegerBids] = useState(true);
   // Sin jugadores de partida: se pueden crear luego en el panel o, en modo móviles, darse de alta ellos mismos.
   const [players, setPlayers] = useState<string[]>([]);
+  const [initialImageUrl, setInitialImageUrl] = useState<string | null>(null);
   const [maxPlayersText, setMaxPlayersText] = useState(String(MAX_PLAYERS));
   const maxPlayers = maxPlayersText.trim() === '' ? MAX_PLAYERS : Number(maxPlayersText);
   // Catálogo propio cargado desde una plantilla (null = el de la temática)
@@ -119,6 +120,7 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
     setImageMode(v.imageMode === 'ai' && !aiAvailable ? 'stickers' : v.imageMode);
     setPlayers(v.players);
     setItems(v.items);
+    setInitialImageUrl(v.initialImageUrl ?? null);
     go(STEPS.length - 1); // directo al resumen para revisar
   }
 
@@ -197,11 +199,12 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
       });
       // Fotos de la plantilla (por URL): la partida YA existe; si alguna falla se avisa en el panel pero no se bloquea nada.
       const photos = (items ?? []).filter((i) => i.photoUrl).map((i) => ({ name: i.name, url: i.photoUrl! }));
-      if (photos.length > 0) {
-        setBusyLabel(`Descargando ${photos.length} ${photos.length === 1 ? 'foto' : 'fotos'}…`);
+      if (photos.length > 0 || initialImageUrl) {
+        setBusyLabel(photos.length ? `Descargando ${photos.length} ${photos.length === 1 ? 'foto' : 'fotos'}…` : 'Descargando la imagen inicial…');
         try {
-          const r = await importPhotosRequest(room_code, photos);
-          if (r.failed.length > 0) window.sessionStorage.setItem('ss_import_notice', JSON.stringify({ code: room_code, imported: r.imported, failed: r.failed }));
+          const r = await importPhotosRequest(room_code, photos, initialImageUrl);
+          const failed = [...r.failed, ...(r.initial && !r.initial.ok ? [{ name: 'Imagen inicial de la casa', reason: r.initial.reason ?? 'no se pudo guardar' }] : [])];
+          if (failed.length > 0) window.sessionStorage.setItem('ss_import_notice', JSON.stringify({ code: room_code, imported: r.imported, failed }));
         } catch {
           window.sessionStorage.setItem('ss_import_notice', JSON.stringify({ code: room_code, imported: 0, failed: photos.map((p) => ({ name: p.name, reason: 'no se pudo descargar' })) }));
         }

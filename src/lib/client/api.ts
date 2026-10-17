@@ -68,9 +68,17 @@ export async function createGameRequest(body: unknown): Promise<{ room_code: str
 }
 
 export interface PhotoImportResult { imported: number; failed: { name: string; reason: string }[] }
-export async function importPhotosRequest(roomCode: string, photos: { name: string; url: string }[]): Promise<PhotoImportResult> {
-  const res = await fetch(`/api/games/${roomCode}/import-photos`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ photos }) });
-  return parse<PhotoImportResult>(res);
+export async function importPhotosRequest(roomCode: string, photos: { name: string; url: string }[], initial?: string | null): Promise<PhotoImportResult & { initial?: { ok: boolean; reason?: string } }> {
+  const res = await fetch(`/api/games/${roomCode}/import-photos`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ photos, ...(initial ? { initial } : {}) }) });
+  return parse<PhotoImportResult & { initial?: { ok: boolean; reason?: string } }>(res);
+}
+
+export interface SystemTemplateCard { id: string; slug: string; title: string; description: string; cover_url: string | null; items: number; players: number; has_initial_image: boolean }
+export async function listSystemTemplatesRequest(): Promise<SystemTemplateCard[]> {
+  return (await parse<{ templates: SystemTemplateCard[] }>(await fetch('/api/system-templates'))).templates;
+}
+export async function getSystemTemplateRequest(id: string): Promise<{ id: string; title: string; data: unknown }> {
+  return parse(await fetch(`/api/system-templates/${id}`));
 }
 
 export interface SavedTemplateSummary { id: string; name: string; updated_at: string; items: number; players: number }

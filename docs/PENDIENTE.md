@@ -25,7 +25,7 @@ Orden de las migraciones (carpeta `supabase/migrations`): `…0000_core` → `�
 → `…2200`/`…2300` (panel de superadmin: ajustes, perfiles, invitaciones, auditoría; `image_usage` deja de borrarse con la partida)
 → `…2400`/`…2500` (foto propia de los elementos del catálogo)
 → `…2600`/`…2700` (rondas máximas, pujas enteras, imagen inicial obligatoria y subasta automática)
-→ `…2800`/`…2900` (puerta de alta: `ss_signup_allowed`; el formulario de la app ya no permite crear cuenta con el registro cerrado) → `…3000`/`…3100` (sonido: interruptores de efectos y música de la TV) → `…3200`/`…3300` (cierre automático de la votación de la galería) → `…3400`/`…3500` (plantillas guardadas del anfitrión: tabla `host_templates`) → `…3600`/`…3700` (devolución de cuota de IA cuando el proveedor no gastó nada) → `…3800`/`…3900` (proveedores de IA: apagado y tope diario por proveedor, uso de hoy) → `…4000`/`…4100` (máximo de jugadores por partida: columna `games.max_players`, `ss_max_players_cap()` = 10; renombra `ss_get_state` otra vez) Si alguna se aplicó a mano en el SQL Editor, marca antes
+→ `…2800`/`…2900` (puerta de alta: `ss_signup_allowed`; el formulario de la app ya no permite crear cuenta con el registro cerrado) → `…3000`/`…3100` (sonido: interruptores de efectos y música de la TV) → `…3200`/`…3300` (cierre automático de la votación de la galería) → `…3400`/`…3500` (plantillas guardadas del anfitrión: tabla `host_templates`) → `…3600`/`…3700` (devolución de cuota de IA cuando el proveedor no gastó nada) → `…3800`/`…3900` (proveedores de IA: apagado y tope diario por proveedor, uso de hoy) → `…4200`/`…4300` (partidas del sistema: tabla `system_templates` y sus funciones) → `…4000`/`…4100` (máximo de jugadores por partida: columna `games.max_players`, `ss_max_players_cap()` = 10; renombra `ss_get_state` otra vez) Si alguna se aplicó a mano en el SQL Editor, marca antes
 esas versiones con `npx supabase migration repair --status applied <versión>`.
 Después de cada migración nueva, vuelve a probar a mano: crear partida, pujar, adjudicar (el saldo baja una sola vez) y borrar.
 
@@ -72,6 +72,12 @@ Después de cada migración nueva, vuelve a probar a mano: crear partida, pujar,
 - [ ] Borra los despliegues antiguos que ya no uses (Vercel → proyecto → *Deployments*) y, en *Settings → Build & Deployment → Deployment Retention*, reduce cuánto se conservan. El espacio ya usado no baja solo.
 - [ ] Tras el siguiente despliegue, prueba a generar una imagen con IA (la única función que usa `sharp`) y abre `/admin/ia`. Si algo falla por falta de `sharp` o `@electric-sql/pglite`, avísame con el error.
 - [ ] Cada push a la rama de producción genera un despliegue: agrupa los cambios en menos commits/pushes y, si usas ramas de prueba, desactiva sus previews en *Settings → Git → Ignored Build Step* o en `vercel.json` (`git.deploymentEnabled`; no lo toqué porque no sé cuál es tu rama de producción).
+
+## 5g. Partidas del sistema
+- [ ] Aplica las migraciones `…4200`/`…4300` (tabla `system_templates`).
+- [ ] Elige dónde guardar las fotos (R2 o jsDelivr; ver `docs/PLANTILLAS-SISTEMA.md`), prepáralas con `npm run assets:normalize` y define `ASSET_CDN_HOSTS` en Vercel.
+- [ ] En `/admin/plantillas` crea una plantilla con fotos reales, pulsa «Comprobar imágenes» y publícala. **Sin probar contra un CDN real.**
+- [ ] Añadir a la política de privacidad/créditos el proveedor de fotos que elijas (nuevo tercero que sirve imágenes a los visitantes).
 
 ## 6. Cron externo (opcional pero recomendado en producción)
 - [ ] El cron de `vercel.json` es diario (límite del plan *Hobby*). Para que los trabajos de imagen y el borrado se procesen con más frecuencia, programa en GitHub Actions o cron-job.org una llamada cada minuto a `/api/jobs/process` con la cabecera `Authorization: Bearer <CRON_SECRET>`.
