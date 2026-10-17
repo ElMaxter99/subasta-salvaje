@@ -415,9 +415,10 @@ Solo para el correo de `SUPERADMIN_EMAILS` (confirmado); cualquier otra persona 
 - **Usuarios:** lista de anfitriones (incluye cuentas de Supabase sin perfil), bloquear/desbloquear, dar o quitar la IA a un usuario (sus partidas en modo IA pasan a pegatinas), **invitaciones** y **borrado total** (cuenta de Auth, partidas, jugadores, pujas, imágenes y archivos; hay que escribir el correo para confirmar). El superadmin no puede bloquearse ni borrarse.
 - **Partidas:** todas, con dueño, peso, IA usada y última actividad; borrar una o «purgar caducadas ahora».
 - **Ajustes (en caliente, sin redeploy):** registro **abierto/cerrado** (cerrado: solo entra quien tenga invitación o ya tuviera partidas; la pantalla de registro de Supabase sigue existiendo pero esas cuentas no pueden entrar), **borrado automático** en días (por defecto 7), **interruptor global de IA** y topes de cuota por partida/día (ganan a las variables de entorno).
+- **IA (`/admin/ia`):** auditoría de proveedores, solo lectura y con caché de 60 s. **Cloudflare**: neuronas de hoy y de 7 días, por día y por modelo (GraphQL Analytics; el token necesita «Account Analytics: Read»), neuronas por llamada y cuántas llamadas al día caben en la capa gratuita. **Pollinations**: validez, tipo y presupuesto de la clave, saldo de pollen, peticiones y coste de 24 h/7 d/30 d por día y modelo, e imágenes estimadas que quedan. **Sin probar contra las APIs reales** (la consulta de Cloudflare usa nombres de campo de ejemplos de terceros; si los rechaza, el error se muestra en el panel).
 - **Auditoría:** registro inmutable de todo lo anterior (quién, qué, cuándo).
 - El uso de IA (`image_usage`) se conserva al borrar partidas o usuarios: borrar no «devuelve» cuota ni borra el historial de gasto.
-- **Pendiente (MFA):** la autenticación en dos pasos del superadmin está anotada en `docs/PENDIENTE.md`; hasta entonces protege la cuenta con una contraseña larga.
+- **MFA:** opcional con `SUPERADMIN_REQUIRE_MFA=true` (ver arriba). Sin ella, protege la cuenta con una contraseña larga.
 
 </details>
 

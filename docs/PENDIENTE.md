@@ -60,6 +60,10 @@ Después de cada migración nueva, vuelve a probar a mano: crear partida, pujar,
 - [x] Primera prueba real (17-10-2026): la clave y el endpoint funcionan (Pollinations respondió 402 «API key budget too low: ~0.0020 pollen por imagen, la clave tiene 0»). El presupuesto se sube **en la clave** (enter.pollinations.ai → editar clave); recargar la cartera no lo aumenta. No metas dinero: solo usa el saldo gratuito que dé tu cuenta, si lo hay.
 - [ ] Confirmar que una edición real con imagen también funciona (la generación ya la has visto funcionar tras dar presupuesto a la clave): el adaptador (`src/lib/ai/pollinations.ts`) asume la respuesta OpenAI `data[0].b64_json` (la documentación consultada estaba recortada) y solo lo cubren tests con `fetch` simulado. Si el formato difiere, ajustar y avisar.
 
+## 5d. Panel de auditoría de IA (`/admin/ia`)
+- [ ] Para ver las neuronas de Cloudflare, el token (`CLOUDFLARE_API_TOKEN`) necesita además el permiso **Account → Account Analytics → Read** (créalo con *Edit* o añade el permiso al token y rota si procede). Abre `/admin/ia`: si Cloudflare rechaza la consulta (nombres de campo sin verificar), el panel muestra el error; cópiamelo y lo ajusto.
+- [ ] Contrasta con el panel de Cloudflare que las neuronas coinciden y usa «Neuronas / llamada» para fijar `IMAGE_QUOTA_PER_DAY` o el tope diario de Cloudflare en Ajustes.
+
 ## 6. Cron externo (opcional pero recomendado en producción)
 - [ ] El cron de `vercel.json` es diario (límite del plan *Hobby*). Para que los trabajos de imagen y el borrado se procesen con más frecuencia, programa en GitHub Actions o cron-job.org una llamada cada minuto a `/api/jobs/process` con la cabecera `Authorization: Bearer <CRON_SECRET>`.
 

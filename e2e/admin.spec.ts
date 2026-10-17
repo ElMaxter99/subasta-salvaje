@@ -34,6 +34,11 @@ test('superadmin: panel con estadísticas, ajustes y auditoría; los demás ven 
   await page.getByPlaceholder('correo@ejemplo.com').fill('amigo@ejemplo.com');
   await page.getByRole('button', { name: 'Invitar' }).click();
   await expect(page.getByText('amigo@ejemplo.com').first()).toBeVisible();
+  // Panel de IA: en demo no hay credenciales, así que muestra el aviso en lugar de llamar a ningún proveedor
+  await page.goto('/admin/ia');
+  await expect(page.getByRole('heading', { name: 'Cloudflare Workers AI' })).toBeVisible();
+  await expect(page.getByText('No hay credenciales de Cloudflare configuradas')).toBeVisible();
+  await expect(page.getByText('No hay clave de Pollinations configurada')).toBeVisible();
   await page.goto('/admin/auditoria');
   await expect(page.getByText('Ajuste cambiado').first()).toBeVisible();
   await expect(page.getByText('Invitación creada').first()).toBeVisible();
