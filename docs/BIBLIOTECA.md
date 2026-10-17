@@ -43,6 +43,8 @@ Misma presentación que el catálogo del anfitrión: buscador (nombre, descripci
 ## Rellenar la biblioteca en bloque desde tu ordenador (fotos libres de Wikimedia Commons)
 Primero se descarga todo a una **carpeta local** para revisarlo; después se sube a producción desde el panel. Nada se sube desde el script.
 ```bash
+npm run library          # TODO en uno: descarga los 4 packs, genera la galería y la abre (LIBRARY_CONTACT=tu@correo opcional)
+# o por partes:
 npm run library:fetch -- --pack docs/catalogo-semilla/halloween.txt --contact tu@correo   # un pack
 npm run library:fetch -- --all --contact tu@correo                                         # los 4 packs piloto (~125 productos)
 open biblioteca-pendiente/index.html        # galería local con autor, licencia y origen; borra a mano las fotos que no sirvan

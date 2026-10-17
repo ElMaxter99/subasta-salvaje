@@ -3,16 +3,18 @@
  * Nada se sube a la app desde aquí: primero se revisan los archivos en tu ordenador y luego se suben con «Elegir una carpeta» en
  * Superadmin → Biblioteca → Imágenes (lee el manifest.csv: colección, título, tipo y crédito de cada foto, todo en un commit).
  *
- *   npm run library:fetch -- --pack docs/catalogo-semilla/halloween.txt            # un pack
- *   npm run library:fetch -- --all                                                 # todos los packs de docs/catalogo-semilla
+ *   npm run library                                                                 # TODO en uno: descarga todos los packs y abre la galería
+ *   npm run library:fetch -- --pack docs/catalogo-semilla/halloween.txt            # un solo pack
+ *   npm run library:fetch -- --all                                                 # todos los packs, sin abrir la galería
  *   npm run library:fetch -- --all --out mi-carpeta --allow-by --min-width 1000
  *   npm run library:fetch -- --index-only      # tras borrar a mano las fotos malas: regenera manifest.csv, index.html y FUENTES.md
  *
- * Opciones: --out (por defecto biblioteca-pendiente) · --per-product 1 · --allow-by (acepta también CC BY / CC BY-SA, con atribución)
+ * Opciones: --open (abre index.html al terminar; `npm run library` ya lo hace) · --out (por defecto biblioteca-pendiente) · --per-product 1 · --allow-by (acepta también CC BY / CC BY-SA, con atribución)
  *           · --min-width 800 · --delay 1500 (ms entre peticiones; sé amable con Wikimedia) · --contact "tu@correo" (va en el User-Agent).
  * Cada pack (docs/catalogo-semilla/*.txt) lista los productos con su búsqueda en inglés. Se puede repetir: salta lo ya descargado.
  */
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { execFile } from 'node:child_process';
 import { join, resolve } from 'node:path';
 import { manifestToCsv, parsePack, searchCommons, type ManifestRow } from '../../src/lib/library/commons';
 
@@ -25,7 +27,7 @@ const perProduct = Math.max(1, Number(opt('per-product') ?? 1));
 const delay = Number(opt('delay') ?? 1500);
 const minWidth = Number(opt('min-width') ?? 800);
 const allowBy = flag('allow-by');
-const contact = opt('contact') ?? 'contacto-no-indicado';
+const contact = opt('contact') ?? process.env.LIBRARY_CONTACT ?? 'contacto-no-indicado';
 const userAgent = `SubastaSalvajeLibrary/1.0 (${contact}; relleno manual de una biblioteca de fotos) node`;
 const STATE = join(out, 'fuentes.json');
 
@@ -62,6 +64,11 @@ function writeIndexes(): void {
   const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
   const body = cols.map((c) => `<h2>${esc(c)} <small>(${rows.filter((r) => r.coleccion === c).length})</small></h2><div class="g">${rows.filter((r) => r.coleccion === c).map((r) => `<figure><img loading="lazy" src="${encodeURI(`${r.coleccion}/${r.archivo}`)}"><figcaption><b>${esc(r.titulo)}</b><br>${esc(r.autor)} · ${esc(r.licencia)}<br><a href="${esc(r.fuente)}" target="_blank" rel="noreferrer">origen</a><br><small>${esc(r.archivo)}</small></figcaption></figure>`).join('')}</div>`).join('');
   writeFileSync(join(out, 'index.html'), `<!doctype html><meta charset="utf-8"><title>Biblioteca pendiente</title><style>body{font:14px system-ui;background:#111;color:#eee;margin:16px}.g{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}figure{margin:0;background:#1d1d2a;border-radius:10px;overflow:hidden}img{width:100%;aspect-ratio:1;object-fit:cover;display:block}figcaption{padding:6px;font-size:12px}a{color:#fbbf24}</style><h1>Biblioteca pendiente (${rows.length} imágenes)</h1><p>Borra de las carpetas lo que no sirva y ejecuta <code>npm run library:fetch -- --index-only</code>. Luego sube la carpeta entera en Superadmin → Biblioteca → «Elegir una carpeta».</p>${body}`);
+  if (flag('open')) {
+    const index = join(out, 'index.html');
+    const [cmd, args] = process.platform === 'darwin' ? ['open', [index]] : process.platform === 'win32' ? ['cmd', ['/c', 'start', '', index]] : ['xdg-open', [index]];
+    execFile(cmd, args, () => undefined);
+  }
   console.log(`\n✔ ${rows.length} imágenes en ${cols.length} colecciones.\n  Revisa: ${join(out, 'index.html')}\n  Luego sube la carpeta «${out}» en Superadmin → Biblioteca → Imágenes → «Elegir una carpeta».`);
 }
 

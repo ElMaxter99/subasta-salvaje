@@ -152,6 +152,7 @@ npm run dev            # http://localhost:3000  → modo demo si no hay .env.loc
 | `npm run mascot:chroma` | Quita un fondo verde liso de un render (`-- entrada.png --out salida.webp`) |
 | `npm run brand:build` / `brand:mini` | Regenera logo e iconos de marca / el mini héroe vectorial |
 | `npm run ai:lab` | Prueba prompts de mezcla de imágenes contra el proveedor de IA real (`-- --base a.jpg --items b.jpg,c.jpg`); ver [`docs/PROMPTS-IA.md`](docs/PROMPTS-IA.md) |
+| `npm run library` | **Un solo comando**: descarga a `biblioteca-pendiente/` las fotos libres de todos los packs (`docs/catalogo-semilla/`) y abre la galería de revisión (ver `npm run library:fetch` para opciones). |
 | `npm run library:fetch` | Descarga fotos libres (CC0 / dominio público, Wikimedia Commons) a la carpeta local `biblioteca-pendiente/` según los packs de `docs/catalogo-semilla/`, con galería de revisión y `manifest.csv`; luego se sube la carpeta desde Superadmin → Biblioteca. Ver [`docs/BIBLIOTECA.md`](docs/BIBLIOTECA.md) |
 | `npm run ai:measure` | Mide con TUS credenciales de Cloudflare 1 generación (y con `--edit`, 1 edición) para calcular cuánta cuota gratuita gasta cada llamada; sin `--yes` solo muestra qué haría (gasta cuota real: ejecútalo tú) |
 | `npm run emails:build` | Genera las plantillas de correo de Supabase Auth |
