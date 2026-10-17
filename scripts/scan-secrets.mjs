@@ -61,7 +61,7 @@ const GIT_PATTERNS = [
   ['JWT (p. ej. service_role)', 'eyJ[A-Za-z0-9_-]{20,}[.][A-Za-z0-9_-]{20,}[.][A-Za-z0-9_-]{20,}'],
 ];
 // Commits con claves FALSAS de prueba (valores «xxxx» en tests/ai-chain.test.ts, ya corregidos en el árbol). No se reescribe el historial público.
-const FAKE_KEY_COMMITS = ['8263359'];
+const FAKE_KEY_COMMITS = ['8263359', '70cd16a']; // el segundo es el que las parte
 for (const [name, ere] of GIT_PATTERNS) {
   const out = execFileSync('git', ['log', '--all', '-G', ere, '--oneline', '--', '.', ':!package-lock.json'])
     .toString()

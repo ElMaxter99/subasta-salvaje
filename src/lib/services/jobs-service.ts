@@ -167,6 +167,10 @@ async function runJob(ctx: Ctx, provider: ImageGenerationProvider, job: ClaimedJ
       prompt: image.prompt,
       provider: image.provider ?? provider.id,
     });
+    // Si la cadena respondió con otro proveedor, el uso (y los topes diarios) se atribuyen al que respondió.
+    if (reserved && image.provider && image.provider !== provider.id) {
+      await ctx.db.rpc('ss_set_usage_provider', { job_id: job.job_id, provider: image.provider }).catch((e) => console.error('[jobs] no se pudo atribuir el uso', redactSecrets(String(e))));
+    }
     await publish(ctx, done.room_code);
     return true;
   } catch (err) {

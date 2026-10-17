@@ -5,17 +5,22 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { adminPost } from '@/lib/client/admin-api';
 import type { AppSettings } from '@/lib/services/settings';
+import { providerLabel, type ProviderLabelId } from '@/lib/ai/labels';
 import { Section } from './widgets';
 
 type Key = keyof AppSettings;
 
-export function SettingsForm({ settings, defaults, aiConfigured }: { settings: AppSettings; defaults: { ttlHours: number; perGame: number; perDay: number }; aiConfigured: boolean }) {
+const PROVIDER_ORDER_NOTE = 'El orden de la cadena lo fija IMAGE_PROVIDERS en el servidor (Vercel); aquí solo se apaga un proveedor o se le pone un tope diario.';
+
+export function SettingsForm({ settings, defaults, aiConfigured, providers = [] }: { settings: AppSettings; defaults: { ttlHours: number; perGame: number; perDay: number }; aiConfigured: boolean; providers?: { id: ProviderLabelId; used: number }[] }) {
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [days, setDays] = useState(settings.game_ttl_hours ? String(Math.round((settings.game_ttl_hours / 24) * 100) / 100) : '');
   const [perGame, setPerGame] = useState(settings.quota_per_game?.toString() ?? '');
   const [perDay, setPerDay] = useState(settings.quota_per_day?.toString() ?? '');
+  const [limits, setLimits] = useState<Record<string, string>>(Object.fromEntries(providers.map((p) => [p.id, settings.ai_provider_limits?.[p.id]?.toString() ?? ''])));
+  const off = settings.ai_providers_off ?? [];
 
   async function save(key: Key, value: unknown, ok: string) {
     setBusy(key);
@@ -74,6 +79,51 @@ export function SettingsForm({ settings, defaults, aiConfigured }: { settings: A
           </form>
         </div>
       </Section>
+
+      {providers.length > 0 ? (
+        <Section title="Proveedores de IA (cadena)" hint={`${PROVIDER_ORDER_NOTE} Se prueban en orden; si uno falla por cuota, límite, credenciales o red se usa el siguiente y, al final, la composición sin IA. El tope diario es aproximado (el límite duro es el global).`}>
+          <ul className="space-y-3" data-testid="provider-list">
+            {providers.map((p, idx) => {
+              const isOff = off.includes(p.id);
+              const limit = settings.ai_provider_limits?.[p.id];
+              return (
+                <li key={p.id} className="flex flex-wrap items-end gap-3 rounded-2xl border border-white/10 p-3">
+                  <div className="min-w-44">
+                    <p className="font-bold">{idx + 1}. {providerLabel(p.id)}</p>
+                    <p className="text-xs text-white/60">Hoy: {p.used}{limit ? ` / ${limit}` : ''} usos</p>
+                  </div>
+                  <span className={`rounded-full px-3 py-1 text-sm font-bold ${isOff ? 'bg-rose/20 text-rose' : 'bg-teal/20 text-teal'}`}>{isOff ? 'Apagado' : 'Activo'}</span>
+                  <Button
+                    variant={isOff ? 'primary' : 'secondary'}
+                    loading={busy === `off-${p.id}`}
+                    disabled={busy !== null}
+                    onClick={() => save('ai_providers_off', isOff ? off.filter((x) => x !== p.id) : [...off, p.id], isOff ? `${providerLabel(p.id)} activado` : `${providerLabel(p.id)} apagado`)}
+                  >
+                    {isOff ? 'Activar' : 'Apagar'}
+                  </Button>
+                  <form
+                    className="flex items-end gap-2"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      const next = { ...(settings.ai_provider_limits ?? {}) };
+                      const v = num(limits[p.id] ?? '');
+                      if (v === null) delete next[p.id];
+                      else next[p.id] = v;
+                      void save('ai_provider_limits', next, `Tope de ${providerLabel(p.id)} actualizado`);
+                    }}
+                  >
+                    <label className="text-sm font-semibold">
+                      Tope diario
+                      <input aria-label={`Tope diario de ${providerLabel(p.id)}`} value={limits[p.id] ?? ''} onChange={(e) => setLimits({ ...limits, [p.id]: e.target.value.replace(/\D/g, '') })} placeholder="sin tope" className={`${input} mt-1 block`} inputMode="numeric" />
+                    </label>
+                    <Button type="submit" variant="secondary" loading={busy === 'ai_provider_limits'} disabled={busy !== null}>Guardar</Button>
+                  </form>
+                </li>
+              );
+            })}
+          </ul>
+        </Section>
+      ) : null}
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import path from 'node:path';
+import { createSettingsGate } from './ai-gate';
 import { createProviderChain } from '@/lib/ai/chain';
 import { cloudflareConfig, getImageProviderIds, pollinationsConfig, type ImageProviderId, getRuntimeMode, getSupabaseConfig, openAiKey } from '@/lib/config/env';
 import { createCloudflareProvider } from '@/lib/ai/cloudflare';
@@ -51,21 +52,22 @@ function buildOne(id: ImageProviderId): ImageGenerationProvider {
   return /^(0|false|no)$/i.test(process.env.IMAGE_EDIT_COMPOSE?.trim() ?? '') ? cf : withEditFallback(cf);
 }
 
-function buildProvider(): ImageGenerationProvider | null {
+function buildProvider(db?: Db): ImageGenerationProvider | null {
   const ids = getImageProviderIds();
   if (ids.length === 0) return null;
   // Con un solo proveedor la cadena devuelve ese mismo proveedor (sin cambios de comportamiento).
-  return createProviderChain(ids.map(buildOne), { onSkip: (s) => console.warn(`[ai-chain] salto de ${s.provider} (${s.kind})`) });
+  return createProviderChain(ids.map(buildOne), { ...(db ? { gate: createSettingsGate(db) } : {}), onSkip: (s) => console.warn(`[ai-chain] salto de ${s.provider} (${s.kind})`) });
 }
 
 async function build(): Promise<AppContext> {
   const mode = getRuntimeMode();
   if (mode === 'unconfigured') throw new DomainError('internal', 'La aplicación no está configurada. Visita /setup.');
   if (mode === 'supabase') {
-    return { mode, db: createSupabaseDb(), storage: createSupabaseStorage(), publisher: createSupabasePublisher(), provider: buildProvider(), stickers: createDemoProvider() };
+    const db = createSupabaseDb();
+    return { mode, db, storage: createSupabaseStorage(), publisher: createSupabasePublisher(), provider: buildProvider(db), stickers: createDemoProvider() };
   }
   const db = await createPgliteDb(path.join(demoDataDir(), 'pgdata'));
-  return { mode, db, storage: createLocalStorage(path.join(demoDataDir(), 'images')), publisher: noopPublisher, provider: buildProvider(), stickers: createDemoProvider() };
+  return { mode, db, storage: createLocalStorage(path.join(demoDataDir(), 'images')), publisher: noopPublisher, provider: buildProvider(db), stickers: createDemoProvider() };
 }
 
 /** Contexto singleton por proceso (se reutiliza entre peticiones y recargas en desarrollo). */

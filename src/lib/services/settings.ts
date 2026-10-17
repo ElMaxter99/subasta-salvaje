@@ -8,6 +8,10 @@ export interface AppSettings {
   ai_enabled: boolean;
   quota_per_game: number | null;
   quota_per_day: number | null;
+  /** Proveedores de IA apagados por el superadmin. */
+  ai_providers_off?: string[];
+  /** Tope diario (blando) de usos por proveedor. */
+  ai_provider_limits?: Record<string, number>;
 }
 
 const TTL_MS = 5_000;

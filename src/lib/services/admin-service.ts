@@ -124,6 +124,8 @@ const setting = z.discriminatedUnion('key', [
   z.object({ key: z.literal('ai_enabled'), value: z.boolean() }),
   z.object({ key: z.literal('game_ttl_hours'), value: z.number().int().min(1).max(2160).nullable() }),
   z.object({ key: z.literal('quota_per_game'), value: z.number().int().min(1).max(100000).nullable() }),
+  z.object({ key: z.literal('ai_providers_off'), value: z.array(z.enum(['cloudflare', 'pollinations', 'openai'])).max(3) }),
+  z.object({ key: z.literal('ai_provider_limits'), value: z.partialRecord(z.enum(['cloudflare', 'pollinations', 'openai']), z.number().int().min(1).max(100000)) }),
   z.object({ key: z.literal('quota_per_day'), value: z.number().int().min(1).max(100000).nullable() }),
 ]);
 

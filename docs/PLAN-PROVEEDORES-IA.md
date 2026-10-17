@@ -194,6 +194,8 @@ Superadmin (cumple el aviso de `PLAN-SUPERADMIN.md`: «el panel no puede elegir 
 
 > **Fase 4 (17-10-2026): adaptador de Pollinations escrito** según `APIDOCS.md` oficial (`/v1/images/generations` y `/v1/images/edits`, Bearer `sk_…`, 402 = presupuesto agotado). Solo tests simulados; sin probar contra el servicio real.
 
+> **Fase 2 (17-10-2026): panel de superadmin implementado (versión reducida).** `/admin/ajustes → Proveedores de IA (cadena)`: apagar/activar cada proveedor y tope diario aproximado por proveedor, con el uso de hoy. Migraciones `…3800`/`…3900` (`ai_providers_off`, `ai_provider_limits`, `ss_provider_usage`, `ss_set_usage_provider`). El orden de la cadena sigue fijándose con `IMAGE_PROVIDERS` en el servidor; no hay tabla `provider_budgets` ni topes de coste (no hay proveedores de pago en la cadena). El tope por proveedor es blando (caché de uso de 15 s); el duro es el global.
+
 ## 5. Cambios concretos por archivo
 
 | Archivo | Cambio |

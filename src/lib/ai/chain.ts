@@ -16,7 +16,11 @@ import { ProviderError, type EditSceneInput, type GeneratedImage, type ImageGene
  */
 export const SKIPPABLE: ReadonlySet<ProviderErrorKind> = new Set(['quota', 'rate_limit', 'auth', 'network', 'server', 'unsupported']);
 
+/** Decide si un proveedor puede usarse ahora (ajustes del superadmin: apagado o tope diario). */
+export type ProviderGate = (providerId: string) => Promise<{ ok: true } | { ok: false; reason: 'disabled' | 'day_limit' }>;
+
 export interface ChainOptions {
+  gate?: ProviderGate;
   now?: () => number;
   /** Aviso de cada salto (para registro); nunca incluye contenido de las peticiones. */
   onSkip?: (info: { provider: string; kind: ProviderErrorKind; message: string }) => void;
@@ -35,14 +39,26 @@ export function cooldownUntil(kind: ProviderErrorKind, now: number): number {
 
 export function createProviderChain(members: ImageGenerationProvider[], opts: ChainOptions = {}): ImageGenerationProvider {
   if (members.length === 0) throw new Error('La cadena necesita al menos un proveedor');
-  if (members.length === 1) return members[0]!; // sin cambio de comportamiento con un solo proveedor
+  if (members.length === 1) return opts.gate ? withGate(members[0]!, opts.gate) : members[0]!; // un solo proveedor: sin enfriamiento ni composición extra
   const now = opts.now ?? Date.now;
   const cooling = new Map<string, number>();
+  const gate = opts.gate;
 
   const available = (p: ImageGenerationProvider) => (cooling.get(p.id) ?? 0) <= now();
+  /** Filtra por los ajustes del superadmin (asíncrono: consulta ajustes y uso). */
+  async function permitted(list: ImageGenerationProvider[]): Promise<ImageGenerationProvider[]> {
+    if (!gate) return list;
+    const out: ImageGenerationProvider[] = [];
+    for (const p of list) {
+      const g = await gate(p.id);
+      if (g.ok) out.push(p);
+      else opts.onSkip?.({ provider: p.id, kind: 'quota', message: g.reason === 'disabled' ? 'apagado por el superadmin' : 'tope diario del proveedor alcanzado' });
+    }
+    return out;
+  }
 
   async function run<T extends GeneratedImage>(needsEdit: boolean, call: (p: ImageGenerationProvider) => Promise<T>): Promise<T> {
-    const candidates = members.filter((m) => (!needsEdit || m.capabilities.edit) && available(m));
+    const candidates = await permitted(members.filter((m) => (!needsEdit || m.capabilities.edit) && available(m)));
     let last: ProviderError | null = null;
     for (const p of candidates) {
       try {
@@ -56,7 +72,7 @@ export function createProviderChain(members: ImageGenerationProvider[], opts: Ch
       }
     }
     if (last) throw last;
-    throw new ProviderError('Ningún proveedor de imágenes está disponible ahora mismo (en enfriamiento o sin capacidad). Se conserva la imagen anterior.', true, false, 'unsupported');
+    throw new ProviderError('Ningún proveedor de imágenes está disponible ahora mismo (en enfriamiento, apagado, con tope diario o sin capacidad). Se conserva la imagen anterior.', true, false, 'unsupported');
   }
 
   const self: ImageGenerationProvider = {
@@ -65,7 +81,7 @@ export function createProviderChain(members: ImageGenerationProvider[], opts: Ch
     generateInitialScene: (i: InitialSceneInput) => run(false, (p) => p.generateInitialScene(i)),
     generateItemImage: (i: ItemImageInput) => run(false, (p) => p.generateItemImage(i)),
     async editScene(input: EditSceneInput): Promise<GeneratedImage> {
-      const editors = members.some((m) => m.capabilities.edit && available(m));
+      const editors = (await permitted(members.filter((m) => m.capabilities.edit && available(m)))).length > 0;
       if (editors) {
         try {
           return await run(true, (p) => p.editScene(input));
@@ -81,4 +97,21 @@ export function createProviderChain(members: ImageGenerationProvider[], opts: Ch
     },
   };
   return self;
+}
+
+/** Un solo proveedor con filtro de ajustes: si está apagado o sin tope, no se llama (y no se gasta nada). */
+function withGate(p: ImageGenerationProvider, gate: ProviderGate): ImageGenerationProvider {
+  const guard = async <T>(call: () => Promise<T>): Promise<T> => {
+    const g = await gate(p.id);
+    if (!g.ok) {
+      throw new ProviderError(g.reason === 'disabled' ? `El proveedor ${p.id} está apagado por el superadmin. Se conserva la imagen anterior.` : `El proveedor ${p.id} ha alcanzado su tope diario. Se conserva la imagen anterior; se renueva a las 00:00 UTC.`, false, false, 'quota');
+    }
+    return call();
+  };
+  return {
+    ...p,
+    generateInitialScene: (i) => guard(() => p.generateInitialScene(i)),
+    generateItemImage: (i) => guard(() => p.generateItemImage(i)),
+    editScene: (i) => guard(() => p.editScene(i)),
+  };
 }
