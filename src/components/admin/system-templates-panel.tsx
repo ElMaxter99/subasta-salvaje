@@ -5,7 +5,9 @@ import { useState, type ChangeEvent } from 'react';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { adminPost } from '@/lib/client/admin-api';
-import { blankTemplate, parseTemplate } from '@/lib/domain/template';
+import { blankTemplate, parseTemplate, type Template } from '@/lib/domain/template';
+import { applyAsset, matchTarget, targetLabel, type AssetTarget } from '@/lib/domain/template-assets';
+import { uploadTemplateImageRequest } from '@/lib/client/template-upload';
 import type { ImageCheck, SystemTemplate, SystemTemplateSummary } from '@/lib/services/system-template-service';
 import { Section, Table, fmtDate } from './widgets';
 
@@ -23,13 +25,18 @@ function emptyDraft(): Draft {
   return { slug: '', title: '', description: '', sort_order: '100', json: JSON.stringify(t, null, 2) };
 }
 
-export function SystemTemplatesPanel({ templates, cdnHosts }: { templates: SystemTemplateSummary[]; cdnHosts: string[] }) {
+interface UploadRow { id: number; name: string; state: 'sending' | 'ok' | 'error' | 'unassigned'; message?: string; url?: string; file?: File }
+const KIND_OF = { cover: 'cover', scene: 'scene', item: 'item' } as const;
+
+export function SystemTemplatesPanel({ templates, cdnHosts, uploadsEnabled = false }: { templates: SystemTemplateSummary[]; cdnHosts: string[]; uploadsEnabled?: boolean }) {
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [checks, setChecks] = useState<{ title: string; list: ImageCheck[] } | null>(null);
   const [del, setDel] = useState<SystemTemplateSummary | null>(null);
+  const [uploads, setUploads] = useState<UploadRow[]>([]);
+  const [over, setOver] = useState(false);
 
   async function run<T>(key: string, body: unknown, ok: string | ((r: T) => string)): Promise<T | null> {
     setBusy(key);
@@ -71,6 +78,32 @@ export function SystemTemplatesPanel({ templates, cdnHosts }: { templates: Syste
       setDraft({ slug, title: parsed.template.nombre, description: '', sort_order: '100', json: JSON.stringify(parsed.template, null, 2) });
       setMsg({ ok: true, text: 'Plantilla cargada en el editor: revísala y guarda el borrador.' });
     });
+  }
+
+  /** Sube las imágenes soltadas de una en una (el repositorio de fotos no admite subidas simultáneas) y rellena el JSON. */
+  async function handleFiles(files: File[], forced?: AssetTarget) {
+    if (!draft) return;
+    const slug = draft.slug;
+    if (!slug) return setMsg({ ok: false, text: 'Pon primero el identificador (slug): las imágenes se guardan en su carpeta.' });
+    let json = draft.json;
+    const startId = Date.now();
+    setUploads((u) => [...u, ...files.map((f, i): UploadRow => ({ id: startId + i, name: f.name, state: 'sending' }))]);
+    for (const [i, file] of files.entries()) {
+      const id = startId + i;
+      const set = (patch: Partial<UploadRow>) => setUploads((u) => u.map((r) => (r.id === id ? { ...r, ...patch } : r)));
+      const parsed = parseTemplate(json);
+      if (!parsed.ok) { set({ state: 'error', message: 'Arregla primero los errores del JSON' }); continue; }
+      const target = forced ?? matchTarget(file.name, parsed.template);
+      if (!target) { set({ state: 'unassigned', message: 'No encaja con la portada, la casa ni ningún elemento: asígnala abajo', file }); continue; }
+      try {
+        const up = await uploadTemplateImageRequest(slug, KIND_OF[target.kind], file);
+        json = JSON.stringify(applyAsset(parsed.template as Template, target, up.url), null, 2);
+        setDraft((d) => (d ? { ...d, json } : d));
+        set({ state: 'ok', message: `${targetLabel(target, parsed.template)} · ${up.width}×${up.height} · ${Math.round(up.bytes / 1024)} KB`, url: up.url });
+      } catch (e) {
+        set({ state: 'error', message: e instanceof Error ? e.message : 'No se pudo subir' });
+      }
+    }
   }
 
   const live = draft ? parseTemplate(draft.json) : null;
@@ -159,6 +192,47 @@ export function SystemTemplatesPanel({ templates, cdnHosts }: { templates: Syste
               <label className="text-sm font-semibold">Orden<input aria-label="Orden" inputMode="numeric" value={draft.sort_order} onChange={(e) => setDraft({ ...draft, sort_order: e.target.value.replace(/\D/g, '') })} className={`${input} mt-1`} /></label>
             </div>
             <label className="block text-sm font-semibold">Descripción (la tarjeta, hasta 300 caracteres)<input aria-label="Descripción" maxLength={300} value={draft.description} onChange={(e) => setDraft({ ...draft, description: e.target.value })} className={`${input} mt-1`} /></label>
+            <div
+              data-testid="template-dropzone"
+              onDragOver={(e) => { e.preventDefault(); setOver(true); }}
+              onDragLeave={() => setOver(false)}
+              onDrop={(e) => { e.preventDefault(); setOver(false); if (uploadsEnabled) void handleFiles(Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith('image/'))); }}
+              className={`rounded-2xl border-2 border-dashed p-4 text-center text-sm ${over ? 'border-gold bg-gold/10' : 'border-white/20 bg-night-900'}`}
+            >
+              {uploadsEnabled ? (
+                <>
+                  <p className="font-bold">Arrastra aquí las imágenes (o <label className="cursor-pointer underline">elígelas<input type="file" multiple accept="image/png,image/jpeg,image/webp" className="sr-only" aria-label="Elegir imágenes" onChange={(e) => { void handleFiles(Array.from(e.target.files ?? [])); e.target.value = ''; }} /></label>)</p>
+                  <p className="mt-1 text-xs text-white/60">Se reducen al formato interno y se suben a tu repositorio de fotos (no a Supabase). Se asignan por el nombre del archivo: <code>portada.jpg</code>, <code>casa.jpg</code> o el título de un elemento (<code>sombrilla-roja.jpg</code>).</p>
+                </>
+              ) : (
+                <p className="text-white/70" data-testid="uploads-disabled">La subida de imágenes no está configurada: define <code>GITHUB_ASSETS_REPO</code> y <code>GITHUB_ASSETS_TOKEN</code> en Vercel (ver docs/PLANTILLAS-SISTEMA.md). Mientras tanto puedes pegar enlaces https en el JSON.</p>
+              )}
+            </div>
+            {uploads.length > 0 ? (
+              <ul className="space-y-1" aria-label="Imágenes subidas" data-testid="upload-list">
+                {uploads.map((u) => (
+                  <li key={u.id} className="flex flex-wrap items-center gap-2 rounded-xl bg-night-900 px-3 py-1.5 text-sm">
+                    <span className={u.state === 'ok' ? 'text-teal' : u.state === 'error' ? 'text-rose' : 'text-gold-soft'} aria-hidden>{u.state === 'ok' ? '✔' : u.state === 'error' ? '✖' : u.state === 'sending' ? '…' : '?'}</span>
+                    <span className="font-semibold">{u.name}</span>
+                    <span className="text-xs text-white/65">{u.state === 'sending' ? 'subiendo…' : u.message}</span>
+                    {u.state === 'unassigned' && u.file && live?.ok ? (
+                      <select aria-label={`Asignar ${u.name}`} defaultValue="" className="rounded-lg bg-night-950 px-2 py-1 text-xs" onChange={(e) => {
+                        const v = e.target.value;
+                        if (!v) return;
+                        const file = u.file!;
+                        setUploads((all) => all.filter((x) => x.id !== u.id));
+                        void handleFiles([file], v === 'cover' ? { kind: 'cover' } : v === 'scene' ? { kind: 'scene' } : { kind: 'item', index: Number(v.slice(5)) });
+                      }}>
+                        <option value="">Asignar a…</option>
+                        <option value="cover">Portada</option>
+                        <option value="scene">Casa inicial</option>
+                        {(live.template.catalogo ?? []).map((it, idx) => <option key={idx} value={`item-${idx}`}>Elemento · {it.titulo}</option>)}
+                      </select>
+                    ) : null}
+                  </li>
+                ))}
+              </ul>
+            ) : null}
             <label className="block text-sm font-semibold">
               Plantilla (JSON)
               <textarea aria-label="Plantilla JSON" spellCheck={false} rows={18} value={draft.json} onChange={(e) => setDraft({ ...draft, json: e.target.value })} className={`${input} mt-1 font-mono text-xs`} />

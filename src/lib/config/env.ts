@@ -117,7 +117,21 @@ export function getImageProviderIds(env: NodeJS.ProcessEnv = process.env): Image
  * Vacía = se acepta cualquier https (las defensas de safe-fetch siguen aplicando); el panel avisa de que conviene definirla.
  */
 export function assetCdnHosts(env: NodeJS.ProcessEnv = process.env): string[] {
-  return (env.ASSET_CDN_HOSTS ?? '').split(',').map((h) => h.trim().toLowerCase()).filter(Boolean);
+  const hosts = (env.ASSET_CDN_HOSTS ?? '').split(',').map((h) => h.trim().toLowerCase()).filter(Boolean);
+  // Con la subida a GitHub configurada, jsDelivr (donde se sirven esas fotos) se admite aunque no esté en la lista.
+  if (hosts.length > 0 && githubAssetsConfig(env) && !hosts.includes('cdn.jsdelivr.net')) hosts.push('cdn.jsdelivr.net');
+  return hosts;
+}
+
+/** Subida de fotos de plantillas a un repositorio de GitHub (servido por jsDelivr). Sin las tres variables, la subida no existe. */
+export function githubAssetsConfig(env: NodeJS.ProcessEnv = process.env): { repo: string; token: string; branch: string; apiBase: string } | null {
+  const repo = env.GITHUB_ASSETS_REPO?.trim();
+  const token = env.GITHUB_ASSETS_TOKEN?.trim();
+  if (!repo || !token) return null;
+  // GITHUB_ASSETS_API_BASE solo existe para las pruebas (un servidor local simulado); cualquier otro valor se ignora.
+  const base = env.GITHUB_ASSETS_API_BASE?.trim();
+  const apiBase = base && /^http:\/\/(127\.0\.0\.1|localhost)(:\d+)?$/.test(base) ? base : 'https://api.github.com';
+  return { repo, token, branch: env.GITHUB_ASSETS_BRANCH?.trim() || 'main', apiBase };
 }
 
 export function urlAllowedByCdn(url: string, hosts: string[] = assetCdnHosts()): boolean {

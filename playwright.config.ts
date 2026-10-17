@@ -22,6 +22,6 @@ export default defineConfig({
     url: `http://localhost:${PORT}/api/runtime`,
     reuseExistingServer: false,
     timeout: 120_000,
-    env: { NEXT_DIST_DIR: '.next-e2e', DEMO_DATA_DIR: '.demo-data-e2e', FORCE_DEMO_MODE: 'true', NODE_ENV: 'development' },
+    env: { NEXT_DIST_DIR: '.next-e2e', DEMO_DATA_DIR: '.demo-data-e2e', FORCE_DEMO_MODE: 'true', GITHUB_ASSETS_REPO: 'e2e/fotos', GITHUB_ASSETS_TOKEN: 'e2e-token-no-real', GITHUB_ASSETS_API_BASE: 'http://127.0.0.1:3299', NODE_ENV: 'development' },
   },
 });

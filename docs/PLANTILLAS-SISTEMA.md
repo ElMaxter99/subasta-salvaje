@@ -14,14 +14,21 @@ Cada elemento del catálogo puede llevar `foto` (URL https). En plantillas del s
 - **Publicar**: solo si **todas** las imágenes se descargan y se leen; si alguna falla no se publica y el informe dice cuál. **Retirar** la vuelve a dejar en borrador. **Borrar** no afecta a las partidas ya creadas.
 - Todo queda en **Auditoría** (creada, modificada, publicada, retirada, borrada).
 
-## Dónde guardar las fotos (tu CDN)
-La aplicación **no sube** nada a ningún servicio: dejas las fotos ya preparadas en el proveedor que elijas y pegas los enlaces.
-1. Prepara las fotos: `npm run assets:normalize -- ./mis-fotos --kind=item` (y `--kind=scene` para casas, `--kind=cover` para portadas). Salen en `./mis-fotos/normalizadas/*.webp`.
-2. Súbelas a tu proveedor y copia los enlaces públicos (https). Recomendado, **sin tarjeta ni riesgo de cobro**:
-   - **GitHub + jsDelivr**: crea un repositorio **público** solo para las fotos (no las metas en el de la app), sube la carpeta con un commit y usa enlaces con una **etiqueta o commit fijo** (no `@main`, que se cachea horas):
-     `https://cdn.jsdelivr.net/gh/TU_USUARIO/TU_REPO@v1/plantillas/noche-luna/sombrilla.webp` → `ASSET_CDN_HOSTS=cdn.jsdelivr.net`. Gratis para contenido de código abierto, con CDN; no hace falta cuenta aparte. *(Condiciones de uso de jsDelivr sin verificar desde este entorno: léelas.)* Ese ajuste deja pasar cualquier repositorio servido por jsDelivr, no solo el tuyo; es un riesgo menor porque solo el superadmin pega enlaces.
-   - Descartado: **Cloudflare R2** pide un método de pago para activarse y un exceso se cobra; Dropbox/Drive como «CDN»: los enlaces directos cambian y tienen límites de tráfico.
-3. En Vercel define `ASSET_CDN_HOSTS=cdn.tudominio.com` (lista separada por comas): solo se aceptarán fotos de esos servidores. Sin definirla se acepta cualquier https (el panel te lo avisa).
+## Subir las imágenes: arrastrar y soltar (GitHub + jsDelivr, no Supabase)
+En el editor de `/admin/plantillas` hay una **zona para arrastrar imágenes** (o elegirlas). Cada una:
+1. se reduce en el navegador (si pesa mucho), y el servidor la lleva al **formato interno** (WebP, ver `IMAGEN-INTERNA.md`);
+2. se sube a **tu repositorio público de fotos en GitHub** con la API de contenidos (`plantillas/<slug>/<tipo>-<nombre>-<hash>.webp`); **nada va a Supabase**;
+3. el JSON de la plantilla se rellena solo con el enlace de **jsDelivr fijado al commit** (`…/gh/usuario/repo@<commit>/…`: se sirve al instante y nunca cambia).
+Las imágenes se asignan por el **nombre del archivo**: `portada.jpg` → portada, `casa.jpg`/`casa-inicial.jpg` → casa inicial, y el título de un elemento (`sombrilla-roja.jpg` → «Sombrilla roja»; sin tildes ni mayúsculas). Las que no encajan quedan en la lista con un desplegable «Asignar a…». Se suben **de una en una** (GitHub no admite commits simultáneos en la misma rama) y la misma foto no se duplica (el nombre lleva el hash del contenido). Cada subida queda en la **auditoría**.
+
+### Configuración (una vez)
+1. Crea un repositorio **público** solo para las fotos (p. ej. `subasta-salvaje-fotos`) con un primer commit (un README basta).
+2. En GitHub → *Settings → Developer settings → Fine-grained personal access tokens* crea un token **solo para ese repositorio** con el permiso **Contents: Read and write** (nada más) y una caducidad razonable. No lo pegues en el chat ni en el repositorio.
+3. En Vercel (solo servidor): `GITHUB_ASSETS_REPO=tu-usuario/subasta-salvaje-fotos`, `GITHUB_ASSETS_TOKEN=…` (*Sensitive*) y, si la rama no es `main`, `GITHUB_ASSETS_BRANCH`. Redespliega. `cdn.jsdelivr.net` se admite automáticamente en la lista de servidores si defines también `ASSET_CDN_HOSTS`.
+4. Si no defines esas variables, el editor lo indica y puedes seguir pegando enlaces https a mano en el JSON.
+
+### Alternativa manual
+`npm run assets:normalize -- ./mis-fotos --kind=item` deja `.webp` listos para subirlos tú a cualquier alojamiento público (GitHub+jsDelivr) y pegar los enlaces. **No uses R2** (pide método de pago) ni Dropbox/Drive (enlaces que cambian, sin CDN).
 
 ## Cómo se usan las fotos
 Al crear la partida se **copian** a su almacenamiento (Supabase) pasando por `normalizeImage` y se borran con la partida. El juego no depende de que el CDN esté disponible durante la partida, y si una foto falla se avisa sin bloquear nada. La portada de la tarjeta sí se carga directamente desde el CDN (solo es decorativa; si falla se oculta).

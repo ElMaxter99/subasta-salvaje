@@ -1,6 +1,10 @@
+import { createHash } from 'node:crypto';
 import { z } from 'zod';
-import { IMAGE_SPECS, type ImageKind } from '@/lib/images/normalize';
-import { assetCdnHosts, urlAllowedByCdn } from '@/lib/config/env';
+import { validateImage } from '@/lib/ai/image-validation';
+import { assetCdnHosts, githubAssetsConfig, urlAllowedByCdn } from '@/lib/config/env';
+import { IMAGE_SPECS, normalizeImage, NormalizeError, type ImageKind } from '@/lib/images/normalize';
+import { slugify } from '@/lib/domain/template-assets';
+import { AssetUploadError, createGithubAssets, type GithubAssets, type UploadedAsset } from '@/lib/storage/github-assets';
 import { DomainError } from '@/lib/domain/errors';
 import { parseTemplate, TEMPLATE_LIMITS, type Template } from '@/lib/domain/template';
 import { fetchImageBytes, SafeFetchError, type FetchImageOptions } from '@/lib/security/safe-fetch';
@@ -151,4 +155,53 @@ export async function setSystemTemplateStatus(ctx: Ctx, actor: string, id: strin
 
 export async function deleteSystemTemplate(ctx: Ctx, actor: string, id: string): Promise<void> {
   await ctx.db.rpc('ss_admin_system_template_delete', { id, actor });
+}
+
+/* ---------- Subida de imágenes de plantillas (drag & drop del superadmin) ---------- */
+
+export const TEMPLATE_UPLOAD_MAX_BYTES = 7 * 1024 * 1024;
+
+export function templateUploadsEnabled(): boolean {
+  return githubAssetsConfig() !== null;
+}
+
+export interface TemplateImageUpload extends UploadedAsset {
+  kind: ImageKind;
+  width: number;
+  height: number;
+  bytes: number;
+}
+
+/**
+ * Normaliza la imagen (formato interno), la sube al repositorio de fotos y devuelve el enlace público fijado al commit.
+ * El nombre lleva el hash del contenido: la misma foto no se duplica y un enlace nunca cambia de contenido.
+ */
+export async function uploadTemplateImage(
+  ctx: Ctx,
+  actor: string,
+  input: { slug: string; kind: ImageKind; name: string; bytes: Uint8Array },
+  assets: GithubAssets | null = (() => { const c = githubAssetsConfig(); return c ? createGithubAssets(c, fetch, c.apiBase) : null; })(),
+): Promise<TemplateImageUpload> {
+  if (!assets) throw new DomainError('invalid_input', 'La subida de imágenes no está configurada (GITHUB_ASSETS_REPO y GITHUB_ASSETS_TOKEN).');
+  const slug = slugify(input.slug);
+  if (!slug) throw new DomainError('invalid_input', 'Pon primero el identificador (slug) de la plantilla.');
+  let n;
+  try {
+    validateImage(input.bytes, { maxBytes: TEMPLATE_UPLOAD_MAX_BYTES });
+    n = await normalizeImage(input.bytes, input.kind);
+  } catch (e) {
+    throw new DomainError('invalid_input', e instanceof NormalizeError || e instanceof Error ? e.message : 'Imagen no válida');
+  }
+  const hash = createHash('sha256').update(n.bytes).digest('hex').slice(0, 12);
+  const label = slugify(input.name.replace(/\.[^.]+$/, '')).slice(0, 40) || input.kind;
+  const path = `plantillas/${slug}/${input.kind}-${label}-${hash}.webp`;
+  let up: UploadedAsset;
+  try {
+    up = await assets.put(path, n.bytes, `Foto de plantilla: ${slug}/${label}`);
+  } catch (e) {
+    if (e instanceof AssetUploadError) throw new DomainError('invalid_input', e.message, e.kind === 'rate' ? 429 : 502);
+    throw e;
+  }
+  await ctx.db.rpc('ss_admin_audit_event', { actor, action: 'system_template_image_uploaded', target_type: 'system_template', target_id: slug, payload: { path, bytes: n.bytes.length, existed: up.existed } }).catch(() => undefined);
+  return { ...up, kind: input.kind, width: n.width, height: n.height, bytes: n.bytes.length };
 }
