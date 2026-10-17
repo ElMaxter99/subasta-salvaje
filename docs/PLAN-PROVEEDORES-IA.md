@@ -279,3 +279,11 @@ Total aproximado: 9–13 días de trabajo según se incluyan fases 3–5.
 5. Aceptación del **aviso de privacidad** sobre imágenes enviadas a terceros en el modo `ai` (y si los anfitriones pueden subir fotos de personas).
 6. Cuotas objetivo: ¿cuántas imágenes/día se quieren cubrir gratis? Determina si basta Cloudflare con ahorro (Fase 0) o hace falta el autoalojado.
 7. Cuándo lanzar las migraciones (DECISIONES nº 23: «todo de golpe»).
+
+## 10. Nota del 17-10-2026: OpenAI descartado y búsqueda de capas gratuitas
+El propietario descarta OpenAI (100 % de pago); su adaptador se conserva sin uso. Búsqueda rápida (solo blogs/directorios de terceros, **ninguna página oficial verificada**):
+- **Cloudflare Workers AI:** la única opción gratuita recurrente confirmada por todas las fuentes (ya integrada).
+- **Pollinations:** gratis sin clave o con clave gratuita, ~1 petición/15 s anónima; límites oficiales y términos comerciales **sin confirmar**; hay que leer su documentación y probar con una clave real.
+- **Hugging Face Inference Providers:** crédito gratuito mensual mínimo (~0,10 $); solo respaldo marginal.
+- **Google (Gemini/Imagen):** fuentes contradictorias sobre si hay capa gratuita de imagen (una habla de 500 imágenes/día; otra de ninguna). Verificar en la página oficial antes de nada.
+- Créditos de bienvenida de otros servicios (fal, Together, Replicate…): únicos, no recurrentes. No sirven para una cadena sostenida.
