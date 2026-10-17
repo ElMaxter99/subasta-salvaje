@@ -3,7 +3,7 @@
  * Nada se sube a la app desde aquí: primero se revisan los archivos en tu ordenador y luego se suben con «Elegir una carpeta» en
  * Superadmin → Biblioteca → Imágenes (lee el manifest.csv: colección, título, tipo y crédito de cada foto, todo en un commit).
  *
- *   npm run library                                                                 # TODO en uno: descarga todos los packs y abre la galería
+ *   npm run library -- --contact tu@correo                                           # TODO en uno: descarga todos los packs y abre la galería
  *   npm run library:fetch -- --pack docs/catalogo-semilla/halloween.txt            # un solo pack
  *   npm run library:fetch -- --all                                                 # todos los packs, sin abrir la galería
  *   npm run library:fetch -- --all --out mi-carpeta --allow-by --min-width 1000

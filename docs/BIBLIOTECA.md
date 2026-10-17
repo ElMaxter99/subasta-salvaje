@@ -43,13 +43,14 @@ Misma presentación que el catálogo del anfitrión. Arriba del todo: el título
 ## Rellenar la biblioteca en bloque desde tu ordenador (fotos libres de Wikimedia Commons)
 Primero se descarga todo a una **carpeta local** para revisarlo; después se sube a producción desde el panel. Nada se sube desde el script.
 ```bash
-npm run library          # TODO en uno: descarga los 4 packs, genera la galería y la abre (LIBRARY_CONTACT=tu@correo opcional)
+npm run library -- --contact tu@correo   # TODO en uno: descarga los 4 packs, genera la galería y la abre (el correo es opcional, va en el User-Agent)
 # o por partes:
 npm run library:fetch -- --pack docs/catalogo-semilla/halloween.txt --contact tu@correo   # un pack
 npm run library:fetch -- --all --contact tu@correo                                         # los 4 packs piloto (~125 productos)
-open biblioteca-pendiente/index.html        # galería local con autor, licencia y origen; borra a mano las fotos que no sirvan
+start biblioteca-pendiente\index.html      # Windows (en Mac: open; en Linux: xdg-open). `npm run library` ya la abre sola. Galería local con autor, licencia y origen; borra a mano las fotos que no sirvan
 npm run library:fetch -- --index-only       # regenera manifest.csv, FUENTES.md e index.html con lo que quede
 ```
+- **Windows / Mac / Linux:** los comandos son los mismos (solo necesitas Node ≥ 20 y `npm install`). Para dar el correo por variable de entorno: PowerShell `$env:LIBRARY_CONTACT="tu@correo"; npm run library` · Mac/Linux `LIBRARY_CONTACT=tu@correo npm run library`. Los nombres de archivo se limpian de caracteres no válidos en Windows.
 - Los **packs** (`docs/catalogo-semilla/*.txt`) listan los productos como `Nombre; Descripción; Emoji; búsqueda en inglés` con cabeceras
   `# Colección:` y `# Tipo: item|scene`. Piloto: Halloween, Dulces y chocolates, Playa y verano, Objetos del hogar. Se pueden añadir más.
 - **Solo CC0 / dominio público** por defecto (`--allow-by` añade CC BY / CC BY-SA, con atribución en el crédito). Se descarta lo pequeño
