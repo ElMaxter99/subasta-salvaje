@@ -45,6 +45,9 @@ export async function editSize(baseBytes: Uint8Array, cfg: { size: string; sizeF
   }
 }
 
+/** Semilla nueva en cada llamada: sin ella Pollinations puede devolver siempre la misma imagen para el mismo prompt. */
+const newSeed = () => Math.floor(Math.random() * 2_147_483_647);
+
 export function createPollinationsProvider(cfg: PollinationsProviderOptions): ImageGenerationProvider {
   const doFetch = cfg.fetchImpl ?? fetch;
   const timeout = cfg.timeoutMs ?? 90_000;
@@ -86,7 +89,7 @@ export function createPollinationsProvider(cfg: PollinationsProviderOptions): Im
 
   async function generate(prompt: string): Promise<GeneratedImage> {
     const text = prompt.slice(0, MAX_PROMPT);
-    const bytes = await call('/v1/images/generations', { json: { prompt: text, model: cfg.model, size: cfg.size, response_format: 'b64_json' } });
+    const bytes = await call('/v1/images/generations', { json: { prompt: text, model: cfg.model, size: cfg.size, response_format: 'b64_json', seed: newSeed() } });
     return { bytes, mime: 'image/png', prompt: text, model: cfg.model };
   }
 
@@ -105,6 +108,7 @@ export function createPollinationsProvider(cfg: PollinationsProviderOptions): Im
       form.set('model', cfg.editModel);
       form.set('size', await editSize(input.base.bytes, cfg));
       form.set('response_format', 'b64_json');
+      form.set('seed', String(newSeed()));
       form.append('image', new Blob([(await toReferencePng(input.base, REF_MAX_SIDE)) as BlobPart], { type: 'image/png' }), 'scene.png');
       if (input.itemImage) form.append('image', new Blob([(await toReferencePng(input.itemImage, REF_MAX_SIDE)) as BlobPart], { type: 'image/png' }), 'item.png');
       const bytes = await call('/v1/images/edits', { form });
