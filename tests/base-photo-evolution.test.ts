@@ -64,12 +64,14 @@ describe('el anfitrión sube UNA foto base y cada jugador la evoluciona por sepa
     expect(seen[1]!.base).toBe(photoHex);
     // Segunda edición de Ana: parte de SU primera edición, no de la foto ni de la de Beto, y conoce lo comprado
     expect(seen[2]!.base).not.toBe(photoHex);
-    expect(seen[2]!.base).toBe(hex((await normalizeImage(await png(10, 20, 30), 'scene')).bytes));
     expect(seen[2]!.previous).toHaveLength(1);
 
     const after = await getHostState(ctx, room_code, host);
     const chain = after.versions.filter((v) => v.player_id === playerByName(after, 'Ana').id);
     expect(chain).toHaveLength(3); // foto base + 2 ediciones
+    // La 2.ª edición recibió EXACTAMENTE la imagen guardada de la 1.ª (la guardia de zona puede haber recompuesto lo que devolvió el modelo)
+    expect(seen[2]!.base).toBe(hex(ctx.storage.files.get(chain[1]!.storage_path!)!.bytes));
+    expect(chain[2]!.parent_version_id).toBe(chain[1]!.id);
     expect(chain.map((v) => v.origin)).toEqual(['uploaded', 'edit', 'edit']);
   });
 
