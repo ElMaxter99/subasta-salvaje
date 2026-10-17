@@ -52,7 +52,7 @@ test('partidas del sistema: el superadmin crea y publica una plantilla; el anfit
   await expect(card).toBeVisible({ timeout: 30_000 });
   await expect(card).toContainText('2 elementos');
   await card.getByRole('button', { name: /Usar la partida del sistema/ }).click();
-  await expect(page.getByTestId('template-loaded')).toContainText('Noche en la luna');
+  await expect(page.getByTestId('summary-catalog')).toContainText('2 elementos'); // el asistente salta al Resumen con la plantilla cargada
   await page.getByRole('button', { name: /Crear partida/ }).click();
   await page.waitForURL(/\/game\/[A-Z0-9]{6}\/host/, { timeout: 60_000 });
   await expect(page.getByText('Noche en la luna').first()).toBeVisible();
