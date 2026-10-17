@@ -48,7 +48,7 @@ export function createCloudflareProvider(cfg: CloudflareProviderOptions): ImageG
         signal: AbortSignal.timeout(timeout),
       });
     } catch (e) {
-      throw new ProviderError(`No se pudo contactar con Cloudflare: ${redactSecrets((e as Error).message)}`, true, false);
+      throw new ProviderError(`No se pudo contactar con Cloudflare: ${redactSecrets((e as Error).message)}`, true, false, 'network');
     }
 
     const contentType = res.headers.get('content-type') ?? '';
@@ -66,18 +66,18 @@ export function createCloudflareProvider(cfg: CloudflareProviderOptions): ImageG
       const detail = redactSecrets(first?.message ?? text.slice(0, 300));
       // Cuota gratuita agotada: no tiene sentido reintentar y NO se pasa a un proveedor de pago.
       if (/daily free allocation|neurons|exceeded.*(quota|allocation)/i.test(detail)) {
-        throw new ProviderError(`Cloudflare: cuota diaria gratuita agotada (${detail}). La partida sigue con la imagen anterior; se renueva a las 00:00 UTC. No se activa ningún plan de pago automáticamente.`, false, false);
+        throw new ProviderError(`Cloudflare: cuota diaria gratuita agotada (${detail}). La partida sigue con la imagen anterior; se renueva a las 00:00 UTC. No se activa ningún plan de pago automáticamente.`, false, false, 'quota');
       }
       if (res.status === 401 || res.status === 403) {
-        throw new ProviderError(`Cloudflare ${res.status}: ${detail}. Revisa CLOUDFLARE_API_TOKEN (permiso Workers AI) y que tu plan admita este modelo.`, false, false);
+        throw new ProviderError(`Cloudflare ${res.status}: ${detail}. Revisa CLOUDFLARE_API_TOKEN (permiso Workers AI) y que tu plan admita este modelo.`, false, false, 'auth');
       }
       const retryable = res.status === 429 || res.status >= 500 || res.status === 408;
       // 429 y 400–499: el proveedor rechazó la petición sin ejecutarla (no gasta neuronas); 5xx/408: no se sabe, se cuenta.
-      throw new ProviderError(`Cloudflare ${res.status}${first?.code ? ` (código ${first.code})` : ''}: ${detail}`, retryable, res.status >= 400 && res.status < 500 && res.status !== 408 ? false : true);
+      throw new ProviderError(`Cloudflare ${res.status}${first?.code ? ` (código ${first.code})` : ''}: ${detail}`, retryable, res.status >= 400 && res.status < 500 && res.status !== 408 ? false : true, res.status === 429 ? 'rate_limit' : retryable ? 'server' : 'input');
     }
     // Respuesta típica: { result: { image: "<base64>" }, success: true }. También se admite { image } sin envoltorio.
     const b64 = json?.result?.image ?? json?.image;
-    if (!b64 || typeof b64 !== 'string') throw new ProviderError('Cloudflare no devolvió ninguna imagen', true);
+    if (!b64 || typeof b64 !== 'string') throw new ProviderError('Cloudflare no devolvió ninguna imagen', true, true, 'server');
     return new Uint8Array(Buffer.from(b64, 'base64'));
   }
 
@@ -98,6 +98,8 @@ export function createCloudflareProvider(cfg: CloudflareProviderOptions): ImageG
         throw new ProviderError(
           `El modelo de Cloudflare configurado (${cfg.model}) sólo genera imágenes nuevas y no puede editar la casa existente. Se conserva la imagen anterior. Define CLOUDFLARE_EDIT_MODEL (p. ej. @cf/black-forest-labs/flux-2-klein-4b) o usa otro proveedor con edición.`,
           false,
+          false,
+          'unsupported',
         );
       }
       // Con foto del elemento: la instrucción (buildBlendPrompt) ya describe imagen 0 = escena e imagen 1 = elemento.

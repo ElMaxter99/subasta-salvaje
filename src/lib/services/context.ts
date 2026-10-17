@@ -1,5 +1,6 @@
 import path from 'node:path';
-import { cloudflareConfig, getImageProviderId, getRuntimeMode, getSupabaseConfig, openAiKey } from '@/lib/config/env';
+import { createProviderChain } from '@/lib/ai/chain';
+import { cloudflareConfig, getImageProviderIds, type ImageProviderId, getRuntimeMode, getSupabaseConfig, openAiKey } from '@/lib/config/env';
 import { createCloudflareProvider } from '@/lib/ai/cloudflare';
 import { withEditFallback } from '@/lib/ai/compose';
 import { createDemoProvider } from '@/lib/ai/demo';
@@ -30,8 +31,7 @@ export const demoDataDir = () => process.env.DEMO_DATA_DIR || path.join(process.
 
 const g = globalThis as unknown as { __ssCtx?: Promise<AppContext> };
 
-function buildProvider(): ImageGenerationProvider | null {
-  const id = getImageProviderId();
+function buildOne(id: ImageProviderId): ImageGenerationProvider {
   if (id === 'openai') {
     const e = process.env;
     return createOpenAiProvider({
@@ -43,13 +43,17 @@ function buildProvider(): ImageGenerationProvider | null {
       inputFidelity: (e.OPENAI_IMAGE_INPUT_FIDELITY as 'high' | 'low' | 'off' | undefined) || undefined,
     });
   }
-  if (id === 'cloudflare') {
-    const cf = createCloudflareProvider(cloudflareConfig()!);
-    // Edición real con foto de referencia (FLUX.2 klein). Si el modelo la rechaza, o no hay modelo de edición,
-    // se usa la composición (gratis, misma cuota). IMAGE_EDIT_COMPOSE=false desactiva ese plan B.
-    return /^(0|false|no)$/i.test(process.env.IMAGE_EDIT_COMPOSE?.trim() ?? '') ? cf : withEditFallback(cf);
-  }
-  return null;
+  const cf = createCloudflareProvider(cloudflareConfig()!);
+  // Edición real con foto de referencia (FLUX.2 klein). Si el modelo la rechaza, o no hay modelo de edición,
+  // se usa la composición (gratis, misma cuota). IMAGE_EDIT_COMPOSE=false desactiva ese plan B.
+  return /^(0|false|no)$/i.test(process.env.IMAGE_EDIT_COMPOSE?.trim() ?? '') ? cf : withEditFallback(cf);
+}
+
+function buildProvider(): ImageGenerationProvider | null {
+  const ids = getImageProviderIds();
+  if (ids.length === 0) return null;
+  // Con un solo proveedor la cadena devuelve ese mismo proveedor (sin cambios de comportamiento).
+  return createProviderChain(ids.map(buildOne), { onSkip: (s) => console.warn(`[ai-chain] salto de ${s.provider} (${s.kind})`) });
 }
 
 async function build(): Promise<AppContext> {

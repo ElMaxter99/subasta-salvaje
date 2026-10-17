@@ -149,6 +149,18 @@ describe('10-11. Fallos de IA: la compra se mantiene y el reintento no cobra', (
     },
   };
 
+  it('la imagen guarda el proveedor que respondió realmente (cadena) y no el id del primero', async () => {
+    const host = newHost();
+    const { room, snap } = await gameWithImages(host);
+    const ana = playerByName(snap, 'Ana');
+    await buy(host, room, ana.id, 450);
+    const demo = createDemoProvider();
+    const chained = { ...demo, editScene: async (i: Parameters<typeof demo.editScene>[0]) => ({ ...(await demo.editScene(i)), provider: 'demo' }) };
+    await processImageJobs({ ...ctx, provider: chained }, { gameId: snap.game.id });
+    const after = await getHostState(ctx, room, host);
+    expect(playerByName(after, 'Ana').current_image?.provider).toBe('demo');
+  });
+
   it('tras agotar reintentos el trabajo queda fallido, se conserva la imagen aprobada y el saldo; reintentar no vuelve a cobrar', async () => {
     const host = newHost();
     const { room, snap } = await gameWithImages(host);

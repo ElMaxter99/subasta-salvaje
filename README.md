@@ -161,6 +161,7 @@ Plantilla sin valores: [`.env.example`](.env.example). Nunca subas `.env*` al re
 | `SUPABASE_SERVICE_ROLE_KEY` | Sí (modo real) | **solo servidor** | Clave de servicio. Nunca en el navegador. |
 | `SUPABASE_STORAGE_BUCKET` | No | servidor | Bucket de imágenes (por defecto `game-images`). |
 | `IMAGE_PROVIDER` | No (vacío = sin IA) | servidor | `cloudflare` \| `openai`. Activa el modo «Con IA». Ninguna credencial lo activa sin esto. |
+| `IMAGE_PROVIDERS` | No | servidor | Lista ordenada de proveedores **gratuitos** con fallback automático (cuota, límite, credenciales, red). Sustituye a `IMAGE_PROVIDER`. Hoy solo hay uno gratuito (`cloudflare`), así que de momento no cambia nada; `openai` (de pago) no puede ir en una lista de varios. |
 | `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN` | Con `cloudflare` | **solo servidor** | Credenciales de Workers AI. |
 | `CLOUDFLARE_IMAGE_MODEL`, `_IMAGE_STEPS`, `CLOUDFLARE_EDIT_MODEL`, `_EDIT_WIDTH`, `_EDIT_HEIGHT` | No | servidor | Modelos y parámetros (ver arriba). |
 | `IMAGE_QUOTA_PER_GAME`, `IMAGE_QUOTA_PER_DAY` | No (10 / 50) | servidor | Límite de generaciones reales por partida y por día. |

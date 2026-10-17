@@ -186,6 +186,12 @@ Superadmin (cumple el aviso de `PLAN-SUPERADMIN.md`: «el panel no puede elegir 
 - Cachear resultados idénticos (mismo base+elemento) por hash dentro de la misma partida (p. ej. «deshacer y rehacer»).
 - Medir el coste real por llamada leyendo el panel de Cloudflare y ajustar `IMAGE_QUOTA_PER_DAY` (hoy 50, sin base medida).
 
+> **Estado fase 1 (17-10-2026): implementada la parte sin decisiones del propietario.** `ProviderError.kind`, `src/lib/ai/chain.ts` (proveedor compuesto con
+> fallback por cuota/429/auth/red/5xx, enfriamiento en memoria, composición como último recurso, moderación/entrada inválida NO saltan), `IMAGE_PROVIDERS`
+> y registro del proveedor que respondió (`GeneratedImage.provider`). **Simplificaciones respecto al diseño de arriba:** la cuota local se reserva una vez por
+> trabajo (no por candidato) y no hay topes por proveedor ni de coste, porque los proveedores de pago quedan fuera de la cadena (fase 5). Pendiente: topes
+> por proveedor (SQL), panel de superadmin (fase 2) y los adaptadores nuevos (fases 3–4). Probado solo con proveedores simulados.
+
 ## 5. Cambios concretos por archivo
 
 | Archivo | Cambio |

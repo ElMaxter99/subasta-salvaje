@@ -132,7 +132,7 @@ export function withComposedEdit(inner: ImageGenerationProvider): ImageGeneratio
         if (e instanceof ProviderError) throw e;
         throw new ProviderError(`No se pudo componer el objeto sobre la escena: ${(e as Error).message}`, false);
       }
-      return { bytes: merged, mime: 'image/png', prompt: `[composición] ${item.prompt}`, model: `${item.model}+compose` };
+      return { bytes: merged, mime: 'image/png', prompt: `[composición] ${item.prompt}`, model: `${item.model}+compose`, ...((item as { provider?: string }).provider ? { provider: (item as { provider?: string }).provider } : {}) };
     },
   };
 }

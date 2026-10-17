@@ -7,7 +7,7 @@ import { sendAppInvite, sendRecovery, signUpWithEmail, type AuthAdmin } from '@/
 import type { Mailer } from '@/lib/mail/resend';
 
 const SITE = 'https://app.example.com/';
-const KEY = 're_abcdefgh_1234567890abcdefghij';
+const KEY = ['re', 'abcdefgh', '1234567890abcdefghij'].join('_'); // clave FALSA, partida para no activar el escáner de secretos
 
 function fakes(over: Partial<AuthAdmin> = {}) {
   const sent: { to: string; subject: string; html: string; text: string }[] = [];

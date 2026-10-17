@@ -7,7 +7,16 @@ export interface GeneratedImage extends ImageData {
   /** Prompt realmente enviado al proveedor (se guarda en image_versions.prompt_used). */
   prompt: string;
   model: string;
+  /** Proveedor que respondió realmente (lo rellena la cadena; si falta, el `id` del proveedor usado). */
+  provider?: string;
 }
+
+/**
+ * Por qué falló un proveedor. Decide si la cadena (`chain.ts`) pasa al siguiente: cuota, límite de ritmo, credenciales,
+ * red, servidor caído o «no sé hacer esto» permiten probar otro proveedor; moderación, entrada inválida o desconocido NO
+ * (el mismo contenido se rechazaría igual y no se reparte por varios terceros).
+ */
+export type ProviderErrorKind = 'quota' | 'rate_limit' | 'auth' | 'network' | 'server' | 'unsupported' | 'moderation' | 'input' | 'invalid_output' | 'unknown';
 
 export class ProviderError extends Error {
   constructor(
@@ -20,6 +29,7 @@ export class ProviderError extends Error {
      * Por defecto `true` (prudente: ante la duda se cuenta).
      */
     public readonly consumed: boolean = true,
+    public readonly kind: ProviderErrorKind = 'unknown',
   ) {
     super(message);
     this.name = 'ProviderError';

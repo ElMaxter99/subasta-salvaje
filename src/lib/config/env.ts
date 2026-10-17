@@ -70,10 +70,23 @@ export function cloudflareConfig(env: NodeJS.ProcessEnv = process.env): Cloudfla
 export function getImageProviderId(env: NodeJS.ProcessEnv = process.env): ImageProviderId | null {
   // Interruptor de seguridad: IMAGE_AI_DISABLED=true apaga TODA la IA real sin tocar credenciales ni partidas.
   if (/^(1|true|yes)$/i.test(env.IMAGE_AI_DISABLED?.trim() ?? '')) return null;
-  const want = (env.IMAGE_PROVIDER ?? '').trim().toLowerCase();
-  if (want === 'cloudflare') return cloudflareConfig(env) ? 'cloudflare' : null;
-  if (want === 'openai') return openAiKey(env) ? 'openai' : null;
-  return null;
+  return getImageProviderIds(env)[0] ?? null;
+}
+
+/**
+ * Cadena de proveedores: `IMAGE_PROVIDERS=cloudflare,…` (orden de preferencia) o, como hasta ahora, `IMAGE_PROVIDER=…` (uno solo).
+ * Solo entran los pedidos explícitamente y con credenciales. Un proveedor de PAGO (openai) solo se admite como único
+ * (no puede ser fallback silencioso de otro: exigiría un tope de gasto, ver docs/PLAN-PROVEEDORES-IA.md fase 5).
+ */
+export function getImageProviderIds(env: NodeJS.ProcessEnv = process.env): ImageProviderId[] {
+  if (/^(1|true|yes)$/i.test(env.IMAGE_AI_DISABLED?.trim() ?? '')) return [];
+  const wanted = (env.IMAGE_PROVIDERS?.trim() ? env.IMAGE_PROVIDERS : (env.IMAGE_PROVIDER ?? '')).split(',').map((s) => s.trim().toLowerCase()).filter(Boolean);
+  const out: ImageProviderId[] = [];
+  for (const w of wanted) {
+    if (w === 'cloudflare' && cloudflareConfig(env) && !out.includes('cloudflare')) out.push('cloudflare');
+    else if (w === 'openai' && openAiKey(env) && wanted.length === 1) out.push('openai');
+  }
+  return out;
 }
 
 export interface QuotaConfig {

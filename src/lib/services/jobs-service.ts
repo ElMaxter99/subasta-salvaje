@@ -165,7 +165,7 @@ async function runJob(ctx: Ctx, provider: ImageGenerationProvider, job: ClaimedJ
       mime_type: mime,
       bytes: image.bytes.length,
       prompt: image.prompt,
-      provider: provider.id,
+      provider: image.provider ?? provider.id,
     });
     await publish(ctx, done.room_code);
     return true;
