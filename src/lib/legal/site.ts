@@ -109,6 +109,7 @@ export const SERVICE_PROVIDERS = [
   { name: 'Supabase', role: 'Base de datos, autenticación, almacenamiento de imágenes y tiempo real.', url: 'https://supabase.com/privacy' },
   { name: 'Vercel', role: 'Alojamiento de la aplicación y tareas programadas.', url: 'https://vercel.com/legal/privacy-policy' },
   { name: 'Cloudflare (Workers AI)', role: 'Generación y edición de imágenes con IA, solo si el anfitrión/propietario la configura.', url: 'https://www.cloudflare.com/privacypolicy/' },
+  { name: 'Pollinations', role: 'Generación y edición de imágenes con IA, solo si el propietario lo configura (se envían el texto de la petición y, al editar, la imagen de la casa y del elemento).', url: 'https://pollinations.ai/' },
   { name: 'Resend', role: 'Envío de los correos de la cuenta (confirmación, recuperación de contraseña, invitaciones), solo si el propietario lo configura.', url: 'https://resend.com/legal/privacy-policy' },
   { name: 'OpenAI', role: 'Generación y edición de imágenes con IA, solo si el propietario lo configura.', url: 'https://openai.com/policies/privacy-policy' },
 ] as const;

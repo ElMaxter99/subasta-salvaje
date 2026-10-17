@@ -24,7 +24,29 @@ export function openAiKey(env: NodeJS.ProcessEnv = process.env): string | null {
   return env.OPENAI_API_KEY?.trim() || null;
 }
 
-export type ImageProviderId = 'cloudflare' | 'openai';
+export type ImageProviderId = 'cloudflare' | 'pollinations' | 'openai';
+
+export interface PollinationsConfig {
+  apiKey: string;
+  /** Modelo de generación (por defecto FLUX.1 schnell, el de la documentación de Pollinations). */
+  model: string;
+  /** Modelo de edición con imágenes de referencia (opcional; vacío = la edición no está disponible y se usa la composición). */
+  editModel: string | null;
+  size: string;
+}
+
+/** Pollinations (gratuito con clave gratuita; límites y términos SIN verificar: ver docs/PENDIENTE.md). */
+export function pollinationsConfig(env: NodeJS.ProcessEnv = process.env): PollinationsConfig | null {
+  const apiKey = env.POLLINATIONS_API_KEY?.trim();
+  if (!apiKey) return null;
+  const size = env.POLLINATIONS_IMAGE_SIZE?.trim();
+  return {
+    apiKey,
+    model: env.POLLINATIONS_IMAGE_MODEL?.trim() || 'black-forest-labs/flux.1-schnell',
+    editModel: /^(off|none|false|no)$/i.test(env.POLLINATIONS_EDIT_MODEL?.trim() ?? '') ? null : env.POLLINATIONS_EDIT_MODEL?.trim() || null,
+    size: size && /^\d{3,4}x\d{3,4}$/.test(size) ? size : '1024x768',
+  };
+}
 
 export interface CloudflareConfig {
   accountId: string;
@@ -84,6 +106,7 @@ export function getImageProviderIds(env: NodeJS.ProcessEnv = process.env): Image
   const out: ImageProviderId[] = [];
   for (const w of wanted) {
     if (w === 'cloudflare' && cloudflareConfig(env) && !out.includes('cloudflare')) out.push('cloudflare');
+    else if (w === 'pollinations' && pollinationsConfig(env) && !out.includes('pollinations')) out.push('pollinations');
     else if (w === 'openai' && openAiKey(env) && wanted.length === 1) out.push('openai');
   }
   return out;

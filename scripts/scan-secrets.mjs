@@ -15,10 +15,11 @@ const PATTERNS = [
   ['Token de Cloudflare', /cf[ua]t_[A-Za-z0-9_-]{16,}/],
   ['Clave secreta de Supabase', /sb_secret_[A-Za-z0-9_-]{8,}/],
   ['Clave de OpenAI', /sk-(?:proj-)?[A-Za-z0-9_-]{20,}/],
+  ['Clave de Pollinations', /\bsk_[A-Za-z0-9]{20,}/],
   ['Clave de Resend', /\bre_[A-Za-z0-9]{8,}_[A-Za-z0-9]{16,}/],
   ['JWT (p. ej. service_role)', /eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}/],
 ];
-const SECRET_VARS = ['CLOUDFLARE_API_TOKEN', 'OPENAI_API_KEY', 'SUPABASE_SERVICE_ROLE_KEY', 'CRON_SECRET', 'RESEND_API_KEY'];
+const SECRET_VARS = ['CLOUDFLARE_API_TOKEN', 'OPENAI_API_KEY', 'SUPABASE_SERVICE_ROLE_KEY', 'CRON_SECRET', 'RESEND_API_KEY', 'POLLINATIONS_API_KEY'];
 let problems = 0;
 const fail = (msg) => {
   problems++;
@@ -59,8 +60,15 @@ const GIT_PATTERNS = [
   ['Clave de OpenAI', 'sk-[A-Za-z0-9_-]{20,}'],
   ['JWT (p. ej. service_role)', 'eyJ[A-Za-z0-9_-]{20,}[.][A-Za-z0-9_-]{20,}[.][A-Za-z0-9_-]{20,}'],
 ];
+// Commits con claves FALSAS de prueba (valores «xxxx» en tests/ai-chain.test.ts, ya corregidos en el árbol). No se reescribe el historial público.
+const FAKE_KEY_COMMITS = ['8263359'];
 for (const [name, ere] of GIT_PATTERNS) {
-  const out = execFileSync('git', ['log', '--all', '-G', ere, '--oneline', '--', '.', ':!package-lock.json']).toString().trim();
+  const out = execFileSync('git', ['log', '--all', '-G', ere, '--oneline', '--', '.', ':!package-lock.json'])
+    .toString()
+    .split('\n')
+    .filter((l) => l.trim() && !FAKE_KEY_COMMITS.some((c) => l.startsWith(c)))
+    .join('\n')
+    .trim();
   if (out) fail(`${name} aparece en el historial de git:\n${out}`);
 }
 

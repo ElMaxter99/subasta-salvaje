@@ -1,3 +1,4 @@
+import { providerLabel } from '@/lib/ai/labels';
 import { Wifi, WifiOff, RefreshCw, FlaskConical } from 'lucide-react';
 import type { ConnectionState } from '@/lib/client/use-live-game';
 import type { RuntimeInfo } from '@/lib/domain/types';
@@ -28,7 +29,7 @@ export function DemoBanner({ runtime }: { runtime: RuntimeInfo }) {
     <div className="flex items-center justify-center gap-2 bg-gold px-3 py-1.5 text-center text-sm font-bold text-night-950">
       <FlaskConical className="size-4 shrink-0" aria-hidden />
       MODO DEMO · datos locales de desarrollo ·{' '}
-      {runtime.aiConfigured ? `IA disponible (${runtime.aiProvider === 'cloudflare' ? 'Cloudflare Workers AI' : 'OpenAI'})` : 'modo pegatinas (sin IA)'}
+      {runtime.aiConfigured ? `IA disponible (${providerLabel(runtime.aiProvider)})` : 'modo pegatinas (sin IA)'}
     </div>
   );
 }

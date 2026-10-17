@@ -192,6 +192,8 @@ Superadmin (cumple el aviso de `PLAN-SUPERADMIN.md`: «el panel no puede elegir 
 > trabajo (no por candidato) y no hay topes por proveedor ni de coste, porque los proveedores de pago quedan fuera de la cadena (fase 5). Pendiente: topes
 > por proveedor (SQL), panel de superadmin (fase 2) y los adaptadores nuevos (fases 3–4). Probado solo con proveedores simulados.
 
+> **Fase 4 (17-10-2026): adaptador de Pollinations escrito** según `APIDOCS.md` oficial (`/v1/images/generations` y `/v1/images/edits`, Bearer `sk_…`, 402 = presupuesto agotado). Solo tests simulados; sin probar contra el servicio real.
+
 ## 5. Cambios concretos por archivo
 
 | Archivo | Cambio |

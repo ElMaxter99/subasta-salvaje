@@ -231,7 +231,7 @@ export interface Gallery {
 /** Instantánea del anfitrión: añade trabajos, versiones y eventos. */
 /** Contador de generaciones REALES de imagen (el proveedor demo no cuenta ni tiene límite). */
 export interface ImageUsage {
-  provider: 'openai' | 'cloudflare' | 'demo';
+  provider: 'openai' | 'cloudflare' | 'pollinations' | 'demo';
   limited: boolean;
   game_used: number;
   game_limit: number | null;
@@ -254,7 +254,7 @@ export interface RuntimeInfo {
   mode: 'supabase' | 'demo';
   aiConfigured: boolean;
   /** Proveedor de IA REAL configurado ('demo' = ninguno: sólo está disponible el modo pegatinas). */
-  aiProvider: 'openai' | 'cloudflare' | 'demo';
+  aiProvider: 'openai' | 'cloudflare' | 'pollinations' | 'demo';
   /** El proveedor configurado puede EDITAR la imagen existente de una casa (si no, sólo genera imágenes nuevas). */
   aiCanEdit: boolean;
   /** Sólo en Supabase: permite que el navegador se suscriba a Realtime. */

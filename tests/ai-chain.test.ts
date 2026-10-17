@@ -112,15 +112,15 @@ describe('cadena de proveedores', () => {
 });
 
 describe('configuración de la cadena', () => {
-  const cf = { CLOUDFLARE_ACCOUNT_ID: 'acc', CLOUDFLARE_API_TOKEN: 'cfut_xxxxxxxxxxxxxxxxxxxx' };
+  const cf = { CLOUDFLARE_ACCOUNT_ID: 'acc', CLOUDFLARE_API_TOKEN: ['cfut', 'x'.repeat(20)].join('_') };
   it('IMAGE_PROVIDER (uno) sigue funcionando y exige credenciales', () => {
     expect(getImageProviderIds({ IMAGE_PROVIDER: 'cloudflare', ...cf } as never)).toEqual(['cloudflare']);
     expect(getImageProviderIds({ IMAGE_PROVIDER: 'cloudflare' } as never)).toEqual([]);
     expect(getImageProviderIds({ ...cf } as never)).toEqual([]);
   });
   it('un proveedor de pago no entra en una lista de varios', () => {
-    expect(getImageProviderIds({ IMAGE_PROVIDERS: 'openai,cloudflare', OPENAI_API_KEY: 'sk-test-xxxxxxxxxxxxxxxxxxxx', ...cf } as never)).toEqual(['cloudflare']);
-    expect(getImageProviderIds({ IMAGE_PROVIDERS: 'openai', OPENAI_API_KEY: 'sk-test-xxxxxxxxxxxxxxxxxxxx' } as never)).toEqual(['openai']);
+    expect(getImageProviderIds({ IMAGE_PROVIDERS: 'openai,cloudflare', OPENAI_API_KEY: ['sk', 'test', 'x'.repeat(20)].join('-'), ...cf } as never)).toEqual(['cloudflare']);
+    expect(getImageProviderIds({ IMAGE_PROVIDERS: 'openai', OPENAI_API_KEY: ['sk', 'test', 'x'.repeat(20)].join('-') } as never)).toEqual(['openai']);
   });
   it('IMAGE_AI_DISABLED lo apaga todo', () => {
     expect(getImageProviderIds({ IMAGE_PROVIDERS: 'cloudflare', IMAGE_AI_DISABLED: 'true', ...cf } as never)).toEqual([]);

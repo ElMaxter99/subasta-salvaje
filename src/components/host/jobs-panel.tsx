@@ -1,5 +1,6 @@
 'use client';
 
+import { providerLabel } from '@/lib/ai/labels';
 import { useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { History, Play, RotateCw } from 'lucide-react';
@@ -167,7 +168,7 @@ function UsageCard({ ctx }: { ctx: HostCtx }) {
         </div>
       </div>
       <p className="mt-2 text-xs text-white/55">
-        Proveedor: {u.provider === 'cloudflare' ? 'Cloudflare Workers AI' : 'OpenAI'}. Cuenta cada llamada al proveedor (también las que fallan). Límites: <code>IMAGE_QUOTA_PER_GAME</code> / <code>IMAGE_QUOTA_PER_DAY</code>.
+        Proveedor: {providerLabel(u.provider)}. Cuenta cada llamada al proveedor (también las que fallan). Límites: <code>IMAGE_QUOTA_PER_GAME</code> / <code>IMAGE_QUOTA_PER_DAY</code>.
       </p>
       {full ? <Notice tone="warn">Cuota alcanzada: los trabajos nuevos fallarán con un aviso claro y la partida sigue con las imágenes actuales. Se renueva a las 00:00 UTC (diaria).</Notice> : null}
     </Card>

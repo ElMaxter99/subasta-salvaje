@@ -55,6 +55,10 @@ Después de cada migración nueva, vuelve a probar a mano: crear partida, pujar,
 - [ ] Verificar tu dominio en Resend (SPF/DKIM) y crear una API key. En Vercel: `RESEND_API_KEY` (*Sensitive*), `MAIL_FROM`, opcional `MAIL_REPLY_TO`; confirmar `NEXT_PUBLIC_SITE_URL`; redesplegar. Probar: recuperar contraseña, registro con confirmación y «Enviar correo» en `/admin/usuarios`. **Sin probar contra Resend real.**
 - [ ] En Supabase → Authentication → Sign In / Providers, desactivar «Allow new users to sign up» (el registro de la app ya no lo usa). Para borrar usuarios ya creados: Authentication → Users, o desde `/admin/usuarios`.
 
+## 5c. Pollinations (segundo eslabón gratuito de la cadena)
+- [ ] Crear una clave en Pollinations, **leer sus términos y límites** (no verificados) y definir `POLLINATIONS_API_KEY` (+ `IMAGE_PROVIDERS=cloudflare,pollinations`). Opcional `POLLINATIONS_EDIT_MODEL=black-forest-labs/flux.2-klein-4b` para edición real.
+- [ ] Probar 1 generación y 1 edición reales: el adaptador (`src/lib/ai/pollinations.ts`) asume la respuesta OpenAI `data[0].b64_json` (la documentación consultada estaba recortada) y solo lo cubren tests con `fetch` simulado. Si el formato difiere, ajustar y avisar.
+
 ## 6. Cron externo (opcional pero recomendado en producción)
 - [ ] El cron de `vercel.json` es diario (límite del plan *Hobby*). Para que los trabajos de imagen y el borrado se procesen con más frecuencia, programa en GitHub Actions o cron-job.org una llamada cada minuto a `/api/jobs/process` con la cabecera `Authorization: Bearer <CRON_SECRET>`.
 

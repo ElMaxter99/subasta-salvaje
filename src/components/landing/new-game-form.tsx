@@ -1,5 +1,6 @@
 'use client';
 
+import { providerLabel } from '@/lib/ai/labels';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
@@ -50,7 +51,7 @@ function Choice({ checked, disabled, name, value, onChange, title, desc, tag }: 
   );
 }
 
-export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean; aiProvider: 'openai' | 'cloudflare' | 'demo' }) {
+export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean; aiProvider: 'openai' | 'cloudflare' | 'pollinations' | 'demo' }) {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [dir, setDir] = useState<1 | -1>(1);
@@ -313,7 +314,7 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
                   disabled={!aiAvailable}
                   onChange={() => setImageMode('ai')}
                   title="✨ Con inteligencia artificial"
-                  desc={aiAvailable ? `La IA (${aiProvider === 'cloudflare' ? 'Cloudflare Workers AI' : 'OpenAI'}) genera la casa inicial y la va editando con cada compra. Tiene límites de generaciones por partida y por día.` : 'No disponible: este despliegue no tiene un proveedor de IA configurado (IMAGE_PROVIDER). Usa el modo pegatinas.'}
+                  desc={aiAvailable ? `La IA (${providerLabel(aiProvider)}) genera la casa inicial y la va editando con cada compra. Tiene límites de generaciones por partida y por día.` : 'No disponible: este despliegue no tiene un proveedor de IA configurado (IMAGE_PROVIDER). Usa el modo pegatinas.'}
                 />
               </fieldset>
             </>
