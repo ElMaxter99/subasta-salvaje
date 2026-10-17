@@ -1,0 +1,33 @@
+# Colección: Halloween
+# Tipo: item
+# Formato: Nombre; Descripción; Emoji; búsqueda en inglés (para Wikimedia Commons)
+Calabaza tallada; Calabaza naranja con una sonrisa tallada y una vela dentro; 🎃; jack-o'-lantern carved pumpkin
+Calabaza gigante; Una calabaza enorme de granja, redonda y naranja; 🎃; giant pumpkin
+Fantasma de sábana; Fantasma blanco hecho con una sábana con dos agujeros por ojos; 👻; ghost costume sheet
+Murciélago; Murciélago de alas abiertas colgando en la noche; 🦇; bat flying
+Araña; Araña grande y peluda en el centro de su telaraña; 🕷️; spider on web
+Telaraña; Telaraña cubierta de rocío; 🕸️; spider web dew
+Esqueleto; Esqueleto humano de plástico de decoración; 💀; skeleton decoration halloween
+Calavera; Calavera blanca con las cuencas vacías; 💀; human skull
+Sombrero de bruja; Sombrero negro, puntiagudo y de ala ancha; 🎩; witch hat
+Escoba de bruja; Escoba de paja y mango de madera; 🧹; broomstick besom
+Caldero; Caldero negro de hierro sobre el fuego; 🍲; cauldron iron
+Gato negro; Gato negro de ojos amarillos sentado en una valla; 🐈‍⬛; black cat
+Cuervo; Cuervo negro posado en una rama; 🐦‍⬛; raven bird
+Búho; Búho de ojos enormes en una rama; 🦉; owl perched
+Luna llena; Luna llena brillante y enorme; 🌕; full moon
+Cementerio; Cementerio antiguo con lápidas torcidas; 🪦; old cemetery gravestones
+Casa encantada; Casa victoriana abandonada y siniestra; 🏚️; abandoned old house
+Castillo oscuro; Castillo medieval sobre una colina; 🏰; medieval castle hill
+Vela; Vela encendida goteando cera; 🕯️; burning candle
+Caramelos de Halloween; Montón de caramelos de colores en un cuenco; 🍬; halloween candy bowl
+Manzana de caramelo; Manzana roja cubierta de caramelo con un palo; 🍎; candy apple
+Maíz de caramelo; Caramelos triangulares naranjas, amarillos y blancos; 🍬; candy corn
+Linterna; Linterna antigua de metal con luz; 🏮; old lantern
+Hoja seca; Hoja de otoño seca y naranja; 🍂; autumn leaf
+Espantapájaros; Espantapájaros de paja con sombrero en un campo; 🧑‍🌾; scarecrow field
+Telescopio; Telescopio de latón apuntando al cielo; 🔭; brass telescope
+Poción; Frasco de cristal con un líquido de colores; 🧪; potion bottle glass
+Libro viejo; Libro antiguo de tapas de cuero; 📖; old leather book
+Máscara; Máscara de carnaval con plumas; 🎭; carnival mask
+Cuervo de piedra; Gárgola de piedra en una torre; 🗿; gargoyle stone

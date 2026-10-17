@@ -16,3 +16,6 @@ coverage
 .next-*
 *.jar
 .email-preview/
+
+# Descargas locales de la biblioteca (se revisan y se suben desde el panel)
+biblioteca-pendiente/

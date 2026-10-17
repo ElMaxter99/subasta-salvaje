@@ -2,7 +2,7 @@
 
 Objetivo: llenar **Superadmin → Biblioteca** con cientos de fotos útiles para el juego (objetos divertidos, comida, animales, paisajes…) y con
 **productos de catálogo completos** (nombre, descripción, emoji, colección y foto) listos para importar en cualquier partida o plantilla.
-Estado: **plan** (nada de esto está ejecutado). Las cifras de límites de terceros salen de la documentación pública consultada de pasada y
+Estado: **fases B y C hechas en versión piloto** (4 packs de productos y `npm run library:fetch` para descargar a una carpeta local; ver `docs/BIBLIOTECA.md`); todo lo demás sigue siendo plan. Nada se ha descargado todavía. Las cifras de límites de terceros salen de la documentación pública consultada de pasada y
 **hay que confirmarlas en la web oficial antes de depender de ellas**.
 
 ## 0. Lo que condiciona el plan (honesto)

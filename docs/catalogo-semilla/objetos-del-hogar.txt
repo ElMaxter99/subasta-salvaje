@@ -1,0 +1,33 @@
+# Colección: Objetos del hogar
+# Tipo: item
+Sofá; Sofá cómodo de tela gris; 🛋️; sofa living room
+Sillón de orejas; Sillón antiguo de orejas; 🪑; wingback armchair
+Lámpara de pie; Lámpara de pie con pantalla; 💡; floor lamp
+Reloj de pared; Reloj redondo de pared con números grandes; 🕰️; wall clock
+Despertador; Despertador clásico con campanas; ⏰; alarm clock
+Tostadora; Tostadora cromada con dos rebanadas; 🍞; toaster
+Cafetera; Cafetera italiana de aluminio; ☕; moka pot
+Tetera; Tetera de porcelana con flores; 🫖; teapot
+Sartén; Sartén negra con mango largo; 🍳; frying pan
+Olla; Olla grande de acero inoxidable; 🍲; cooking pot
+Plancha; Plancha de ropa antigua de hierro; 🧺; flat iron antique
+Aspiradora; Aspiradora de trineo roja; 🧹; vacuum cleaner
+Paraguas; Paraguas abierto de colores; ☂️; umbrella open
+Maceta; Maceta de barro con una planta; 🪴; flowerpot plant
+Cactus en maceta; Cactus pequeño en una maceta de barro; 🌵; potted cactus
+Espejo; Espejo de marco dorado; 🪞; mirror ornate frame
+Piano; Piano de cola negro; 🎹; grand piano
+Guitarra; Guitarra española de madera; 🎸; classical guitar
+Bicicleta; Bicicleta clásica con cesta; 🚲; bicycle basket
+Patinete; Patinete plegable; 🛴; kick scooter
+Carretilla; Carretilla de jardín llena de tierra; 🛒; wheelbarrow
+Regadera; Regadera metálica de jardinero; 🚿; watering can
+Cortacésped; Cortacésped rojo; 🌱; lawn mower
+Nevera vintage; Nevera retro de esquinas redondeadas; 🧊; vintage refrigerator
+Máquina de escribir; Máquina de escribir antigua; ⌨️; typewriter
+Teléfono antiguo; Teléfono de disco negro; ☎️; rotary telephone
+Radio antigua; Radio de válvulas de madera; 📻; vintage radio
+Televisión antigua; Televisor de tubo con antenas; 📺; old television set
+Globo terráqueo; Globo terráqueo sobre un pie de madera; 🌍; world globe
+Muñeco de peluche; Osito de peluche marrón; 🧸; teddy bear
+Cometa; Cometa de colores en el aire; 🪁; kite flying

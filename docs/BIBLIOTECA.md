@@ -40,6 +40,29 @@ Misma presentación que el catálogo del anfitrión: buscador (nombre, descripci
 - **Editar** (nombre, emoji, colección, descripción) y **Eliminar**. **Añadir producto** crea uno nuevo; «Añadir muchos productos a la vez» acepta
   una línea por producto, `Nombre; Descripción; Emoji`, y enlaza sola la imagen con el mismo título. Los repetidos (misma colección y nombre) se omiten.
 
+## Rellenar la biblioteca en bloque desde tu ordenador (fotos libres de Wikimedia Commons)
+Primero se descarga todo a una **carpeta local** para revisarlo; después se sube a producción desde el panel. Nada se sube desde el script.
+```bash
+npm run library:fetch -- --pack docs/catalogo-semilla/halloween.txt --contact tu@correo   # un pack
+npm run library:fetch -- --all --contact tu@correo                                         # los 4 packs piloto (~125 productos)
+open biblioteca-pendiente/index.html        # galería local con autor, licencia y origen; borra a mano las fotos que no sirvan
+npm run library:fetch -- --index-only       # regenera manifest.csv, FUENTES.md e index.html con lo que quede
+```
+- Los **packs** (`docs/catalogo-semilla/*.txt`) listan los productos como `Nombre; Descripción; Emoji; búsqueda en inglés` con cabeceras
+  `# Colección:` y `# Tipo: item|scene`. Piloto: Halloween, Dulces y chocolates, Playa y verano, Objetos del hogar. Se pueden añadir más.
+- **Solo CC0 / dominio público** por defecto (`--allow-by` añade CC BY / CC BY-SA, con atribución en el crédito). Se descarta lo pequeño
+  (`--min-width 800`), lo que no es JPG/PNG/WebP y lo marcado con restricciones de marca o personalidad. Pausas entre peticiones (`--delay 1500`)
+  y el `User-Agent` lleva tu correo (`--contact`), como pide Wikimedia. Se puede repetir: salta lo ya descargado.
+- Sale `biblioteca-pendiente/<Colección>/<Nombre del producto>.jpg` (el título coincide con el producto, así que **se enlaza sola** al importar el texto),
+  `manifest.csv` (colección, título, autor, licencia, fuente, tipo), `FUENTES.md`, `index.html` y `<Colección>/productos.txt`. La carpeta está en `.gitignore`.
+- **Subir a producción:** Superadmin → Biblioteca → Imágenes → **«Elegir una carpeta»** y elige `biblioteca-pendiente`. La pantalla lee el
+  `manifest.csv`: cada foto entra con su colección, título, tipo y crédito (autor · licencia · origen), con miniaturas para quitar las que sobren y **un solo commit**.
+  Luego, en **Productos del catálogo → Añadir muchos productos a la vez**, pega el contenido de `<Colección>/productos.txt` con la colección elegida:
+  los productos se crean con su foto. Los que no tengan foto, con «Generar imagen» (IA) o subiéndola.
+- **Sin probar contra Wikimedia real** (el entorno de desarrollo no tiene red hacia esos servidores): la búsqueda y el manifiesto se prueban con respuestas
+  simuladas y la subida con un GitHub simulado. Si Commons devuelve pocos resultados para una búsqueda, cámbiala en el pack (cuarta columna).
+  Respeta las condiciones de uso de Wikimedia (no lances descargas masivas seguidas).
+
 ## Usarlo al configurar una partida
 En el asistente de «Nueva partida» (y en el editor del superadmin), en el **Resumen → catálogo**: **«De la biblioteca»** abre un modal flotante
 (móvil y escritorio) con colecciones y buscador; marcas productos o «Marcar todos» y se **añaden al catálogo** de esa partida (los nombres que ya

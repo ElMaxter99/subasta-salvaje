@@ -1,5 +1,8 @@
 import { createServer } from 'node:http';
 import { expect, test } from '@playwright/test';
+import { mkdtempSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import sharp from 'sharp';
 
 const stamp = Date.now().toString(36); // la base del e2e persiste entre ejecuciones: nombres únicos
@@ -46,7 +49,7 @@ test('biblioteca: subida masiva (con repetida y archivo no válido), productos d
       await file(`murcielago_${stamp}.jpg`, `rgb(34, 17, ${k + 20})`),
       await file(`copia_de_fantasma_${stamp}.jpg`, `rgb(238, ${k + 20}, 255)`),
       await file(`sobra_${stamp}.jpg`, `rgb(1, ${k + 20}, 2)`),
-      { name: 'notas.txt', mimeType: 'text/plain', buffer: Buffer.from('no soy una imagen') },
+      { name: 'animacion.gif', mimeType: 'image/gif', buffer: Buffer.from('GIF89a') },
     ]);
     // Primero se revisan las miniaturas: nada se sube hasta pulsar «Subir»; una sobra se quita con la ✕
     await expect(page.getByTestId('library-queue-item')).toHaveCount(5);
@@ -60,6 +63,26 @@ test('biblioteca: subida masiva (con repetida y archivo no válido), productos d
     expect(blobs).toBeGreaterThanOrEqual(3); // (una copia dentro del lote puede dejar un blob sin usar: no entra en el commit)
     expect(commits).toBe(1); // ...y las tres nuevas entraron en UN solo commit
     expect(puts).toBe(0);
+
+    // Carpeta preparada con `npm run library:fetch`: el manifest.csv da a cada foto su colección, título y crédito
+    const folder = `${COLLECTION} carpeta`;
+    const csv = `coleccion,archivo,titulo,autor,licencia,fuente,tipo\n${folder},uno_${stamp}.jpg,Uno con título,"Ana, B.",CC0,https://commons.wikimedia.org/wiki/File:Uno.jpg,item\n`;
+    await page.getByRole('button', { name: 'Limpiar lo hecho' }).click();
+    const dir = mkdtempSync(join(tmpdir(), 'biblioteca-'));
+    writeFileSync(join(dir, `uno_${stamp}.jpg`), (await file(`uno_${stamp}.jpg`, `rgb(${k + 30}, 5, 200)`)).buffer);
+    writeFileSync(join(dir, 'manifest.csv'), csv);
+    writeFileSync(join(dir, 'index.html'), '<p>apoyo</p>');
+    await page.getByLabel('Elegir una carpeta de imágenes').setInputFiles(dir);
+    await expect(page.getByTestId('library-queue-item')).toHaveCount(1);
+    await expect(page.getByTestId('library-ignored')).toContainText('1 archivo(s) ignorados'); // los archivos de apoyo (csv, html) no suman a los ignorados
+    await page.getByTestId('library-start').click();
+    await expect(page.getByTestId('library-queue-item').first()).toHaveAttribute('data-state', 'ok', { timeout: 60_000 });
+    const folderImgs = ((await (await ctx.request.post('/api/admin/library', { data: { op: 'images.list', collection: folder }, headers: ORIGIN })).json()) as { images: { id: string; title: string; credit: string }[] }).images;
+    expect(folderImgs).toHaveLength(1);
+    expect(folderImgs[0]).toMatchObject({ title: 'Uno con título' });
+    expect(folderImgs[0]!.credit).toContain('Ana, B. · CC0');
+    await ctx.request.post('/api/admin/library', { data: { op: 'images.delete', ids: folderImgs.map((i) => i.id) }, headers: ORIGIN });
+    await page.getByRole('button', { name: 'Limpiar lo hecho' }).click();
 
     // Galería: filtro por colección y selección
     await page.getByLabel('Filtrar por colección').selectOption(COLLECTION);

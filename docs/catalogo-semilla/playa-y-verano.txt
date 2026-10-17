@@ -1,0 +1,32 @@
+# Colección: Playa y verano
+# Tipo: item
+Sombrilla de playa; Sombrilla rayada clavada en la arena; ⛱️; beach umbrella
+Flotador de rosquilla; Flotador hinchable en forma de rosquilla; 🍩; pool float inflatable
+Barca a pedales; Barca de pedales con forma de cisne en un lago; 🚣; pedal boat swan
+Velero; Velero de velas blancas en el mar; ⛵; sailboat sea
+Lancha motora; Lancha rápida dejando una estela; 🚤; speedboat wake
+Kayak; Kayak de colores en aguas tranquilas; 🛶; kayak
+Tabla de surf; Tabla de surf clavada en la arena; 🏄; surfboard
+Castillo de arena; Castillo de arena con torres y bandera; 🏰; sandcastle
+Concha de mar; Concha grande de caracola; 🐚; seashell conch
+Estrella de mar; Estrella de mar naranja en la orilla; ⭐; starfish beach
+Cangrejo; Cangrejo rojo caminando por la arena; 🦀; crab beach
+Palmera; Palmera con cocos junto a la playa; 🌴; palm tree beach
+Coco; Coco abierto con una pajita; 🥥; coconut drink
+Helado de verano; Polo de hielo de colores derritiéndose; 🍦; ice lolly popsicle
+Gafas de sol; Gafas de sol oscuras en una toalla; 🕶️; sunglasses
+Chancletas; Par de chanclas sobre la arena; 🩴; flip flops sand
+Toalla de playa; Toalla rayada extendida; 🏖️; beach towel
+Cubo y pala; Cubo y pala de plástico de colores; 🪣; sand bucket spade
+Pelota de playa; Pelota hinchable de colores; 🏐; beach ball
+Faro; Faro blanco y rojo junto al mar; 🗼; lighthouse
+Delfín; Delfín saltando fuera del agua; 🐬; dolphin jumping
+Medusa; Medusa transparente flotando; 🪼; jellyfish
+Tortuga marina; Tortuga marina nadando; 🐢; sea turtle
+Pez payaso; Pez payaso entre anémonas; 🐠; clownfish
+Salvavidas; Salvavidas rojo y blanco; 🛟; lifebuoy
+Cabaña de playa; Casita de madera de socorrista; 🏖️; lifeguard hut beach
+Hamaca; Hamaca de rayas entre dos palmeras; 🏝️; hammock beach
+Gaviota; Gaviota blanca posada en un muelle; 🕊️; seagull
+Pulpo; Pulpo rosado con tentáculos extendidos; 🐙; octopus
+Atardecer en la playa; Sol rojizo cayendo sobre el mar; 🌅; sunset beach

@@ -1,0 +1,32 @@
+# Colección: Dulces y chocolates
+# Tipo: item
+Tableta de chocolate; Tableta de chocolate negro partida en onzas; 🍫; chocolate bar
+Bombones; Caja de bombones variados; 🍫; assorted chocolates pralines
+Trufa de chocolate; Trufa cubierta de cacao en polvo; 🍫; chocolate truffle
+Donut glaseado; Rosquilla con glaseado rosa y virutas de colores; 🍩; glazed donut sprinkles
+Cupcake; Magdalena con crema de colores y una cereza; 🧁; cupcake frosting
+Tarta de cumpleaños; Tarta con velas encendidas; 🎂; birthday cake candles
+Macarons; Macarons franceses de varios colores; 🍪; macarons colorful
+Galletas; Galletas de mantequilla recién hechas; 🍪; cookies baked
+Helado de cucurucho; Bola de helado en cucurucho de barquillo; 🍦; ice cream cone
+Piruleta; Piruleta redonda de colores en espiral; 🍭; lollipop swirl
+Algodón de azúcar; Nube de algodón de azúcar rosa; 🍭; cotton candy
+Gominolas; Ositos de goma de muchos colores; 🧸; gummy bears
+Caramelos duros; Caramelos de colores envueltos; 🍬; hard candy assorted
+Tarta de queso; Porción de tarta de queso con mermelada; 🍰; cheesecake slice
+Tiramisú; Porción de tiramisú con cacao; 🍰; tiramisu
+Crepe con nata; Crepe doblado con nata y fresas; 🥞; crepe strawberries cream
+Gofre; Gofre con sirope y frutas; 🧇; waffle syrup
+Tortitas; Pila de tortitas con mantequilla; 🥞; pancakes stack
+Churros; Churros crujientes con chocolate caliente; 🍩; churros chocolate
+Helado de fresa; Dos bolas de helado de fresa en un cuenco; 🍨; strawberry ice cream
+Bizcocho; Bizcocho esponjoso con azúcar glas; 🍰; sponge cake
+Turrón; Tableta de turrón de almendra; 🍬; turron nougat
+Palomitas; Cubo de palomitas de maíz; 🍿; popcorn bucket
+Chicle; Tira de chicle rosa estirada; 🍬; bubble gum
+Brownie; Brownie de chocolate con nueces; 🍫; chocolate brownie
+Natillas; Vasito de natillas con galleta; 🍮; custard dessert
+Flan; Flan de huevo con caramelo líquido; 🍮; flan caramel pudding
+Mermelada; Tarro de mermelada de fresa; 🍓; jam jar strawberry
+Miel; Tarro de miel dorada con una cuchara; 🍯; honey jar
+Barquillo; Barquillos crujientes enrollados; 🍪; wafer rolls

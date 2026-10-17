@@ -30,7 +30,8 @@
     "legal:credits": "node scripts/legal/build-credits.mjs",
     "docs:screens": "node scripts/docs/screenshots.mjs",
     "ai:measure": "node scripts/ai/measure-cloudflare.mjs",
-    "ai:lab": "tsx --env-file-if-exists=.env.local scripts/ai/prompt-lab.ts"
+    "ai:lab": "tsx --env-file-if-exists=.env.local scripts/ai/prompt-lab.ts",
+    "library:fetch": "tsx scripts/library/fetch-commons.ts"
   },
   "engines": {
     "node": ">=20"

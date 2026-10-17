@@ -5,7 +5,7 @@ import type { CollectionCount, LibraryImage, LibraryItem, LibraryItemInput } fro
 
 export type { CollectionCount, LibraryImage, LibraryItem, LibraryItemInput };
 
-export interface UploadMeta { collection: string; tags: string; credit: string; kind: 'item' | 'scene' }
+export interface UploadMeta { collection: string; tags: string; credit: string; kind: 'item' | 'scene'; /** Si se indica, sustituye al título sacado del nombre del archivo. */ title?: string }
 
 export type StagedImage = import('@/lib/services/library-service').StagedImage;
 export type StageResult = { existed: true; image: LibraryImage } | { existed: false; staged: StagedImage };
@@ -17,7 +17,7 @@ export async function stageLibraryImageRequest(file: File, meta: UploadMeta): Pr
   form.set('tags', meta.tags);
   form.set('credit', meta.credit);
   form.set('kind', meta.kind);
-  form.set('title', '');
+  form.set('title', meta.title ?? '');
   // El título sale del nombre original (la reducción en el navegador puede cambiar la extensión).
   const small = await shrinkForUpload(file);
   form.set('file', new File([small], file.name.replace(/\.[^.]+$/, '') + small.name.slice(small.name.lastIndexOf('.')), { type: small.type }));
