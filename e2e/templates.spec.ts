@@ -21,7 +21,9 @@ test('plantillas: descargar la vacía, importar con errores y bien, crear la par
   await expect(page.getByTestId('template-import')).toBeVisible({ timeout: 60_000 });
   await page.waitForTimeout(2500); // el servidor de desarrollo en frío puede recargar una vez
 
-  // Plantilla vacía descargable y válida
+  // Plantilla vacía descargable y válida (en el modal, origen «Subir un archivo»)
+  await page.getByTestId('template-open').click();
+  await page.getByTestId('template-source').selectOption('file');
   const [dl] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: /Descargar plantilla vacía/ }).click()]);
   const blank = JSON.parse(await (await import('node:fs/promises')).readFile((await dl.path())!, 'utf8'));
   expect(blank).toMatchObject({ formato: 'subasta-salvaje/plantilla@1' });
@@ -118,6 +120,10 @@ test('plantillas guardadas: guardar desde el resumen, aparecer en «Mis plantill
 
   // Otra sesión de «Nueva partida»: aparece en «Mis plantillas» y se carga
   await page.goto('/new-game');
+  await expect(page.getByTestId('template-import')).toBeVisible({ timeout: 60_000 });
+  await page.waitForTimeout(2500);
+  await page.getByTestId('template-open').click();
+  await page.getByTestId('template-source').selectOption('mine'); // puede haber partidas del sistema de otras pruebas
   await expect(page.getByTestId('saved-templates')).toContainText('Mi base lunar', { timeout: 30_000 });
   await expect(page.getByTestId('saved-templates')).toContainText('3 elementos · 2 jugadores');
   await page.getByRole('button', { name: 'Cargar la plantilla Mi base lunar' }).click();
@@ -139,6 +145,10 @@ test('plantillas guardadas: guardar desde el resumen, aparecer en «Mis plantill
   expect((await other.request.post('/api/auth/demo')).ok()).toBeTruthy();
   expect((await (await other.request.get('/api/templates')).json()).templates).toHaveLength(0);
   await page.goto('/new-game');
+  await expect(page.getByTestId('template-import')).toBeVisible({ timeout: 60_000 });
+  await page.waitForTimeout(2500);
+  await page.getByTestId('template-open').click();
+  await page.getByTestId('template-source').selectOption('mine');
   await page.getByRole('button', { name: 'Borrar la plantilla Mi base lunar' }).click();
   await page.getByRole('button', { name: 'Confirmar el borrado de Mi base lunar' }).click();
   await expect(page.getByTestId('saved-templates')).not.toContainText('Mi base lunar');
