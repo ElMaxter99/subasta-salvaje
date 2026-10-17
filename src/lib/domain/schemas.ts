@@ -89,6 +89,7 @@ export const actionSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('image.generate_initial_all'), scope_current: z.boolean().default(true), scope_new: z.boolean().default(false) }),
   z.object({ type: z.literal('image.clear_new_player_image') }),
   z.object({ type: z.literal('image.restore'), player_id: uuid, version_id: uuid }),
+  z.object({ type: z.literal('image.regenerate'), player_id: uuid, version_id: uuid }),
 ]);
 export type GameAction = z.infer<typeof actionSchema>;
 

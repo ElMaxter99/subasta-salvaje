@@ -1,4 +1,5 @@
 'use client';
+import { RotateCw } from 'lucide-react';
 import { providerLabel, type ProviderLabelId } from '@/lib/ai/labels';
 import { Loader } from '@/components/ui/loader';
 import { ItemIcon } from '@/components/mascot/mascot';
@@ -42,6 +43,7 @@ function HistoryInner({ roomCode, initial, runtime }: Props) {
   const [aId, setA] = useState<string | null>(null);
   const [bId, setB] = useState<string | null>(null);
   const [restoring, setRestoring] = useState<ImageVersion | null>(null);
+  const [regenerating, setRegenerating] = useState<ImageVersion | null>(null);
 
   const players = snapshot.players;
   const player = players.find((p) => p.id === playerId) ?? players[0];
@@ -115,6 +117,7 @@ function HistoryInner({ roomCode, initial, runtime }: Props) {
                         onA={() => setA(v.id === aId ? null : v.id)}
                         onB={() => setB(v.id === bId ? null : v.id)}
                         onRestore={() => setRestoring(v)}
+                        onRegenerate={v.id === player?.current_image_version_id && v.origin === 'edit' && v.provider !== 'demo' && v.generation_status === 'completed' && !!v.parent_version_id ? () => setRegenerating(v) : undefined}
                         busy={busy !== null}
                       />
                     ))}
@@ -125,6 +128,24 @@ function HistoryInner({ roomCode, initial, runtime }: Props) {
           </>
         )}
       </main>
+
+      <ConfirmDialog
+        open={!!regenerating}
+        title="Regenerar la imagen actual"
+        confirmLabel="Regenerar"
+        loading={busy === 'regenerate'}
+        onCancel={() => setRegenerating(null)}
+        onConfirm={async () => {
+          if (regenerating && player) {
+            const res = await run('regenerate', { type: 'image.regenerate', player_id: player.id, version_id: regenerating.id }, 'Regenerando… la nueva versión aparecerá en la línea de tiempo');
+            if (res) setRegenerating(null);
+          }
+        }}
+      >
+        <p>
+          Se vuelve a generar la imagen de <b>{player?.name}</b> partiendo de su <b>versión anterior</b>, con la IA que esté configurada ahora (otro modelo, otro prompt…). La versión actual <b>se conserva en el historial</b> para compararla. <b>No cobra ni cambia saldos ni compras</b>; cuenta como una generación más en la cuota. Máximo 10 por compra.
+        </p>
+      </ConfirmDialog>
 
       <ConfirmDialog
         open={!!restoring}
@@ -166,7 +187,7 @@ function aiInfo(v: ImageVersion): { who: string; kind: string } {
   return { who, kind };
 }
 
-function VersionItem({ v, parent, current, isA, isB, onA, onB, onRestore, busy }: { v: ImageVersion; parent: ImageVersion | null; current: boolean; isA: boolean; isB: boolean; onA: () => void; onB: () => void; onRestore: () => void; busy: boolean }) {
+function VersionItem({ v, parent, current, isA, isB, onA, onB, onRestore, onRegenerate, busy }: { v: ImageVersion; parent: ImageVersion | null; current: boolean; isA: boolean; isB: boolean; onA: () => void; onB: () => void; onRestore: () => void; busy: boolean; onRegenerate?: () => void }) {
   const [open, setOpen] = useState(false);
   const failed = v.generation_status === 'failed';
   const restorable = v.generation_status === 'completed' && v.is_approved && !!v.url;
@@ -195,6 +216,11 @@ function VersionItem({ v, parent, current, isA, isB, onA, onB, onRestore, busy }
         <Button size="md" variant="success" disabled={!restorable || current || busy} onClick={onRestore} title={restorable ? undefined : 'Solo se pueden restaurar versiones completadas y aprobadas'}>
           <RotateCcw className="size-4" aria-hidden /> {current ? 'Es la actual' : 'Restaurar esta versión'}
         </Button>
+        {onRegenerate ? (
+          <Button size="md" variant="secondary" disabled={busy} onClick={onRegenerate} title="Vuelve a generar esta versión partiendo de la anterior, con la IA configurada ahora">
+            <RotateCw className="size-4" aria-hidden /> Regenerar
+          </Button>
+        ) : null}
         <Button size="md" variant="ghost" aria-expanded={open} onClick={() => setOpen((o) => !o)}>
           <ChevronDown className={`size-4 transition ${open ? 'rotate-180' : ''}`} aria-hidden /> Detalles
         </Button>

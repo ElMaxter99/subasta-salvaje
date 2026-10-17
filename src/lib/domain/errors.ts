@@ -36,6 +36,7 @@ export const ERROR_MESSAGES: Record<string, string> = {
   job_already_completed: 'El trabajo ya terminó correctamente.',
   version_not_found: 'La versión de imagen no existe.',
   version_not_restorable: 'Esa versión no se puede restaurar.',
+  version_not_regenerable: 'Solo se puede regenerar la versión ACTUAL de un jugador cuando es una edición completada con una versión anterior aprobada.',
   voting_disabled: 'La votación no está activada en esta partida.',
   invalid_action: 'Acción no válida.',
   ai_disabled_for_user: 'El administrador ha desactivado la IA para tu cuenta: usa el modo pegatinas.',

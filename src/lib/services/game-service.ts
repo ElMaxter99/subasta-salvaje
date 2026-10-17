@@ -153,6 +153,8 @@ function toRpc(action: GameAction): { fn: string; params: Record<string, unknown
       return { fn: 'ss_retry_image_job', params: rest };
     case 'image.restore':
       return { fn: 'ss_restore_version', params: rest };
+    case 'image.regenerate':
+      return { fn: 'ss_regenerate_image', params: rest };
     default:
       throw new DomainError('invalid_action');
   }

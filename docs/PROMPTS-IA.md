@@ -33,6 +33,13 @@ Fuentes: búsquedas web (sin acceso directo a las webs de los proveedores desde 
 5. **AI Horde:** comunitario y gratis, pero hace img2img clásico, no edición por instrucciones: no mejora esto.
 Conclusión: **probar primero FLUX.2 klein 9B / dev en Cloudflare** (misma integración, solo variable de entorno) y comparar con `npm run ai:lab`.
 
+## Prueba A/B en una partida real (Pikachu + barca a pedales)
+1. **Prepara**: aplica las migraciones hasta `…5700` (+ `notify pgrst, 'reload schema';`) y despliega. En Vercel: `IMAGE_PROVIDERS` (p. ej. `cloudflare,pollinations`), `CLOUDFLARE_EDIT_MODEL`, `IMAGE_EDIT_GUARD`, claves. En `/admin/ajustes` sube temporalmente la cuota por partida y por día (cada generación y cada «regenerar» cuenta; por defecto 10/partida y 50/día).
+2. **Crea la partida** con «Cómo cambian las casas → Con IA», 1 jugador, la foto de la persona en la puerta como imagen inicial (subida) y un catálogo con *Pikachu* y *Una barca a pedales* con su foto (de la biblioteca o subida).
+3. **Compra** el Pikachu y luego la barca con ese jugador. En el panel → Historial mira cada versión (IA, modelo, prompt, «guardia de zona…»).
+4. **Repite el último paso con otro modelo o prompt sin volver a comprar**: cambia la variable en Vercel (`CLOUDFLARE_EDIT_MODEL`, `IMAGE_EDIT_GUARD`…), redespliega y en el Historial pulsa **«Regenerar»** en la versión actual: vuelve a generar partiendo de la versión anterior (la actual se conserva) y no cobra nada (máx. 10 por compra). Compara con «A»/«B».
+5. Para probar un prompt nuevo sin desplegar, usa `npm run ai:lab` (más abajo).
+
 ## Probar y pulir con el modelo real: `npm run ai:lab`
 ```bash
 npm run ai:lab -- --base casa.jpg --items pikachu.jpg,barca.jpg --names "Pikachu,Barca" --out lab-salida
