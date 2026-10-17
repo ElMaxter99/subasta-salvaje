@@ -1,9 +1,9 @@
 import sharp from 'sharp';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import type { GithubAssets } from '@/lib/storage/github-assets';
+import type { GithubBatchAssets } from '@/lib/storage/github-assets';
 import {
-  addLibraryItems, deleteLibraryImages, deleteLibraryItems, listLibraryImages, listLibraryItems, parseItemLines, titleFromFilename,
-  updateLibraryImages, updateLibraryItem, uploadLibraryImage,
+  addLibraryItems, commitLibraryImages, deleteLibraryImages, deleteLibraryItems, listLibraryImages, listLibraryItems, parseItemLines, stageLibraryImage, titleFromFilename,
+  updateLibraryImages, updateLibraryItem,
 } from '@/lib/services/library-service';
 import { makeCtx, type TestCtx } from './helpers';
 
@@ -12,33 +12,62 @@ beforeAll(async () => { ctx = await makeCtx(); });
 afterAll(async () => { await ctx.db.close(); });
 
 const photo = (r: number, g: number, b: number) => sharp({ create: { width: 900, height: 700, channels: 3, background: { r, g, b } } }).jpeg().toBuffer();
-const puts: string[] = [];
-const assets: GithubAssets = {
-  async put(path) {
-    puts.push(path);
-    return { path, url: `https://cdn.jsdelivr.net/gh/e2e/fotos@sha${puts.length}/${path}`, sha: `sha${puts.length}`, existed: false };
+const blobs: string[] = [];
+const commits: { files: string[]; message: string }[] = [];
+const assets: GithubBatchAssets = {
+  async stageBlob() { blobs.push('x'); return (blobs.length.toString(16).padStart(40, '0')); },
+  async commitMany(files, message) {
+    commits.push({ files: files.map((f) => f.path), message });
+    const sha = `c${commits.length}`.padEnd(40, '0');
+    return { sha, files: files.map((f) => ({ path: f.path, url: `https://cdn.jsdelivr.net/gh/e2e/fotos@${sha}/${f.path}`, sha, existed: false })) };
   },
 };
-const up = async (name: string, color: [number, number, number], extra: Record<string, unknown> = {}) =>
-  uploadLibraryImage(ctx, 'admin@test', { name, bytes: new Uint8Array(await photo(...color)), ...extra }, assets);
+/** Prepara y publica un lote (como hace la pantalla): devuelve las imágenes registradas. */
+async function uploadBatch(files: { name: string; color: [number, number, number]; extra?: Record<string, unknown> }[]) {
+  const staged = [];
+  for (const f of files) {
+    const r = await stageLibraryImage(ctx, { name: f.name, bytes: new Uint8Array(await photo(...f.color)), ...f.extra }, assets);
+    if (!r.existed) staged.push(r.staged);
+  }
+  return commitLibraryImages(ctx, 'admin@test', staged, assets);
+}
+const up = async (name: string, color: [number, number, number], extra: Record<string, unknown> = {}) => (await uploadBatch([{ name, color, extra }])).images[0]!;
 
 describe('biblioteca de medios: imágenes', () => {
-  it('sube, registra con colección y etiquetas, y no duplica la misma foto', async () => {
-    const a = await up('calabaza_naranja.jpg', [220, 120, 20], { collection: 'Halloween', tags: ['Fruta', ' otoño '] });
-    expect(a.existed).toBe(false);
-    expect(a.image).toMatchObject({ title: 'Calabaza naranja', collection: 'Halloween', tags: ['fruta', 'otoño'] });
-    expect(a.image.path).toMatch(/^biblioteca\/halloween\/calabaza-naranja-[0-9a-f]{16}\.webp$/);
-    expect(a.image.url).toContain('cdn.jsdelivr.net');
-    const again = await up('otro-nombre.jpg', [220, 120, 20], { collection: 'Otra' });
+  it('un lote entero entra en UN solo commit; la misma foto no se duplica ni llega a GitHub', async () => {
+    const before = commits.length;
+    const r = await uploadBatch([
+      { name: 'calabaza_naranja.jpg', color: [220, 120, 20], extra: { collection: 'Halloween', tags: ['Fruta', ' otoño '] } },
+      { name: 'fantasma.jpg', color: [240, 240, 250], extra: { collection: 'Halloween' } },
+      { name: 'bombon.jpg', color: [90, 40, 20], extra: { collection: 'Chocolates', tags: ['dulce'] } },
+      { name: 'playa.jpg', color: [20, 160, 220], extra: { collection: 'Paisajes', kind: 'scene' } },
+    ]);
+    expect(commits.length - before).toBe(1); // cuatro imágenes, un commit
+    expect(commits.at(-1)!.files).toHaveLength(4);
+    expect(r).toMatchObject({ added: 4, existed: 0 });
+    const cal = r.images.find((i) => i.title === 'Calabaza naranja')!;
+    expect(cal).toMatchObject({ collection: 'Halloween', tags: ['fruta', 'otoño'] });
+    expect(cal.path).toMatch(/^biblioteca\/halloween\/calabaza-naranja-[0-9a-f]{16}\.webp$/);
+    expect(cal.url).toContain(`@${r.commit}/`);
+
+    const blobsBefore = blobs.length;
+    const again = await stageLibraryImage(ctx, { name: 'otro-nombre.jpg', bytes: new Uint8Array(await photo(220, 120, 20)), collection: 'Otra' }, assets);
     expect(again.existed).toBe(true);
-    expect(again.image.id).toBe(a.image.id);
-    expect(puts).toHaveLength(1); // la segunda no llegó a GitHub
+    expect(blobs.length).toBe(blobsBefore); // la repetida no se prepara en GitHub
+  });
+
+  it('el commit rechaza listas no válidas y, si GitHub falla, no registra nada', async () => {
+    await expect(commitLibraryImages(ctx, 'a', [], assets)).rejects.toMatchObject({ code: 'invalid_input' });
+    await expect(commitLibraryImages(ctx, 'a', [{ path: '../x.webp', blobSha: 'z', hash: 'q' }], assets)).rejects.toMatchObject({ code: 'invalid_input' });
+    const r = await stageLibraryImage(ctx, { name: 'nuevo.jpg', bytes: new Uint8Array(await photo(5, 6, 7)) }, assets);
+    if (r.existed) throw new Error('debería ser nueva');
+    const broken: GithubBatchAssets = { ...assets, commitMany: async () => { throw new (await import('@/lib/storage/github-assets')).AssetUploadError('GitHub caído', 'network'); } };
+    await expect(commitLibraryImages(ctx, 'a', [r.staged], broken)).rejects.toMatchObject({ code: 'invalid_input' });
+    expect((await listLibraryImages(ctx, { q: 'nuevo' })).total).toBe(0);
+    expect((await commitLibraryImages(ctx, 'a', [r.staged], assets)).added).toBe(1); // reintento con la misma lista
   });
 
   it('lista con búsqueda, colección y paginación; cambia colección y borra en bloque', async () => {
-    await up('fantasma.jpg', [240, 240, 250], { collection: 'Halloween' });
-    await up('bombon.jpg', [90, 40, 20], { collection: 'Chocolates', tags: ['dulce'] });
-    await up('playa.jpg', [20, 160, 220], { collection: 'Paisajes', kind: 'scene' });
     const all = await listLibraryImages(ctx);
     expect(all.total).toBeGreaterThanOrEqual(4);
     expect(all.collections.map((c) => c.name)).toEqual(expect.arrayContaining(['Halloween', 'Chocolates', 'Paisajes']));
@@ -58,8 +87,8 @@ describe('biblioteca de medios: imágenes', () => {
   });
 
   it('rechaza lo que no es una imagen y sin configuración no sube nada', async () => {
-    await expect(uploadLibraryImage(ctx, 'a', { name: 'x.jpg', bytes: new Uint8Array([1, 2, 3]) }, assets)).rejects.toMatchObject({ code: 'invalid_input' });
-    await expect(uploadLibraryImage(ctx, 'a', { name: 'x.jpg', bytes: new Uint8Array(await photo(1, 2, 3)) }, null)).rejects.toMatchObject({ code: 'invalid_input' });
+    await expect(stageLibraryImage(ctx, { name: 'x.jpg', bytes: new Uint8Array([1, 2, 3]) }, assets)).rejects.toMatchObject({ code: 'invalid_input' });
+    await expect(stageLibraryImage(ctx, { name: 'x.jpg', bytes: new Uint8Array(await photo(1, 2, 3)) }, null)).rejects.toMatchObject({ code: 'invalid_input' });
   });
 });
 
@@ -100,5 +129,53 @@ describe('biblioteca de medios: catálogo general de productos', () => {
   it('títulos a partir del nombre del archivo', () => {
     expect(titleFromFilename('sombrilla_roja-01.JPG')).toBe('Sombrilla roja 01');
     expect(titleFromFilename('IMG_0001.jpg')).toBe('IMG 0001');
+  });
+});
+
+describe('cliente de GitHub: lote en un solo commit (API de datos de Git, fetch simulado)', () => {
+  const CFG = { repo: 'yo/fotos', token: ['github', 'pat', 'A1b2C3d4E5f6G7h8I9j0K1l2M3n4'].join('_'), branch: 'master' };
+  const res = (b: unknown, status = 200) => new Response(JSON.stringify(b), { status });
+
+  it('prepara blobs sin commit y publica todos con blobs → árbol → UN commit → mover la rama', async () => {
+    const { createGithubAssets } = await import('@/lib/storage/github-assets');
+    const calls: string[] = [];
+    let blob = 0;
+    const f = async (url: string, init: RequestInit = {}) => {
+      const m = init.method ?? 'GET';
+      const path = url.replace('https://api.github.com/repos/yo/fotos', '');
+      calls.push(`${m} ${path}`);
+      if (m === 'POST' && path === '/git/blobs') return res({ sha: String(++blob).padStart(40, 'a') }, 201);
+      if (m === 'GET' && path === '/commits/master') return res({ sha: 'h'.repeat(40) });
+      if (m === 'GET' && path.startsWith('/git/commits/')) return res({ tree: { sha: 't'.repeat(40) } });
+      if (m === 'POST' && path === '/git/trees') { const b = JSON.parse(init.body as string); expect(b.tree).toHaveLength(3); expect(b.base_tree).toBe('t'.repeat(40)); return res({ sha: 'n'.repeat(40) }, 201); }
+      if (m === 'POST' && path === '/git/commits') { const b = JSON.parse(init.body as string); expect(b.parents).toEqual(['h'.repeat(40)]); return res({ sha: 'c'.repeat(40) }, 201); }
+      if (m === 'PATCH' && path === '/git/refs/heads/master') return res({});
+      return res({}, 404);
+    };
+    const gh = createGithubAssets(CFG, f as never);
+    const shas = [await gh.stageBlob(new Uint8Array([1])), await gh.stageBlob(new Uint8Array([2])), await gh.stageBlob(new Uint8Array([3]))];
+    expect(calls.filter((c) => c.includes('/git/commits')).length).toBe(0); // preparar no crea commits
+    const r = await gh.commitMany(shas.map((blobSha, i) => ({ path: `biblioteca/x/f${i}-0000000000000000.webp`, blobSha })), 'Biblioteca: 3 imágenes');
+    expect(r.sha).toBe('c'.repeat(40));
+    expect(r.files[1]!.url).toBe(`https://cdn.jsdelivr.net/gh/yo/fotos@${'c'.repeat(40)}/biblioteca/x/f1-0000000000000000.webp`);
+    expect(calls.filter((c) => c === 'POST /git/commits')).toHaveLength(1);
+  });
+
+  it('si la rama se movió (422) rehace el commit sobre la nueva cabeza', async () => {
+    const { createGithubAssets } = await import('@/lib/storage/github-assets');
+    let heads = 0, patches = 0;
+    const f = async (url: string, init: RequestInit = {}) => {
+      const m = init.method ?? 'GET';
+      const path = url.replace('https://api.github.com/repos/yo/fotos', '');
+      if (m === 'GET' && path === '/commits/master') return res({ sha: String(++heads).padStart(40, 'h') });
+      if (m === 'GET' && path.startsWith('/git/commits/')) return res({ tree: { sha: 't'.repeat(40) } });
+      if (m === 'POST' && path === '/git/trees') return res({ sha: 'n'.repeat(40) }, 201);
+      if (m === 'POST' && path === '/git/commits') return res({ sha: `c${heads}`.padEnd(40, '0') }, 201);
+      if (m === 'PATCH') return ++patches === 1 ? res({ message: 'Update is not a fast forward' }, 422) : res({});
+      return res({}, 404);
+    };
+    const r = await createGithubAssets(CFG, f as never).commitMany([{ path: 'biblioteca/x/a-0000000000000000.webp', blobSha: 'a'.repeat(40) }], 'm');
+    expect(heads).toBe(2);
+    expect(r.sha.startsWith('c2')).toBe(true);
   });
 });

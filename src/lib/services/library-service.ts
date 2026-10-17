@@ -5,7 +5,7 @@ import { githubAssetsConfig } from '@/lib/config/env';
 import { DomainError } from '@/lib/domain/errors';
 import { slugify } from '@/lib/domain/template-assets';
 import { normalizeImage, NormalizeError } from '@/lib/images/normalize';
-import { AssetUploadError, createGithubAssets, type GithubAssets } from '@/lib/storage/github-assets';
+import { AssetUploadError, createGithubAssets, type GithubBatchAssets } from '@/lib/storage/github-assets';
 import type { AppContext } from './context';
 
 type Ctx = Pick<AppContext, 'db'>;
@@ -45,7 +45,7 @@ export interface LibraryItem {
 
 export interface CollectionCount { name: string; count: number }
 
-const defaultAssets = (): GithubAssets | null => {
+const defaultAssets = (): GithubBatchAssets | null => {
   const c = githubAssetsConfig();
   return c ? createGithubAssets(c, fetch, c.apiBase) : null;
 };
@@ -71,16 +71,30 @@ export const uploadMetaSchema = z.object({
   kind: z.enum(['item', 'scene']).default('item'),
 });
 
+/** Imagen ya normalizada y preparada en GitHub (blob), pendiente de entrar en el commit del lote. */
+export const stagedSchema = z.object({
+  path: z.string().regex(/^biblioteca\/[a-z0-9]+(-[a-z0-9]+)*\/[a-z0-9]+(-[a-z0-9]+)*-[0-9a-f]{16}\.webp$/).max(240),
+  blobSha: z.string().regex(/^[0-9a-f]{40}$/),
+  hash: z.string().regex(/^[0-9a-f]{16}$/),
+  title: z.string().trim().max(120),
+  collection: z.string().trim().max(60),
+  tags: z.array(z.string().trim().max(30)).max(20),
+  credit: z.string().trim().max(200),
+  width: z.number().int().positive().max(10_000),
+  height: z.number().int().positive().max(10_000),
+  bytes: z.number().int().positive().max(5_000_000),
+});
+export type StagedImage = z.infer<typeof stagedSchema>;
+
 /**
- * Normaliza la imagen (formato interno), la sube a `biblioteca/<colección>/…` del repositorio de fotos y la registra.
- * Idempotente por contenido: la misma foto (mismo hash tras normalizar) no se vuelve a subir ni a registrar.
+ * Fase 1 (una llamada por foto): normaliza la imagen (formato interno), mira si ya está registrada (mismo hash tras normalizar:
+ * entonces no se toca GitHub) y, si es nueva, la PREPARA en GitHub como blob (sin crear ningún commit).
  */
-export async function uploadLibraryImage(
+export async function stageLibraryImage(
   ctx: Ctx,
-  actor: string,
   input: { name: string; bytes: Uint8Array } & Partial<z.input<typeof uploadMetaSchema>>,
-  assets: GithubAssets | null = defaultAssets(),
-): Promise<{ existed: boolean; image: LibraryImage }> {
+  assets: GithubBatchAssets | null = defaultAssets(),
+): Promise<{ existed: true; image: LibraryImage } | { existed: false; staged: StagedImage }> {
   if (!assets) throw new DomainError('invalid_input', 'La subida de imágenes no está configurada (GITHUB_ASSETS_REPO y GITHUB_ASSETS_TOKEN).');
   const meta = uploadMetaSchema.parse(input);
   let n;
@@ -91,24 +105,53 @@ export async function uploadLibraryImage(
     throw new DomainError('invalid_input', e instanceof NormalizeError || e instanceof Error ? e.message : 'Imagen no válida');
   }
   const hash = createHash('sha256').update(n.bytes).digest('hex').slice(0, 16);
-  // Ya registrada (mismo contenido): no se toca GitHub.
   const already = await ctx.db.rpc<LibraryImage | null>('ss_admin_library_image_by_hash', { hash });
   if (already) return { existed: true, image: already };
   const title = meta.title || titleFromFilename(input.name);
   const folder = slugify(meta.collection) || 'general';
   const label = slugify(title).slice(0, 40) || 'imagen';
-  const path = `biblioteca/${folder}/${label}-${hash}.webp`;
-  let up;
+  let blobSha: string;
   try {
-    up = await assets.put(path, n.bytes, `Biblioteca: ${folder}/${label}`);
+    blobSha = await assets.stageBlob(n.bytes);
   } catch (e) {
     if (e instanceof AssetUploadError) throw new DomainError('invalid_input', e.message, e.kind === 'rate' ? 429 : 502);
     throw e;
   }
-  return ctx.db.rpc<{ existed: boolean; image: LibraryImage }>('ss_admin_library_image_add', {
-    actor, hash, path: up.path, url: up.url, sha: up.sha, title, collection: meta.collection, tags: meta.tags, credit: meta.credit,
-    width: n.width, height: n.height, bytes: n.bytes.length,
-  });
+  return { existed: false, staged: { path: `biblioteca/${folder}/${label}-${hash}.webp`, blobSha, hash, title, collection: meta.collection, tags: meta.tags, credit: meta.credit, width: n.width, height: n.height, bytes: n.bytes.length } };
+}
+
+/**
+ * Fase 2 (UNA llamada para todo el lote): publica todas las imágenes preparadas en UN solo commit y las registra con su enlace
+ * fijado a ese commit. Si algo falla antes de terminar no se registra nada y se puede reintentar con la misma lista.
+ */
+export async function commitLibraryImages(
+  ctx: Ctx,
+  actor: string,
+  rawStaged: unknown,
+  assets: GithubBatchAssets | null = defaultAssets(),
+): Promise<{ commit: string; added: number; existed: number; images: LibraryImage[] }> {
+  if (!assets) throw new DomainError('invalid_input', 'La subida de imágenes no está configurada (GITHUB_ASSETS_REPO y GITHUB_ASSETS_TOKEN).');
+  const parsed = z.array(stagedSchema).min(1).max(500).safeParse(rawStaged);
+  if (!parsed.success) throw new DomainError('invalid_input', 'La lista de imágenes preparadas no es válida.');
+  const unique = [...new Map(parsed.data.map((s) => [s.hash, s])).values()];
+  let commit;
+  try {
+    commit = await assets.commitMany(unique.map((s) => ({ path: s.path, blobSha: s.blobSha })), `Biblioteca: ${unique.length} ${unique.length === 1 ? 'imagen' : 'imágenes'}`);
+  } catch (e) {
+    if (e instanceof AssetUploadError) throw new DomainError('invalid_input', e.message, e.kind === 'rate' ? 429 : 502);
+    throw e;
+  }
+  const images: LibraryImage[] = [];
+  let existed = 0;
+  for (const [i, s] of unique.entries()) {
+    const r = await ctx.db.rpc<{ existed: boolean; image: LibraryImage }>('ss_admin_library_image_add', {
+      actor, hash: s.hash, path: s.path, url: commit.files[i]!.url, sha: commit.sha, title: s.title, collection: s.collection, tags: s.tags, credit: s.credit,
+      width: s.width, height: s.height, bytes: s.bytes,
+    });
+    if (r.existed) existed++;
+    images.push(r.image);
+  }
+  return { commit: commit.sha, added: images.length - existed, existed, images };
 }
 
 /* ---------- Imágenes ---------- */

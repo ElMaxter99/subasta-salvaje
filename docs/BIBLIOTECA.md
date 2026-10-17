@@ -16,9 +16,12 @@ duplicar nada.
 ## `/admin/biblioteca`
 **Pestaña Imágenes**
 - *Subida masiva*: arrastra archivos o una **carpeta entera** (o elige). Colección, etiquetas y crédito se aplican a todo el lote; el título sale
-  del nombre del archivo (`sombrilla_roja-01.jpg` → «Sombrilla roja 01»). Se envían **de una en una** (GitHub no admite commits simultáneos en la
-  misma rama) con barra de progreso, contadores (nuevas / repetidas / con error), botón **Parar** y **Continuar**. Si GitHub pide ir más despacio
-  (429) se espera 20 s y se reintenta hasta 3 veces. Lo que no es JPG, PNG o WebP se descarta y se avisa.
+  del nombre del archivo (`sombrilla_roja-01.jpg` → «Sombrilla roja 01»). La subida es en **dos fases y todo el lote entra en UN solo commit**:
+  (1) cada foto se envía de una en una: el servidor la normaliza, mira si ya está registrada y, si es nueva, la deja *preparada* en GitHub como
+  objeto de Git (blob), sin crear commit; (2) al acabar, **todas las preparadas se publican juntas** (árbol + un commit + mover la rama con la
+  API de datos de Git). Barra de progreso, contadores (nuevas / repetidas / con error), **Parar** (lo ya preparado se publica con «Publicar N
+  preparadas») y reintento si GitHub pide ir más despacio (429: espera 20 s, hasta 3 veces). Si falla la publicación **no se registra nada** y se
+  reintenta con la misma lista. Las copias dentro del mismo lote se detectan por contenido. Lo que no es JPG, PNG o WebP se descarta y se avisa.
 - *Galería*: búsqueda (título, etiquetas, colección), filtro por colección, «Cargar más», selección múltiple → **mover de colección**, **borrar** o
   **crear productos**.
 - Borrar una imagen quita el registro; **el archivo sigue en el repositorio de fotos** (no se borra de GitHub) y los productos que la usaban quedan sin foto.
@@ -33,7 +36,7 @@ duplicar nada.
 En el asistente de «Nueva partida» (y en el editor del superadmin), en el **Resumen → catálogo**: **«De la biblioteca»** abre un modal flotante
 (móvil y escritorio) con colecciones y buscador; marcas productos o «Marcar todos» y se **añaden al catálogo** de esa partida (los nombres que ya
 están se omiten; máximo 100 elementos). Las fotos son enlaces https que se copian a la partida al crearla (necesitan `ASSET_CDN_HOSTS` con
-`cdn.jsdelivr.net` si la defines). Cualquier anfitrión con sesión puede **leer** el catálogo general (`GET /api/library/items`); solo el superadmin
+`cdn.jsdelivr.net` si la defines). La portada, la casa inicial y la foto de cada elemento de una plantilla del sistema también se eligen de la biblioteca («De la biblioteca» en la Ficha y en el editor de catálogo) o se suben. Cualquier anfitrión con sesión puede **leer** el catálogo general (`GET /api/library/items`); solo el superadmin
 lo gestiona.
 
 ## Configuración
@@ -43,6 +46,11 @@ Misma que las fotos de plantillas: `GITHUB_ASSETS_REPO`, `GITHUB_ASSETS_TOKEN` (
 ## Honestidad y límites
 - La subida a GitHub **solo se ha probado con un servidor simulado**, no contra GitHub ni jsDelivr reales. Si en una subida de 200 fotos GitHub aplica
   límites secundarios más estrictos que los reintentos previstos, la cola se puede **Continuar** sin perder lo ya subido.
-- Cada foto es un commit en el repositorio de fotos: 200 fotos = 200 commits. Es normal para un repositorio de medios, pero el historial crece.
-- No se borra nada de GitHub desde la app. Las imágenes pueden proceder de terceros: respeta la política del repositorio (README de
+- Un lote = un commit (también el arrastrar y soltar de varias fotos en la Ficha de una plantilla). Una foto suelta es su propio commit. Los blobs
+  preparados que no llegan a publicarse (p. ej. una copia dentro del lote) los limpia GitHub solo.
+- Si entre la preparación y la publicación alguien mueve la rama, la publicación se rehace sobre la cabeza nueva (hasta 3 intentos).
+- El lote pasa por el token de GitHub: necesita *Contents: Read and write* (la API de datos de Git usa el mismo permiso). No se borra nada de GitHub desde la app. Las imágenes pueden proceder de terceros: respeta la política del repositorio (README de
   `subasta-salvaje-public`: sin ánimo de lucro, sin licencia concedida, retirada a petición) y anota el origen en el crédito.
+
+## Regla de producto: nunca se escribe una URL
+En la interfaz **no hay campos para pegar o escribir `https://…`**: las imágenes se **suben** o se **eligen de la biblioteca**. Lo vigila `tests/no-url-inputs.test.ts`. (Los archivos JSON/ZIP/CSV importados pueden contener enlaces: se validan, pero no se teclean.)

@@ -4,7 +4,7 @@ import { validateImage } from '@/lib/ai/image-validation';
 import { assetCdnHosts, githubAssetsConfig, urlAllowedByCdn } from '@/lib/config/env';
 import { IMAGE_SPECS, normalizeImage, NormalizeError, type ImageKind } from '@/lib/images/normalize';
 import { slugify } from '@/lib/domain/template-assets';
-import { AssetUploadError, createGithubAssets, type GithubAssets, type UploadedAsset } from '@/lib/storage/github-assets';
+import { AssetUploadError, createGithubAssets, type GithubAssets, type GithubBatchAssets, type UploadedAsset } from '@/lib/storage/github-assets';
 import { DomainError } from '@/lib/domain/errors';
 import { parseTemplate, TEMPLATE_LIMITS, type Template } from '@/lib/domain/template';
 import { fetchImageBytes, SafeFetchError, type FetchImageOptions } from '@/lib/security/safe-fetch';
@@ -174,17 +174,8 @@ export interface TemplateImageUpload extends UploadedAsset {
   bytes: number;
 }
 
-/**
- * Normaliza la imagen (formato interno), la sube al repositorio de fotos y devuelve el enlace público fijado al commit.
- * El nombre lleva el hash del contenido: la misma foto no se duplica y un enlace nunca cambia de contenido.
- */
-export async function uploadTemplateImage(
-  ctx: Ctx,
-  actor: string,
-  input: { slug: string; kind: ImageKind; name: string; bytes: Uint8Array },
-  assets: GithubAssets | null = (() => { const c = githubAssetsConfig(); return c ? createGithubAssets(c, fetch, c.apiBase) : null; })(),
-): Promise<TemplateImageUpload> {
-  if (!assets) throw new DomainError('invalid_input', 'La subida de imágenes no está configurada (GITHUB_ASSETS_REPO y GITHUB_ASSETS_TOKEN).');
+/** Normaliza la imagen (formato interno) y calcula su ruta en el repositorio de fotos (el nombre lleva el hash del contenido). */
+async function prepareTemplateImage(input: { slug: string; kind: ImageKind; name: string; bytes: Uint8Array }) {
   const slug = slugify(input.slug);
   if (!slug) throw new DomainError('invalid_input', 'Pon primero el identificador (slug) de la plantilla.');
   let n;
@@ -196,14 +187,85 @@ export async function uploadTemplateImage(
   }
   const hash = createHash('sha256').update(n.bytes).digest('hex').slice(0, 12);
   const label = slugify(input.name.replace(/\.[^.]+$/, '')).slice(0, 40) || input.kind;
-  const path = `plantillas/${slug}/${input.kind}-${label}-${hash}.webp`;
+  return { slug, label, n, path: `plantillas/${slug}/${input.kind}-${label}-${hash}.webp` };
+}
+
+const defaultBatchAssets = (): GithubBatchAssets | null => {
+  const c = githubAssetsConfig();
+  return c ? createGithubAssets(c, fetch, c.apiBase) : null;
+};
+const uploadError = (e: unknown): never => {
+  if (e instanceof AssetUploadError) throw new DomainError('invalid_input', e.message, e.kind === 'rate' ? 429 : 502);
+  throw e;
+};
+
+/**
+ * Normaliza la imagen (formato interno), la sube al repositorio de fotos y devuelve el enlace público fijado al commit.
+ * El nombre lleva el hash del contenido: la misma foto no se duplica y un enlace nunca cambia de contenido.
+ * Para varias imágenes a la vez usa stageTemplateImage + commitTemplateImages (un solo commit).
+ */
+export async function uploadTemplateImage(
+  ctx: Ctx,
+  actor: string,
+  input: { slug: string; kind: ImageKind; name: string; bytes: Uint8Array },
+  assets: GithubAssets | null = (() => { const c = githubAssetsConfig(); return c ? createGithubAssets(c, fetch, c.apiBase) : null; })(),
+): Promise<TemplateImageUpload> {
+  if (!assets) throw new DomainError('invalid_input', 'La subida de imágenes no está configurada (GITHUB_ASSETS_REPO y GITHUB_ASSETS_TOKEN).');
+  const { slug, label, n, path } = await prepareTemplateImage(input);
   let up: UploadedAsset;
   try {
     up = await assets.put(path, n.bytes, `Foto de plantilla: ${slug}/${label}`);
   } catch (e) {
-    if (e instanceof AssetUploadError) throw new DomainError('invalid_input', e.message, e.kind === 'rate' ? 429 : 502);
-    throw e;
+    return uploadError(e);
   }
   await ctx.db.rpc('ss_admin_audit_event', { actor, action: 'system_template_image_uploaded', target_type: 'system_template', target_id: slug, payload: { path, bytes: n.bytes.length, existed: up.existed } }).catch(() => undefined);
   return { ...up, kind: input.kind, width: n.width, height: n.height, bytes: n.bytes.length };
+}
+
+export interface StagedTemplateImage { path: string; blobSha: string; kind: ImageKind; width: number; height: number; bytes: number }
+
+/** Subida de varias imágenes, fase 1: normaliza una imagen y la deja preparada en GitHub (sin crear commit). */
+export async function stageTemplateImage(
+  input: { slug: string; kind: ImageKind; name: string; bytes: Uint8Array },
+  assets: GithubBatchAssets | null = defaultBatchAssets(),
+): Promise<StagedTemplateImage> {
+  if (!assets) throw new DomainError('invalid_input', 'La subida de imágenes no está configurada (GITHUB_ASSETS_REPO y GITHUB_ASSETS_TOKEN).');
+  const { n, path } = await prepareTemplateImage(input);
+  let blobSha: string;
+  try {
+    blobSha = await assets.stageBlob(n.bytes);
+  } catch (e) {
+    return uploadError(e);
+  }
+  return { path, blobSha, kind: input.kind, width: n.width, height: n.height, bytes: n.bytes.length };
+}
+
+const stagedTemplateSchema = z.object({
+  path: z.string().regex(/^plantillas\/[a-z0-9]+(-[a-z0-9]+)*\/(cover|scene|item)-[a-z0-9-]*-[0-9a-f]{12}\.webp$/).max(240),
+  blobSha: z.string().regex(/^[0-9a-f]{40}$/),
+  kind: z.enum(['cover', 'scene', 'item']),
+  width: z.number().int().positive(),
+  height: z.number().int().positive(),
+  bytes: z.number().int().positive(),
+});
+
+/** Fase 2: publica TODAS las imágenes preparadas en UN solo commit y devuelve sus enlaces fijados a él. */
+export async function commitTemplateImages(
+  ctx: Ctx,
+  actor: string,
+  rawStaged: unknown,
+  assets: GithubBatchAssets | null = defaultBatchAssets(),
+): Promise<{ commit: string; files: (UploadedAsset & { kind: ImageKind; width: number; height: number; bytes: number })[] }> {
+  if (!assets) throw new DomainError('invalid_input', 'La subida de imágenes no está configurada (GITHUB_ASSETS_REPO y GITHUB_ASSETS_TOKEN).');
+  const parsed = z.array(stagedTemplateSchema).min(1).max(200).safeParse(rawStaged);
+  if (!parsed.success) throw new DomainError('invalid_input', 'La lista de imágenes preparadas no es válida.');
+  const unique = [...new Map(parsed.data.map((s) => [s.path, s])).values()];
+  let commit;
+  try {
+    commit = await assets.commitMany(unique.map((s) => ({ path: s.path, blobSha: s.blobSha })), `Fotos de plantilla: ${unique.length} ${unique.length === 1 ? 'imagen' : 'imágenes'}`);
+  } catch (e) {
+    return uploadError(e);
+  }
+  await ctx.db.rpc('ss_admin_audit_event', { actor, action: 'system_template_images_uploaded', target_type: 'system_template', target_id: unique[0]!.path.split('/')[1]!, payload: { count: unique.length, commit: commit.sha } }).catch(() => undefined);
+  return { commit: commit.sha, files: commit.files.map((f, i) => ({ ...f, kind: unique[i]!.kind, width: unique[i]!.width, height: unique[i]!.height, bytes: unique[i]!.bytes })) };
 }

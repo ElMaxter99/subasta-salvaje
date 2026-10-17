@@ -3,7 +3,8 @@
 import { useRef, useState } from 'react';
 import { ImageOff } from 'lucide-react';
 import { slugify, matchTarget, targetLabel, type AssetTarget } from '@/lib/domain/template-assets';
-import { uploadTemplateImageRequest } from '@/lib/client/template-upload';
+import { commitTemplateImagesRequest, stageTemplateImageRequest, uploadTemplateImageRequest, type StagedTemplateImage } from '@/lib/client/template-upload';
+import { LibraryImagePicker } from './library-image-picker';
 
 /** Datos propios de una plantilla del sistema (lo que el asistente de «Nueva partida» no tiene). */
 export interface SystemMeta {
@@ -42,6 +43,7 @@ export function SystemTemplateStep({
   const [uploads, setUploads] = useState<UploadRow[]>([]);
   const [over, setOver] = useState(false);
   const seq = useRef(0);
+  const [pick, setPick] = useState<'cover' | 'scene' | null>(null);
 
   async function handleFiles(files: File[], forced?: AssetTarget) {
     if (!meta.slug) return setUploads((u) => [...u, { id: ++seq.current, name: files[0]?.name ?? 'imagen', state: 'error', message: 'Pon primero el identificador: las imágenes se guardan en su carpeta.' }]);
@@ -49,20 +51,43 @@ export function SystemTemplateStep({
     seq.current += files.length;
     setUploads((u) => [...u, ...files.map((f, i): UploadRow => ({ id: startId + i, name: f.name, state: 'sending' }))]);
     const tpl = { catalogo: itemTitles.map((titulo) => ({ titulo, descripcion: '' })) };
-    // Una a una: el repositorio de fotos no admite subidas simultáneas.
+    const apply = (target: AssetTarget, url: string) => {
+      if (target.kind === 'cover') onMeta({ portada: url });
+      else if (target.kind === 'scene') onInitialImage(url);
+      else onItemPhoto(target.index, url);
+    };
+    // Varias imágenes a la vez = UN solo commit (se preparan una a una y se publican juntas); una sola imagen = su propio commit.
+    const batch = files.length > 1 && !forced;
+    const staged: { id: number; target: AssetTarget; st: StagedTemplateImage }[] = [];
     for (const [i, file] of files.entries()) {
       const id = startId + i;
       const set = (patch: Partial<UploadRow>) => setUploads((u) => u.map((r) => (r.id === id ? { ...r, ...patch } : r)));
       const target = forced ?? matchTarget(file.name, tpl);
       if (!target) { set({ state: 'unassigned', message: 'No encaja con la portada, la casa ni ningún elemento: asígnala abajo', file }); continue; }
       try {
-        const up = await uploadTemplateImageRequest(meta.slug, target.kind, file);
-        if (target.kind === 'cover') onMeta({ portada: up.url });
-        else if (target.kind === 'scene') onInitialImage(up.url);
-        else onItemPhoto(target.index, up.url);
-        set({ state: 'ok', message: `${targetLabel(target, tpl)} · ${up.width}×${up.height} · ${Math.round(up.bytes / 1024)} KB` });
+        if (batch) {
+          staged.push({ id, target, st: await stageTemplateImageRequest(meta.slug, target.kind, file) });
+          set({ message: 'preparada para el commit…' });
+        } else {
+          const up = await uploadTemplateImageRequest(meta.slug, target.kind, file);
+          apply(target, up.url);
+          set({ state: 'ok', message: `${targetLabel(target, tpl)} · ${up.width}×${up.height} · ${Math.round(up.bytes / 1024)} KB` });
+        }
       } catch (e) {
         set({ state: 'error', message: e instanceof Error ? e.message : 'No se pudo subir' });
+      }
+    }
+    if (batch && staged.length > 0) {
+      try {
+        const r = await commitTemplateImagesRequest(staged.map((x) => x.st));
+        const byPath = new Map(r.files.map((f) => [f.path, f]));
+        for (const x of staged) {
+          const f = byPath.get(x.st.path)!;
+          apply(x.target, f.url);
+          setUploads((u) => u.map((row) => (row.id === x.id ? { ...row, state: 'ok', message: `${targetLabel(x.target, tpl)} · ${x.st.width}×${x.st.height} · ${Math.round(x.st.bytes / 1024)} KB · commit ${r.commit.slice(0, 7)}` } : row)));
+        }
+      } catch (e) {
+        for (const x of staged) setUploads((u) => u.map((row) => (row.id === x.id ? { ...row, state: 'error', message: `No se pudo publicar el lote: ${e instanceof Error ? e.message : 'error'}` } : row)));
       }
     }
   }
@@ -113,9 +138,9 @@ export function SystemTemplateStep({
                 // eslint-disable-next-line @next/next/no-img-element -- alojada en el CDN del propietario
                 <img src={url} alt="" referrerPolicy="no-referrer" className="aspect-[1200/630] w-full rounded-xl object-cover" />
               ) : <div className="grid aspect-[1200/630] w-full place-items-center rounded-xl bg-night-950 text-sm text-white/50">Sin imagen</div>}
-              <input aria-label={`${title} (URL https)`} inputMode="url" maxLength={500} value={url ?? ''} onChange={(e) => set(e.target.value.trim() || null)} placeholder="https://… o súbela" className="w-full rounded-lg border border-white/15 bg-night-950 px-3 py-2 text-sm" />
               <div className="flex flex-wrap gap-2">
                 {picker(kind, `Subir ${kind === 'cover' ? 'portada' : 'casa inicial'}`)}
+                <button type="button" onClick={() => setPick(kind)} aria-label={`Elegir ${kind === 'cover' ? 'portada' : 'casa inicial'} de la biblioteca`} className="inline-flex min-h-11 items-center rounded-xl border border-white/15 px-3 text-sm font-semibold hover:bg-white/10">De la biblioteca</button>
                 {url ? <button type="button" onClick={() => set(null)} className="inline-flex min-h-11 items-center gap-1 rounded-xl px-3 text-sm text-white/70 hover:bg-white/10"><ImageOff className="size-4" aria-hidden /> Quitar</button> : null}
               </div>
             </div>
@@ -165,6 +190,12 @@ export function SystemTemplateStep({
           </ul>
         ) : null}
       </section>
+      <LibraryImagePicker
+        open={pick !== null}
+        title={pick === 'cover' ? 'Elegir la portada' : 'Elegir la casa inicial'}
+        onClose={() => setPick(null)}
+        onPick={(image) => { if (pick === 'cover') onMeta({ portada: image.url }); else onInitialImage(image.url); setPick(null); }}
+      />
     </div>
   );
 }

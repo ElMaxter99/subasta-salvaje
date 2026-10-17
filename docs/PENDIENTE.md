@@ -90,7 +90,7 @@ La colección con alfa real (`public/assets/mascot-vector/`) es vectorial. Para 
 
 ## 5h. Biblioteca de medios
 - [ ] Aplica las migraciones `…5000`/`…5100` (tablas `library_images` y `library_items`) y `notify pgrst, 'reload schema';`.
-- [ ] Usa las mismas variables `GITHUB_ASSETS_*` que las plantillas (token con *Contents: Read and write*).
+- [ ] Usa las mismas variables `GITHUB_ASSETS_*` que las plantillas (token con *Contents: Read and write*). La subida por lotes usa la API de datos de Git (blobs, árbol, commit, mover la rama): **sin probar contra GitHub real**; si rechaza la rama (protegida, por ejemplo) copia el mensaje.
 - [ ] **Sin probar contra GitHub/jsDelivr reales.** Prueba primero con 5-10 fotos y luego con un lote grande: si GitHub aplica límites secundarios (429/403) más estrictos que los reintentos previstos, copia el mensaje. La cola se puede parar y continuar.
 - [ ] Decide la política del repositorio de fotos (licencias/retirada) antes de subir cientos de imágenes de terceros.
 

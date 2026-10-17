@@ -13,6 +13,7 @@ import { Logo } from '@/components/ui/logo';
 import { createGameRequest, importPhotosRequest, saveTemplateRequest } from '@/lib/client/api';
 import { CatalogEditor, validateCatalog } from './catalog-editor';
 import { LibraryPicker } from './library-picker';
+import { LibraryImagePicker } from '@/components/admin/library-image-picker';
 import { TEMPLATE_LIMITS } from '@/lib/domain/template';
 import { TemplateImport, type LoadedCatalog, type LoadedTemplate } from './template-import';
 import { CUSTOM_THEME, formToTemplate, parseTemplate, templateToForm, type Template } from '@/lib/domain/template';
@@ -101,6 +102,7 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
   const [busyLabel, setBusyLabel] = useState<string | null>(null);
   const [editingCatalog, setEditingCatalog] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [photoPick, setPhotoPick] = useState<number | null>(null);
   const [tplName, setTplName] = useState('');
   const [tplMsg, setTplMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -164,10 +166,6 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
     setPlayers(v.players);
     setItems(v.items);
     setInitialImageUrl(v.initialImageUrl ?? null);
-    if (systemEditor) {
-      setMeta((m) => ({ ...m, portada: v.portada ?? m.portada, creditos: v.creditos ?? m.creditos, title: m.slugTouched ? m.title : v.name, slug: m.slugTouched ? m.slug : slugFromTitle(v.name) }));
-      if (!v.items) setItems(presetCatalog(v.themeChoice)); // las plantillas del sistema llevan siempre catálogo explícito
-    }
     if (opts.jump !== false) go(steps.length - 1); // directo al resumen para revisar
   }
 
@@ -198,8 +196,8 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
     if (systemEditor && i === 5) {
       if (!meta.title.trim()) return 'Escribe el título de la tarjeta.';
       if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(meta.slug) || meta.slug.length < 2) return 'El identificador solo admite minúsculas, números y guiones (mínimo 2 caracteres).';
-      if (meta.portada && !/^https:\/\//i.test(meta.portada)) return 'La portada debe ser una URL https o una imagen subida.';
-      if (initialImageUrl && !/^https:\/\//i.test(initialImageUrl)) return 'La casa inicial debe ser una URL https o una imagen subida.';
+      if (meta.portada && !/^https:\/\//i.test(meta.portada)) return 'La portada no es válida: súbela o elígela de la biblioteca.';
+      if (initialImageUrl && !/^https:\/\//i.test(initialImageUrl)) return 'La casa inicial no es válida: súbela o elígela de la biblioteca.';
     }
     if (i === 4 && (!Number.isInteger(maxPlayers) || maxPlayers < 1 || maxPlayers > MAX_PLAYERS)) return `El máximo de jugadores debe estar entre 1 y ${MAX_PLAYERS}.`;
     if (i === 4 && names.length > maxPlayers) return `Has puesto ${names.length} jugadores y el máximo es ${maxPlayers}: quita alguno o sube el máximo.`;
@@ -408,7 +406,7 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
         <div key={step} className={`${dir === 1 ? 'ss-step-in-right' : 'ss-step-in-left'} space-y-4`} data-testid={`wizard-step-${step + 1}`}>
           {step === 0 ? (
             <>
-              <TemplateImport onTemplate={(v) => applyTemplate(v)} onCatalog={setItems} fileOnly={Boolean(systemEditor)} />
+              {systemEditor ? null : <TemplateImport onTemplate={(v) => applyTemplate(v)} onCatalog={setItems} />}
               <fieldset className={card}>
                 <legend className="px-2 font-display text-xl 2xl:text-3xl">Quién puja</legend>
                 <Choice name="play_mode" value="host" checked={playMode === 'host'} onChange={() => setPlayMode('host')} title="Pujas del anfitrión" desc="Los jugadores pujan en voz alta y tú registras cada puja desde tu panel. No necesitan móvil ni cuenta." />
@@ -573,7 +571,7 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
                 </>
               ))}
               {items && editingCatalog ? (
-                <CatalogEditor items={items} onChange={setItems} onClose={() => setEditingCatalog(false)} onUploadPhoto={systemEditor?.uploadsEnabled ? (i, f) => void uploadItemPhoto(i, f) : undefined} />
+                <CatalogEditor items={items} onChange={setItems} onClose={() => setEditingCatalog(false)} onUploadPhoto={systemEditor?.uploadsEnabled ? (i, f) => void uploadItemPhoto(i, f) : undefined} onPickPhoto={systemEditor ? (i) => setPhotoPick(i) : undefined} />
               ) : items ? (
                 <div className="rounded-2xl border border-violet/40 bg-night-900 p-4 md:col-span-2" data-testid="summary-catalog">
                   <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
@@ -655,6 +653,14 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
           ) : null}
         </div>
 
+        {systemEditor ? (
+          <LibraryImagePicker
+            open={photoPick !== null}
+            title="Elegir la foto del elemento"
+            onClose={() => setPhotoPick(null)}
+            onPick={(image) => { setItems((cur) => (cur && photoPick !== null ? cur.map((it, k) => (k === photoPick ? { ...it, photoUrl: image.url, photoFile: null, photoPath: null, credito: it.credito ?? (image.credit || null) } : it)) : cur)); setPhotoPick(null); }}
+          />
+        ) : null}
         <LibraryPicker open={pickerOpen} onClose={() => setPickerOpen(false)} onPick={importFromLibrary} taken={new Set((items ?? presetCatalog(themeChoice)).map((i) => i.name.trim().toLowerCase()))} />
 
         {error ? <p role="alert" data-testid="wizard-error" className="rounded-xl bg-rose/20 px-4 py-3 font-semibold text-rose 2xl:text-xl">{error}</p> : null}

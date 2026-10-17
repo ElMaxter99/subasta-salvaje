@@ -2,18 +2,18 @@ import { assertSameOrigin, handle, json, limit } from '@/lib/api';
 import { requireSuperadmin } from '@/lib/auth/host';
 import { DomainError } from '@/lib/domain/errors';
 import { getContext } from '@/lib/services/context';
-import { LIBRARY_UPLOAD_MAX_BYTES, uploadLibraryImage, uploadMetaSchema } from '@/lib/services/library-service';
+import { LIBRARY_UPLOAD_MAX_BYTES, stageLibraryImage, uploadMetaSchema } from '@/lib/services/library-service';
 
 export const maxDuration = 60;
 
 /**
- * Sube UNA imagen de la biblioteca (la subida masiva envía las fotos de una en una): se normaliza, se publica en el
- * repositorio de fotos (GitHub + jsDelivr, NO en Supabase) y se registra. Solo superadmin.
+ * Subida masiva, fase 1: prepara UNA imagen (se normaliza, se comprueba si ya está registrada y, si es nueva, se deja lista en
+ * GitHub sin crear commit). Después, /api/admin/library/commit publica todo el lote en un único commit. Solo superadmin.
  */
 export const POST = handle(async (req: Request) => {
   assertSameOrigin(req);
   const admin = await requireSuperadmin();
-  limit(req, 'admin-library-upload', admin.id, 600, 600_000);
+  limit(req, 'admin-library-stage', admin.id, 600, 600_000);
   const form = await req.formData().catch(() => null);
   const file = form?.get('file');
   if (!(file instanceof File)) throw new DomainError('invalid_input');
@@ -27,5 +27,5 @@ export const POST = handle(async (req: Request) => {
     tags,
   });
   if (!meta.success) throw new DomainError('invalid_input', meta.error.issues[0]?.message ?? 'Datos no válidos');
-  return json(await uploadLibraryImage(await getContext(), admin.email ?? 'superadmin', { name: file.name, bytes: new Uint8Array(await file.arrayBuffer()), ...meta.data }));
+  return json(await stageLibraryImage(await getContext(), { name: file.name, bytes: new Uint8Array(await file.arrayBuffer()), ...meta.data }));
 });

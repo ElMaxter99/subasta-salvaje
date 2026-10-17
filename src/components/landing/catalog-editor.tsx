@@ -18,14 +18,14 @@ export function validateCatalog(items: LoadedCatalog): string | null {
     if (it.name.trim().length > 80) return `Elemento ${n} del catálogo: el título supera los 80 caracteres.`;
     if (it.description.length > 500) return `Elemento ${n} del catálogo: la descripción supera los 500 caracteres.`;
     if ((it.emoji ?? '').length > 8) return `Elemento ${n} del catálogo: el emoji es demasiado largo.`;
-    if (it.photoUrl && (!/^https:\/\//i.test(it.photoUrl.trim()) || it.photoUrl.length > 500)) return `Elemento ${n} («${it.name.trim()}»): la foto debe ser una URL https:// de hasta 500 caracteres.`;
+    if (it.photoUrl && (!/^https:\/\//i.test(it.photoUrl.trim()) || it.photoUrl.length > 500)) return `Elemento ${n} («${it.name.trim()}»): la foto no es válida: súbela o elígela de la biblioteca.`;
   }
   return null;
 }
 
 /** Editor del catálogo dentro del asistente: cambiar, añadir, borrar y reordenar elementos (título, descripción, emoji y foto por URL). */
-/** `onUploadPhoto` (solo superadmin) añade «Subir foto» a cada elemento: sube al repositorio de fotos y pone la URL. */
-export function CatalogEditor({ items, onChange, onClose, onUploadPhoto }: { items: LoadedCatalog; onChange: (items: LoadedCatalog) => void; onClose: () => void; onUploadPhoto?: (index: number, file: File) => void }) {
+/** Solo superadmin: `onUploadPhoto` sube la foto al repositorio de fotos y `onPickPhoto` la elige de la biblioteca (nunca se escribe una URL a mano). */
+export function CatalogEditor({ items, onChange, onClose, onUploadPhoto, onPickPhoto }: { items: LoadedCatalog; onChange: (items: LoadedCatalog) => void; onClose: () => void; onUploadPhoto?: (index: number, file: File) => void; onPickPhoto?: (index: number) => void }) {
   const set = (i: number, patch: Partial<Item>) => onChange(items.map((it, k) => (k === i ? { ...it, ...patch } : it)));
   const move = (i: number, d: -1 | 1) => {
     const j = i + d;
@@ -41,7 +41,7 @@ export function CatalogEditor({ items, onChange, onClose, onUploadPhoto }: { ite
         <h3 className="font-display text-xl 2xl:text-3xl">Catálogo ({items.length})</h3>
         <Button type="button" size="sm" variant="secondary" onClick={onClose} disabled={Boolean(err)}>Listo</Button>
       </div>
-      <p className="text-sm text-white/65">Cada elemento se subasta en una ronda, en este orden. La foto (URL https) se usa de referencia cuando alguien gana el elemento.</p>
+      <p className="text-sm text-white/65">Cada elemento se subasta en una ronda, en este orden. La foto se usa de referencia cuando alguien gana el elemento.</p>
       <ol className="space-y-3">
         {items.map((it, i) => (
           <li key={i} className="space-y-2 rounded-xl border border-white/10 bg-night-800/70 p-3" data-testid={`catalog-row-${i + 1}`}>
@@ -60,14 +60,19 @@ export function CatalogEditor({ items, onChange, onClose, onUploadPhoto }: { ite
                 <Button type="button" size="sm" variant="ghost" onClick={() => set(i, { photoFile: null, photoPath: null })} aria-label={`Quitar la foto del elemento ${i + 1}`}><ImageOff className="size-4" aria-hidden /> Quitar</Button>
               </p>
             ) : (
-              <div className="flex gap-2">
-                <input aria-label={`Foto (URL https) del elemento ${i + 1}`} className={input} maxLength={500} inputMode="url" value={it.photoUrl ?? ''} onChange={(e) => set(i, { photoUrl: e.target.value.trim() || null })} placeholder="Foto: https://… (opcional)" />
+              <div className="flex flex-wrap items-center gap-2">
+                {it.photoUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element -- alojada en el CDN del propietario
+                  <img src={it.photoUrl} alt={`Foto del elemento ${i + 1}`} loading="lazy" referrerPolicy="no-referrer" className="size-12 rounded-lg object-cover" />
+                ) : <span className="text-sm text-white/60">Sin foto</span>}
                 {onUploadPhoto ? (
                   <label className="inline-flex min-h-11 shrink-0 cursor-pointer items-center rounded-xl border border-white/15 px-3 text-sm font-semibold hover:bg-white/10">
-                    Subir
+                    Subir foto
                     <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" aria-label={`Subir la foto del elemento ${i + 1}`} onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) onUploadPhoto(i, f); }} />
                   </label>
                 ) : null}
+                {onPickPhoto ? <Button type="button" size="sm" variant="secondary" onClick={() => onPickPhoto(i)} aria-label={`Elegir la foto del elemento ${i + 1} de la biblioteca`}>De la biblioteca</Button> : null}
+                {it.photoUrl ? <Button type="button" size="sm" variant="ghost" onClick={() => set(i, { photoUrl: null })} aria-label={`Quitar la foto del elemento ${i + 1}`}><ImageOff className="size-4" aria-hidden /> Quitar</Button> : null}
               </div>
             )}
             {onUploadPhoto ? (

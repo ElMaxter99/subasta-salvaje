@@ -177,10 +177,7 @@ test('editor de catálogo en el asistente: personalizar el de la temática, edit
   await expect(page.getByLabel('Título del elemento 1', { exact: true })).toHaveValue('Piscina infinita');
 
   await page.getByLabel('Título del elemento 1', { exact: true }).fill('Piscina de lava');
-  await page.getByLabel('Foto (URL https) del elemento 1', { exact: true }).fill('http://no-https.com/a.jpg');
-  await expect(page.getByTestId('catalog-error')).toContainText('https');
-  await expect(editor.getByRole('button', { name: 'Listo' })).toBeDisabled();
-  await page.getByLabel('Foto (URL https) del elemento 1', { exact: true }).fill('');
+  await expect(editor.getByLabel(/URL/i)).toHaveCount(0); // nunca se escribe una URL a mano
   await page.getByRole('button', { name: 'Bajar el elemento 1', exact: true }).click(); // la piscina pasa a la 2.ª posición
   await expect(page.getByLabel('Título del elemento 2', { exact: true })).toHaveValue('Piscina de lava');
   for (let i = 0; i < 9; i++) await page.getByRole('button', { name: 'Quitar el elemento 3', exact: true }).click(); // 12 → 3

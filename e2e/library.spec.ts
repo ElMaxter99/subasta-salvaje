@@ -8,13 +8,20 @@ const ORIGIN = { origin: 'http://localhost:3210' };
 
 test('biblioteca: subida masiva (con repetida y archivo no válido), productos desde imágenes y los importa un anfitrión', async ({ browser }) => {
   // Servidor local que imita la API de GitHub (el servidor de la app apunta aquí por GITHUB_ASSETS_API_BASE)
-  const puts: string[] = [];
+  const hex40 = (n: number) => n.toString(16).padStart(40, '0');
+  let blobs = 0, commits = 0, puts = 0;
   const stub = createServer((req, res) => {
     req.on('data', () => undefined);
     req.on('end', () => {
       res.setHeader('Content-Type', 'application/json');
-      if (req.method === 'PUT') { puts.push(decodeURIComponent(req.url ?? '')); res.statusCode = 201; res.end(JSON.stringify({ commit: { sha: 'stub0000sha' } })); }
-      else if (req.url?.includes('/commits/')) res.end(JSON.stringify({ sha: 'stub0000sha' }));
+      const url = req.url ?? '';
+      if (req.method === 'POST' && url.endsWith('/git/blobs')) { blobs++; res.statusCode = 201; res.end(JSON.stringify({ sha: hex40(blobs) })); }
+      else if (req.method === 'POST' && url.endsWith('/git/trees')) { res.statusCode = 201; res.end(JSON.stringify({ sha: hex40(9000) })); }
+      else if (req.method === 'POST' && url.endsWith('/git/commits')) { commits++; res.statusCode = 201; res.end(JSON.stringify({ sha: 'e2ec0de'.padEnd(40, '0') })); }
+      else if (req.method === 'PATCH' && url.includes('/git/refs/heads/')) res.end('{}');
+      else if (req.method === 'PUT') { puts++; res.statusCode = 201; res.end(JSON.stringify({ commit: { sha: 'stub0000sha' } })); }
+      else if (url.includes('/git/commits/')) res.end(JSON.stringify({ tree: { sha: hex40(8000) } }));
+      else if (url.includes('/commits/')) res.end(JSON.stringify({ sha: 'stub0000sha' }));
       else { res.statusCode = 404; res.end('{}'); }
     });
   });
@@ -28,20 +35,23 @@ test('biblioteca: subida masiva (con repetida y archivo no válido), productos d
     await page.waitForTimeout(2500);
 
     // Subida masiva: 3 nuevas + 1 con el mismo contenido + 1 archivo que no es una imagen
-    const photo = (color: string) => sharp({ create: { width: 1200, height: 900, channels: 3, background: color } }).jpeg().toBuffer();
+    const k = parseInt(stamp, 36) % 200; // contenido único por ejecución (la base del e2e persiste y las imágenes se identifican por contenido)
+    const photo = (color: string) => sharp({ create: { width: 1200 + (k % 37), height: 900 + (k % 29), channels: 3, background: color.replace('#', '#') } }).jpeg().toBuffer();
     const file = async (name: string, color: string) => ({ name, mimeType: 'image/jpeg', buffer: await photo(color) });
     await page.getByLabel('Colección de la subida').fill(COLLECTION);
     await page.getByLabel('Etiquetas de la subida').fill('terror, otoño');
     await page.getByLabel('Elegir imágenes para la biblioteca').setInputFiles([
-      await file(`calabaza_gigante_${stamp}.jpg`, '#dd7711'),
-      await file(`fantasma_${stamp}.jpg`, '#eeeeff'),
-      await file(`murcielago_${stamp}.jpg`, '#221133'),
-      await file(`copia_de_fantasma_${stamp}.jpg`, '#eeeeff'),
+      await file(`calabaza_gigante_${stamp}.jpg`, `rgb(${20 + k}, 119, 17)`),
+      await file(`fantasma_${stamp}.jpg`, `rgb(238, ${k + 20}, 255)`),
+      await file(`murcielago_${stamp}.jpg`, `rgb(34, 17, ${k + 20})`),
+      await file(`copia_de_fantasma_${stamp}.jpg`, `rgb(238, ${k + 20}, 255)`),
       { name: 'notas.txt', mimeType: 'text/plain', buffer: Buffer.from('no soy una imagen') },
     ]);
     await expect(page.getByTestId('library-progress')).toContainText('3 nuevas · 1 repetidas · 1 con error', { timeout: 90_000 });
-    expect(puts).toHaveLength(3); // la repetida no llegó a GitHub
-    expect(puts.every((p) => p.includes('/biblioteca/') && p.endsWith('.webp'))).toBe(true);
+    await expect(page.getByTestId('library-queue')).toContainText('Publicada en el commit', { timeout: 30_000 });
+    expect(blobs).toBeGreaterThanOrEqual(3); // (una copia dentro del lote puede dejar un blob sin usar: no entra en el commit)
+    expect(commits).toBe(1); // ...y las tres nuevas entraron en UN solo commit
+    expect(puts).toBe(0);
 
     // Galería: filtro por colección y selección
     await page.getByLabel('Filtrar por colección').selectOption(COLLECTION);
@@ -78,6 +88,18 @@ test('biblioteca: subida masiva (con repetida y archivo no válido), productos d
     await page.getByTestId('library-pick-add').click();
     await expect(page.getByTestId('summary-catalog')).toContainText(`${before + 4} elementos`);
     await expect(page.getByTestId('summary-catalog')).toContainText('con foto');
+
+    // Superadmin: la portada de una plantilla del sistema se elige de la biblioteca
+    await page.goto('/admin/plantillas/editor');
+    await expect(page.getByTestId('wizard-step-1')).toBeVisible({ timeout: 60_000 });
+    await page.waitForTimeout(2500);
+    for (let i = 0; i < 5; i++) await page.getByRole('button', { name: /Siguiente/ }).click();
+    await expect(page.getByLabel(/URL/i)).toHaveCount(0); // nunca se teclea una URL: se sube o se elige de la biblioteca
+    await page.getByRole('button', { name: 'Elegir portada de la biblioteca' }).click();
+    await page.getByLabel('Colección de imágenes').selectOption(COLLECTION);
+    await expect(page.getByTestId('library-image-choice')).toHaveCount(3, { timeout: 30_000 });
+    await page.getByTestId('library-image-choice').first().click();
+    await expect(page.getByTestId('system-cover').locator('img')).toHaveAttribute('src', /cdn\.jsdelivr\.net\/gh\/e2e\/fotos@e2ec0de.*biblioteca\//);
 
     // Limpieza: productos e imágenes de la prueba
     const items = ((await (await ctx.request.post('/api/admin/library', { data: { op: 'items.list', collection: COLLECTION }, headers: ORIGIN })).json()) as { items: { id: string }[] }).items;

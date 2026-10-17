@@ -4,18 +4,6 @@ import sharp from 'sharp';
 
 const stamp = Date.now().toString(36); // la base del e2e persiste entre ejecuciones: nombres únicos
 const TITLE = `Noche en la luna ${stamp}`;
-const template = {
-  formato: 'subasta-salvaje/plantilla@1',
-  nombre: TITLE,
-  tematica: 'Base lunar',
-  reglas: { presupuesto: 30, puja_minima: 2, rondas_maximas: 2, pujas_enteras: true, clasificacion: 'saldo', modo_juego: 'anfitrion', modo_imagenes: 'pegatinas' },
-  jugadores: ['Ana', 'Beto'],
-  catalogo: [
-    { titulo: 'Cráter', descripcion: 'Un cráter enorme.', emoji: '🌑' },
-    { titulo: 'Rover', descripcion: 'Vehículo lunar.', emoji: '🚙' },
-  ],
-};
-
 /** Avanza `n` pasos del asistente del superadmin con «Siguiente». */
 async function next(page: import('@playwright/test').Page, n: number) {
   for (let i = 0; i < n; i++) await page.getByRole('button', { name: /Siguiente/ }).click();
@@ -30,21 +18,21 @@ test('partidas del sistema: el superadmin crea y publica una plantilla; el anfit
   await page.goto('/new-game');
   await expect(page.getByTestId('template-import')).toBeVisible({ timeout: 60_000 });
 
-  // Superadmin: el MISMO asistente que el anfitrión, con un paso de ficha; se importa el JSON y se guarda como borrador
+  // Superadmin: el mismo recorrido de pasos que el anfitrión, con un paso de ficha, y SIN «¿Tienes una plantilla?»
   await page.goto('/admin/plantillas');
   await page.getByRole('link', { name: 'Nueva plantilla' }).click();
   await expect(page.getByTestId('wizard-step-1')).toBeVisible({ timeout: 60_000 });
   await page.waitForTimeout(2500);
-  await page.getByTestId('template-open').click();
-  await page.getByTestId('template-input').setInputFiles({ name: 'mala.json', mimeType: 'application/json', buffer: Buffer.from('{ "formato": "mal" }') });
-  await expect(page.getByTestId('template-errors')).toBeVisible();
-  await page.getByTestId('template-input').setInputFiles({ name: 'buena.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(template)) });
-  await expect(page.getByTestId('summary-catalog')).toContainText('2 elementos'); // salta al resumen con la plantilla cargada
-  await page.getByRole('button', { name: 'Editar Ficha del sistema' }).click();
+  await expect(page.getByTestId('template-import')).toHaveCount(0);
+  await next(page, 2); // Quién puja → Casas → Partida
+  await page.getByLabel('Nombre de la partida').fill(TITLE);
+  await next(page, 3); // Reglas → Jugadores → Ficha
   await expect(page.getByTestId('system-step')).toBeVisible();
+  await page.getByLabel('Título de la tarjeta').fill(TITLE);
   await page.getByLabel('Identificador (carpeta de las fotos)').fill(`noche-luna-${stamp}`);
   await page.getByLabel('Descripción (hasta 300 caracteres)').fill('Una subasta lunar para empezar rápido');
   await next(page, 1);
+  const N = Number(await page.getByTestId('summary-catalog').locator('b').first().innerText()); // elementos del catálogo (el de la temática, ya editable)
   await page.getByRole('button', { name: 'Guardar borrador' }).click();
   await page.waitForURL(/\/admin\/plantillas(\?|$)/, { timeout: 30_000 });
   const row = page.getByTestId('system-template-row').filter({ hasText: TITLE });
@@ -66,9 +54,9 @@ test('partidas del sistema: el superadmin crea y publica una plantilla; el anfit
   await page.getByTestId('template-open').click();
   const card = page.getByTestId('system-template-card').filter({ hasText: TITLE });
   await expect(card).toBeVisible({ timeout: 30_000 });
-  await expect(card).toContainText('2 elementos');
+  await expect(card).toContainText(`${N} elementos`);
   await card.getByRole('button', { name: /Usar la partida del sistema/ }).click();
-  await expect(page.getByTestId('summary-catalog')).toContainText('2 elementos'); // el asistente salta al Resumen con la plantilla cargada
+  await expect(page.getByTestId('summary-catalog')).toContainText(`${N} elementos`); // el asistente salta al Resumen con la plantilla cargada
   await page.getByRole('button', { name: /Crear partida/ }).click();
   await page.waitForURL(/\/game\/[A-Z0-9]{6}\/host/, { timeout: 60_000 });
   await expect(page.getByText(TITLE).first()).toBeVisible();
@@ -95,16 +83,24 @@ test('partidas del sistema: el superadmin crea y publica una plantilla; el anfit
 test('arrastrar y soltar: las imágenes se suben al repositorio de fotos (simulado), no a Supabase, y rellenan el JSON', async ({ browser }) => {
   // Servidor local que imita la API de GitHub (el servidor de la app apunta aquí por GITHUB_ASSETS_API_BASE)
   const puts: string[] = [];
+  let blobs = 0, commits = 0;
+  const hex40 = (n: number) => n.toString(16).padStart(40, '0');
   const stub = createServer((req, res) => {
     const chunks: Buffer[] = [];
     req.on('data', (c) => chunks.push(c));
     req.on('end', () => {
       res.setHeader('Content-Type', 'application/json');
-      if (req.method === 'PUT') {
-        puts.push(decodeURIComponent(req.url ?? ''));
+      const url = req.url ?? '';
+      if (req.method === 'POST' && url.endsWith('/git/blobs')) { blobs++; res.statusCode = 201; res.end(JSON.stringify({ sha: hex40(blobs) })); }
+      else if (req.method === 'POST' && url.endsWith('/git/trees')) { res.statusCode = 201; res.end(JSON.stringify({ sha: hex40(9000) })); }
+      else if (req.method === 'POST' && url.endsWith('/git/commits')) { commits++; res.statusCode = 201; res.end(JSON.stringify({ sha: 'stub0000sha' })); }
+      else if (req.method === 'PATCH' && url.includes('/git/refs/heads/')) res.end('{}');
+      else if (req.method === 'PUT') {
+        puts.push(decodeURIComponent(url));
         res.statusCode = 201;
         res.end(JSON.stringify({ commit: { sha: 'stub0000sha' } }));
-      } else if (req.url?.includes('/commits/')) res.end(JSON.stringify({ sha: 'stub0000sha' }));
+      } else if (url.includes('/git/commits/')) res.end(JSON.stringify({ tree: { sha: hex40(8000) } }));
+      else if (url.includes('/commits/')) res.end(JSON.stringify({ sha: 'stub0000sha' }));
       else { res.statusCode = 404; res.end('{}'); }
     });
   });
@@ -139,7 +135,10 @@ test('arrastrar y soltar: las imágenes se suben al repositorio de fotos (simula
     // La imagen suelta se asigna a mano a un elemento
     await list.getByLabel('Asignar IMG_0001.jpg').selectOption({ label: 'Elemento · Sofá gigante' });
     await expect(list.getByText(/^Elemento · Sofá gigante · \d+×\d+/)).toBeVisible({ timeout: 60_000 });
-    expect(puts).toHaveLength(4);
+    // Tres fotos soltadas a la vez = UN commit (3 blobs); la asignada a mano después es una subida suelta (su propio commit)
+    expect(blobs).toBe(3);
+    expect(commits).toBe(1);
+    expect(puts).toHaveLength(1);
     expect(puts.every((p) => p.endsWith('.webp'))).toBe(true);
 
     // Resumen y guardado: la plantilla lleva los enlaces fijados al commit (nada se guardó en Supabase)

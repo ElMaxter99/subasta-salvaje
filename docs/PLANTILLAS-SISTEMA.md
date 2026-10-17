@@ -20,14 +20,14 @@ En el paso **Ficha** del editor hay una **zona para arrastrar imágenes** (o ele
 1. se reduce en el navegador (si pesa mucho), y el servidor la lleva al **formato interno** (WebP, ver `IMAGEN-INTERNA.md`);
 2. se sube a **tu repositorio público de fotos en GitHub** con la API de contenidos (`plantillas/<slug>/<tipo>-<nombre>-<hash>.webp`); **nada va a Supabase**;
 3. la plantilla se rellena sola con el enlace de **jsDelivr fijado al commit** (`…/gh/usuario/repo@<commit>/…`: se sirve al instante y nunca cambia).
-Las imágenes se asignan por el **nombre del archivo**: `portada.jpg` → portada, `casa.jpg`/`casa-inicial.jpg` → casa inicial, y el título de un elemento (`sombrilla-roja.jpg` → «Sombrilla roja»; sin tildes ni mayúsculas). Las que no encajan quedan en la lista con un desplegable «Asignar a…». Se suben **de una en una** (GitHub no admite commits simultáneos en la misma rama) y la misma foto no se duplica (el nombre lleva el hash del contenido). Cada subida queda en la **auditoría**.
+Las imágenes se asignan por el **nombre del archivo**: `portada.jpg` → portada, `casa.jpg`/`casa-inicial.jpg` → casa inicial, y el título de un elemento (`sombrilla-roja.jpg` → «Sombrilla roja»; sin tildes ni mayúsculas). Las que no encajan quedan en la lista con un desplegable «Asignar a…». Varias imágenes soltadas a la vez se **preparan de una en una y se publican en UN solo commit** (una imagen suelta es su propio commit) y la misma foto no se duplica (el nombre lleva el hash del contenido). Cada subida queda en la **auditoría**.
 
 ### Configuración (una vez)
 1. Crea un repositorio **público** solo para las fotos (p. ej. `subasta-salvaje-fotos`) con un primer commit (un README basta).
 2. En GitHub → *Settings → Developer settings → Fine-grained personal access tokens* crea un token **solo para ese repositorio** con el permiso **Contents: Read and write** (nada más) y una caducidad razonable. No lo pegues en el chat ni en el repositorio.
 3. En Vercel (solo servidor): `GITHUB_ASSETS_REPO=tu-usuario/subasta-salvaje-fotos`, `GITHUB_ASSETS_TOKEN=…` (*Sensitive*) y, si la rama no es `main`, `GITHUB_ASSETS_BRANCH`.
    **Repositorio real del proyecto:** `ElMaxter99/subasta-salvaje-public` (ya inicializado con su README, `plantillas/` y `.gitattributes`). Su rama por defecto es **`master`**, así que hay que definir `GITHUB_ASSETS_BRANCH=master`. Redespliega. `cdn.jsdelivr.net` se admite automáticamente en la lista de servidores si defines también `ASSET_CDN_HOSTS`.
-4. Si no defines esas variables, la Ficha lo indica y puedes seguir pegando enlaces https a mano en los campos de URL.
+4. Si no defines esas variables, la Ficha lo indica y sigue pudiendo elegir imágenes de la biblioteca (nunca se escriben URLs).
 
 ### Alternativa manual
 `npm run assets:normalize -- ./mis-fotos --kind=item` deja `.webp` listos para subirlos tú a cualquier alojamiento público (GitHub+jsDelivr) y pegar los enlaces. **No uses R2** (pide método de pago) ni Dropbox/Drive (enlaces que cambian, sin CDN).

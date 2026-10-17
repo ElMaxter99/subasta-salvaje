@@ -36,7 +36,15 @@ export interface GithubAssets {
   put(path: string, bytes: Uint8Array, message: string): Promise<UploadedAsset>;
 }
 
-export function createGithubAssets(cfg: GithubAssetsConfig, fetchImpl: typeof fetch = fetch, apiBase = 'https://api.github.com'): GithubAssets {
+/** Subida por lotes (biblioteca): TODO el lote entra en UN solo commit. */
+export interface GithubBatchAssets {
+  /** Prepara el contenido (blob de Git, sin crear commit)… */
+  stageBlob(bytes: Uint8Array): Promise<string>;
+  /** …y publica TODOS los archivos preparados en UN solo commit (API de datos de Git). */
+  commitMany(files: { path: string; blobSha: string }[], message: string): Promise<{ sha: string; files: UploadedAsset[] }>;
+}
+
+export function createGithubAssets(cfg: GithubAssetsConfig, fetchImpl: typeof fetch = fetch, apiBase = 'https://api.github.com'): GithubAssets & GithubBatchAssets {
   if (!REPO_RE.test(cfg.repo)) throw new AssetUploadError('GITHUB_ASSETS_REPO debe ser «usuario/repositorio».', 'config');
   const headers = { Authorization: `Bearer ${cfg.token}`, Accept: 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28', 'User-Agent': 'subasta-salvaje' };
   const contents = (p: string) => `${apiBase}/repos/${cfg.repo}/contents/${p.split('/').map(encodeURIComponent).join('/')}`;
@@ -66,9 +74,43 @@ export function createGithubAssets(cfg: GithubAssetsConfig, fetchImpl: typeof fe
     return j.sha;
   }
 
+  const gitUrl = (p: string) => `${apiBase}/repos/${cfg.repo}/git/${p}`;
+  const json = async <T>(res: Response): Promise<T> => {
+    if (!res.ok) return fail(res);
+    return (await res.json().catch(() => ({}))) as T;
+  };
+  const checkPath = (path: string) => {
+    if (!PATH_RE.test(path) || path.includes('..') || path.includes('//')) throw new AssetUploadError('Ruta de archivo no válida.', 'config');
+  };
+
   return {
+    async stageBlob(bytes) {
+      const j = await json<{ sha?: string }>(await call(gitUrl('blobs'), { method: 'POST', body: JSON.stringify({ content: Buffer.from(bytes).toString('base64'), encoding: 'base64' }) }));
+      if (!j.sha) throw new AssetUploadError('GitHub no devolvió el identificador del archivo preparado.', 'other');
+      return j.sha;
+    },
+
+    async commitMany(files, message) {
+      if (files.length === 0) throw new AssetUploadError('No hay archivos que publicar.', 'config');
+      for (const f of files) checkPath(f.path);
+      for (let attempt = 0; ; attempt++) {
+        const head = await headSha();
+        const parent = await json<{ tree?: { sha?: string } }>(await call(gitUrl(`commits/${head}`)));
+        if (!parent.tree?.sha) throw new AssetUploadError('GitHub no devolvió el árbol de la rama.', 'other');
+        const tree = await json<{ sha?: string }>(await call(gitUrl('trees'), { method: 'POST', body: JSON.stringify({ base_tree: parent.tree.sha, tree: files.map((f) => ({ path: f.path, mode: '100644', type: 'blob', sha: f.blobSha })) }) }));
+        if (!tree.sha) throw new AssetUploadError('GitHub no devolvió el árbol nuevo.', 'other');
+        const commit = await json<{ sha?: string }>(await call(gitUrl('commits'), { method: 'POST', body: JSON.stringify({ message, tree: tree.sha, parents: [head] }) }));
+        if (!commit.sha) throw new AssetUploadError('GitHub no devolvió el commit creado.', 'other');
+        const ref = await call(gitUrl(`refs/heads/${cfg.branch.split('/').map(encodeURIComponent).join('/')}`), { method: 'PATCH', body: JSON.stringify({ sha: commit.sha, force: false }) });
+        if (ref.status === 422 && attempt < 2) continue; // la rama se movió mientras tanto: se rehace sobre la nueva cabeza
+        if (!ref.ok) return fail(ref);
+        const sha = commit.sha;
+        return { sha, files: files.map((f) => ({ path: f.path, url: urlFor(sha, f.path), sha, existed: false })) };
+      }
+    },
+
     async put(path, bytes, message) {
-      if (!PATH_RE.test(path) || path.includes('..') || path.includes('//')) throw new AssetUploadError('Ruta de archivo no válida.', 'config');
+      checkPath(path);
       // ¿Ya está? (mismo contenido = misma ruta, porque el nombre lleva el hash): no se duplica.
       const existing = await call(`${contents(path)}?ref=${encodeURIComponent(cfg.branch)}`);
       if (existing.ok) {

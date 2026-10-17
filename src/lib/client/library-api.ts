@@ -7,8 +7,11 @@ export type { CollectionCount, LibraryImage, LibraryItem, LibraryItemInput };
 
 export interface UploadMeta { collection: string; tags: string; credit: string; kind: 'item' | 'scene' }
 
-/** Sube UNA imagen a la biblioteca (el servidor la normaliza y la publica en el repositorio de fotos). */
-export async function uploadLibraryImageRequest(file: File, meta: UploadMeta): Promise<{ existed: boolean; image: LibraryImage }> {
+export type StagedImage = import('@/lib/services/library-service').StagedImage;
+export type StageResult = { existed: true; image: LibraryImage } | { existed: false; staged: StagedImage };
+
+/** Fase 1: prepara UNA imagen (el servidor la normaliza y la deja lista en GitHub, sin crear commit). */
+export async function stageLibraryImageRequest(file: File, meta: UploadMeta): Promise<StageResult> {
   const form = new FormData();
   form.set('collection', meta.collection);
   form.set('tags', meta.tags);
@@ -18,11 +21,14 @@ export async function uploadLibraryImageRequest(file: File, meta: UploadMeta): P
   // El título sale del nombre original (la reducción en el navegador puede cambiar la extensión).
   const small = await shrinkForUpload(file);
   form.set('file', new File([small], file.name.replace(/\.[^.]+$/, '') + small.name.slice(small.name.lastIndexOf('.')), { type: small.type }));
-  const res = await fetch('/api/admin/library/upload', { method: 'POST', body: form });
-  const data = (await res.json().catch(() => null)) as ({ existed: boolean; image: LibraryImage } & { error?: { code: string; message: string } }) | null;
+  const res = await fetch('/api/admin/library/stage', { method: 'POST', body: form });
+  const data = (await res.json().catch(() => null)) as (StageResult & { error?: { code: string; message: string } }) | null;
   if (!res.ok || !data) throw new ApiError(data?.error?.code ?? 'internal', data?.error?.message ?? `Error ${res.status}`, res.status);
   return data;
 }
+
+/** Fase 2: publica todas las imágenes preparadas en UN solo commit y las registra. */
+export const commitLibraryRequest = (staged: StagedImage[]) => adminPost<{ commit: string; added: number; existed: number; images: LibraryImage[] }>('library/commit', { staged });
 
 export interface ImageList { total: number; images: LibraryImage[]; collections: CollectionCount[]; uploadsEnabled: boolean }
 export interface ItemList { total: number; items: LibraryItem[]; collections: CollectionCount[] }

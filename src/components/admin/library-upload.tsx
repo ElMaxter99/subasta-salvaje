@@ -4,30 +4,36 @@ import { useRef, useState } from 'react';
 import { FolderUp, ImagePlus, Square } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ApiError } from '@/lib/client/api';
-import { uploadLibraryImageRequest, type UploadMeta } from '@/lib/client/library-api';
+import { commitLibraryRequest, stageLibraryImageRequest, type StagedImage, type UploadMeta } from '@/lib/client/library-api';
 
-interface Row { id: number; file: File; state: 'wait' | 'sending' | 'ok' | 'dup' | 'error'; message?: string }
+interface Row { id: number; file: File; state: 'wait' | 'sending' | 'ready' | 'ok' | 'dup' | 'error'; message?: string; staged?: StagedImage }
 
 const input = 'w-full rounded-xl border border-white/15 bg-night-900 px-3 py-2';
 const IMAGE = /\.(jpe?g|png|webp)$/i;
+const COMMIT_CHUNK = 500;
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /**
- * Subida masiva: se sueltan (o eligen) decenas o cientos de imágenes —también carpetas enteras— y se envían de UNA en una
- * (GitHub no admite commits simultáneos en la misma rama). Si GitHub limita el ritmo se espera y se reintenta; las fotos ya
- * registradas se detectan por su contenido y no se vuelven a subir. Se puede parar en cualquier momento.
+ * Subida masiva en dos fases: (1) cada foto se envía de UNA en una y se deja preparada en GitHub (sin commit; las ya registradas
+ * se detectan por su contenido y se saltan); (2) al terminar, TODAS las preparadas se publican en UN SOLO commit. Si GitHub limita
+ * el ritmo se espera y se reintenta. Se puede parar; lo ya preparado se publica con «Publicar preparadas». Si falla la publicación,
+ * no se registra nada y se reintenta con la misma lista.
  */
 export function LibraryUpload({ enabled, collections, onDone }: { enabled: boolean; collections: string[]; onDone: () => void }) {
   const [meta, setMeta] = useState<UploadMeta>({ collection: '', tags: '', credit: '', kind: 'item' });
   const [rows, setRows] = useState<Row[]>([]);
   const [running, setRunning] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [commitError, setCommitError] = useState<string | null>(null);
   const [over, setOver] = useState(false);
   const stop = useRef(false);
   const seq = useRef(0);
+  const rowsRef = useRef<Row[]>([]);
 
-  const patch = (id: number, p: Partial<Row>) => setRows((all) => all.map((r) => (r.id === id ? { ...r, ...p } : r)));
+  const update = (fn: (all: Row[]) => Row[]) => setRows((all) => { const n = fn(all); rowsRef.current = n; return n; });
+  const patch = (id: number, p: Partial<Row>) => update((all) => all.map((r) => (r.id === id ? { ...r, ...p } : r)));
 
-  async function run(batch: Row[]) {
+  async function stageAll(batch: Row[]) {
     stop.current = false;
     setRunning(true);
     for (const row of batch) {
@@ -35,8 +41,10 @@ export function LibraryUpload({ enabled, collections, onDone }: { enabled: boole
       patch(row.id, { state: 'sending', message: undefined });
       for (let attempt = 0; ; attempt++) {
         try {
-          const r = await uploadLibraryImageRequest(row.file, meta);
-          patch(row.id, r.existed ? { state: 'dup', message: 'Ya estaba en la biblioteca' } : { state: 'ok', message: `${r.image.width}×${r.image.height} · ${Math.round((r.image.bytes ?? 0) / 1024)} KB` });
+          const r = await stageLibraryImageRequest(row.file, meta);
+          if (r.existed) patch(row.id, { state: 'dup', message: 'Ya estaba en la biblioteca' });
+          else if (rowsRef.current.some((o) => o.id !== row.id && o.staged?.hash === r.staged.hash)) patch(row.id, { state: 'dup', message: 'Repetida en este lote (mismo contenido)' });
+          else patch(row.id, { state: 'ready', staged: r.staged, message: `${r.staged.width}×${r.staged.height} · ${Math.round(r.staged.bytes / 1024)} KB · preparada` });
           break;
         } catch (e) {
           const limited = e instanceof ApiError && (e.status === 429 || e.code === 'rate_limited');
@@ -45,27 +53,50 @@ export function LibraryUpload({ enabled, collections, onDone }: { enabled: boole
             await sleep(20_000);
             continue;
           }
-          patch(row.id, { state: 'error', message: e instanceof Error ? e.message : 'No se pudo subir' });
+          patch(row.id, { state: 'error', message: e instanceof Error ? e.message : 'No se pudo preparar' });
           break;
         }
       }
     }
     setRunning(false);
-    onDone();
+    if (!stop.current) await publish();
+    else onDone();
+  }
+
+  /** Publica TODAS las preparadas en un único commit (en trozos de 500 solo si hay más). */
+  async function publish() {
+    const ready = rowsRef.current.filter((r) => r.state === 'ready' && r.staged);
+    if (ready.length === 0) { onDone(); return; }
+    setPublishing(true);
+    setCommitError(null);
+    try {
+      for (let i = 0; i < ready.length; i += COMMIT_CHUNK) {
+        const chunk = ready.slice(i, i + COMMIT_CHUNK);
+        const r = await commitLibraryRequest(chunk.map((c) => c.staged!));
+        for (const c of chunk) patch(c.id, { state: 'ok', staged: undefined, message: `Publicada en el commit ${r.commit.slice(0, 7)}` });
+      }
+    } catch (e) {
+      setCommitError(e instanceof Error ? e.message : 'No se pudo publicar el lote');
+    } finally {
+      setPublishing(false);
+      onDone();
+    }
   }
 
   function add(files: File[]) {
     const valid = files.filter((f) => IMAGE.test(f.name) || /^image\/(jpeg|png|webp)$/.test(f.type));
     const skipped = files.length - valid.length;
     const batch: Row[] = valid.map((file) => ({ id: ++seq.current, file, state: 'wait' }));
-    if (skipped > 0) batch.push({ id: ++seq.current, file: new File([], `${skipped} archivo(s) que no son JPG, PNG ni WebP`), state: 'error', message: 'Ignorados' });
-    setRows((all) => [...all, ...batch]);
-    if (!running) void run(batch.filter((b) => b.state === 'wait'));
+    const extra: Row[] = skipped > 0 ? [{ id: ++seq.current, file: new File([], `${skipped} archivo(s) que no son JPG, PNG ni WebP`), state: 'error', message: 'Ignorados' }] : [];
+    update((all) => [...all, ...batch, ...extra]);
+    if (!running && !publishing && batch.length > 0) void stageAll(batch);
   }
 
-  const done = rows.filter((r) => r.state === 'ok' || r.state === 'dup' || r.state === 'error').length;
+  const finished = rows.filter((r) => r.state === 'ready' || r.state === 'ok' || r.state === 'dup' || r.state === 'error').length;
   const count = (s: Row['state']) => rows.filter((r) => r.state === s).length;
-  const pending = rows.filter((r) => r.state === 'wait' || r.state === 'sending').length;
+  const pending = rows.filter((r) => r.state === 'wait').length;
+  const ready = count('ready');
+  const busy = running || publishing;
 
   return (
     <div className="space-y-3" data-testid="library-upload">
@@ -108,7 +139,7 @@ export function LibraryUpload({ enabled, collections, onDone }: { enabled: boole
                 <input type="file" multiple className="sr-only" aria-label="Elegir una carpeta de imágenes" {...({ webkitdirectory: '', directory: '' } as Record<string, string>)} onChange={(e) => { add(Array.from(e.target.files ?? [])); e.target.value = ''; }} />
               </label>
             </div>
-            <p className="text-xs text-white/60">Se reducen al formato interno (WebP ligero) y se suben una a una a tu repositorio público de fotos (no a Supabase). El título sale del nombre del archivo. Sube solo imágenes que puedas usar; anota su origen en el crédito.</p>
+            <p className="text-xs text-white/60">Se reducen al formato interno (WebP ligero), se preparan una a una y <b>todo el lote se publica en un único commit</b> en tu repositorio público de fotos (no en Supabase). El título sale del nombre del archivo. Sube solo imágenes que puedas usar; anota su origen en el crédito.</p>
           </div>
         ) : (
           <p className="text-white/70" data-testid="uploads-disabled">La subida no está configurada: define <code>GITHUB_ASSETS_REPO</code> y <code>GITHUB_ASSETS_TOKEN</code> en Vercel (ver docs/BIBLIOTECA.md).</p>
@@ -118,18 +149,21 @@ export function LibraryUpload({ enabled, collections, onDone }: { enabled: boole
       {rows.length > 0 ? (
         <div className="space-y-2" data-testid="library-queue">
           <div className="flex flex-wrap items-center gap-3 text-sm">
-            <progress value={done} max={rows.length} className="h-2 min-w-40 flex-1 accent-[#fbbf24]" aria-label="Progreso de la subida" />
-            <span data-testid="library-progress" className="font-semibold">{done}/{rows.length} · {count('ok')} nuevas · {count('dup')} repetidas · {count('error')} con error</span>
+            <progress value={finished} max={rows.length} className="h-2 min-w-40 flex-1 accent-[#fbbf24]" aria-label="Progreso de la subida" />
+            <span data-testid="library-progress" className="font-semibold">{finished}/{rows.length} · {count('ok') + ready} nuevas · {count('dup')} repetidas · {count('error')} con error</span>
             {running ? <Button size="sm" variant="secondary" onClick={() => { stop.current = true; }}><Square className="size-4" aria-hidden /> Parar</Button> : null}
-            {!running && pending > 0 ? <Button size="sm" variant="primary" onClick={() => void run(rows.filter((r) => r.state === 'wait'))}>Continuar</Button> : null}
-            {!running ? <Button size="sm" variant="ghost" onClick={() => setRows((all) => all.filter((r) => r.state === 'wait' || r.state === 'error'))}>Limpiar lo hecho</Button> : null}
+            {!busy && pending > 0 ? <Button size="sm" variant="primary" onClick={() => void stageAll(rowsRef.current.filter((r) => r.state === 'wait'))}>Continuar</Button> : null}
+            {!busy && ready > 0 ? <Button size="sm" variant="primary" onClick={() => void publish()} data-testid="library-publish">Publicar {ready} preparadas en un commit</Button> : null}
+            {!busy ? <Button size="sm" variant="ghost" onClick={() => update((all) => all.filter((r) => r.state === 'wait' || r.state === 'ready' || r.state === 'error'))}>Limpiar lo hecho</Button> : null}
           </div>
+          {publishing ? <p role="status" data-testid="library-publishing" className="rounded-xl bg-gold/10 px-3 py-2 text-sm font-semibold text-gold-soft">Publicando {ready} imágenes en un único commit…</p> : null}
+          {commitError ? <p role="alert" className="rounded-xl bg-rose/15 px-3 py-2 text-sm text-rose">No se pudo publicar el lote (no se ha registrado nada): {commitError}. Pulsa «Publicar» para reintentarlo.</p> : null}
           <ul className="max-h-64 space-y-1 overflow-y-auto" aria-label="Cola de subida">
             {rows.map((r) => (
               <li key={r.id} className="flex flex-wrap items-center gap-2 rounded-xl bg-night-900 px-3 py-1.5 text-sm">
-                <span className={r.state === 'ok' ? 'text-teal' : r.state === 'error' ? 'text-rose' : r.state === 'dup' ? 'text-gold-soft' : 'text-white/60'} aria-hidden>{r.state === 'ok' ? '✔' : r.state === 'dup' ? '＝' : r.state === 'error' ? '✖' : '…'}</span>
+                <span className={r.state === 'ok' ? 'text-teal' : r.state === 'error' ? 'text-rose' : r.state === 'dup' || r.state === 'ready' ? 'text-gold-soft' : 'text-white/60'} aria-hidden>{r.state === 'ok' ? '✔' : r.state === 'dup' ? '＝' : r.state === 'ready' ? '◔' : r.state === 'error' ? '✖' : '…'}</span>
                 <span className="font-semibold">{r.file.name}</span>
-                <span className="text-xs text-white/65">{r.state === 'wait' ? 'en cola' : r.state === 'sending' ? (r.message ?? 'subiendo…') : r.message}</span>
+                <span className="text-xs text-white/65">{r.state === 'wait' ? 'en cola' : r.state === 'sending' ? (r.message ?? 'preparando…') : r.message}</span>
               </li>
             ))}
           </ul>

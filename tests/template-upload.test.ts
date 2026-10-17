@@ -130,3 +130,28 @@ describe('subida de la imagen de una plantilla (servicio)', () => {
     await expect(uploadTemplateImage(ctx, 'a', { slug: 'x-y', kind: 'item', name: 'a.jpg', bytes: big }, assets)).rejects.toThrow(/rechazó el token/);
   });
 });
+
+describe('varias imágenes de una plantilla: un solo commit', () => {
+  it('prepara cada imagen sin commit y las publica juntas; rechaza rutas ajenas', async () => {
+    const { stageTemplateImage, commitTemplateImages } = await import('@/lib/services/system-template-service');
+    const ctx = await makeCtx();
+    const commits: string[][] = [];
+    let n = 0;
+    const assets = {
+      stageBlob: async () => String(++n).padStart(40, 'b'),
+      commitMany: async (files: { path: string }[]) => { commits.push(files.map((f) => f.path)); return { sha: 'c'.repeat(40), files: files.map((f) => ({ path: f.path, url: `https://cdn.jsdelivr.net/gh/yo/fotos@${'c'.repeat(40)}/${f.path}`, sha: 'c'.repeat(40), existed: false })) }; },
+    };
+    const img = async (c: string) => new Uint8Array(await sharp({ create: { width: 900, height: 600, channels: 3, background: c } }).jpeg().toBuffer());
+    const a = await stageTemplateImage({ slug: 'Luna', kind: 'cover', name: 'portada.jpg', bytes: await img('#ff0000') }, assets);
+    const b = await stageTemplateImage({ slug: 'Luna', kind: 'item', name: 'rover.jpg', bytes: await img('#00ff00') }, assets);
+    expect(commits).toHaveLength(0);
+    expect(a.path).toMatch(/^plantillas\/luna\/cover-portada-[0-9a-f]{12}\.webp$/);
+    const r = await commitTemplateImages(ctx, 'admin', [a, b], assets);
+    expect(commits).toHaveLength(1);
+    expect(commits[0]).toHaveLength(2);
+    expect(r.files.map((f) => f.kind)).toEqual(['cover', 'item']);
+    expect(r.files[0]!.url).toContain(`@${'c'.repeat(40)}/plantillas/luna/`);
+    await expect(commitTemplateImages(ctx, 'admin', [{ ...a, path: 'otra-carpeta/x.webp' }], assets)).rejects.toMatchObject({ code: 'invalid_input' });
+    await ctx.db.close();
+  });
+});
