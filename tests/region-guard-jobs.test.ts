@@ -1,4 +1,4 @@
-import sharp from 'sharp';
+import sharp, { type Sharp } from 'sharp';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { ImageGenerationProvider } from '@/lib/ai/types';
 import { createGame, getHostState, uploadInitialImageForAll } from '@/lib/services/game-service';
@@ -10,7 +10,7 @@ beforeAll(async () => { ctx = await makeCtx(); });
 afterAll(async () => { await ctx.db.close(); });
 
 const gray = () => sharp({ create: { width: 640, height: 360, channels: 3, background: '#808080' } });
-const withSquare = (img: sharp.Sharp, x: number, y: number, w: number, h: number, c: string) =>
+const withSquare = (img: Sharp, x: number, y: number, w: number, h: number, c: string) =>
   img.composite([{ input: { create: { width: w, height: h, channels: 3 as const, background: c } }, left: x, top: y }]).png().toBuffer().then((b) => new Uint8Array(b));
 
 describe('una edición que «pierde» lo anterior no puede borrarlo de la casa', () => {
