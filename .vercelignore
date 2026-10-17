@@ -9,3 +9,14 @@
 node_modules
 test-results
 playwright-report
+
+# Documentación, pruebas y herramientas: no hacen falta para ejecutar la app (menos peso al desplegar con la CLI)
+docs
+e2e
+tests
+scripts
+subasta-salvaje-assets
+playwright.config.ts
+vitest.config.ts
+*.md
+!README.md

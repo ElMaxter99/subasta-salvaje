@@ -4,7 +4,7 @@ import { PGlite } from '@electric-sql/pglite';
 import { toDomainError } from '@/lib/domain/errors';
 import { assertFnName, type Db } from './types';
 
-const MIGRATIONS_DIR = path.join(process.cwd(), 'supabase', 'migrations');
+const MIGRATIONS_DIR = path.join(/* turbopackIgnore: true */ process.cwd(), 'supabase', 'migrations');
 
 /** Migraciones portables (se omiten las específicas de Supabase: RLS/Storage). */
 export function portableMigrations(): { name: string; sql: string }[] {

@@ -8,7 +8,6 @@ import { createDemoProvider } from '@/lib/ai/demo';
 import { createOpenAiProvider } from '@/lib/ai/openai';
 import { createPollinationsProvider } from '@/lib/ai/pollinations';
 import type { ImageGenerationProvider } from '@/lib/ai/types';
-import { createPgliteDb } from '@/lib/db/pglite';
 import { createSupabaseDb } from '@/lib/db/supabase';
 import type { Db } from '@/lib/db/types';
 import { DomainError } from '@/lib/domain/errors';
@@ -29,7 +28,7 @@ export interface AppContext {
   stickers?: ImageGenerationProvider;
 }
 
-export const demoDataDir = () => process.env.DEMO_DATA_DIR || path.join(process.cwd(), '.demo-data');
+export const demoDataDir = () => process.env.DEMO_DATA_DIR || path.join(/* turbopackIgnore: true */ process.cwd(), '.demo-data');
 
 const g = globalThis as unknown as { __ssCtx?: Promise<AppContext> };
 
@@ -66,6 +65,8 @@ async function build(): Promise<AppContext> {
     const db = createSupabaseDb();
     return { mode, db, storage: createSupabaseStorage(), publisher: createSupabasePublisher(), provider: buildProvider(db), stickers: createDemoProvider() };
   }
+  // PGlite (Postgres WASM) solo se carga en modo demo: en producción no está ni desplegado (ahorra 27 MB por función).
+  const { createPgliteDb } = await import('@/lib/db/pglite');
   const db = await createPgliteDb(path.join(demoDataDir(), 'pgdata'));
   return { mode, db, storage: createLocalStorage(path.join(demoDataDir(), 'images')), publisher: noopPublisher, provider: buildProvider(db), stickers: createDemoProvider() };
 }

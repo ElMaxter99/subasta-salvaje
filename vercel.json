@@ -1,6 +1,7 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "nextjs",
+  "ignoreCommand": "git diff --quiet ${VERCEL_GIT_PREVIOUS_SHA:-HEAD^} HEAD -- src public package.json package-lock.json next.config.ts vercel.json tsconfig.json postcss.config.mjs",
   "crons": [
     {
       "path": "/api/jobs/process",

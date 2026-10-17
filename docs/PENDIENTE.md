@@ -68,6 +68,11 @@ Después de cada migración nueva, vuelve a probar a mano: crear partida, pujar,
 - [ ] Actívalo en Vercel → tu proyecto → *Analytics → Enable* (sin eso el script devuelve 404 y no se mide nada) y redespliega. Solo mide en producción. Apágalo cuando quieras con `NEXT_PUBLIC_DISABLE_ANALYTICS=true`.
 - [ ] **Revisión legal tuya:** los textos de `/privacidad` y `/cookies` dicen que es una analítica sin cookies, según la documentación de Vercel (no verificado aquí). Si tu criterio o el de tu asesor exige consentimiento previo para cualquier analítica, desactívala con la variable o añade el banner antes de activarla.
 
+## 5f. Almacenamiento de Vercel (despliegues)
+- [ ] Borra los despliegues antiguos que ya no uses (Vercel → proyecto → *Deployments*) y, en *Settings → Build & Deployment → Deployment Retention*, reduce cuánto se conservan. El espacio ya usado no baja solo.
+- [ ] Tras el siguiente despliegue, prueba a generar una imagen con IA (la única función que usa `sharp`) y abre `/admin/ia`. Si algo falla por falta de `sharp` o `@electric-sql/pglite`, avísame con el error.
+- [ ] Cada push a la rama de producción genera un despliegue: agrupa los cambios en menos commits/pushes y, si usas ramas de prueba, desactiva sus previews en *Settings → Git → Ignored Build Step* o en `vercel.json` (`git.deploymentEnabled`; no lo toqué porque no sé cuál es tu rama de producción).
+
 ## 6. Cron externo (opcional pero recomendado en producción)
 - [ ] El cron de `vercel.json` es diario (límite del plan *Hobby*). Para que los trabajos de imagen y el borrado se procesen con más frecuencia, programa en GitHub Actions o cron-job.org una llamada cada minuto a `/api/jobs/process` con la cabecera `Authorization: Bearer <CRON_SECRET>`.
 

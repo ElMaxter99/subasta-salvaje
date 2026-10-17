@@ -32,3 +32,19 @@ El orden está en `ARQUITECTURA.md`. Errores vistos: `42P07 relation "games" alr
 ## Diagnóstico
 `/api/health` (estado de BD/Storage/proveedor) · `/setup` (guía de configuración) · `/api/runtime` · panel → pestañas *Imágenes* (jobs, cuota) y *Resumen* (actividad `game_events`).
 Problemas típicos en el README (§Solución de problemas): «Invalid API key», 500 en `POST /api/games` por migración sin aplicar, «Cuota … alcanzada», cola de imágenes parada (sin cron).
+
+## Peso de los despliegues en Vercel (almacenamiento de funciones)
+Cada despliegue guarda las funciones con los archivos que Next «traza» para ellas, y el plan gratuito limita ese almacenamiento. Medido con `npm run build && npm run size:functions` (suma de lo trazado por ruta, sin comprimir):
+
+| | Antes | Ahora |
+|---|---|---|
+| Mediana por función | ≈ 97 MB | ≈ 2,4 MB |
+| Suma de las 61 funciones | ≈ 5 350 MB | ≈ 230 MB |
+
+Qué se hizo y por qué:
+- `process.cwd()` en `local.ts`, `context.ts` y `pglite.ts` hacía que Next incluyera **el proyecto entero** (assets, mascota, `docs`…) en cada función: se marcó con `/* turbopackIgnore: true */` y desapareció el aviso del build.
+- `outputFileTracingExcludes` (en `next.config.ts`) quita PGlite (27 MB, solo demo/tests; ahora se carga con `import()` solo en modo demo), las variantes musl/wasm de sharp, y carpetas que no son código (`docs`, `e2e`, `tests`, `scripts`, `subasta-salvaje-assets`, `supabase`).
+- `sharp` (≈ 20 MB) solo se añade a las 3 rutas que ejecutan trabajos de imágenes: `/api/jobs/process`, `/api/games/[code]/jobs` y `/api/games/[code]/actions`. Si algún día otra ruta usa sharp, añádela a `outputFileTracingIncludes`.
+- `ignoreCommand` en `vercel.json`: un commit que solo toca documentación, tests o migraciones **no genera despliegue** (compara con `VERCEL_GIT_PREVIOUS_SHA`; si no puede comparar, despliega).
+- `.vercelignore` excluye docs, e2e, tests y scripts de las subidas con la CLI.
+**Sin probar en Vercel real** (verificado en local: el build, el tamaño de las trazas y el arranque en modo Supabase sin PGlite ni sharp instalados). Tras desplegar, comprueba que generar una imagen de IA sigue funcionando.
