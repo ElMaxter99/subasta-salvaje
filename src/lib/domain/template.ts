@@ -40,6 +40,9 @@ export const templateSchema = z.object({
     .optional()
     .default({}),
   jugadores: z.array(text('cada jugador debe ser un texto').transform(clean).pipe(z.string().min(1, 'hay un nombre de jugador vacío').max(40, 'un nombre de jugador supera los 40 caracteres')), { error: '«jugadores» debe ser una lista de nombres' }).max(TEMPLATE_LIMITS.players, `como máximo ${TEMPLATE_LIMITS.players} jugadores`).optional().default([]),
+  /** Solo plantillas del sistema: URL https de la portada de la tarjeta y de la imagen inicial de la casa (se copia a la partida). */
+  portada: text('la portada debe ser una URL').trim().max(500, 'la URL de la portada supera los 500 caracteres').nullable().optional(),
+  casa_inicial: text('la casa inicial debe ser una URL').trim().max(500, 'la URL de la casa inicial supera los 500 caracteres').nullable().optional(),
   catalogo: z.array(itemSchema, { error: '«catalogo» debe ser una lista de elementos' }).max(TEMPLATE_LIMITS.items, `como máximo ${TEMPLATE_LIMITS.items} elementos`).optional(),
 });
 export type Template = z.infer<typeof templateSchema>;
@@ -58,6 +61,8 @@ export interface TemplateFormValues {
   playMode: 'host' | 'mobile';
   imageMode: 'stickers' | 'ai';
   players: string[];
+  /** Imagen inicial de la casa (URL https) que trae la plantilla: se copia a la partida al crearla. */
+  initialImageUrl: string | null;
   items: { name: string; description: string; emoji: string | null; photoUrl: string | null; /** Ruta de una foto DENTRO de un ZIP (p. ej. fotos/sofa.jpg) */ photoPath: string | null }[] | null;
 }
 
@@ -97,13 +102,16 @@ export function parseTemplate(raw: string, opts: { zip?: boolean } = {}): Templa
   }
   const t = r.data;
   const warnings: string[] = [];
-  const known = new Set(['formato', 'nombre', 'tematica', 'reglas', 'jugadores', 'catalogo']);
+  const known = new Set(['formato', 'nombre', 'tematica', 'reglas', 'jugadores', 'catalogo', 'portada', 'casa_inicial']);
   for (const k of Object.keys(data as object)) if (!known.has(k)) warnings.push(`Se ignora el campo desconocido «${k}».`);
   const names = t.jugadores.map((n) => n.toLowerCase());
   if (new Set(names).size !== names.length) return { ok: false, errors: ['jugadores: hay nombres repetidos.'] };
   const whole = t.reglas.pujas_enteras ?? true;
   if (whole && t.reglas.puja_minima !== undefined && Math.round(t.reglas.puja_minima * 100) % 100 !== 0) {
     return { ok: false, errors: ['reglas.puja_minima: con «pujas_enteras» activadas la puja mínima debe ser un euro entero (1, 2, 3…); pon «pujas_enteras»: false para admitir céntimos.'] };
+  }
+  for (const [campo, url] of [['portada', t.portada], ['casa_inicial', t.casa_inicial]] as const) {
+    if (url && !/^https:\/\//i.test(url)) return { ok: false, errors: [`${campo}: debe ser una URL https://.`] };
   }
   if (t.catalogo) {
     if (t.reglas.rondas_maximas && t.reglas.rondas_maximas > t.catalogo.length) warnings.push(`Las rondas máximas (${t.reglas.rondas_maximas}) superan los elementos del catálogo (${t.catalogo.length}).`);
@@ -139,6 +147,7 @@ export function templateToForm(t: Template): TemplateFormValues {
     playMode: t.reglas.modo_juego === 'movil' ? 'mobile' : 'host',
     imageMode: t.reglas.modo_imagenes === 'ia' ? 'ai' : 'stickers',
     players: t.jugadores,
+    initialImageUrl: t.casa_inicial && /^https:\/\//i.test(t.casa_inicial) ? t.casa_inicial : null,
     items: t.catalogo ? t.catalogo.map((i) => ({ name: i.titulo, description: i.descripcion, emoji: i.emoji ?? null, photoUrl: i.foto && /^https:\/\//i.test(i.foto) ? i.foto : null, photoPath: i.foto && isLocalPhotoPath(i.foto) ? i.foto.replace(/\\/g, '/') : null })) : null,
   };
 }

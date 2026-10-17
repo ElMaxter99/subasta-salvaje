@@ -13,6 +13,11 @@ const LABEL: Record<string, string> = {
   games_purged: 'Purga de partidas caducadas',
   invite_add: 'Invitación creada',
   invite_remove: 'Invitación eliminada',
+  system_template_created: 'Plantilla del sistema creada',
+  system_template_updated: 'Plantilla del sistema modificada',
+  system_template_published: 'Plantilla del sistema publicada',
+  system_template_unpublished: 'Plantilla del sistema retirada',
+  system_template_deleted: 'Plantilla del sistema borrada',
 };
 
 export default async function AuditPage() {

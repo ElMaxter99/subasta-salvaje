@@ -112,6 +112,24 @@ export function getImageProviderIds(env: NodeJS.ProcessEnv = process.env): Image
   return out;
 }
 
+/**
+ * Servidores (lista blanca) de los que se aceptan fotos para las plantillas del sistema: ASSET_CDN_HOSTS=cdn.midominio.com,otro.cdn.com
+ * Vacía = se acepta cualquier https (las defensas de safe-fetch siguen aplicando); el panel avisa de que conviene definirla.
+ */
+export function assetCdnHosts(env: NodeJS.ProcessEnv = process.env): string[] {
+  return (env.ASSET_CDN_HOSTS ?? '').split(',').map((h) => h.trim().toLowerCase()).filter(Boolean);
+}
+
+export function urlAllowedByCdn(url: string, hosts: string[] = assetCdnHosts()): boolean {
+  if (hosts.length === 0) return /^https:\/\//i.test(url);
+  try {
+    const u = new URL(url);
+    return u.protocol === 'https:' && hosts.includes(u.hostname.toLowerCase()) && !u.username && !u.password;
+  } catch {
+    return false;
+  }
+}
+
 export interface QuotaConfig {
   perGame: number;
   perDay: number;

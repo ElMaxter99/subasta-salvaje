@@ -67,6 +67,8 @@ export const ERROR_MESSAGES: Record<string, string> = {
   lease_lost: 'El trabajo fue reasignado a otro worker.',
   provider_not_configured: 'El proveedor de IA no está configurado.',
   template_not_found: 'No existe esa plantilla.',
+  slug_taken: 'Ya existe una plantilla del sistema con ese identificador.',
+  template_images_failed: 'Hay imágenes de la plantilla que no se pueden usar: revisa el informe de imágenes.',
   template_limit: 'Ya tienes 20 plantillas guardadas: borra alguna para guardar otra.',
   template_too_large: 'La plantilla es demasiado grande (máximo 256 KB).',
   migration_pending: 'Falta aplicar una migración de la base de datos (ejecuta «npx supabase db push»).',
