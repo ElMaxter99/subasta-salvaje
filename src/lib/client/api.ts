@@ -1,3 +1,4 @@
+import { shrinkForUpload } from './image-shrink';
 import type { GameAction } from '@/lib/domain/schemas';
 import type { HostSnapshot } from '@/lib/domain/types';
 
@@ -43,16 +44,16 @@ export async function uploadInitialImage(roomCode: string, playerId: string, fil
     form.set('scope_current', String(scope.current));
     form.set('scope_new', String(scope.new));
   }
-  form.set('file', file);
+  form.set('file', await shrinkForUpload(file));
   const res = await fetch(`/api/games/${roomCode}/initial-image`, { method: 'POST', body: form });
   return parse<ActionResponse>(res);
 }
 
-/** Sube la foto de un elemento del catálogo (PNG/JPEG/WebP, máx. 7 MB). La IA la mezclará con la casa de quien gane el elemento. */
+/** Sube la foto de un elemento del catálogo (PNG/JPEG/WebP; se reduce antes de subirla y el servidor la guarda en el formato interno). La IA la mezclará con la casa de quien gane el elemento. */
 export async function uploadItemImage(roomCode: string, itemId: string, file: File): Promise<ActionResponse> {
   const form = new FormData();
   form.set('item_id', itemId);
-  form.set('file', file);
+  form.set('file', await shrinkForUpload(file));
   return parse<ActionResponse>(await fetch(`/api/games/${roomCode}/item-image`, { method: 'POST', body: form }));
 }
 

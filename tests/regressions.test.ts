@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createGame, getHostState, uploadInitialImage } from '@/lib/services/game-service';
 import { processImageJobs } from '@/lib/services/jobs-service';
-import { act, key, makeCtx, newHost, playerByName, type TestCtx } from './helpers';
+import { act, key, makeCtx, newHost, playerByName, type TestCtx, REAL_PNG } from './helpers';
 
 let ctx: TestCtx;
 beforeAll(async () => { ctx = await makeCtx(); });
@@ -31,7 +31,7 @@ describe('regresiones de la revisión independiente', () => {
     const ana = playerByName(snap, 'Ana').id;
     await act(ctx, room, host, { type: 'image.request_initial', player_id: ana });
     const claimed = await ctx.db.rpc<{ job_id: string }>('ss_claim_image_job', { worker_id: 'w-lento', game_id: snap.game.id });
-    const png = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0]);
+    const png = REAL_PNG;
     const up = await uploadInitialImage(ctx, room, host, ana, png);
     const uploaded = playerByName(up.snapshot, 'Ana').current_image_version_id;
     await ctx.db.rpc('ss_complete_image_job', { job_id: claimed.job_id, worker_id: 'w-lento', storage_path: 'games/x/tarde.png', mime_type: 'image/png', bytes: 5, prompt: 'p', provider: 'demo' });
@@ -116,7 +116,7 @@ describe('imagen de partida común para todos', () => {
     const { uploadInitialImageForAll } = await import('@/lib/services/game-service');
     const host = newHost();
     const { room } = await lobby(host);
-    const png = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1, 2, 3, 4]);
+    const png = REAL_PNG;
     const r = await uploadInitialImageForAll(ctx, room, host, png);
     expect(r.snapshot.players.every((p) => p.current_image?.provider === 'upload')).toBe(true);
     await expect(uploadInitialImageForAll(ctx, room, host, new TextEncoder().encode('no es imagen'))).rejects.toMatchObject({ code: 'invalid_input' });
@@ -129,7 +129,7 @@ describe('imagen de partida común para todos', () => {
     expect((await processImageJobs(ctx, { gameId: s.game.id })).succeeded).toBe(1);
     const cur = playerByName(await getHostState(ctx, room, host), 'Beto').current_image!;
     const svg = new TextDecoder().decode(ctx.storage.files.get(cur.storage_path!)!.bytes);
-    expect(svg).toContain('data:image/png;base64');
+    expect(svg).toContain('data:image/webp;base64'); // la subida se guardó en el formato interno (WebP)
     expect(svg).toContain('data-demo-sticker');
   });
 });

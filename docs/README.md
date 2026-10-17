@@ -25,4 +25,5 @@ una regla, una migración o una decisión, actualiza el documento correspondient
 - [`SONIDO.md`](SONIDO.md): sonidos y música sintetizados, control del anfitrión y límites.
 - [`MARCA.md`](MARCA.md): identidad visual (logo, mascota oficial, tipografía, tokens, componentes y limitaciones).
 - [`OPEN-GRAPH.md`](OPEN-GRAPH.md): miniaturas al compartir enlaces (invitación con código, TV, resultados).
+- [`IMAGEN-INTERNA.md`](IMAGEN-INTERNA.md): formato y tamaño internos de todas las imágenes, y cómo preparar fotos para un CDN.
 - [`PLANTILLAS.md`](PLANTILLAS.md): plantillas de partida (JSON) con catálogo y fotos por URL, formato y seguridad.

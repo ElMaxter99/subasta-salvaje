@@ -1,3 +1,4 @@
+import { normalizeImage } from '@/lib/images/normalize';
 import sharp from 'sharp';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { ImageGenerationProvider } from '@/lib/ai/types';
@@ -56,13 +57,14 @@ describe('el anfitrión sube UNA foto base y cada jugador la evoluciona por sepa
     for (let i = 0; i < 3; i++) await processImageJobs(aiCtx, { gameId, maxJobs: 1 });
 
     expect(seen).toHaveLength(3);
-    const photoHex = hex(photo);
+    // Todo lo que se guarda pasa por el formato interno (WebP): se compara con la versión normalizada de la foto subida
+    const photoHex = hex((await normalizeImage(photo, 'scene')).bytes);
     // Primera edición de cada jugador: parte exactamente de la foto subida por el anfitrión
     expect(seen[0]!.base).toBe(photoHex);
     expect(seen[1]!.base).toBe(photoHex);
     // Segunda edición de Ana: parte de SU primera edición, no de la foto ni de la de Beto, y conoce lo comprado
     expect(seen[2]!.base).not.toBe(photoHex);
-    expect(seen[2]!.base).toBe(hex(await png(10, 20, 30)));
+    expect(seen[2]!.base).toBe(hex((await normalizeImage(await png(10, 20, 30), 'scene')).bytes));
     expect(seen[2]!.previous).toHaveLength(1);
 
     const after = await getHostState(ctx, room_code, host);

@@ -6,7 +6,7 @@ import { buildEditPrompt } from '@/lib/ai/prompts';
 import { ProviderError, type ImageGenerationProvider } from '@/lib/ai/types';
 import { getHostState, uploadInitialImage } from '@/lib/services/game-service';
 import { processImageJobs } from '@/lib/services/jobs-service';
-import { act, key, makeCtx, newHost, playerByName, type TestCtx } from './helpers';
+import { act, key, makeCtx, newHost, playerByName, type TestCtx, REAL_PNG, REAL_PNG_B64 } from './helpers';
 
 let ctx: TestCtx;
 beforeAll(async () => {
@@ -72,7 +72,7 @@ describe('imagen inicial', () => {
     const { createGame } = await import('@/lib/services/game-service');
     const { room_code } = await createGame(ctx, host, { name: 'X', players: [{ name: 'Ana' }, { name: 'Beto' }] });
     const snap = await getHostState(ctx, room_code, host);
-    const png = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0]);
+    const png = REAL_PNG;
     const ok = await uploadInitialImage(ctx, room_code, host, snap.players[0]!.id, png);
     expect(ok.snapshot.players[0]!.current_image?.provider).toBe('upload');
     await expect(uploadInitialImage(ctx, room_code, host, snap.players[0]!.id, new TextEncoder().encode('<svg onload=alert(1)>'))).rejects.toMatchObject({ code: 'invalid_input' });
@@ -316,7 +316,7 @@ describe('12. Versiones: guardar y restaurar', () => {
 });
 
 describe('proveedor OpenAI (HTTP simulado, sin red real)', () => {
-  const png = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1, 2, 3]).toString('base64');
+  const png = REAL_PNG_B64;
 
   it('genera con /images/generations y edita con /images/edits enviando la imagen base', async () => {
     const seen: { url: string; headers: Headers; body: unknown }[] = [];

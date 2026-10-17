@@ -15,6 +15,10 @@
 - `ss_audit` para registrar acciones del superadmin; `requireSuperadmin()` (con MFA opcional).
 - **Lo que falta para el punto 3:** hoy las subidas solo se *validan* (tipo real, ≤ 7 MB, `image-validation.ts`) pero **se guardan tal cual**; las salidas de IA (JPEG de Cloudflare, PNG de Pollinations) también. No hay reducción ni conversión.
 
+## 0. Decisiones tomadas (17-10-2026)
+Tamaños y formato de §3: **aprobados**. Imágenes de partidas en **Supabase** (lo más barato y sencillo; tienen 10 GB). Las **plantillas del sistema** guardan sus fotos en un **proveedor externo** (el propietario elige cuál; recomendado R2 o jsDelivr) y **se copian a la partida al crearla**. Las plantillas pueden llevar **catálogo, reglas e imagen inicial de la casa**. Los **borradores solo los ve el superadmin**. Se normalizan **solo las imágenes nuevas**.
+**Estado:** fase 1 (imagen interna) implementada — ver `IMAGEN-INTERNA.md`.
+
 ## 3. Imagen interna única (fase 1, la base de todo)
 **Especificación propuesta** (a confirmar):
 

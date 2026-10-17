@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createGame, getHostState, getPublicState } from '@/lib/services/game-service';
 import { galleryVote, hashToken, identifyPlayer, joinGame, leaveGame, playerBid } from '@/lib/services/play-service';
-import { act, key, makeCtx, newHost, playerByName, type TestCtx } from './helpers';
+import { act, key, makeCtx, newHost, playerByName, type TestCtx, REAL_PNG } from './helpers';
 
 let ctx: TestCtx;
 beforeAll(async () => { ctx = await makeCtx(); });
@@ -295,7 +295,7 @@ describe('imagen inicial para jugadores actuales y/o nuevos', () => {
     const { uploadInitialImageForAll } = await import('@/lib/services/game-service');
     const host = newHost();
     const { room } = await mobileGame(host);
-    const png = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 9, 9, 9, 9]);
+    const png = REAL_PNG;
     await uploadInitialImageForAll(ctx, room, host, png, { current: true, new: true });
     await joinGame(ctx, room, { name: 'Nuevo' });
     const s = await getHostState(ctx, room, host);

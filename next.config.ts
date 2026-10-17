@@ -23,7 +23,7 @@ const config: NextConfig = {
       'tests/**',
       'scripts/**',
       '.demo-data/**',
-      // sharp (≈20 MB con libvips) solo lo usan los trabajos de imágenes de IA: se añade de nuevo abajo a las 3 rutas que los ejecutan.
+      // sharp (≈20 MB con libvips) solo lo usan los trabajos de imágenes de IA y la normalización de subidas: se añade de nuevo abajo a las rutas que lo necesitan.
       'node_modules/sharp/**',
       'node_modules/@img/**',
     ],
@@ -32,6 +32,10 @@ const config: NextConfig = {
     '/api/jobs/process': SHARP_FILES,
     '/api/games/*/actions': SHARP_FILES,
     '/api/games/*/jobs': SHARP_FILES,
+    // Subidas e importaciones: normalizan la imagen al formato interno con sharp
+    '/api/games/*/initial-image': SHARP_FILES,
+    '/api/games/*/item-image': SHARP_FILES,
+    '/api/games/*/import-photos': SHARP_FILES,
   },
   async headers() {
     return [

@@ -1,4 +1,5 @@
 import { randomUUID } from 'node:crypto';
+import sharp from 'sharp';
 import { createDemoProvider } from '@/lib/ai/demo';
 import type { ImageGenerationProvider } from '@/lib/ai/types';
 import { createPgliteDb, type PgliteDb } from '@/lib/db/pglite';
@@ -61,3 +62,10 @@ export function playerByName(snap: HostSnapshot, name: string) {
   if (!p) throw new Error(`jugador ${name} no encontrado`);
   return p;
 }
+
+/** Imágenes REALES diminutas (el sistema las decodifica y normaliza: las cabeceras «de mentira» ya no valen). */
+export const REAL_PNG: Uint8Array = new Uint8Array(await sharp({ create: { width: 16, height: 16, channels: 3, background: '#3366cc' } }).png().toBuffer());
+export const REAL_PNG_2: Uint8Array = new Uint8Array(await sharp({ create: { width: 16, height: 16, channels: 3, background: '#cc6633' } }).png().toBuffer());
+export const REAL_JPEG: Uint8Array = new Uint8Array(await sharp({ create: { width: 16, height: 16, channels: 3, background: '#33cc66' } }).jpeg().toBuffer());
+export const REAL_JPEG_B64: string = Buffer.from(REAL_JPEG).toString('base64');
+export const REAL_PNG_B64: string = Buffer.from(REAL_PNG).toString('base64');

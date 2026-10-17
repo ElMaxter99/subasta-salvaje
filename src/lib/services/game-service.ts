@@ -6,6 +6,7 @@ import { getImageProviderId } from '@/lib/config/env';
 import { effectiveQuota, effectiveTtlHours, getSettings } from './settings';
 import type { GameSummary, HostSnapshot, ImageUsage, PublicSnapshot } from '@/lib/domain/types';
 import { validateImage } from '@/lib/ai/image-validation';
+import { normalizeImage, NormalizeError, type ImageKind } from '@/lib/images/normalize';
 import { extensionForMime } from '@/lib/storage/types';
 import type { AppContext } from './context';
 import { catalogSceneSvg } from '@/lib/ai/catalog-scenes';
@@ -175,6 +176,17 @@ export async function performAction(ctx: Ctx, roomCode: string, hostId: string, 
   return { result, snapshot };
 }
 
+/** Valida (tipo real y tamaño) y lleva la imagen al formato interno (WebP, tamaño y peso acotados, sin metadatos). */
+async function toInternalImage(bytes: Uint8Array, kind: ImageKind): Promise<{ bytes: Uint8Array; mime: string }> {
+  try {
+    validateImage(bytes, { maxBytes: UPLOAD_MAX_BYTES });
+    const n = await normalizeImage(bytes, kind);
+    return { bytes: n.bytes, mime: n.mime };
+  } catch (e) {
+    throw new DomainError('invalid_input', e instanceof NormalizeError || e instanceof Error ? e.message : 'Imagen no válida');
+  }
+}
+
 /** Sube una imagen inicial elegida por el anfitrión (valida tipo real y tamaño). */
 export async function uploadInitialImage(
   ctx: Ctx,
@@ -184,13 +196,9 @@ export async function uploadInitialImage(
   bytes: Uint8Array,
 ): Promise<ActionResult> {
   const code = room(roomCode);
-  const mime = (() => {
-    try {
-      return validateImage(bytes, { maxBytes: UPLOAD_MAX_BYTES });
-    } catch (e) {
-      throw new DomainError('invalid_input', (e as Error).message);
-    }
-  })();
+  const img = await toInternalImage(bytes, 'scene');
+  bytes = img.bytes;
+  const mime = img.mime;
   // Comprueba permisos ANTES de escribir en el almacenamiento.
   const before = await getHostState(ctx, code, hostId);
   const player = before.players.find((p) => p.id === playerId);
@@ -217,11 +225,9 @@ export async function uploadInitialImage(
 async function setItemImage(ctx: Ctx, code: string, hostId: string, itemId: string, bytes: Uint8Array | null): Promise<ActionResult> {
   let mime = '';
   if (bytes) {
-    try {
-      mime = validateImage(bytes, { maxBytes: UPLOAD_MAX_BYTES });
-    } catch (e) {
-      throw new DomainError('invalid_input', (e as Error).message);
-    }
+    const img = await toInternalImage(bytes, 'item');
+    bytes = img.bytes;
+    mime = img.mime;
   }
   const before = await getHostState(ctx, code, hostId); // comprueba permisos ANTES de escribir en el almacenamiento
   if (!before.items.some((i) => i.id === itemId)) throw new DomainError('item_not_found');
@@ -267,13 +273,8 @@ export async function setInitialFromCatalog(ctx: Ctx, code: string, hostId: stri
 }
 
 export async function uploadInitialImageForAll(ctx: Ctx, roomCode: string, hostId: string, bytes: Uint8Array, scope: InitialScope = { current: true, new: false }): Promise<ActionResult> {
-  let mime: string;
-  try {
-    mime = validateImage(bytes, { maxBytes: UPLOAD_MAX_BYTES });
-  } catch (e) {
-    throw new DomainError('invalid_input', (e as Error).message);
-  }
-  return storeAndSetForAll(ctx, room(roomCode), hostId, bytes, mime, 'upload', scope);
+  const img = await toInternalImage(bytes, 'scene');
+  return storeAndSetForAll(ctx, room(roomCode), hostId, img.bytes, img.mime, 'upload', scope);
 }
 
 /**

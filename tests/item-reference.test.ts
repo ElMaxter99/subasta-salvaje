@@ -1,3 +1,4 @@
+import { normalizeImage } from '@/lib/images/normalize';
 import sharp from 'sharp';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createCloudflareProvider } from '@/lib/ai/cloudflare';
@@ -142,7 +143,7 @@ describe('foto del elemento: subida del anfitrión y mezcla al ganar', () => {
     await processImageJobs({ ...ctx, provider: recording }, { gameId: s0.game.id, maxJobs: 1 });
     await processImageJobs({ ...ctx, provider: recording }, { gameId: s0.game.id, maxJobs: 1 });
     const withPhoto = seen.find((x) => x.name === conejo.name)!;
-    expect(withPhoto.item).toBe(hex(photo)); // la foto del conejo llega a la IA
+    expect(withPhoto.item).toBe(hex((await normalizeImage(photo, 'item')).bytes)); // la foto del conejo llega a la IA
     expect(seen.find((x) => x.name === vaca.name)!.item).toBeNull(); // sin foto: solo texto
   });
 

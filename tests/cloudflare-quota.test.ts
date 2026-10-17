@@ -6,10 +6,10 @@ import { ProviderError, type ImageGenerationProvider } from '@/lib/ai/types';
 import { cloudflareConfig, getImageProviderId, quotaConfig } from '@/lib/config/env';
 import { createGame, getHostState } from '@/lib/services/game-service';
 import { processImageJobs } from '@/lib/services/jobs-service';
-import { act, key, makeCtx, newHost, playerByName, type TestCtx } from './helpers';
+import { act, key, makeCtx, newHost, playerByName, type TestCtx, REAL_JPEG_B64, REAL_PNG } from './helpers';
 
-const jpeg = Buffer.from([0xff, 0xd8, 0xff, 0xe0, 1, 2, 3]).toString('base64');
-const PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1, 2, 3]);
+const jpeg = REAL_JPEG_B64;
+const PNG = REAL_PNG;
 const CF = { accountId: 'acc123', apiToken: 'tok-secret', model: '@cf/black-forest-labs/flux-1-schnell', steps: 4, editModel: null, width: 1024, height: 768 };
 
 describe('selección de proveedor de IA: desactivado por defecto, nunca cambia solo a uno de pago', () => {

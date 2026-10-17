@@ -64,7 +64,7 @@ function ItemForm({ initial, submitLabel, busyKey, ctx, onSubmit, onCancel }: { 
   );
 }
 
-const MAX_PHOTO_BYTES = 7 * 1024 * 1024;
+const MAX_PHOTO_BYTES = 25 * 1024 * 1024; // se reduce en el navegador antes de subirla
 const PHOTO_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
 
 export function CatalogPanel({ ctx }: { ctx: HostCtx }) {
@@ -146,7 +146,7 @@ export function CatalogPanel({ ctx }: { ctx: HostCtx }) {
                       e.target.value = '';
                       if (!file) return;
                       if (!PHOTO_TYPES.includes(file.type)) return toast.error('Formato no válido. Usa PNG, JPEG o WebP.');
-                      if (file.size > MAX_PHOTO_BYTES) return toast.error('La imagen supera los 7 MB.');
+                      if (file.size > MAX_PHOTO_BYTES) return toast.error('La imagen supera los 25 MB.');
                       void exec(`upitem-${it.id}`, () => uploadItemImage(roomCode, it.id, file), `Foto de «${it.name}» guardada`);
                     }}
                   />

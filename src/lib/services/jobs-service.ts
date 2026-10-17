@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
 import { validateProviderOutput } from '@/lib/ai/image-validation';
+import { normalizeImage } from '@/lib/images/normalize';
 import { ProviderError, type GeneratedImage, type ImageGenerationProvider } from '@/lib/ai/types';
 import { effectiveQuota, getSettings } from './settings';
 import { redactSecrets } from '@/lib/security/redact';
@@ -153,8 +154,18 @@ async function runJob(ctx: Ctx, provider: ImageGenerationProvider, job: ClaimedJ
       throw new ProviderError('El proveedor configurado sólo genera imágenes nuevas y no puede editar la casa existente. Se conserva la imagen anterior.', false);
     }
     reserved = await reserveQuota(ctx, provider, job);
-    const image = await generate(ctx, provider, job);
-    const mime = validateProviderOutput(image, provider.id === 'demo');
+    let image = await generate(ctx, provider, job);
+    let mime = validateProviderOutput(image, provider.id === 'demo');
+    if (mime !== 'image/svg+xml') {
+      // Formato interno único: la salida de cualquier proveedor se reduce y se pasa a WebP antes de guardarla.
+      try {
+        const n = await normalizeImage(image.bytes, job.kind === 'item' ? 'item' : 'scene');
+        image = { ...image, bytes: n.bytes, mime: n.mime };
+        mime = n.mime;
+      } catch (e) {
+        throw new ProviderError(`Imagen devuelta no válida: ${(e as Error).message}`, true);
+      }
+    }
     const folder = job.kind === 'item' ? `items/${job.item_id}` : job.kind === 'base' ? 'shared' : `players/${job.player_id}`;
     const storagePath = `games/${job.game_id}/${folder}/${randomUUID()}.${extensionForMime(mime)}`;
     await ctx.storage.put(storagePath, image.bytes, mime);

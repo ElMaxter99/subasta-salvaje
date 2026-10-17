@@ -10,7 +10,7 @@ import { INITIAL_CATALOG } from '@/lib/domain/initial-catalog';
 import { Card } from './bits';
 import type { HostCtx } from './host-context';
 
-const MAX_BYTES = 7 * 1024 * 1024;
+const MAX_BYTES = 25 * 1024 * 1024; // el original puede ser grande: se reduce en el navegador antes de subirlo
 const TYPES = ['image/png', 'image/jpeg', 'image/webp'];
 
 type Pending = { kind: 'file'; file: File } | { kind: 'catalog'; id: string } | { kind: 'generate' } | null;
@@ -39,7 +39,7 @@ export function InitialImageCard({ ctx }: { ctx: HostCtx }) {
     if (fileRef.current) fileRef.current.value = '';
     if (!file) return;
     if (!TYPES.includes(file.type)) return toast.error('Formato no válido. Usa PNG, JPEG o WebP.');
-    if (file.size > MAX_BYTES) return toast.error('La imagen supera los 7 MB.');
+    if (file.size > MAX_BYTES) return toast.error('La imagen supera los 25 MB.');
     setPending({ kind: 'file', file });
   }
 
