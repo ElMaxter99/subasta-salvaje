@@ -99,6 +99,10 @@ Todas las capturas son **reales**, generadas con la app en **modo demo (pegatina
 </tr>
 </table>
 
+### Repositorio hermano de imágenes: [subasta-salvaje-public](https://github.com/ElMaxter99/subasta-salvaje-public)
+
+Las fotos de las **partidas del sistema** (Halloween, casa encantada, batido…) no viven en este repositorio ni en Supabase, sino en [`ElMaxter99/subasta-salvaje-public`](https://github.com/ElMaxter99/subasta-salvaje-public), un repositorio público sin ánimo de lucro que la app llena con el arrastrar y soltar de `/admin/plantillas` y que se sirve por jsDelivr. Ese repositorio enlaza de vuelta a este proyecto. Configuración en `GITHUB_ASSETS_*` (ver variables de entorno) y [`docs/PLANTILLAS-SISTEMA.md`](docs/PLANTILLAS-SISTEMA.md).
+
 ### Recursos gráficos del proyecto
 
 | Recurso | Dónde | Notas |
