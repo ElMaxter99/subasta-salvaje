@@ -37,6 +37,21 @@ export function cooldownUntil(kind: ProviderErrorKind, now: number): number {
   return now + 30_000; // red, servidor, sin capacidad
 }
 
+/** ¿Edita de verdad? (si el proveedor no lo declara, se deduce de su capacidad de edición). */
+const isEditor = (p: ImageGenerationProvider): boolean => p.realEdit ?? p.capabilities.edit;
+
+export type ChainTask = 'generate' | 'edit';
+
+/**
+ * Asignación de tareas: para GENERAR desde cero (imagen inicial, producto) van primero los que solo generan y después los que también
+ * editan (así no se gasta la cuota de los buenos editando en lo que cualquiera hace); para EDITAR solo los que editan de verdad y, si
+ * ninguno puede, la composición con lo que generen los demás. Dentro de cada grupo se respeta el orden de IMAGE_PROVIDERS.
+ */
+export function orderFor(task: ChainTask, members: ImageGenerationProvider[]): ImageGenerationProvider[] {
+  const editors = members.filter(isEditor);
+  return task === 'edit' ? editors : [...members.filter((m) => !isEditor(m)), ...editors];
+}
+
 export function createProviderChain(members: ImageGenerationProvider[], opts: ChainOptions = {}): ImageGenerationProvider {
   if (members.length === 0) throw new Error('La cadena necesita al menos un proveedor');
   if (members.length === 1) return opts.gate ? withGate(members[0]!, opts.gate) : members[0]!; // un solo proveedor: sin enfriamiento ni composición extra
@@ -60,20 +75,19 @@ export function createProviderChain(members: ImageGenerationProvider[], opts: Ch
     return out;
   }
 
-  async function run<T extends GeneratedImage>(needsEdit: boolean, call: (p: ImageGenerationProvider) => Promise<T>): Promise<T> {
-    const notes: string[] = [`cadena: ${members.map((m) => m.id).join(' → ')}`];
-    for (const m of members) {
-      if (needsEdit && !m.capabilities.edit) notes.push(`${m.id} no edita imágenes`);
-      else if (!available(m)) notes.push(`${m.id} en enfriamiento (${coolWhy.get(m.id) ?? 'fallo reciente'})`);
-    }
-    const candidates = await permitted(members.filter((m) => (!needsEdit || m.capabilities.edit) && available(m)));
-    for (const m of members) if ((!needsEdit || m.capabilities.edit) && available(m) && !candidates.includes(m)) notes.push(`${m.id} apagado o con el tope diario alcanzado (ajustes del superadmin)`);
+  async function run<T extends GeneratedImage>(task: ChainTask, call: (p: ImageGenerationProvider) => Promise<T>): Promise<T> {
+    const order = orderFor(task, members);
+    const notes: string[] = [`${task === 'edit' ? 'edición real' : 'generar desde cero'}: ${order.map((m) => m.id).join(' → ') || '(ninguno)'}`];
+    for (const m of members) if (!order.includes(m)) notes.push(`${m.id} solo genera (no edita de verdad)`);
+    for (const m of order) if (!available(m)) notes.push(`${m.id} en enfriamiento (${coolWhy.get(m.id) ?? 'fallo reciente'})`);
+    const candidates = await permitted(order.filter((m) => available(m)));
+    for (const m of order) if (available(m) && !candidates.includes(m)) notes.push(`${m.id} apagado o con el tope diario alcanzado (ajustes del superadmin)`);
     let last: ProviderError | null = null;
     for (const p of candidates) {
       try {
         const out = await call(p);
-        const pos = members.findIndex((m) => m.id === p.id) + 1;
-        return { ...out, provider: p.id, notes: `${notes.join('; ')}; respondió ${p.id} (${pos}.º de ${members.length})` };
+        const pos = order.findIndex((m) => m.id === p.id) + 1;
+        return { ...out, provider: p.id, notes: `${notes.join('; ')}; respondió ${p.id} (${pos}.º de ${order.length})` };
       } catch (e) {
         if (!(e instanceof ProviderError) || !SKIPPABLE.has(e.kind)) throw e; // moderación, entrada inválida…: no se reparte
         last = e;
@@ -90,17 +104,18 @@ export function createProviderChain(members: ImageGenerationProvider[], opts: Ch
   const self: ImageGenerationProvider = {
     id: members[0]!.id,
     capabilities: { edit: true }, // siempre hay composición como último recurso
+    realEdit: members.some(isEditor),
     only: (id: string) => {
       const m = members.find((x) => x.id === id);
       return m ? (gate ? withGate(m, gate) : m) : null;
     },
-    generateInitialScene: (i: InitialSceneInput) => run(false, (p) => p.generateInitialScene(i)),
-    generateItemImage: (i: ItemImageInput) => run(false, (p) => p.generateItemImage(i)),
+    generateInitialScene: (i: InitialSceneInput) => run('generate', (p) => p.generateInitialScene(i)),
+    generateItemImage: (i: ItemImageInput) => run('generate', (p) => p.generateItemImage(i)),
     async editScene(input: EditSceneInput): Promise<GeneratedImage> {
-      const editors = (await permitted(members.filter((m) => m.capabilities.edit && available(m)))).length > 0;
+      const editors = (await permitted(orderFor('edit', members).filter((m) => available(m)))).length > 0;
       if (editors) {
         try {
-          return await run(true, (p) => p.editScene(input));
+          return await run('edit', (p) => p.editScene(input));
         } catch (e) {
           if (!(e instanceof ProviderError) || !SKIPPABLE.has(e.kind)) throw e;
           opts.onSkip?.({ provider: 'chain', kind: e.kind, message: 'edición real no disponible: se usa la composición' });

@@ -37,23 +37,23 @@ const g = globalThis as unknown as { __ssCtx?: Promise<AppContext> };
 function buildOne(id: ImageProviderId): ImageGenerationProvider {
   if (id === 'openai') {
     const e = process.env;
-    return createOpenAiProvider({
+    return { ...createOpenAiProvider({
       apiKey: openAiKey()!,
       baseUrl: e.OPENAI_BASE_URL || undefined,
       model: e.OPENAI_IMAGE_MODEL || undefined,
       size: e.OPENAI_IMAGE_SIZE || undefined,
       quality: e.OPENAI_IMAGE_QUALITY || undefined,
       inputFidelity: (e.OPENAI_IMAGE_INPUT_FIDELITY as 'high' | 'low' | 'off' | undefined) || undefined,
-    });
+    }), realEdit: true };
   }
-  if (id === 'pollinations') return withEditFallback(createPollinationsProvider(pollinationsConfig()!));
+  if (id === 'pollinations') { const inner = createPollinationsProvider(pollinationsConfig()!); return { ...withEditFallback(inner), realEdit: inner.capabilities.edit }; }
   // Solo generan: la «edición» de la casa pasa por composición (gratis, con el objeto generado por el siguiente proveedor disponible).
-  if (id === 'aihorde') return withEditFallback(createAiHordeProvider(aiHordeConfig()));
-  if (id === 'huggingface') return withEditFallback(createHuggingFaceProvider(huggingFaceConfig()!));
+  if (id === 'aihorde') return { ...withEditFallback(createAiHordeProvider(aiHordeConfig())), realEdit: false };
+  if (id === 'huggingface') return { ...withEditFallback(createHuggingFaceProvider(huggingFaceConfig()!)), realEdit: false };
   const cf = createCloudflareProvider(cloudflareConfig()!);
   // Edición real con foto de referencia (FLUX.2 klein). Si el modelo la rechaza, o no hay modelo de edición,
   // se usa la composición (gratis, misma cuota). IMAGE_EDIT_COMPOSE=false desactiva ese plan B.
-  return /^(0|false|no)$/i.test(process.env.IMAGE_EDIT_COMPOSE?.trim() ?? '') ? cf : withEditFallback(cf);
+  return { ...(/^(0|false|no)$/i.test(process.env.IMAGE_EDIT_COMPOSE?.trim() ?? '') ? cf : withEditFallback(cf)), realEdit: cf.capabilities.edit };
 }
 
 function buildProvider(db?: Db): ImageGenerationProvider | null {

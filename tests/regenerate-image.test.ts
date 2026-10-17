@@ -123,7 +123,7 @@ describe('regenerar forzando un proveedor (para comparar Cloudflare y Pollinatio
     const chainV = after.versions.filter((v) => v.player_id === pid);
     expect(chainV.at(-1)).toMatchObject({ provider: 'cloudflare', model: 'cloudflare-modelo' });
     expect(chainV.at(-1)!.provider_note).toBe('Regenerado forzando cloudflare (se ignora la cadena)');
-    expect(chainV[1]!.provider_note).toBe('cadena: pollinations → cloudflare; respondió pollinations (1.º de 2)'); // generación normal: queda explicado también
+    expect(chainV[1]!.provider_note).toBe('edición real: pollinations → cloudflare; respondió pollinations (1.º de 2)'); // generación normal: queda explicado también
 
     // Sin proveedor forzado vuelve a mandar la cadena
     await act(ctx, room_code, host, { type: 'image.regenerate', player_id: pid, version_id: chainV.at(-1)!.id });

@@ -72,6 +72,12 @@ export interface ItemImageInput {
 export interface ImageGenerationProvider {
   /** `demo` genera imágenes de muestra locales y NO usa IA. */
   readonly id: 'openai' | 'cloudflare' | 'pollinations' | 'aihorde' | 'huggingface' | 'demo';
+  /**
+   * ¿Edita DE VERDAD con imagen de referencia (modelo de edición)? `false` = solo genera desde cero y su «edición» es una composición
+   * (collage). La cadena lo usa para asignar tareas: generar desde cero primero con los que solo generan y reservar los que editan
+   * (y su cuota) para editar. Si falta se deduce de `capabilities.edit`.
+   */
+  readonly realEdit?: boolean;
   /** Qué sabe hacer el modelo configurado. `edit=false`: sólo genera imágenes nuevas (no puede editar la casa existente). */
   readonly capabilities: { edit: boolean };
   generateInitialScene(input: InitialSceneInput): Promise<GeneratedImage>;

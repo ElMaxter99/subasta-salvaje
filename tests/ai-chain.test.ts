@@ -134,21 +134,49 @@ describe('la cadena explica por qué no usó a un proveedor y permite forzar uno
     const chain = createProviderChain([a, b], { now: () => t });
     const first = await chain.editScene(await editInput());
     expect(first.provider).toBe('pollinations');
-    expect(first.notes).toMatch(/^cadena: cloudflare → pollinations; cloudflare falló \(quota: cloudflare falla: quota\); respondió pollinations \(2\.º de 2\)$/);
+    expect(first.notes).toMatch(/^edición real: cloudflare → pollinations; cloudflare falló \(quota: cloudflare falla: quota\); respondió pollinations \(2\.º de 2\)$/);
     const second = await chain.editScene(await editInput()); // cloudflare ya está en enfriamiento hasta las 00:00 UTC
     expect(second.notes).toMatch(/cloudflare en enfriamiento \(quota: /);
     // Sin fallos también se explica: quién va primero y quién respondió
     const ok = await createProviderChain([fake('cloudflare', { edit: true }), b]).editScene(await editInput());
-    expect(ok.notes).toBe('cadena: cloudflare → pollinations; respondió cloudflare (1.º de 2)');
+    expect(ok.notes).toBe('edición real: cloudflare → pollinations; respondió cloudflare (1.º de 2)');
     // Si fallan todos, el error explica la cadena
     const all = createProviderChain([fake('cloudflare', { edit: true, fail: 'quota' }), fake('pollinations', { edit: true, fail: 'rate_limit' })], { now: () => t });
-    await expect(all.generateItemImage({ theme: 't', itemName: 'x', itemDescription: '', itemEmoji: null })).rejects.toThrow(/\[cadena: cloudflare → pollinations; cloudflare falló \(quota.*pollinations falló \(rate_limit/);
+    await expect(all.generateItemImage({ theme: 't', itemName: 'x', itemDescription: '', itemEmoji: null })).rejects.toThrow(/\[generar desde cero: cloudflare → pollinations; cloudflare falló \(quota.*pollinations falló \(rate_limit/);
     // Apagado por el superadmin
     const gated = createProviderChain([fake('cloudflare', { edit: true }), b], { gate: async (id) => (id === 'cloudflare' ? { ok: false, reason: 'disabled' } : { ok: true }) });
     const g = await gated.editScene(await editInput());
     expect(g.provider).toBe('pollinations');
     expect(g.notes).toMatch(/cloudflare apagado o con el tope diario alcanzado/);
     expect(t).toBeGreaterThan(0);
+  });
+
+  it('asigna tareas: generar desde cero prueba antes a los que solo generan; editar solo usa a los que editan de verdad', async () => {
+    const gen = (id: string, fail?: ProviderErrorKind): Fake => ({ ...fake(id, { edit: true, fail: fail ?? null }), realEdit: false });
+    const ed = (id: string, fail?: ProviderErrorKind): Fake => ({ ...fake(id, { edit: true, fail: fail ?? null }), realEdit: true });
+    const item = { theme: 't', itemName: 'x', itemDescription: '', itemEmoji: null };
+    // La cadena está configurada con el editor primero, pero para generar manda quien solo genera
+    const horde = gen('aihorde'), cf = ed('cloudflare');
+    const r = await createProviderChain([cf, horde]).generateItemImage(item);
+    expect(r.provider).toBe('aihorde');
+    expect(cf.calls).toEqual([]);
+    expect(r.notes).toBe('generar desde cero: aihorde → cloudflare; respondió aihorde (1.º de 2)');
+    // Si el que solo genera falla (por cuota, etc.) se llega a los que sirven para todo
+    const horde2 = gen('aihorde', 'quota'), hf2 = gen('huggingface', 'rate_limit'), cf2 = ed('cloudflare');
+    const r2 = await createProviderChain([cf2, horde2, hf2]).generateInitialScene({ theme: 't', houseStyle: 'x' } as never);
+    expect(r2.provider).toBe('cloudflare');
+    expect(horde2.calls).toEqual(['initial']);
+    expect(hf2.calls).toEqual(['initial']);
+    // Editar: los que solo generan no se llaman nunca
+    const horde3 = gen('aihorde'), cf3 = ed('cloudflare', 'server'), pol3 = ed('pollinations');
+    const r3 = await createProviderChain([horde3, cf3, pol3]).editScene(await editInput());
+    expect(r3.provider).toBe('pollinations');
+    expect(horde3.calls).toEqual([]);
+    expect(r3.notes).toMatch(/^edición real: cloudflare → pollinations;/);
+    // `only` fuerza a un proveedor concreto aunque solo genere
+    const horde4 = gen('aihorde');
+    await createProviderChain([cf, horde4]).only!('aihorde')!.generateItemImage(item);
+    expect(horde4.calls).toEqual(['item']);
   });
 
   it('`only(id)` devuelve ese proveedor solo (respetando los ajustes) o null si no está en la cadena', async () => {

@@ -33,6 +33,17 @@ Fuentes: búsquedas web (sin acceso directo a las webs de los proveedores desde 
 5. **AI Horde:** comunitario y gratis, pero hace img2img clásico, no edición por instrucciones: no mejora esto.
 Conclusión: **probar primero FLUX.2 klein 9B / dev en Cloudflare** (misma integración, solo variable de entorno) y comparar con `npm run ai:lab`.
 
+## Tareas por proveedor
+
+La cadena asigna a cada proveedor las tareas para las que sirve (`realEdit` en `ImageGenerationProvider`):
+
+| Tarea | Orden de prueba |
+|---|---|
+| Generar desde cero (casa inicial, imagen de un elemento, «Generar imagen») | primero los que **solo generan** (AI Horde, Hugging Face), después los que sirven para todo (Cloudflare, Pollinations con modelo de edición) |
+| Editar la casa del jugador (compras, regenerar) | solo los que **editan de verdad**; si ninguno responde, composición (collage) |
+
+Dentro de cada grupo manda el orden de `IMAGE_PROVIDERS`. Si un proveedor «solo generar» falla por cuota o red, se pasa al siguiente hasta llegar a los editores. **Sin probar** contra los servicios reales.
+
 ## ¿Por qué se usó este proveedor? (historial → Detalles → «Por qué este proveedor»)
 Cada imagen generada con IA (también las normales, no solo las regeneradas) guarda una **nota del proveedor** (`image_versions.provider_note`):
 - **Cadena:** `cadena: cloudflare → pollinations; cloudflare falló (quota: …); respondió pollinations (2.º de 2)`. Explica el orden (el de `IMAGE_PROVIDERS`), qué proveedores se saltaron y por qué: **falló** (cuota, límite de ritmo, credenciales, red, servidor o sin capacidad), **en enfriamiento** (falló hace poco; hasta las 00:00 UTC si fue cuota diaria, 10 min si credenciales, 1 min si ritmo, 30 s en otros casos; el enfriamiento vive en la memoria de cada instancia), **apagado o con el tope diario alcanzado** (ajustes del superadmin) o **no edita** (sin modelo de edición). Si ningún proveedor puede editar de verdad se anota que se usó la composición (collage).
