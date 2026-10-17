@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers';
+import { after } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { z } from 'zod';
 import { assertSameOrigin, handle, json, limit } from '@/lib/api';
@@ -34,7 +35,11 @@ export const POST = handle(async (req: Request) => {
   if (!gate.allowed) throw new DomainError('signups_closed');
   const deps = getAuthMailDeps();
   const r = await signUpWithEmail(body.data.email, body.data.password, deps);
-  if (r.status === 'confirmation_sent') return json({ ok: true, session: false, confirmation: true });
+  if (r.status === 'confirmation_sent') {
+    const send = r.send;
+    if (send) after(() => send().catch(() => undefined));
+    return json({ ok: true, session: false, confirmation: true });
+  }
   // Sin correo propio la cuenta ya está confirmada: se inicia sesión en el servidor con las credenciales recién creadas.
   const cfg = getSupabaseConfig();
   const store = await cookies();

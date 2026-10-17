@@ -45,7 +45,7 @@ export function createPollinationsProvider(cfg: PollinationsProviderOptions): Im
     if (!res.ok) {
       const detail = redactSecrets(text.slice(0, 300));
       if (res.status === 401 || res.status === 403) throw new ProviderError(`Pollinations ${res.status}: ${detail}. Revisa POLLINATIONS_API_KEY.`, false, false, 'auth');
-      if (res.status === 402) throw new ProviderError(`Pollinations: presupuesto de la cuenta agotado (${detail}). Se conserva la imagen anterior; no se añade ningún pago.`, false, false, 'quota');
+      if (res.status === 402) throw new ProviderError(`Pollinations: sin presupuesto en la clave o en la cuenta (${detail}). Revisa el presupuesto de la clave en enter.pollinations.ai. Se conserva la imagen anterior; esta app no añade ningún pago.`, false, false, 'quota');
       if (res.status === 429) throw new ProviderError(`Pollinations 429: límite de ritmo (${detail})`, true, false, 'rate_limit');
       if (res.status >= 500 || res.status === 408) throw new ProviderError(`Pollinations ${res.status}: ${detail}`, true, true, 'server');
       throw new ProviderError(`Pollinations ${res.status}: ${detail}`, false, false, /safety|moderat|content/i.test(detail) ? 'moderation' : 'input');

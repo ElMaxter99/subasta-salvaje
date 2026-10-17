@@ -16,7 +16,11 @@ export interface AuthMailDeps {
   siteUrl: string;
 }
 
-export type SignUpResult = { status: 'created' } | { status: 'confirmation_sent' };
+/**
+ * `send` es el envío del correo, devuelto SIN ejecutar para que la ruta lo lance en segundo plano (`after()`): así la respuesta
+ * tarda lo mismo exista o no la cuenta y no sirve para averiguar qué correos están registrados.
+ */
+export type SignUpResult = { status: 'created' } | { status: 'confirmation_sent'; send?: () => Promise<void> };
 
 const trim = (u: string) => u.replace(/\/+$/, '');
 
@@ -44,18 +48,22 @@ export async function signUpWithEmail(email: string, password: string, deps: Aut
     return { status: 'confirmation_sent' };
   }
   const mail = renderMail('confirmation', { siteUrl: trim(deps.siteUrl), tokenHash: hash, email });
-  await sendOrFail(deps.mailer, email, mail);
-  return { status: 'confirmation_sent' };
+  const mailer = deps.mailer;
+  return { status: 'confirmation_sent', send: () => sendOrFail(mailer, email, mail) };
 }
 
-/** Correo de recuperación de contraseña. Devuelve false si no hay correo propio (el llamador usa el de Supabase). */
-export async function sendRecovery(email: string, deps: AuthMailDeps): Promise<boolean> {
-  if (!deps.mailer) return false;
+/**
+ * Correo de recuperación de contraseña. `handled=false` si no hay correo propio (el llamador usa el de Supabase).
+ * `send` (si lo hay) es el envío, para lanzarlo en segundo plano (misma duración de respuesta exista o no la cuenta).
+ */
+export async function prepareRecovery(email: string, deps: AuthMailDeps): Promise<{ handled: boolean; send?: () => Promise<void> }> {
+  if (!deps.mailer) return { handled: false };
+  const mailer = deps.mailer;
   const { data, error } = await deps.admin.generateLink({ type: 'recovery', email });
   const hash = data?.properties?.hashed_token;
-  if (error || !hash) return true; // cuenta inexistente: no se revela
-  await sendOrFail(deps.mailer, email, renderMail('recovery', { siteUrl: trim(deps.siteUrl), tokenHash: hash, email }));
-  return true;
+  if (error || !hash) return { handled: true }; // cuenta inexistente: no se revela
+  const mail = renderMail('recovery', { siteUrl: trim(deps.siteUrl), tokenHash: hash, email });
+  return { handled: true, send: () => sendOrFail(mailer, email, mail) };
 }
 
 /** Invitación del superadmin: avisa de que ya puede crear su cuenta. */

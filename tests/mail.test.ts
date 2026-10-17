@@ -3,7 +3,7 @@ import { createResendMailer, MailError } from '@/lib/mail/resend';
 import { getMailer, mailStatus } from '@/lib/mail';
 import { renderMail } from '@/lib/mail/templates';
 import { redactSecrets } from '@/lib/security/redact';
-import { sendAppInvite, sendRecovery, signUpWithEmail, type AuthAdmin } from '@/lib/services/auth-mail';
+import { prepareRecovery, sendAppInvite, signUpWithEmail, type AuthAdmin } from '@/lib/services/auth-mail';
 import type { Mailer } from '@/lib/mail/resend';
 
 const SITE = 'https://app.example.com/';
@@ -50,14 +50,18 @@ describe('Resend', () => {
 describe('auth-mail', () => {
   it('registro con correo propio: crea sin confirmar y envía el enlace', async () => {
     const f = fakes();
-    expect(await signUpWithEmail('u@x.com', 'password1', { admin: f.admin, mailer: f.mailer, siteUrl: SITE })).toEqual({ status: 'confirmation_sent' });
+    const r = await signUpWithEmail('u@x.com', 'password1', { admin: f.admin, mailer: f.mailer, siteUrl: SITE });
+    expect(r.status).toBe('confirmation_sent');
     expect(f.admin.createUser).not.toHaveBeenCalled();
+    expect(f.sent).toHaveLength(0); // el envío se difiere (segundo plano)
+    await (r as { send: () => Promise<void> }).send();
     expect(f.sent).toHaveLength(1);
     expect(f.sent[0]!.html).toContain('https://app.example.com/auth/callback?token_hash=HASH123&type=signup');
   });
   it('registro con correo propio no revela cuentas existentes', async () => {
     const f = fakes({ generateLink: async () => ({ data: null, error: { message: 'User already registered' } }) });
-    expect(await signUpWithEmail('u@x.com', 'password1', { admin: f.admin, mailer: f.mailer, siteUrl: SITE })).toEqual({ status: 'confirmation_sent' });
+    const r = await signUpWithEmail('u@x.com', 'password1', { admin: f.admin, mailer: f.mailer, siteUrl: SITE });
+    expect(r).toEqual({ status: 'confirmation_sent' }); // sin `send`: nada que enviar
     expect(f.sent).toHaveLength(0);
   });
   it('registro sin correo propio: createUser confirmado', async () => {
@@ -65,13 +69,17 @@ describe('auth-mail', () => {
     expect(await signUpWithEmail('u@x.com', 'password1', { admin: f.admin, mailer: null, siteUrl: SITE })).toEqual({ status: 'created' });
     expect(f.admin.createUser).toHaveBeenCalledWith({ email: 'u@x.com', password: 'password1', email_confirm: true });
   });
-  it('recuperación: sin mailer devuelve false; con mailer envía; cuenta inexistente no envía', async () => {
+  it('recuperación: sin mailer no la gestiona; con mailer difiere el envío; cuenta inexistente no envía', async () => {
     const f = fakes();
-    expect(await sendRecovery('u@x.com', { admin: f.admin, mailer: null, siteUrl: SITE })).toBe(false);
-    expect(await sendRecovery('u@x.com', { admin: f.admin, mailer: f.mailer, siteUrl: SITE })).toBe(true);
+    expect((await prepareRecovery('u@x.com', { admin: f.admin, mailer: null, siteUrl: SITE })).handled).toBe(false);
+    const r = await prepareRecovery('u@x.com', { admin: f.admin, mailer: f.mailer, siteUrl: SITE });
+    expect(r.handled).toBe(true);
+    expect(f.sent).toHaveLength(0);
+    await r.send!();
     expect(f.sent[0]!.html).toContain('type=recovery');
     const g = fakes({ generateLink: async () => ({ data: null, error: { message: 'not found' } }) });
-    expect(await sendRecovery('n@x.com', { admin: g.admin, mailer: g.mailer, siteUrl: SITE })).toBe(true);
+    const none = await prepareRecovery('n@x.com', { admin: g.admin, mailer: g.mailer, siteUrl: SITE });
+    expect(none).toEqual({ handled: true });
     expect(g.sent).toHaveLength(0);
   });
   it('invitación de la app', async () => {
