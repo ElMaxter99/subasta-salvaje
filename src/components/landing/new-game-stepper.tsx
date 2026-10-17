@@ -9,9 +9,9 @@ export interface StepInfo {
 
 /**
  * Indicador de pasos. En móvil: «Paso 2 de 5 · Partida» con barra de progreso. Desde `md`: círculos numerados con conectores y etiquetas.
- * Los pasos ya completados son botones para volver atrás; los futuros no se pueden saltar.
+ * Los pasos ya alcanzados (los de antes y los que ya se visitaron más adelante) son botones para moverse entre ellos; los que aún no se han alcanzado no se pueden saltar.
  */
-export function Stepper({ steps, current, onGo }: { steps: StepInfo[]; current: number; onGo: (i: number) => void }) {
+export function Stepper({ steps, current, reached = current, onGo }: { steps: StepInfo[]; current: number; /** Paso más lejano alcanzado: hasta él se puede saltar con un clic. */ reached?: number; onGo: (i: number) => void }) {
   return (
     <nav aria-label="Pasos para crear la partida" className="space-y-3">
       {/* Móvil */}
@@ -30,7 +30,7 @@ export function Stepper({ steps, current, onGo }: { steps: StepInfo[]; current: 
       {/* Escritorio / TV */}
       <ol className="hidden items-center md:flex">
         {steps.map((s, i) => {
-          const done = i < current;
+          const done = i <= Math.max(reached, current - 1) && i !== current;
           const active = i === current;
           return (
             <li key={s.id} className="flex flex-1 items-center last:flex-none" aria-current={active ? 'step' : undefined}>
@@ -39,7 +39,7 @@ export function Stepper({ steps, current, onGo }: { steps: StepInfo[]; current: 
                 disabled={!done}
                 onClick={() => onGo(i)}
                 className="group flex items-center gap-3 rounded-full py-1 pr-3 text-left focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold/60 disabled:cursor-default"
-                aria-label={`${s.label}${done ? ' (completado, volver)' : active ? ' (paso actual)' : ''}`}
+                aria-label={`${s.label}${done ? ' (completado, ir a este paso)' : active ? ' (paso actual)' : ''}`}
               >
                 <span
                   className={`flex size-10 shrink-0 items-center justify-center rounded-full border-2 font-display text-lg transition-colors 2xl:size-12 2xl:text-xl ${

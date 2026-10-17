@@ -198,3 +198,27 @@ test('editor de catálogo en el asistente: personalizar el de la temática, edit
   expect(s.items[3]).toMatchObject({ emoji: '🛸', description: 'Aparcado en el jardín' });
   expect(s.game.total_rounds).toBe(4); // las rondas siguen al tamaño del catálogo propio
 });
+
+test('el indicador de pasos deja moverse con un clic entre los pasos ya alcanzados (también hacia delante)', async ({ browser }) => {
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  expect((await ctx.request.post('/api/auth/demo')).ok()).toBeTruthy();
+  const page = await ctx.newPage();
+  await page.goto('/new-game');
+  await expect(page.getByTestId('wizard-step-1')).toBeVisible({ timeout: 60_000 });
+  await page.waitForTimeout(2500);
+  for (let i = 0; i < 3; i++) await page.getByRole('button', { name: /Siguiente/ }).click();
+  await expect(page.getByTestId('wizard-step-4')).toBeVisible();
+  // Volver al primero…
+  await page.getByRole('button', { name: /^Quién puja \(completado/ }).click();
+  await expect(page.getByTestId('wizard-step-1')).toBeVisible();
+  // …y saltar de nuevo al 4.º sin pasar por «Siguiente» (los pasos intermedios son válidos)
+  await page.getByRole('button', { name: /^Reglas \(completado/ }).click();
+  await expect(page.getByTestId('wizard-step-4')).toBeVisible();
+  // Un paso intermedio inválido bloquea el salto y lleva a él
+  await page.getByRole('button', { name: /^Partida \(completado/ }).click();
+  await page.getByLabel('Nombre de la partida').fill('');
+  await page.getByRole('button', { name: /^Reglas \(completado/ }).click();
+  await expect(page.getByTestId('wizard-step-3')).toBeVisible();
+  await expect(page.getByTestId('wizard-error')).toContainText('nombre');
+  await ctx.close();
+});

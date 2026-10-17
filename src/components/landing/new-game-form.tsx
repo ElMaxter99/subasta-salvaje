@@ -80,6 +80,8 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
   // Modo superadmin: el asistente arranca con la plantilla que se edita (o con el catálogo de la temática para poder personalizarlo).
   const [init] = useState(() => (systemEditor?.draft ? templateToForm(systemEditor.draft.data) : null));
   const [step, setStep] = useState(0);
+  /** Paso más lejano al que se ha llegado: el asistente deja saltar con un clic hasta él (validando los pasos intermedios). */
+  const [reached, setReached] = useState(0);
   const [dir, setDir] = useState<1 | -1>(1);
   const [name, setName] = useState(init?.name ?? (systemEditor ? 'Mi partida del sistema' : 'Noche de Subasta Salvaje'));
   const [themeChoice, setThemeChoice] = useState(init?.themeChoice ?? 'house');
@@ -209,7 +211,21 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
     setError(null);
     setDir(to > step ? 1 : -1);
     setTouched(true);
+    setReached((r) => Math.max(r, to));
     setStep(to);
+  }
+
+  /** Clic en el indicador de pasos: si se avanza, todos los pasos intermedios deben ser válidos; si no, se lleva al primero que falla. */
+  function jump(to: number) {
+    for (let i = step; i < to; i++) {
+      const err = validate(i);
+      if (err) {
+        go(i);
+        setError(err);
+        return;
+      }
+    }
+    go(to);
   }
 
   function next() {
@@ -388,7 +404,7 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
       </div>
 
       <h1 className="sr-only">{systemEditor ? 'Plantilla del sistema' : 'Nueva partida'}</h1>
-      <Stepper steps={steps} current={step} onGo={go} />
+      <Stepper steps={steps} current={step} reached={reached} onGo={jump} />
 
       <form onSubmit={submit} noValidate className="space-y-5">
         {/* Guía: la mascota cambia de gesto y comenta cada paso */}
