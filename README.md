@@ -13,7 +13,7 @@
 ![Supabase](https://img.shields.io/badge/Supabase-Postgres%20%C2%B7%20Realtime-3ecf8e?logo=supabase&logoColor=white)
 ![Modo demo](https://img.shields.io/badge/modo%20demo-sin%20credenciales-f5b82e)
 ![Node >= 20](https://img.shields.io/badge/node-%E2%89%A5%2020-339933?logo=nodedotjs&logoColor=white)
-![Licencia](https://img.shields.io/badge/licencia-sin%20declarar-lightgrey)
+[![Licencia MIT](https://img.shields.io/badge/licencia-MIT-green)](LICENSE)
 
 <img src="docs/img/tv-subasta-en-curso.webp" alt="La pantalla de TV durante una puja: elemento anunciado, puja actual, quién va ganando y las casas de los jugadores" width="860">
 
@@ -557,7 +557,7 @@ Modelo de amenazas completo: [`docs/SEGURIDAD.md`](docs/SEGURIDAD.md).
 
 ## Licencia y créditos
 
-**Sin licencia declarada por ahora**; consulta `/licencia` en la app para ver su estado actual. Mientras no haya licencia, no se conceden derechos de uso más allá de los que permita la ley. Los créditos de dependencias, tipografías, iconos y recursos están en `/creditos` ([`docs/LEGAL.md`](docs/LEGAL.md)).
+El **código** se distribuye bajo la licencia **MIT** ([`LICENSE`](LICENSE)): úsalo, cópialo, modifícalo y redistribúyelo gratis, también en proyectos comerciales, conservando el aviso de copyright. **La marca** (el nombre «Subasta Salvaje», el logotipo y la mascota) **no** está incluida en la licencia y sus derechos quedan reservados por el propietario: si publicas tu propia versión, cambia la marca. El estado también se ve en `/licencia` en la app. Los créditos de dependencias, tipografías, iconos y recursos están en `/creditos` ([`docs/LEGAL.md`](docs/LEGAL.md)).
 
 Construido con [Next.js](https://nextjs.org), [Supabase](https://supabase.com), [PGlite](https://pglite.dev), [Tailwind CSS](https://tailwindcss.com), [Zod](https://zod.dev), [sharp](https://sharp.pixelplumbing.com), [Vitest](https://vitest.dev) y [Playwright](https://playwright.dev), con la ayuda de Claude Code.
 
@@ -572,5 +572,5 @@ El README forma parte de la definición de «terminado»: un cambio no está aca
 - [ ] **Migraciones:** si añades una migración, actualiza el orden en `docs/ARQUITECTURA.md` y el recuento de la sección [Configurar Supabase](#configurar-supabase).
 - [ ] **Honestidad:** si pruebas algo contra un servicio real (OpenAI, Cloudflare, Supabase, Vercel), actualiza «Qué NO está verificado» y `docs/PENDIENTE.md`.
 - [ ] **Cifras:** el número de tests de [Pruebas y calidad](#pruebas-y-calidad) sale de `npm test`; actualízalo si cambia mucho.
-- [ ] **Licencia:** cuando el propietario declare una, actualiza esta sección y `/licencia`.
+- [ ] **Licencia:** si cambia, actualiza `LICENSE`, el campo `license` de `package.json`, esta sección, la insignia y `/licencia` (un test comprueba que coinciden).
 - [ ] **Verificación automática:** `npx vitest run tests/readme.test.ts` comprueba que los enlaces e imágenes locales existen, que los scripts npm mencionados existen y que las capturas pesan menos de 400 KB.

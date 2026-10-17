@@ -79,9 +79,18 @@ describe('páginas legales', () => {
     expect(ok).toMatchObject({ name: 'Ana', email: 'a@b.es', incomplete: false });
   });
 
-  it('no se inventa una licencia', () => {
-    expect(LICENSE_NAME).toBe('Sin licencia declarada');
-    expect((pkg as Record<string, unknown>).license).toBeUndefined();
+  it('la licencia declarada es MIT y coincide en LICENSE, package.json y la constante de la página', () => {
+    expect(LICENSE_NAME).toBe('MIT');
+    expect((pkg as Record<string, unknown>).license).toBe('MIT');
+    const text = readFileSync(path.join(process.cwd(), 'LICENSE'), 'utf8');
+    expect(text.startsWith('MIT License')).toBe(true);
+    expect(text).toMatch(/Copyright \(c\) 2026 \S+/);
+    expect(text).toMatch(/NO cubre la marca/); // la marca queda fuera de la licencia
+  });
+
+  it('todas las dependencias directas tienen licencia permisiva compatible con MIT', () => {
+    const credits = JSON.parse(readFileSync(path.join(process.cwd(), 'src/lib/legal/credits.generated.json'), 'utf8')) as Record<string, { license: string; name: string }[]>;
+    for (const list of Object.values(credits)) for (const c of Array.isArray(list) ? list : []) expect(c.license, c.name).toMatch(/^(MIT|ISC|Apache-2\.0|BSD-[23]-Clause|0BSD|BlueOak-1\.0\.0|MPL-2\.0|\(.*\))$/);
   });
 
   it('el footer no se monta en rutas /game ni en componentes de TV, anfitrión o jugador', () => {

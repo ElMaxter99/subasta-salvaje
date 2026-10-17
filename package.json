@@ -1,6 +1,7 @@
 {
   "name": "subasta-salvaje",
   "version": "1.0.0",
+  "license": "MIT",
   "private": true,
   "description": "Subasta Salvaje: subastas creativas multijugador con edici\u00f3n de im\u00e1genes por IA",
   "scripts": {

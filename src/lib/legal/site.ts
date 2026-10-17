@@ -9,15 +9,16 @@ export const APP_VERSION: string = pkg.version;
 export const REPO_URL = 'https://github.com/ElMaxter99/subasta-salvaje';
 
 /** Fecha (ISO) de la última revisión de los textos legales. Actualízala cuando cambies cualquiera de ellos. */
-export const LEGAL_UPDATED = '2026-10-16';
-export const LEGAL_UPDATED_LABEL = '16 de octubre de 2026';
+export const LEGAL_UPDATED = '2026-10-17';
+export const LEGAL_UPDATED_LABEL = '17 de octubre de 2026';
 
 /**
- * Licencia del código. DECISIÓN PENDIENTE DEL PROPIETARIO: el repositorio no tiene archivo LICENSE ni campo `license`.
- * Cámbiala (p. ej. «MIT», «Apache-2.0», «AGPL-3.0», «Propietaria») solo cuando el propietario lo decida.
+ * Licencia del CÓDIGO: MIT (archivo LICENSE y campo `license` de package.json; un test comprueba que coinciden).
+ * La marca (nombre, logotipo y mascota) NO está incluida en la licencia: ver `/licencia` y el aviso de LICENSE.
  */
-export const LICENSE_NAME = 'Sin licencia declarada';
-export const LICENSE_DECLARED = LICENSE_NAME !== 'Sin licencia declarada';
+export const LICENSE_NAME = pkg.license;
+export const LICENSE_DECLARED = Boolean(LICENSE_NAME);
+export const LICENSE_FILE_URL = `${REPO_URL}/blob/HEAD/LICENSE`;
 
 export interface LegalHolder {
   name?: string;

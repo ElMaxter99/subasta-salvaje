@@ -57,9 +57,12 @@ describe('README.md', () => {
     expect(readme).toContain('node scripts/docs/screenshots.mjs');
   });
 
-  it('declara que no hay licencia y no inventa una', () => {
-    expect(readme).toMatch(/Sin licencia declarada/i);
-    expect(readme).not.toMatch(/\b(MIT|Apache-2\.0|GPL)\b/);
+  it('declara la licencia real (MIT, la de LICENSE y package.json) y que la marca queda fuera', () => {
+    const lic = JSON.parse(readFileSync(path.join(ROOT, 'package.json'), 'utf8')).license;
+    expect(lic).toBe('MIT');
+    expect(readme).toMatch(/licencia \*\*MIT\*\*/i);
+    expect(readme).toMatch(/marca/i);
+    expect(readme).not.toMatch(/Sin licencia declarada/i);
   });
 });
 
