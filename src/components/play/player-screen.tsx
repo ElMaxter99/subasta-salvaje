@@ -16,6 +16,7 @@ import type { ConnectionState } from '@/lib/client/use-live-game';
 import { useAutoAwardCountdown } from '@/lib/client/auto-award';
 import type { Player, PublicSnapshot, RuntimeInfo } from '@/lib/domain/types';
 import { Ohros } from '@/components/ui/ohros';
+import { formatAmount, formatOhros } from '@/lib/domain/money';
 
 /** Paso 2: móvil identificado como un jugador. */
 export function PlayerScreen({
@@ -77,7 +78,7 @@ export function PlayerScreen({
             <p className="flex items-center gap-2 font-display text-4xl leading-none text-gold" data-testid="balance">
               {/* La moneda gira cuando cambia el saldo (key = importe) */}
               <ItemIcon key={me.balance_cents} variant="item-moneda" motion="spin" className="!h-[0.8em]" />
-              <Ohros cents={me.balance_cents} />
+              <span role="img" aria-label={formatOhros(me.balance_cents)}><span aria-hidden>{formatAmount(me.balance_cents)}</span></span>
             </p>
           </div>
           <PlayerMascot snapshot={snapshot} me={me} />
