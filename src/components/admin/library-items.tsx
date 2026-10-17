@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ImageOff, Images, Pencil, Plus, Sparkles, Trash2, Upload } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ImageOff, Images, ListPlus, Pencil, Plus, Sparkles, Trash2, Upload, X } from 'lucide-react';
 import { Section } from './widgets';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
@@ -13,10 +13,40 @@ import { EmojiInput } from '@/components/ui/emoji-input';
 import { LibraryImagePicker } from './library-image-picker';
 
 const input = 'w-full rounded-xl border border-white/15 bg-night-900 px-3 py-2';
-const PAGE = 100;
+const PAGE_SIZES = [12, 24, 48];
 const PHOTO_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
 
 interface Draft { name: string; description: string; emoji: string; collection: string }
+
+/** Ventana modal sencilla (<dialog>): se cierra con Escape, con la ✕ o pulsando fuera. */
+function Modal({ open, title, onClose, children }: { open: boolean; title: string; onClose: () => void; children: React.ReactNode }) {
+  const ref = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const d = ref.current;
+    if (!d) return;
+    if (open && !d.open) d.showModal();
+    if (!open && d.open) d.close();
+  }, [open]);
+  return (
+    <dialog
+      ref={ref}
+      aria-label={title}
+      onCancel={(e) => { e.preventDefault(); onClose(); }}
+      onClick={(e) => e.target === ref.current && onClose()}
+      className="m-auto max-h-[92dvh] w-[min(94vw,36rem)] flex-col overflow-hidden rounded-3xl border border-white/15 bg-night-800 p-0 text-left text-white shadow-2xl backdrop:bg-black/70 backdrop:backdrop-blur-sm open:flex"
+    >
+      {open ? (
+        <>
+          <div className="flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3 sm:px-6">
+            <h2 className="font-display text-xl sm:text-2xl">{title}</h2>
+            <Button type="button" variant="ghost" size="sm" onClick={onClose} aria-label="Cerrar"><X className="size-5" aria-hidden /></Button>
+          </div>
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 sm:px-6">{children}</div>
+        </>
+      ) : null}
+    </dialog>
+  );
+}
 
 function ItemForm({ initial, collections, submitLabel, busy, onSubmit, onCancel }: { initial?: LibraryItem; collections: string[]; submitLabel: string; busy: boolean; onSubmit: (d: Draft) => Promise<boolean>; onCancel?: () => void }) {
   const [d, setD] = useState<Draft>({ name: initial?.name ?? '', description: initial?.description ?? '', emoji: initial?.emoji ?? '', collection: initial?.collection ?? '' });
@@ -71,6 +101,9 @@ export function LibraryItems({ aiConfigured = false, uploadsEnabled = true }: { 
   const [text, setText] = useState('');
   const [targetCollection, setTargetCollection] = useState('');
   const [editing, setEditing] = useState<string | null>(null);
+  const [adding, setAdding] = useState<'one' | 'many' | null>(null);
+  const [page, setPage] = useState(0);
+  const [pageSize, setPageSize] = useState(PAGE_SIZES[0]!);
   const [removing, setRemoving] = useState<LibraryItem | null>(null);
   const [picking, setPicking] = useState<LibraryItem | null>(null);
   const [version, setVersion] = useState(0);
@@ -82,18 +115,19 @@ export function LibraryItems({ aiConfigured = false, uploadsEnabled = true }: { 
   useEffect(() => {
     let alive = true;
     const t = setTimeout(() => {
-      libraryApi.items({ q, collection: collection || null, limit: PAGE, offset: 0 })
-        .then((r) => { if (alive) { setItems(r.items); setTotal(r.total); setCollections(r.collections); } })
+      libraryApi.items({ q, collection: collection || null, limit: pageSize, offset: page * pageSize })
+        .then((r) => {
+          if (!alive) return;
+          // Si tras borrar la página actual queda fuera de rango, se vuelve a la última.
+          if (r.items.length === 0 && r.total > 0 && page > 0) { setPage(Math.ceil(r.total / pageSize) - 1); return; }
+          setItems(r.items); setTotal(r.total); setCollections(r.collections);
+        })
         .catch((e) => alive && setMsg({ ok: false, text: e instanceof Error ? e.message : 'Error' }));
     }, q ? 250 : 0);
     return () => { alive = false; clearTimeout(t); };
-  }, [q, collection, version]);
+  }, [q, collection, version, page, pageSize]);
 
-  async function more() {
-    const r = await libraryApi.items({ q, collection: collection || null, limit: PAGE, offset: items.length });
-    setItems((cur) => [...cur, ...r.items.filter((i) => !cur.some((c) => c.id === i.id))]);
-  }
-
+  const pages = Math.max(1, Math.ceil(total / pageSize));
   async function run(key: string, fn: () => Promise<string>): Promise<boolean> {
     setBusy(key);
     setMsg(null);
@@ -112,8 +146,8 @@ export function LibraryItems({ aiConfigured = false, uploadsEnabled = true }: { 
     });
   }
 
-  async function addFromText() {
-    await run('bulk', async () => {
+  async function addFromText(): Promise<boolean> {
+    return run('bulk', async () => {
       const imgs = (await libraryApi.images({ collection: targetCollection || null, limit: 200 })).images;
       const { items: parsed, ignored } = parseItemLines(text, imgs, targetCollection.trim());
       if (parsed.length === 0) throw new Error('Escribe al menos un producto: «Nombre; Descripción; Emoji», uno por línea.');
@@ -131,12 +165,26 @@ export function LibraryItems({ aiConfigured = false, uploadsEnabled = true }: { 
         📷 Cada producto puede tener su <b>foto</b> (la subes, la eliges de Imágenes o la genera la IA). Al importarlo en una partida, la IA mezcla esa foto con la casa del jugador. {aiConfigured ? 'La generación con IA usa la cadena de proveedores gratuitos y cuenta en el tope diario.' : 'La IA no está configurada en el servidor: «Generar imagen» está desactivada.'}
       </p>
 
-      <Section title={`Productos del catálogo general (${total})`} hint="Los productos se importan en cualquier partida o plantilla desde «Importar de la biblioteca» (las fotos se usan por enlace, sin copiarlas).">
-        <div className="mb-3 grid gap-2 md:grid-cols-2">
-          <input aria-label="Buscar productos" placeholder="Buscar por nombre, descripción o colección…" value={q} onChange={(e) => setQ(e.target.value)} className={input} />
-          <select aria-label="Filtrar productos por colección" value={collection} onChange={(e) => setCollection(e.target.value)} className={input}>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="font-display text-2xl">Productos del catálogo general <span className="text-white/60">({total})</span></h2>
+          <p className="text-sm text-white/65">Se importan en cualquier partida o plantilla desde «Importar de la biblioteca» (las fotos se usan por enlace, sin copiarlas).</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="primary" size="lg" onClick={() => setAdding('one')} data-testid="catalog-add-one"><Plus className="size-5" aria-hidden /> Añadir producto</Button>
+          <Button variant="secondary" size="lg" onClick={() => setAdding('many')} data-testid="catalog-add-many"><ListPlus className="size-5" aria-hidden /> Añadir varios (texto)</Button>
+        </div>
+      </div>
+
+      <Section title="Productos" hint="Busca por nombre, descripción o colección y filtra por colección.">
+        <div className="mb-3 grid gap-2 md:grid-cols-[1fr_1fr_auto]">
+          <input aria-label="Buscar productos" placeholder="Buscar por nombre, descripción o colección…" value={q} onChange={(e) => { setQ(e.target.value); setPage(0); }} className={input} />
+          <select aria-label="Filtrar productos por colección" value={collection} onChange={(e) => { setCollection(e.target.value); setPage(0); }} className={input}>
             <option value="">Todas las colecciones</option>
             {collections.map((c) => <option key={c.name} value={c.name}>{c.name || '(sin colección)'} · {c.count}</option>)}
+          </select>
+          <select aria-label="Productos por página" value={pageSize} onChange={(e) => { setPageSize(Number(e.target.value)); setPage(0); }} className={input}>
+            {PAGE_SIZES.map((n) => <option key={n} value={n}>{n} por página</option>)}
           </select>
         </div>
         {items.length === 0 ? <p className="text-sm text-white/70">Todavía no hay productos{q || collection ? ' con ese filtro' : ''}.</p> : (
@@ -199,25 +247,41 @@ export function LibraryItems({ aiConfigured = false, uploadsEnabled = true }: { 
             ))}
           </ul>
         )}
-        {items.length < total ? <div className="mt-3 text-center"><Button variant="secondary" onClick={() => void more()}>Cargar más ({items.length}/{total})</Button></div> : null}
+        {total > 0 ? (
+          <nav aria-label="Paginación del catálogo" className="mt-4 flex flex-wrap items-center justify-center gap-3" data-testid="catalog-pagination">
+            <Button variant="secondary" size="sm" disabled={page === 0} onClick={() => setPage(page - 1)} aria-label="Página anterior"><ChevronLeft className="size-4" aria-hidden /> Anterior</Button>
+            <span className="text-sm font-semibold" aria-live="polite">Página {Math.min(page + 1, pages)} de {pages} · {total} productos</span>
+            <Button variant="secondary" size="sm" disabled={page + 1 >= pages} onClick={() => setPage(page + 1)} aria-label="Página siguiente">Siguiente <ChevronRight className="size-4" aria-hidden /></Button>
+          </nav>
+        ) : null}
       </Section>
 
-      <Section title="Añadir producto" hint="Crea un producto nuevo; después le pones foto (subirla, elegirla de Imágenes o generarla con IA).">
-        <ItemForm collections={names} submitLabel="Añadir al catálogo" busy={busy === 'add'} onSubmit={(d) => run('add', async () => { const r = await libraryApi.addItems([toPayload(d)]); return r.added ? `«${d.name}» añadido` : `«${d.name}» ya existe en esa colección`; })} />
-      </Section>
+      <Modal open={adding === 'one'} title="Añadir producto" onClose={() => setAdding(null)}>
+        <p className="mb-3 text-sm text-white/70">Crea un producto nuevo; después le pones foto (subirla, elegirla de Imágenes o generarla con IA).</p>
+        <ItemForm
+          collections={names}
+          submitLabel="Añadir al catálogo"
+          busy={busy === 'add'}
+          onCancel={() => setAdding(null)}
+          onSubmit={async (d) => {
+            const ok = await run('add', async () => { const r = await libraryApi.addItems([toPayload(d)]); return r.added ? `«${d.name}» añadido` : `«${d.name}» ya existe en esa colección`; });
+            if (ok) { setAdding(null); setPage(0); }
+            return ok;
+          }}
+        />
+      </Modal>
 
-      <details className="rounded-3xl border border-white/10 bg-night-800/70 p-4">
-        <summary className="cursor-pointer font-bold">Añadir muchos productos a la vez (texto)</summary>
-        <div className="mt-3 space-y-2">
+      <Modal open={adding === 'many'} title="Añadir varios productos" onClose={() => setAdding(null)}>
+        <div className="space-y-2">
           <p className="text-sm text-white/70">Una línea por producto: <code>Nombre; Descripción; Emoji</code> (descripción y emoji opcionales). Si hay una imagen de la biblioteca con el mismo título (en esa colección), se enlaza sola.</p>
           <label className="block text-sm font-semibold">Colección
             <input list="library-item-collections" aria-label="Colección de los productos nuevos" value={targetCollection} onChange={(e) => setTargetCollection(e.target.value)} placeholder="Halloween, Chocolates…" className={`${input} mt-1`} />
             <datalist id="library-item-collections">{names.map((c) => <option key={c} value={c} />)}</datalist>
           </label>
           <textarea aria-label="Lista de productos" rows={6} value={text} onChange={(e) => setText(e.target.value)} placeholder={'Calabaza gigante; Con una vela dentro; 🎃\nFantasma\nMurciélago;;🦇'} className={`${input} font-mono text-sm`} />
-          <Button variant="primary" loading={busy === 'bulk'} disabled={!text.trim() || busy !== null} onClick={() => void addFromText()}>Añadir productos</Button>
+          <Button variant="primary" loading={busy === 'bulk'} disabled={!text.trim() || busy !== null} onClick={() => void addFromText().then((ok) => { if (ok) setAdding(null); })}>Añadir productos</Button>
         </div>
-      </details>
+      </Modal>
 
       <LibraryImagePicker
         open={picking !== null}

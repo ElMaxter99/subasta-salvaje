@@ -115,11 +115,26 @@ test('biblioteca: subida masiva (con repetida y archivo no válido), productos d
     await expect(page.getByTestId('library-item')).toHaveCount(3);
 
     // Añadir en bloque por texto: uno nuevo (con emoji) y uno repetido que se omite
-    await page.getByText('Añadir muchos productos a la vez').click();
+    await page.getByTestId('catalog-add-many').click();
     await page.getByLabel('Colección de los productos nuevos').fill(COLLECTION);
     await page.getByLabel('Lista de productos').fill(`Escoba voladora; Para llegar a tiempo; 🧹\nFantasma ${stamp}`);
     await page.getByRole('button', { name: 'Añadir productos' }).click();
     await expect(page.getByText(/productos añadidos/)).toBeVisible({ timeout: 30_000 });
+
+    // Botón superior «Añadir producto» → ventana con el formulario
+    await page.getByTestId('catalog-add-one').click();
+    await page.getByRole('dialog', { name: 'Añadir producto' }).getByLabel('Nombre del producto').fill(`Tetera ${stamp}`);
+    await page.getByRole('dialog', { name: 'Añadir producto' }).getByLabel('Colección del producto').fill(COLLECTION);
+    await page.getByRole('dialog', { name: 'Añadir producto' }).getByRole('button', { name: 'Añadir al catálogo' }).click();
+    await expect(page.getByText(`«Tetera ${stamp}» añadido`)).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId('catalog-pagination')).toContainText('Página 1 de');
+    await page.getByLabel('Productos por página').selectOption('12');
+    await page.getByLabel('Buscar productos').fill(`Tetera ${stamp}`);
+    await expect(page.getByTestId('library-item')).toHaveCount(1, { timeout: 30_000 });
+    await page.getByTestId('library-item').getByRole('button', { name: `Eliminar Tetera ${stamp}` }).click();
+    await page.getByRole('button', { name: 'Sí, eliminar' }).click();
+    await expect(page.getByText(`«Tetera ${stamp}» eliminado`)).toBeVisible({ timeout: 30_000 });
+    await page.getByLabel('Buscar productos').fill('');
 
     // Vista de catálogo: buscar, editar un producto, y la IA está desactivada si no hay proveedor
     await page.getByLabel('Buscar productos').fill('Escoba');

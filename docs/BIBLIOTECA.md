@@ -32,12 +32,12 @@ Dos vistas, con pestañas arriba: **Imágenes** (`/admin/biblioteca`, solo fotos
 - Borrar una imagen quita el registro; **el archivo sigue en el repositorio de fotos** (no se borra de GitHub) y los productos que la usaban quedan sin foto.
 
 ### Productos del catálogo
-Misma presentación que el catálogo del anfitrión: buscador (nombre, descripción, colección), filtro por colección y lista con foto. En cada producto:
+Misma presentación que el catálogo del anfitrión. Arriba del todo: el título con el total y los botones **«Añadir producto»** (abre una ventana con el formulario) y **«Añadir varios (texto)»**. Debajo: buscador (nombre, descripción, colección), filtro por colección y tamaño de página (12/24/48), la lista con foto **paginada** (Anterior / Siguiente, «Página x de y»). En cada producto:
 - **Generar imagen** con IA (cadena de proveedores gratuitos y ajustes del superadmin; cuenta en el tope diario global; migración `…6400`/`…6500`).
   La imagen generada es la única que se guarda: se publica en la biblioteca (un commit, colección del producto, etiqueta `ia`, crédito con proveedor y
   modelo) y se asocia al producto. Si la IA no está configurada o está apagada, el botón está desactivado: nunca se simula.
 - **Subir foto / Cambiar foto** (se reduce y publica en la biblioteca), **De la biblioteca** (modal con las imágenes) y **Quitar foto**.
-- **Editar** (nombre, emoji, colección, descripción) y **Eliminar**. **Añadir producto** crea uno nuevo; «Añadir muchos productos a la vez» acepta
+- **Editar** (nombre, emoji, colección, descripción) y **Eliminar**. El alta por texto acepta
   una línea por producto, `Nombre; Descripción; Emoji`, y enlaza sola la imagen con el mismo título. Los repetidos (misma colección y nombre) se omiten.
 
 ## Rellenar la biblioteca en bloque desde tu ordenador (fotos libres de Wikimedia Commons)
@@ -59,7 +59,7 @@ npm run library:fetch -- --index-only       # regenera manifest.csv, FUENTES.md 
   `manifest.csv` (colección, título, autor, licencia, fuente, tipo), `FUENTES.md`, `index.html` y `<Colección>/productos.txt`. La carpeta está en `.gitignore`.
 - **Subir a producción:** Superadmin → Biblioteca → Imágenes → **«Elegir una carpeta»** y elige `biblioteca-pendiente`. La pantalla lee el
   `manifest.csv`: cada foto entra con su colección, título, tipo y crédito (autor · licencia · origen), con miniaturas para quitar las que sobren y **un solo commit**.
-  Luego, en **Productos del catálogo → Añadir muchos productos a la vez**, pega el contenido de `<Colección>/productos.txt` con la colección elegida:
+  Luego, en **Productos del catálogo → Añadir varios (texto)**, pega el contenido de `<Colección>/productos.txt` con la colección elegida:
   los productos se crean con su foto. Los que no tengan foto, con «Generar imagen» (IA) o subiéndola.
 - **Sin probar contra Wikimedia real** (el entorno de desarrollo no tiene red hacia esos servidores): la búsqueda y el manifiesto se prueban con respuestas
   simuladas y la subida con un GitHub simulado. Si Commons devuelve pocos resultados para una búsqueda, cámbiala en el pack (cuarta columna).
