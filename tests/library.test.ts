@@ -15,6 +15,7 @@ const photo = (r: number, g: number, b: number) => sharp({ create: { width: 900,
 const blobs: string[] = [];
 const commits: { files: string[]; message: string }[] = [];
 const assets: GithubBatchAssets = {
+  async listFolder() { return []; },
   async stageBlob() { blobs.push('x'); return (blobs.length.toString(16).padStart(40, '0')); },
   async commitMany(files, message) {
     commits.push({ files: files.map((f) => f.path), message });

@@ -41,7 +41,9 @@ export interface GithubBatchAssets {
   /** Prepara el contenido (blob de Git, sin crear commit)… */
   stageBlob(bytes: Uint8Array): Promise<string>;
   /** …y publica TODOS los archivos preparados en UN solo commit (API de datos de Git). */
-  commitMany(files: { path: string; blobSha: string }[], message: string): Promise<{ sha: string; files: UploadedAsset[] }>;
+  commitMany(files: { path: string; blobSha: string }[], message: string, deletes?: string[]): Promise<{ sha: string; files: UploadedAsset[] }>;
+  /** Rutas completas de los archivos que hay ahora mismo en una carpeta de la rama (vacío si no existe). */
+  listFolder(dir: string): Promise<string[]>;
 }
 
 export function createGithubAssets(cfg: GithubAssetsConfig, fetchImpl: typeof fetch = fetch, apiBase = 'https://api.github.com'): GithubAssets & GithubBatchAssets {
@@ -90,14 +92,23 @@ export function createGithubAssets(cfg: GithubAssetsConfig, fetchImpl: typeof fe
       return j.sha;
     },
 
-    async commitMany(files, message) {
-      if (files.length === 0) throw new AssetUploadError('No hay archivos que publicar.', 'config');
+    async listFolder(dir) {
+      checkPath(dir.replace(/\/$/, ''));
+      const res = await call(gitUrl(`trees/${encodeURIComponent(cfg.branch)}:${dir.replace(/\/$/, '').split('/').map(encodeURIComponent).join('/')}`));
+      if (res.status === 404) return [];
+      const j = await json<{ tree?: { path: string; type: string }[] }>(res);
+      return (j.tree ?? []).filter((e) => e.type === 'blob').map((e) => `${dir.replace(/\/$/, '')}/${e.path}`);
+    },
+
+    async commitMany(files, message, deletes = []) {
+      if (files.length === 0 && deletes.length === 0) throw new AssetUploadError('No hay cambios que publicar.', 'config');
       for (const f of files) checkPath(f.path);
+      for (const d of deletes) checkPath(d);
       for (let attempt = 0; ; attempt++) {
         const head = await headSha();
         const parent = await json<{ tree?: { sha?: string } }>(await call(gitUrl(`commits/${head}`)));
         if (!parent.tree?.sha) throw new AssetUploadError('GitHub no devolvió el árbol de la rama.', 'other');
-        const tree = await json<{ sha?: string }>(await call(gitUrl('trees'), { method: 'POST', body: JSON.stringify({ base_tree: parent.tree.sha, tree: files.map((f) => ({ path: f.path, mode: '100644', type: 'blob', sha: f.blobSha })) }) }));
+        const tree = await json<{ sha?: string }>(await call(gitUrl('trees'), { method: 'POST', body: JSON.stringify({ base_tree: parent.tree.sha, tree: [...files.map((f) => ({ path: f.path, mode: '100644', type: 'blob', sha: f.blobSha })), ...deletes.map((d) => ({ path: d, mode: '100644', type: 'blob', sha: null }))] }) }));
         if (!tree.sha) throw new AssetUploadError('GitHub no devolvió el árbol nuevo.', 'other');
         const commit = await json<{ sha?: string }>(await call(gitUrl('commits'), { method: 'POST', body: JSON.stringify({ message, tree: tree.sha, parents: [head] }) }));
         if (!commit.sha) throw new AssetUploadError('GitHub no devolvió el commit creado.', 'other');

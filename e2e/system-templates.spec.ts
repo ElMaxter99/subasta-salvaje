@@ -80,33 +80,39 @@ test('partidas del sistema: el superadmin crea y publica una plantilla; el anfit
   await ctx.close();
 });
 
-test('arrastrar y soltar: las imágenes se suben al repositorio de fotos (simulado), no a Supabase, y rellenan el JSON', async ({ browser }) => {
+test('imágenes de una plantilla: se quedan en la vista y solo se suben, en UN commit, al guardar; al editar se borran las que sobran', async ({ browser }) => {
   // Servidor local que imita la API de GitHub (el servidor de la app apunta aquí por GITHUB_ASSETS_API_BASE)
-  const puts: string[] = [];
-  let blobs = 0, commits = 0;
+  let puts = 0, blobs = 0, commits = 0;
+  const repo = new Set<string>();
+  const trees: { path: string; sha: string | null }[][] = [];
   const hex40 = (n: number) => n.toString(16).padStart(40, '0');
   const stub = createServer((req, res) => {
     const chunks: Buffer[] = [];
     req.on('data', (c) => chunks.push(c));
     req.on('end', () => {
       res.setHeader('Content-Type', 'application/json');
-      const url = req.url ?? '';
+      const url = decodeURIComponent(req.url ?? '');
       if (req.method === 'POST' && url.endsWith('/git/blobs')) { blobs++; res.statusCode = 201; res.end(JSON.stringify({ sha: hex40(blobs) })); }
-      else if (req.method === 'POST' && url.endsWith('/git/trees')) { res.statusCode = 201; res.end(JSON.stringify({ sha: hex40(9000) })); }
+      else if (req.method === 'POST' && url.endsWith('/git/trees')) {
+        const body = JSON.parse(Buffer.concat(chunks).toString()) as { tree: { path: string; sha: string | null }[] };
+        trees.push(body.tree);
+        for (const e of body.tree) { if (e.sha === null) repo.delete(e.path); else repo.add(e.path); }
+        res.statusCode = 201; res.end(JSON.stringify({ sha: hex40(9000) }));
+      }
       else if (req.method === 'POST' && url.endsWith('/git/commits')) { commits++; res.statusCode = 201; res.end(JSON.stringify({ sha: 'stub0000sha' })); }
       else if (req.method === 'PATCH' && url.includes('/git/refs/heads/')) res.end('{}');
-      else if (req.method === 'PUT') {
-        puts.push(decodeURIComponent(url));
-        res.statusCode = 201;
-        res.end(JSON.stringify({ commit: { sha: 'stub0000sha' } }));
+      else if (req.method === 'PUT') { puts++; res.statusCode = 201; res.end(JSON.stringify({ commit: { sha: 'stub0000sha' } })); }
+      else if (req.method === 'GET' && url.includes('/git/trees/')) {
+        const dir = url.split(':').pop()!;
+        res.end(JSON.stringify({ tree: [...repo].filter((p) => p.startsWith(`${dir}/`)).map((p) => ({ path: p.slice(dir.length + 1), type: 'blob' })) }));
       } else if (url.includes('/git/commits/')) res.end(JSON.stringify({ tree: { sha: hex40(8000) } }));
       else if (url.includes('/commits/')) res.end(JSON.stringify({ sha: 'stub0000sha' }));
       else { res.statusCode = 404; res.end('{}'); }
     });
   });
   await new Promise<void>((r) => stub.listen(3299, '127.0.0.1', r));
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   try {
-    const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
     expect((await ctx.request.post('/api/auth/demo')).ok()).toBeTruthy();
     const page = await ctx.newPage();
     await page.goto('/admin/plantillas/editor');
@@ -115,52 +121,73 @@ test('arrastrar y soltar: las imágenes se suben al repositorio de fotos (simula
     await next(page, 5); // Quién puja → Casas → Partida → Reglas → Jugadores → Ficha
     await expect(page.getByTestId('template-dropzone')).toBeVisible();
 
-    const photo = (color: string) => sharp({ create: { width: 1600, height: 1200, channels: 3, background: color } }).jpeg().toBuffer();
+    const k = parseInt(stamp, 36) % 200; // contenido único por ejecución
+    const photo = (color: string) => sharp({ create: { width: 1600 + (k % 31), height: 1200, channels: 3, background: color } }).jpeg().toBuffer();
     const file = async (name: string, color: string) => ({ name, mimeType: 'image/jpeg', buffer: await photo(color) });
-
-    // Sin slug no se sube nada y se explica
-    await page.getByLabel('Identificador (carpeta de las fotos)').fill('');
-    await page.getByLabel('Elegir imágenes').setInputFiles(await file('portada.jpg', '#cc3333'));
-    await expect(page.getByText('Pon primero el identificador')).toBeVisible();
-
     await page.getByLabel('Título de la tarjeta').fill(`Subida ${stamp}`);
     await page.getByLabel('Identificador (carpeta de las fotos)').fill(`subida-${stamp}`);
-    await page.getByLabel('Elegir imágenes').setInputFiles([await file('portada.jpg', '#cc3333'), await file('Casa-Inicial.jpg', '#33cc33'), await file('piscina-infinita.jpg', '#3333cc'), await file('IMG_0001.jpg', '#cccc33')]);
+    await page.getByLabel('Elegir imágenes').setInputFiles([await file('portada.jpg', `rgb(${200 - k % 50}, 50, 50)`), await file('Casa-Inicial.jpg', `rgb(50, ${200 - k % 50}, 50)`), await file('piscina-infinita.jpg', `rgb(50, 50, ${200 - k % 50})`), await file('IMG_0001.jpg', `rgb(200, 200, ${k % 90})`)]);
     const list = page.getByTestId('upload-list');
-    await expect(list.getByText(/^Portada · \d+×\d+/)).toBeVisible({ timeout: 60_000 });
-    await expect(list.getByText(/^Casa inicial · \d+×\d+/)).toBeVisible();
-    await expect(list.getByText(/^Elemento · Piscina infinita · \d+×\d+/)).toBeVisible();
+    await expect(list.getByText(/^Portada · se subirá al guardar/)).toBeVisible();
+    await expect(list.getByText(/^Casa inicial · se subirá al guardar/)).toBeVisible();
+    await expect(list.getByText(/^Elemento · Piscina infinita · se subirá al guardar/)).toBeVisible();
     await expect(list.getByText('No encaja con la portada')).toBeVisible();
-
-    // La imagen suelta se asigna a mano a un elemento
     await list.getByLabel('Asignar IMG_0001.jpg').selectOption({ label: 'Elemento · Sofá gigante' });
-    await expect(list.getByText(/^Elemento · Sofá gigante · \d+×\d+/)).toBeVisible({ timeout: 60_000 });
-    // Tres fotos soltadas a la vez = UN commit (3 blobs); la asignada a mano después es una subida suelta (su propio commit)
-    expect(blobs).toBe(3);
-    expect(commits).toBe(1);
-    expect(puts).toHaveLength(1);
-    expect(puts.every((p) => p.endsWith('.webp'))).toBe(true);
+    await expect(list.getByText(/^Elemento · Sofá gigante · se subirá al guardar/)).toBeVisible();
+    // Vista previa local y NADA enviado todavía a GitHub
+    await expect(page.getByTestId('system-cover').locator('img')).toHaveAttribute('src', /^blob:/);
+    expect([blobs, commits, puts]).toEqual([0, 0, 0]);
 
-    // Resumen y guardado: la plantilla lleva los enlaces fijados al commit (nada se guardó en Supabase)
+    // Resumen y guardado: ahora se preparan 4 imágenes y entran en UN solo commit; los enlaces quedan fijados a él
     await next(page, 1);
     await expect(page.getByText(/Portada: ✔ · Casa inicial: ✔ · Fotos: 2\//)).toBeVisible();
     await page.getByRole('button', { name: 'Guardar borrador' }).click();
-    await page.waitForURL(/\/admin\/plantillas(\?|$)/, { timeout: 30_000 });
+    await page.waitForURL(/\/admin\/plantillas(\?|$)/, { timeout: 60_000 });
+    expect(blobs).toBe(4);
+    expect(commits).toBe(1);
+    expect(puts).toBe(0);
     const row = page.getByTestId('system-template-row').filter({ hasText: `subida-${stamp}` });
     await expect(row).toContainText('casa inicial');
     const id = (await (await ctx.request.get('/api/admin/system-templates')).json()).templates.find((t: { slug: string }) => t.slug === `subida-${stamp}`).id as string;
-    const full = (await (await ctx.request.post('/api/admin/system-templates', { data: { op: 'get', id }, headers: { origin: 'http://localhost:3210' } })).json()) as { data: { portada: string; casa_inicial: string; catalogo: { titulo: string; foto?: string }[] } };
-    expect(full.data.portada).toMatch(new RegExp(`^https://cdn\\.jsdelivr\\.net/gh/e2e/fotos@stub0000sha/plantillas/subida-${stamp}/cover-portada-[0-9a-f]{12}\\.webp$`));
-    expect(full.data.casa_inicial).toContain('/scene-casa-inicial-');
-    expect(full.data.catalogo.find((i) => i.titulo === 'Piscina infinita')!.foto).toContain('/item-piscina-infinita-');
-    expect(full.data.catalogo.find((i) => i.titulo === 'Sofá gigante')!.foto).toContain('/item-img-0001-');
+    const read = async () => ((await (await ctx.request.post('/api/admin/system-templates', { data: { op: 'get', id }, headers: { origin: 'http://localhost:3210' } })).json()) as { data: { portada: string; casa_inicial: string; catalogo: { titulo: string; foto?: string }[] } }).data;
+    const first = await read();
+    expect(first.portada).toMatch(new RegExp(`^https://cdn\\.jsdelivr\\.net/gh/e2e/fotos@stub0000sha/plantillas/subida-${stamp}/cover-portada-[0-9a-f]{12}\\.webp$`));
+    expect(first.casa_inicial).toContain('/scene-casa-inicial-');
+    expect(first.catalogo.find((i) => i.titulo === 'Piscina infinita')!.foto).toContain('/item-piscina-infinita-');
+    expect(first.catalogo.find((i) => i.titulo === 'Sofá gigante')!.foto).toContain('/item-sofa-gigante-');
+    const oldCover = first.portada.split('@stub0000sha/')[1]!;
+    const oldPool = first.catalogo.find((i) => i.titulo === 'Piscina infinita')!.foto!.split('@stub0000sha/')[1]!;
+    expect(repo.has(oldCover) && repo.has(oldPool)).toBe(true);
+
+    // Editar: cambiar la portada por otra y quitar la foto de la piscina; al guardar UN commit sube la nueva y borra las dos viejas
+    await page.goto(`/admin/plantillas/editor?id=${id}`);
+    await expect(page.getByTestId('wizard-step-1')).toBeVisible({ timeout: 60_000 });
+    await page.waitForTimeout(2500);
+    await next(page, 5);
+    await page.getByLabel('Subir portada').setInputFiles(await file('otra.jpg', `rgb(10, ${100 + k % 90}, 200)`));
+    await expect(page.getByTestId('system-cover').locator('img')).toHaveAttribute('src', /^blob:/);
+    await next(page, 1);
+    await page.getByRole('button', { name: 'Editar el catálogo' }).click();
+    await page.getByLabel('Quitar la foto del elemento 1', { exact: true }).click();
+    await page.getByRole('button', { name: 'Listo' }).click();
+    expect([blobs, commits]).toEqual([4, 1]); // seguimos sin subir nada
+    await page.getByRole('button', { name: 'Guardar borrador' }).click();
+    await page.waitForURL(/\/admin\/plantillas(\?|$)/, { timeout: 60_000 });
+    expect(blobs).toBe(5);
+    expect(commits).toBe(2);
+    expect(trees.at(-1)!.filter((e) => e.sha === null).map((e) => e.path).sort()).toEqual([oldCover, oldPool].sort());
+    expect(repo.has(oldCover) || repo.has(oldPool)).toBe(false);
+    const second = await read();
+    expect(second.portada).not.toBe(first.portada);
+    expect(second.catalogo.find((i) => i.titulo === 'Piscina infinita')!.foto).toBeFalsy();
+    expect(second.catalogo.find((i) => i.titulo === 'Sofá gigante')!.foto).toBe(first.catalogo.find((i) => i.titulo === 'Sofá gigante')!.foto); // lo que no cambia no se toca
 
     // Borrar el borrador de la prueba
     await row.getByRole('button', { name: 'Borrar' }).click();
     await page.getByRole('dialog').getByRole('button', { name: 'Borrar' }).click();
     await expect(row).toHaveCount(0);
-    await ctx.close();
   } finally {
+    await ctx.close();
     await new Promise<void>((r) => stub.close(() => r()));
   }
 });

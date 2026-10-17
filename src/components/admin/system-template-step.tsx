@@ -3,7 +3,6 @@
 import { useRef, useState } from 'react';
 import { ImageOff } from 'lucide-react';
 import { slugify, matchTarget, targetLabel, type AssetTarget } from '@/lib/domain/template-assets';
-import { commitTemplateImagesRequest, stageTemplateImageRequest, uploadTemplateImageRequest, type StagedTemplateImage } from '@/lib/client/template-upload';
 import { LibraryImagePicker } from './library-image-picker';
 
 /** Datos propios de una plantilla del sistema (lo que el asistente de «Nueva partida» no tiene). */
@@ -20,7 +19,7 @@ export interface SystemMeta {
 
 export const slugFromTitle = (title: string): string => slugify(title).slice(0, 60);
 
-interface UploadRow { id: number; name: string; state: 'sending' | 'ok' | 'error' | 'unassigned'; message?: string; file?: File }
+interface UploadRow { id: number; name: string; state: 'ok' | 'unassigned'; message?: string; file?: File }
 const field = 'w-full rounded-xl border border-white/15 bg-night-900 px-4 py-3 text-base focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold/50 2xl:px-5 2xl:py-4 2xl:text-xl';
 const label = 'mb-1 block text-sm font-bold 2xl:text-lg';
 
@@ -30,7 +29,7 @@ const label = 'mb-1 block text-sm font-bold 2xl:text-lg';
  * El asistente conserva el estado; este componente solo pinta y sube.
  */
 export function SystemTemplateStep({
-  meta, onMeta, initialImage, onInitialImage, itemTitles, onItemPhoto, uploadsEnabled,
+  meta, onMeta, initialImage, onInitialImage, itemTitles, onItemPhoto, addLocal, uploadsEnabled,
 }: {
   meta: SystemMeta;
   onMeta: (patch: Partial<SystemMeta>) => void;
@@ -38,6 +37,8 @@ export function SystemTemplateStep({
   onInitialImage: (url: string | null) => void;
   itemTitles: string[];
   onItemPhoto: (index: number, url: string) => void;
+  /** Guarda el archivo en memoria hasta «Guardar borrador» y devuelve su dirección local (blob:) para la vista previa. */
+  addLocal: (file: File) => string;
   uploadsEnabled: boolean;
 }) {
   const [uploads, setUploads] = useState<UploadRow[]>([]);
@@ -45,57 +46,27 @@ export function SystemTemplateStep({
   const seq = useRef(0);
   const [pick, setPick] = useState<'cover' | 'scene' | null>(null);
 
-  async function handleFiles(files: File[], forced?: AssetTarget) {
-    if (!meta.slug) return setUploads((u) => [...u, { id: ++seq.current, name: files[0]?.name ?? 'imagen', state: 'error', message: 'Pon primero el identificador: las imágenes se guardan en su carpeta.' }]);
-    const startId = seq.current + 1;
-    seq.current += files.length;
-    setUploads((u) => [...u, ...files.map((f, i): UploadRow => ({ id: startId + i, name: f.name, state: 'sending' }))]);
+  /** Las imágenes NO se suben aquí: se quedan en la vista (vista previa local) y se publican al guardar la plantilla. */
+  function handleFiles(files: File[], forced?: AssetTarget) {
     const tpl = { catalogo: itemTitles.map((titulo) => ({ titulo, descripcion: '' })) };
-    const apply = (target: AssetTarget, url: string) => {
+    const rows: UploadRow[] = [];
+    for (const file of files) {
+      const id = ++seq.current;
+      const target = forced ?? matchTarget(file.name, tpl);
+      if (!target) { rows.push({ id, name: file.name, state: 'unassigned', message: 'No encaja con la portada, la casa ni ningún elemento: asígnala abajo', file }); continue; }
+      const url = addLocal(file);
       if (target.kind === 'cover') onMeta({ portada: url });
       else if (target.kind === 'scene') onInitialImage(url);
       else onItemPhoto(target.index, url);
-    };
-    // Varias imágenes a la vez = UN solo commit (se preparan una a una y se publican juntas); una sola imagen = su propio commit.
-    const batch = files.length > 1 && !forced;
-    const staged: { id: number; target: AssetTarget; st: StagedTemplateImage }[] = [];
-    for (const [i, file] of files.entries()) {
-      const id = startId + i;
-      const set = (patch: Partial<UploadRow>) => setUploads((u) => u.map((r) => (r.id === id ? { ...r, ...patch } : r)));
-      const target = forced ?? matchTarget(file.name, tpl);
-      if (!target) { set({ state: 'unassigned', message: 'No encaja con la portada, la casa ni ningún elemento: asígnala abajo', file }); continue; }
-      try {
-        if (batch) {
-          staged.push({ id, target, st: await stageTemplateImageRequest(meta.slug, target.kind, file) });
-          set({ message: 'preparada para el commit…' });
-        } else {
-          const up = await uploadTemplateImageRequest(meta.slug, target.kind, file);
-          apply(target, up.url);
-          set({ state: 'ok', message: `${targetLabel(target, tpl)} · ${up.width}×${up.height} · ${Math.round(up.bytes / 1024)} KB` });
-        }
-      } catch (e) {
-        set({ state: 'error', message: e instanceof Error ? e.message : 'No se pudo subir' });
-      }
+      rows.push({ id, name: file.name, state: 'ok', message: `${targetLabel(target, tpl)} · se subirá al guardar` });
     }
-    if (batch && staged.length > 0) {
-      try {
-        const r = await commitTemplateImagesRequest(staged.map((x) => x.st));
-        const byPath = new Map(r.files.map((f) => [f.path, f]));
-        for (const x of staged) {
-          const f = byPath.get(x.st.path)!;
-          apply(x.target, f.url);
-          setUploads((u) => u.map((row) => (row.id === x.id ? { ...row, state: 'ok', message: `${targetLabel(x.target, tpl)} · ${x.st.width}×${x.st.height} · ${Math.round(x.st.bytes / 1024)} KB · commit ${r.commit.slice(0, 7)}` } : row)));
-        }
-      } catch (e) {
-        for (const x of staged) setUploads((u) => u.map((row) => (row.id === x.id ? { ...row, state: 'error', message: `No se pudo publicar el lote: ${e instanceof Error ? e.message : 'error'}` } : row)));
-      }
-    }
+    setUploads((u) => [...u, ...rows]);
   }
 
   const picker = (kind: 'cover' | 'scene', name: string) => (
     <label className={`inline-flex min-h-11 cursor-pointer items-center rounded-xl border border-white/15 px-3 text-sm font-semibold ${uploadsEnabled ? 'hover:bg-white/10' : 'cursor-not-allowed opacity-50'}`}>
       Subir imagen
-      <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" aria-label={name} disabled={!uploadsEnabled} onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) void handleFiles([f], { kind }); }} />
+      <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" aria-label={name} disabled={!uploadsEnabled} onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) handleFiles([f], { kind }); }} />
     </label>
   );
 
@@ -151,13 +122,13 @@ export function SystemTemplateStep({
           data-testid="template-dropzone"
           onDragOver={(e) => { e.preventDefault(); setOver(true); }}
           onDragLeave={() => setOver(false)}
-          onDrop={(e) => { e.preventDefault(); setOver(false); if (uploadsEnabled) void handleFiles(Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith('image/'))); }}
+          onDrop={(e) => { e.preventDefault(); setOver(false); if (uploadsEnabled) handleFiles(Array.from(e.dataTransfer.files).filter((f) => f.type.startsWith('image/'))); }}
           className={`rounded-2xl border-2 border-dashed p-4 text-center text-sm ${over ? 'border-gold bg-gold/10' : 'border-white/20 bg-night-900'}`}
         >
           {uploadsEnabled ? (
             <>
-              <p className="font-bold">Arrastra aquí varias imágenes (o <label className="cursor-pointer underline">elígelas<input type="file" multiple accept="image/png,image/jpeg,image/webp" className="sr-only" aria-label="Elegir imágenes" onChange={(e) => { void handleFiles(Array.from(e.target.files ?? [])); e.target.value = ''; }} /></label>)</p>
-              <p className="mt-1 text-xs text-white/60">Se reducen al formato interno y se suben a tu repositorio de fotos (no a Supabase). Se asignan por el nombre del archivo: <code>portada.jpg</code>, <code>casa.jpg</code> o el título del elemento (<code>sombrilla-roja.jpg</code>). Sube solo imágenes que puedas usar y anota su origen en FUENTES.md del repositorio de fotos.</p>
+              <p className="font-bold">Arrastra aquí varias imágenes (o <label className="cursor-pointer underline">elígelas<input type="file" multiple accept="image/png,image/jpeg,image/webp" className="sr-only" aria-label="Elegir imágenes" onChange={(e) => { handleFiles(Array.from(e.target.files ?? [])); e.target.value = ''; }} /></label>)</p>
+              <p className="mt-1 text-xs text-white/60">Las imágenes se quedan aquí hasta que pulses «Guardar borrador»: entonces se reducen al formato interno y se publican en un único commit de tu repositorio de fotos (no en Supabase), y las que ya no se usen se borran. Se asignan por el nombre del archivo: <code>portada.jpg</code>, <code>casa.jpg</code> o el título del elemento (<code>sombrilla-roja.jpg</code>). Sube solo imágenes que puedas usar y anota su origen en FUENTES.md del repositorio de fotos.</p>
             </>
           ) : (
             <p className="text-white/70" data-testid="uploads-disabled">La subida de imágenes no está configurada: define <code>GITHUB_ASSETS_REPO</code> y <code>GITHUB_ASSETS_TOKEN</code> en Vercel (ver docs/PLANTILLAS-SISTEMA.md). Mientras tanto puedes pegar enlaces https.</p>
@@ -165,19 +136,19 @@ export function SystemTemplateStep({
         </div>
 
         {uploads.length > 0 ? (
-          <ul className="space-y-1" aria-label="Imágenes subidas" data-testid="upload-list">
+          <ul className="space-y-1" aria-label="Imágenes pendientes de guardar" data-testid="upload-list">
             {uploads.map((u) => (
               <li key={u.id} className="flex flex-wrap items-center gap-2 rounded-xl bg-night-900 px-3 py-1.5 text-sm">
-                <span className={u.state === 'ok' ? 'text-teal' : u.state === 'error' ? 'text-rose' : 'text-gold-soft'} aria-hidden>{u.state === 'ok' ? '✔' : u.state === 'error' ? '✖' : u.state === 'sending' ? '…' : '?'}</span>
+                <span className={u.state === 'ok' ? 'text-teal' : 'text-gold-soft'} aria-hidden>{u.state === 'ok' ? '✔' : '?'}</span>
                 <span className="font-semibold">{u.name}</span>
-                <span className="text-xs text-white/65">{u.state === 'sending' ? 'subiendo…' : u.message}</span>
+                <span className="text-xs text-white/65">{u.message}</span>
                 {u.state === 'unassigned' && u.file ? (
                   <select aria-label={`Asignar ${u.name}`} defaultValue="" className="rounded-lg bg-night-950 px-2 py-1 text-xs" onChange={(e) => {
                     const v = e.target.value;
                     if (!v) return;
                     const file = u.file!;
                     setUploads((all) => all.filter((x) => x.id !== u.id));
-                    void handleFiles([file], v === 'cover' ? { kind: 'cover' } : v === 'scene' ? { kind: 'scene' } : { kind: 'item', index: Number(v.slice(5)) });
+                    handleFiles([file], v === 'cover' ? { kind: 'cover' } : v === 'scene' ? { kind: 'scene' } : { kind: 'item', index: Number(v.slice(5)) });
                   }}>
                     <option value="">Asignar a…</option>
                     <option value="cover">Portada</option>

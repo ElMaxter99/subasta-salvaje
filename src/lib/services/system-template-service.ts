@@ -4,7 +4,7 @@ import { validateImage } from '@/lib/ai/image-validation';
 import { assetCdnHosts, githubAssetsConfig, urlAllowedByCdn } from '@/lib/config/env';
 import { IMAGE_SPECS, normalizeImage, NormalizeError, type ImageKind } from '@/lib/images/normalize';
 import { slugify } from '@/lib/domain/template-assets';
-import { AssetUploadError, createGithubAssets, type GithubAssets, type GithubBatchAssets, type UploadedAsset } from '@/lib/storage/github-assets';
+import { AssetUploadError, createGithubAssets, type GithubBatchAssets, type UploadedAsset } from '@/lib/storage/github-assets';
 import { DomainError } from '@/lib/domain/errors';
 import { parseTemplate, TEMPLATE_LIMITS, type Template } from '@/lib/domain/template';
 import { fetchImageBytes, SafeFetchError, type FetchImageOptions } from '@/lib/security/safe-fetch';
@@ -199,29 +199,6 @@ const uploadError = (e: unknown): never => {
   throw e;
 };
 
-/**
- * Normaliza la imagen (formato interno), la sube al repositorio de fotos y devuelve el enlace público fijado al commit.
- * El nombre lleva el hash del contenido: la misma foto no se duplica y un enlace nunca cambia de contenido.
- * Para varias imágenes a la vez usa stageTemplateImage + commitTemplateImages (un solo commit).
- */
-export async function uploadTemplateImage(
-  ctx: Ctx,
-  actor: string,
-  input: { slug: string; kind: ImageKind; name: string; bytes: Uint8Array },
-  assets: GithubAssets | null = (() => { const c = githubAssetsConfig(); return c ? createGithubAssets(c, fetch, c.apiBase) : null; })(),
-): Promise<TemplateImageUpload> {
-  if (!assets) throw new DomainError('invalid_input', 'La subida de imágenes no está configurada (GITHUB_ASSETS_REPO y GITHUB_ASSETS_TOKEN).');
-  const { slug, label, n, path } = await prepareTemplateImage(input);
-  let up: UploadedAsset;
-  try {
-    up = await assets.put(path, n.bytes, `Foto de plantilla: ${slug}/${label}`);
-  } catch (e) {
-    return uploadError(e);
-  }
-  await ctx.db.rpc('ss_admin_audit_event', { actor, action: 'system_template_image_uploaded', target_type: 'system_template', target_id: slug, payload: { path, bytes: n.bytes.length, existed: up.existed } }).catch(() => undefined);
-  return { ...up, kind: input.kind, width: n.width, height: n.height, bytes: n.bytes.length };
-}
-
 export interface StagedTemplateImage { path: string; blobSha: string; kind: ImageKind; width: number; height: number; bytes: number }
 
 /** Subida de varias imágenes, fase 1: normaliza una imagen y la deja preparada en GitHub (sin crear commit). */
@@ -249,23 +226,64 @@ const stagedTemplateSchema = z.object({
   bytes: z.number().int().positive(),
 });
 
-/** Fase 2: publica TODAS las imágenes preparadas en UN solo commit y devuelve sus enlaces fijados a él. */
+/** Ruta dentro del repositorio de fotos a partir de un enlace de jsDelivr de ESE repositorio (o null si el enlace es de otro sitio). */
+export function repoPathFromUrl(url: string | null | undefined): string | null {
+  const cfg = githubAssetsConfig();
+  if (!url || !cfg) return null;
+  const m = new RegExp(`^https://cdn\\.jsdelivr\\.net/gh/${cfg.repo.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}@[^/]+/(.+)$`).exec(url);
+  return m ? m[1]! : null;
+}
+
+const commitSchema = z.object({
+  slug: z.string().trim().max(60).default(''),
+  templateId: z.string().uuid().nullish(),
+  staged: z.array(stagedTemplateSchema).max(200).default([]),
+  /** Enlaces https que el formulario conserva (portada, casa inicial y fotos) además de las preparadas. */
+  keepUrls: z.array(z.string().max(500)).max(400).default([]),
+});
+
+/**
+ * Se llama UNA vez al guardar la plantilla (nada se sube mientras se edita): publica en UN solo commit las imágenes nuevas,
+ * y borra del repositorio las de esta plantilla (`plantillas/<slug>/`) que ya no usa. Los nombres llevan el hash del contenido,
+ * así que «sobrescribir» = añadir la nueva y quitar la antigua. Nunca toca la biblioteca ni carpetas de otras plantillas.
+ * Sin cambios que publicar devuelve `commit: null`.
+ */
 export async function commitTemplateImages(
   ctx: Ctx,
   actor: string,
-  rawStaged: unknown,
+  raw: unknown,
   assets: GithubBatchAssets | null = defaultBatchAssets(),
-): Promise<{ commit: string; files: (UploadedAsset & { kind: ImageKind; width: number; height: number; bytes: number })[] }> {
-  if (!assets) throw new DomainError('invalid_input', 'La subida de imágenes no está configurada (GITHUB_ASSETS_REPO y GITHUB_ASSETS_TOKEN).');
-  const parsed = z.array(stagedTemplateSchema).min(1).max(200).safeParse(rawStaged);
+): Promise<{ commit: string | null; files: (UploadedAsset & { kind: ImageKind; width: number; height: number; bytes: number })[]; deleted: string[] }> {
+  const parsed = commitSchema.safeParse(raw);
   if (!parsed.success) throw new DomainError('invalid_input', 'La lista de imágenes preparadas no es válida.');
-  const unique = [...new Map(parsed.data.map((s) => [s.path, s])).values()];
+  const { staged, keepUrls, templateId } = parsed.data;
+  const unique = [...new Map(staged.map((s) => [s.path, s])).values()];
+  // Candidatas a borrar: imágenes de la carpeta de la plantilla guardada que el nuevo contenido ya no referencia.
+  let toDelete: string[] = [];
+  let folder = '';
+  if (templateId) {
+    const current = await getSystemTemplate(ctx, templateId, { admin: true }).catch(() => null);
+    if (current) {
+      folder = `plantillas/${current.slug}`;
+      const t = current.data as { portada?: string | null; casa_inicial?: string | null; catalogo?: { foto?: string | null }[] };
+      const old = [t.portada, t.casa_inicial, ...(t.catalogo ?? []).map((i) => i.foto)].map(repoPathFromUrl).filter((p): p is string => Boolean(p && p.startsWith(`${folder}/`)));
+      const keep = new Set([...keepUrls.map(repoPathFromUrl), ...unique.map((u) => u.path)]);
+      toDelete = [...new Set(old)].filter((p) => !keep.has(p));
+    }
+  }
+  if (unique.length === 0 && toDelete.length === 0) return { commit: null, files: [], deleted: [] };
+  if (!assets) throw new DomainError('invalid_input', 'La subida de imágenes no está configurada (GITHUB_ASSETS_REPO y GITHUB_ASSETS_TOKEN).');
   let commit;
   try {
-    commit = await assets.commitMany(unique.map((s) => ({ path: s.path, blobSha: s.blobSha })), `Fotos de plantilla: ${unique.length} ${unique.length === 1 ? 'imagen' : 'imágenes'}`);
+    if (toDelete.length > 0) {
+      const present = new Set(await assets.listFolder(folder));
+      toDelete = toDelete.filter((p) => present.has(p)); // solo lo que existe de verdad en la rama
+    }
+    if (unique.length === 0 && toDelete.length === 0) return { commit: null, files: [], deleted: [] };
+    commit = await assets.commitMany(unique.map((s) => ({ path: s.path, blobSha: s.blobSha })), `Fotos de plantilla: +${unique.length} −${toDelete.length}`, toDelete);
   } catch (e) {
     return uploadError(e);
   }
-  await ctx.db.rpc('ss_admin_audit_event', { actor, action: 'system_template_images_uploaded', target_type: 'system_template', target_id: unique[0]!.path.split('/')[1]!, payload: { count: unique.length, commit: commit.sha } }).catch(() => undefined);
-  return { commit: commit.sha, files: commit.files.map((f, i) => ({ ...f, kind: unique[i]!.kind, width: unique[i]!.width, height: unique[i]!.height, bytes: unique[i]!.bytes })) };
+  await ctx.db.rpc('ss_admin_audit_event', { actor, action: 'system_template_images_committed', target_type: 'system_template', target_id: templateId ?? parsed.data.slug, payload: { added: unique.length, deleted: toDelete.length, commit: commit.sha } }).catch(() => undefined);
+  return { commit: commit.sha, files: commit.files.map((f, i) => ({ ...f, kind: unique[i]!.kind, width: unique[i]!.width, height: unique[i]!.height, bytes: unique[i]!.bytes })), deleted: toDelete };
 }

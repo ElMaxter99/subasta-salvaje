@@ -3,8 +3,8 @@ import sharp from 'sharp';
 import { applyAsset, matchTarget, slugify } from '@/lib/domain/template-assets';
 import { githubAssetsConfig } from '@/lib/config/env';
 import { redactSecrets } from '@/lib/security/redact';
-import { AssetUploadError, createGithubAssets, type GithubAssets } from '@/lib/storage/github-assets';
-import { uploadTemplateImage } from '@/lib/services/system-template-service';
+import { AssetUploadError, createGithubAssets, type GithubBatchAssets } from '@/lib/storage/github-assets';
+import { commitTemplateImages, saveSystemTemplate, stageTemplateImage } from '@/lib/services/system-template-service';
 import { makeCtx, type TestCtx } from './helpers';
 
 const TOKEN = ['github', 'pat', 'A1b2C3d4E5f6G7h8I9j0K1l2M3n4'].join('_'); // FALSO, partido para el escáner
@@ -93,65 +93,91 @@ describe('qué campo recibe cada imagen soltada', () => {
   });
 });
 
-describe('subida de la imagen de una plantilla (servicio)', () => {
-  let ctx: TestCtx;
-  let big: Uint8Array;
-  beforeAll(async () => {
-    ctx = await makeCtx();
-    big = new Uint8Array(await sharp({ create: { width: 3000, height: 2000, channels: 3, background: '#2288cc' } }).jpeg().toBuffer());
-  });
-  afterAll(async () => {
+describe('imágenes de una plantilla: se preparan al guardar y entran en UN solo commit', () => {
+  const img = async (c: string) => new Uint8Array(await sharp({ create: { width: 900, height: 600, channels: 3, background: c } }).jpeg().toBuffer());
+  const SHA = 'c'.repeat(40);
+  const make = (existing: string[] = []) => {
+    const log: { files: string[]; deletes: string[]; message: string }[] = [];
+    let n = 0;
+    const assets: GithubBatchAssets = {
+      stageBlob: async () => String(++n).padStart(40, 'b'),
+      listFolder: async () => existing,
+      commitMany: async (files, message, deletes = []) => {
+        log.push({ files: files.map((f) => f.path), deletes, message });
+        return { sha: SHA, files: files.map((f) => ({ path: f.path, url: `https://cdn.jsdelivr.net/gh/yo/fotos@${SHA}/${f.path}`, sha: SHA, existed: false })) };
+      },
+    };
+    return { assets, log };
+  };
+
+  it('prepara sin commit: normaliza a WebP, nombra por hash y no toca Supabase Storage', async () => {
+    const ctx = await makeCtx();
+    const { assets, log } = make();
+    const a = await stageTemplateImage({ slug: 'Noche Luna', kind: 'scene', name: 'Casa Inicial.JPG', bytes: await img('#2288cc') }, assets);
+    expect(a.path).toMatch(/^plantillas\/noche-luna\/scene-casa-inicial-[0-9a-f]{12}\.webp$/);
+    expect(a).toMatchObject({ kind: 'scene', width: 900 });
+    expect(log).toHaveLength(0); // preparar no crea commits
+    expect(ctx.storage.files.size).toBe(0);
     await ctx.db.close();
   });
 
-  it('normaliza a WebP, nombra por hash, sube a GitHub (no a Supabase) y deja constancia en la auditoría', async () => {
-    const puts: { path: string; bytes: Uint8Array }[] = [];
-    const assets: GithubAssets = { put: async (path, bytes) => (puts.push({ path, bytes }), { path, url: `https://cdn.jsdelivr.net/gh/yo/fotos@sha1/${path}`, sha: 'sha1', existed: false }) };
-    const r = await uploadTemplateImage(ctx, 'admin@x.com', { slug: 'Noche Luna', kind: 'scene', name: 'Casa Inicial.JPG', bytes: big }, assets);
-    expect(r.url).toMatch(/^https:\/\/cdn\.jsdelivr\.net\/gh\/yo\/fotos@sha1\/plantillas\/noche-luna\/scene-casa-inicial-[0-9a-f]{12}\.webp$/);
-    expect(r).toMatchObject({ kind: 'scene', width: 1536, height: 1024 });
-    expect((await sharp(Buffer.from(puts[0]!.bytes)).metadata()).format).toBe('webp');
-    expect(ctx.storage.files.size).toBe(0); // nada en el Storage de Supabase
-    const a = await ctx.db.pg.query<{ action: string }>("select action from admin_audit where action = 'system_template_image_uploaded'");
-    expect(a.rows).toHaveLength(1);
+  it('sin configuración, sin slug o con una imagen no válida falla con un mensaje claro', async () => {
+    const { assets } = make();
+    await expect(stageTemplateImage({ slug: 'x-y', kind: 'item', name: 'a.jpg', bytes: await img('#fff') }, null)).rejects.toThrow(/no está configurada/);
+    await expect(stageTemplateImage({ slug: '', kind: 'item', name: 'a.jpg', bytes: await img('#fff') }, assets)).rejects.toThrow(/identificador/);
+    await expect(stageTemplateImage({ slug: 'x-y', kind: 'item', name: 'a.svg', bytes: new TextEncoder().encode('<svg/>') }, assets)).rejects.toMatchObject({ code: 'invalid_input' });
+    const failing: GithubBatchAssets = { ...assets, stageBlob: async () => { throw new AssetUploadError('GitHub rechazó el token (401).', 'auth'); } };
+    await expect(stageTemplateImage({ slug: 'x-y', kind: 'item', name: 'a.jpg', bytes: await img('#fff') }, failing)).rejects.toThrow(/rechazó el token/);
   });
 
-  it('sin configuración, sin slug o con una imagen no válida falla con un mensaje claro y no sube nada', async () => {
-    const put = vi.fn();
-    const assets = { put } as unknown as GithubAssets;
-    await expect(uploadTemplateImage(ctx, 'a', { slug: 'x-y', kind: 'item', name: 'a.jpg', bytes: big }, null)).rejects.toThrow(/no está configurada/);
-    await expect(uploadTemplateImage(ctx, 'a', { slug: '', kind: 'item', name: 'a.jpg', bytes: big }, assets)).rejects.toThrow(/identificador/);
-    await expect(uploadTemplateImage(ctx, 'a', { slug: 'x-y', kind: 'item', name: 'a.svg', bytes: new TextEncoder().encode('<svg/>') }, assets)).rejects.toMatchObject({ code: 'invalid_input' });
-    expect(put).not.toHaveBeenCalled();
-  });
-
-  it('un fallo de GitHub se traduce en un error con el motivo', async () => {
-    const assets: GithubAssets = { put: async () => { throw new AssetUploadError('GitHub rechazó el token (401).', 'auth'); } };
-    await expect(uploadTemplateImage(ctx, 'a', { slug: 'x-y', kind: 'item', name: 'a.jpg', bytes: big }, assets)).rejects.toThrow(/rechazó el token/);
-  });
-});
-
-describe('varias imágenes de una plantilla: un solo commit', () => {
-  it('prepara cada imagen sin commit y las publica juntas; rechaza rutas ajenas', async () => {
-    const { stageTemplateImage, commitTemplateImages } = await import('@/lib/services/system-template-service');
+  it('un solo commit con las nuevas; sin cambios no hay commit; rutas ajenas se rechazan', async () => {
     const ctx = await makeCtx();
-    const commits: string[][] = [];
-    let n = 0;
-    const assets = {
-      stageBlob: async () => String(++n).padStart(40, 'b'),
-      commitMany: async (files: { path: string }[]) => { commits.push(files.map((f) => f.path)); return { sha: 'c'.repeat(40), files: files.map((f) => ({ path: f.path, url: `https://cdn.jsdelivr.net/gh/yo/fotos@${'c'.repeat(40)}/${f.path}`, sha: 'c'.repeat(40), existed: false })) }; },
-    };
-    const img = async (c: string) => new Uint8Array(await sharp({ create: { width: 900, height: 600, channels: 3, background: c } }).jpeg().toBuffer());
+    const { assets, log } = make();
     const a = await stageTemplateImage({ slug: 'Luna', kind: 'cover', name: 'portada.jpg', bytes: await img('#ff0000') }, assets);
     const b = await stageTemplateImage({ slug: 'Luna', kind: 'item', name: 'rover.jpg', bytes: await img('#00ff00') }, assets);
-    expect(commits).toHaveLength(0);
-    expect(a.path).toMatch(/^plantillas\/luna\/cover-portada-[0-9a-f]{12}\.webp$/);
-    const r = await commitTemplateImages(ctx, 'admin', [a, b], assets);
-    expect(commits).toHaveLength(1);
-    expect(commits[0]).toHaveLength(2);
+    const r = await commitTemplateImages(ctx, 'admin', { slug: 'luna', staged: [a, b], keepUrls: [] }, assets);
+    expect(log).toHaveLength(1);
+    expect(log[0]!.files).toHaveLength(2);
     expect(r.files.map((f) => f.kind)).toEqual(['cover', 'item']);
-    expect(r.files[0]!.url).toContain(`@${'c'.repeat(40)}/plantillas/luna/`);
-    await expect(commitTemplateImages(ctx, 'admin', [{ ...a, path: 'otra-carpeta/x.webp' }], assets)).rejects.toMatchObject({ code: 'invalid_input' });
+    expect(r.files[0]!.url).toContain(`@${SHA}/plantillas/luna/`);
+    expect(await commitTemplateImages(ctx, 'admin', { slug: 'luna', staged: [], keepUrls: [] }, assets)).toEqual({ commit: null, files: [], deleted: [] });
+    expect(log).toHaveLength(1);
+    await expect(commitTemplateImages(ctx, 'admin', { slug: 'luna', staged: [{ ...a, path: 'otra-carpeta/x.webp' }], keepUrls: [] }, assets)).rejects.toMatchObject({ code: 'invalid_input' });
+    await ctx.db.close();
+  });
+
+  it('al guardar una plantilla existente borra SOLO las imágenes de su carpeta que ya no usa (sobrescribir = añadir la nueva y quitar la vieja)', async () => {
+    vi.stubEnv('GITHUB_ASSETS_REPO', 'yo/fotos');
+    vi.stubEnv('GITHUB_ASSETS_TOKEN', ['github', 'pat', 'A1b2C3d4E5f6G7h8I9j0K1l2M3n4'].join('_'));
+    const ctx = await makeCtx();
+    const url = (p: string) => `https://cdn.jsdelivr.net/gh/yo/fotos@${'a'.repeat(40)}/${p}`;
+    const oldCover = 'plantillas/luna/cover-portada-aaaaaaaaaaaa.webp';
+    const oldItem = 'plantillas/luna/item-rover-bbbbbbbbbbbb.webp';
+    const keptItem = 'plantillas/luna/item-cráter-cccccccccccc.webp'.replace('á', 'a');
+    const library = 'biblioteca/halloween/calabaza-0123456789abcdef.webp';
+    const saved = await saveSystemTemplate(ctx, 'admin', {
+      slug: 'luna', title: 'Luna', description: '',
+      data: { formato: 'subasta-salvaje/plantilla@1', nombre: 'Luna', tematica: 'Casa', reglas: {}, jugadores: [], portada: url(oldCover), casa_inicial: url(library), catalogo: [
+        { titulo: 'Rover', descripcion: '', foto: url(oldItem) }, { titulo: 'Crater', descripcion: '', foto: url(keptItem) }] },
+    });
+    const { assets, log } = make([oldCover, oldItem, keptItem]);
+    const newCover = await stageTemplateImage({ slug: 'luna', kind: 'cover', name: 'portada.jpg', bytes: await img('#123456') }, assets);
+    // La portada se sustituye, la foto del Rover se quita, la del cráter y la de la biblioteca se conservan
+    const r = await commitTemplateImages(ctx, 'admin', { slug: 'luna', templateId: saved.id, staged: [newCover], keepUrls: [url(keptItem), url(library)] }, assets);
+    expect(log).toHaveLength(1);
+    expect(log[0]!.deletes.sort()).toEqual([oldCover, oldItem].sort());
+    expect(r.deleted.sort()).toEqual([oldCover, oldItem].sort());
+    expect(log[0]!.deletes).not.toContain(library); // nunca toca la biblioteca
+    // Solo quitar una imagen también genera un commit (de borrado)
+    const { assets: a2, log: l2 } = make([keptItem]);
+    const r2 = await commitTemplateImages(ctx, 'admin', { slug: 'luna', templateId: saved.id, staged: [], keepUrls: [url(library)] }, a2);
+    expect(l2[0]!.files).toEqual([]);
+    expect(r2.deleted).toEqual([keptItem]);
+    // Lo que ya no existe en la rama no se intenta borrar (evita un error de GitHub)
+    const { assets: a3, log: l3 } = make([]);
+    expect((await commitTemplateImages(ctx, 'admin', { slug: 'luna', templateId: saved.id, staged: [], keepUrls: [] }, a3)).commit).toBeNull();
+    expect(l3).toHaveLength(0);
+    vi.unstubAllEnvs();
     await ctx.db.close();
   });
 });

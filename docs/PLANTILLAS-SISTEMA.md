@@ -15,12 +15,21 @@ Cada elemento del catálogo puede llevar `foto` (URL https) y un `credito` opcio
 - **Publicar**: solo si **todas** las imágenes se descargan y se leen; si alguna falla no se publica y el informe dice cuál. **Retirar** la vuelve a dejar en borrador. **Borrar** no afecta a las partidas ya creadas.
 - Todo queda en **Auditoría** (creada, modificada, publicada, retirada, borrada).
 
-## Subir las imágenes: arrastrar y soltar (GitHub + jsDelivr, no Supabase)
-En el paso **Ficha** del editor hay una **zona para arrastrar imágenes** (o elegirlas). Cada una:
-1. se reduce en el navegador (si pesa mucho), y el servidor la lleva al **formato interno** (WebP, ver `IMAGEN-INTERNA.md`);
-2. se sube a **tu repositorio público de fotos en GitHub** con la API de contenidos (`plantillas/<slug>/<tipo>-<nombre>-<hash>.webp`); **nada va a Supabase**;
-3. la plantilla se rellena sola con el enlace de **jsDelivr fijado al commit** (`…/gh/usuario/repo@<commit>/…`: se sirve al instante y nunca cambia).
-Las imágenes se asignan por el **nombre del archivo**: `portada.jpg` → portada, `casa.jpg`/`casa-inicial.jpg` → casa inicial, y el título de un elemento (`sombrilla-roja.jpg` → «Sombrilla roja»; sin tildes ni mayúsculas). Las que no encajan quedan en la lista con un desplegable «Asignar a…». Varias imágenes soltadas a la vez se **preparan de una en una y se publican en UN solo commit** (una imagen suelta es su propio commit) y la misma foto no se duplica (el nombre lleva el hash del contenido). Cada subida queda en la **auditoría**.
+## Imágenes de una plantilla: se eligen en la vista y se publican al guardar
+En el paso **Ficha** (y en el catálogo) las imágenes se **suben, se arrastran o se eligen de la biblioteca**; **nunca se escribe una URL**.
+**Subir/arrastrar no sube nada todavía**: la imagen se queda en la vista (vista previa local) y se asigna por el **nombre del archivo**
+(`portada.jpg` → portada, `casa.jpg`/`casa-inicial.jpg` → casa inicial, y el título de un elemento: `sombrilla-roja.jpg` → «Sombrilla roja»; sin
+tildes ni mayúsculas); las que no encajan quedan con un desplegable «Asignar a…». Las de la biblioteca ya están alojadas y no se vuelven a subir.
+
+Al pulsar **«Guardar borrador»** ocurre, en este orden:
+1. cada imagen nueva se reduce al **formato interno** (WebP, ver `IMAGEN-INTERNA.md`) y se deja *preparada* en GitHub (sin commit);
+2. **UN solo commit** publica las nuevas (`plantillas/<slug>/<tipo>-<nombre>-<hash>.webp`, nada va a Supabase) **y borra** de esa carpeta las
+   que la plantilla ya no usa (sobrescribir = añadir la nueva y quitar la vieja, porque el nombre lleva el hash del contenido). Solo se borra lo que
+   existe de verdad en la rama y **nunca** se tocan la biblioteca ni las carpetas de otras plantillas;
+3. se guarda el borrador con los enlaces de **jsDelivr fijados al commit** (`…/gh/usuario/repo@<commit>/…`).
+Si no hay cambios de imágenes no se crea ningún commit. Si se cancela la edición no se sube ni se borra nada. Si fallara el paso 3 después del 2,
+las imágenes nuevas quedan en el repositorio y las antiguas siguen accesibles por sus enlaces fijados a commits anteriores. Borrar una plantilla entera
+**no** borra sus fotos del repositorio.
 
 ### Configuración (una vez)
 1. Crea un repositorio **público** solo para las fotos (p. ej. `subasta-salvaje-fotos`) con un primer commit (un README basta).

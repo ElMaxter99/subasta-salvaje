@@ -18,7 +18,7 @@ import { TEMPLATE_LIMITS } from '@/lib/domain/template';
 import { TemplateImport, type LoadedCatalog, type LoadedTemplate } from './template-import';
 import { CUSTOM_THEME, formToTemplate, parseTemplate, templateToForm, type Template } from '@/lib/domain/template';
 import { adminPost } from '@/lib/client/admin-api';
-import { uploadTemplateImageRequest } from '@/lib/client/template-upload';
+import { commitTemplateImagesRequest, stageTemplateImageRequest, type StagedTemplateImage } from '@/lib/client/template-upload';
 import { SystemTemplateStep, slugFromTitle, type SystemMeta } from '@/components/admin/system-template-step';
 import { ApiError, uploadItemImage } from '@/lib/client/api';
 import { formatEuros, parseEurosToCents } from '@/lib/domain/money';
@@ -105,6 +105,17 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
   const [editingCatalog, setEditingCatalog] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [photoPick, setPhotoPick] = useState<number | null>(null);
+  /** Imágenes elegidas en el editor del superadmin, por su dirección local (blob:): se suben al guardar. */
+  const pending = useRef(new Map<string, File>());
+  const addLocal = (file: File): string => {
+    const url = URL.createObjectURL(file);
+    pending.current.set(url, file);
+    return url;
+  };
+  useEffect(() => {
+    const map = pending.current;
+    return () => { for (const u of map.keys()) URL.revokeObjectURL(u); };
+  }, []);
   const [tplName, setTplName] = useState('');
   const [tplMsg, setTplMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -198,8 +209,8 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
     if (systemEditor && i === 5) {
       if (!meta.title.trim()) return 'Escribe el título de la tarjeta.';
       if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(meta.slug) || meta.slug.length < 2) return 'El identificador solo admite minúsculas, números y guiones (mínimo 2 caracteres).';
-      if (meta.portada && !/^https:\/\//i.test(meta.portada)) return 'La portada no es válida: súbela o elígela de la biblioteca.';
-      if (initialImageUrl && !/^https:\/\//i.test(initialImageUrl)) return 'La casa inicial no es válida: súbela o elígela de la biblioteca.';
+      if (meta.portada && !/^(https:\/\/|blob:)/i.test(meta.portada)) return 'La portada no es válida: súbela o elígela de la biblioteca.';
+      if (initialImageUrl && !/^(https:\/\/|blob:)/i.test(initialImageUrl)) return 'La casa inicial no es válida: súbela o elígela de la biblioteca.';
     }
     if (i === 4 && (!Number.isInteger(maxPlayers) || maxPlayers < 1 || maxPlayers > MAX_PLAYERS)) return `El máximo de jugadores debe estar entre 1 y ${MAX_PLAYERS}.`;
     if (i === 4 && names.length > maxPlayers) return `Has puesto ${names.length} jugadores y el máximo es ${maxPlayers}: quita alguno o sube el máximo.`;
@@ -324,10 +335,13 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
     }
   }
 
-  /** Superadmin: guarda el borrador (sube antes las fotos incrustadas de un ZIP al repositorio de fotos). */
+  /**
+   * Superadmin: las imágenes elegidas NO se suben mientras se edita (viven en memoria, con vista previa local). Al guardar se
+   * preparan todas, se publican en UN solo commit (borrando las que la plantilla ya no usa) y se guarda el borrador.
+   */
   async function saveSystem() {
     const list = items ?? [];
-    const catalogErr = validateCatalog(list);
+    const catalogErr = validateCatalog(list, { allowLocal: true });
     if (catalogErr) {
       go(steps.length - 1);
       setEditingCatalog(true);
@@ -343,17 +357,35 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
     setBusy(true);
     setError(null);
     try {
-      const resolved = [...list];
-      const pending = resolved.map((it, idx) => ({ it, idx })).filter((x) => x.it.photoFile);
-      for (const [n, { it, idx }] of pending.entries()) {
-        setBusyLabel(`Subiendo fotos ${n + 1}/${pending.length}…`);
-        const file = new File([it.photoFile!.data as BlobPart], it.photoFile!.name.split('/').pop() ?? 'foto', { type: it.photoFile!.type });
-        const up = await uploadTemplateImageRequest(meta.slug, 'item', file);
-        resolved[idx] = { ...it, photoUrl: up.url, photoFile: null, photoPath: null };
+      // 1. Preparar (sin commit) las imágenes nuevas: portada, casa inicial y fotos de elementos con archivo local.
+      const fields: { url: string | null; kind: 'cover' | 'scene' | 'item'; name: string }[] = [
+        { url: meta.portada, kind: 'cover', name: 'portada' },
+        { url: initialImageUrl, kind: 'scene', name: 'casa-inicial' },
+        ...list.map((it) => ({ url: it.photoUrl, kind: 'item' as const, name: it.name })),
+      ];
+      const local = [...new Set(fields.filter((f) => f.url?.startsWith('blob:')).map((f) => f.url!))];
+      const staged = new Map<string, StagedTemplateImage>();
+      for (const [n, blob] of local.entries()) {
+        setBusyLabel(`Preparando imágenes ${n + 1}/${local.length}…`);
+        const field = fields.find((f) => f.url === blob)!;
+        const file = pending.current.get(blob);
+        if (!file) throw new Error('Se perdió una imagen elegida: vuelve a elegirla.');
+        staged.set(blob, await stageTemplateImageRequest(meta.slug, field.kind, new File([file], `${field.name}.${file.name.split('.').pop() ?? 'jpg'}`, { type: file.type })));
       }
+      // 2. Un único commit con las nuevas y el borrado de las que ya no se usan.
+      setBusyLabel('Publicando imágenes…');
+      const keepUrls = fields.map((f) => f.url).filter((u): u is string => Boolean(u && u.startsWith('https://')));
+      const commit = await commitTemplateImagesRequest({ slug: meta.slug, templateId: systemEditor?.draft?.id ?? null, staged: [...staged.values()], keepUrls });
+      const finalUrl = (blob: string | null) => {
+        if (!blob || !blob.startsWith('blob:')) return blob;
+        const st = staged.get(blob);
+        return commit.files.find((f) => f.path === st?.path)?.url ?? null;
+      };
+      // 3. Guardar el borrador con los enlaces definitivos.
       setBusyLabel('Guardando…');
+      const resolved = list.map((it) => ({ ...it, photoUrl: finalUrl(it.photoUrl) }));
       const base = formToTemplate({ name, themeValue, budget, minBid, maxRounds: roundsValue, integerBids, ranking, playMode, imageMode, players: names, items: resolved });
-      const parsed = parseTemplate(JSON.stringify({ ...base, portada: meta.portada, casa_inicial: initialImageUrl, creditos: meta.creditos.trim() || null }));
+      const parsed = parseTemplate(JSON.stringify({ ...base, portada: finalUrl(meta.portada), casa_inicial: finalUrl(initialImageUrl), creditos: meta.creditos.trim() || null }));
       if (!parsed.ok) throw new Error(parsed.errors[0] ?? 'La plantilla no es válida.');
       const d = systemEditor?.draft;
       await adminPost('system-templates', { op: 'save', ...(d ? { id: d.id } : {}), slug: meta.slug, title: meta.title.trim(), description: meta.description.trim(), sort_order: Number(meta.sortOrder) || 100, data: parsed.template });
@@ -365,15 +397,11 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
     }
   }
 
-  async function uploadItemPhoto(index: number, file: File) {
-    if (!meta.slug) return setError('Pon primero el identificador en la ficha: las fotos se guardan en su carpeta.');
+  /** Foto de un elemento (superadmin): se guarda en memoria hasta «Guardar borrador». */
+  function uploadItemPhoto(index: number, file: File) {
     setError(null);
-    try {
-      const up = await uploadTemplateImageRequest(meta.slug, 'item', file);
-      setItems((cur) => (cur ? cur.map((it, k) => (k === index ? { ...it, photoUrl: up.url, photoFile: null, photoPath: null } : it)) : cur));
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'No se pudo subir la foto.');
-    }
+    const url = addLocal(file);
+    setItems((cur) => (cur ? cur.map((it, k) => (k === index ? { ...it, photoUrl: url, photoFile: null, photoPath: null } : it)) : cur));
   }
 
   function submit(e: FormEvent) {
@@ -559,6 +587,7 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
               onInitialImage={setInitialImageUrl}
               itemTitles={(items ?? []).map((i) => i.name)}
               onItemPhoto={(index, url) => setItems((cur) => (cur ? cur.map((it, k) => (k === index ? { ...it, photoUrl: url, photoFile: null, photoPath: null } : it)) : cur))}
+              addLocal={addLocal}
               uploadsEnabled={systemEditor.uploadsEnabled}
             />
           ) : null}
@@ -587,7 +616,7 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
                 </>
               ))}
               {items && editingCatalog ? (
-                <CatalogEditor items={items} onChange={setItems} onClose={() => setEditingCatalog(false)} onUploadPhoto={systemEditor?.uploadsEnabled ? (i, f) => void uploadItemPhoto(i, f) : undefined} onPickPhoto={systemEditor ? (i) => setPhotoPick(i) : undefined} />
+                <CatalogEditor items={items} onChange={setItems} onClose={() => setEditingCatalog(false)} onUploadPhoto={systemEditor?.uploadsEnabled ? (i, f) => uploadItemPhoto(i, f) : undefined} onPickPhoto={systemEditor ? (i) => setPhotoPick(i) : undefined} />
               ) : items ? (
                 <div className="rounded-2xl border border-violet/40 bg-night-900 p-4 md:col-span-2" data-testid="summary-catalog">
                   <div className="mb-1 flex flex-wrap items-center justify-between gap-2">

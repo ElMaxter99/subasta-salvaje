@@ -46,7 +46,7 @@ Misma que las fotos de plantillas: `GITHUB_ASSETS_REPO`, `GITHUB_ASSETS_TOKEN` (
 ## Honestidad y límites
 - La subida a GitHub **solo se ha probado con un servidor simulado**, no contra GitHub ni jsDelivr reales. Si en una subida de 200 fotos GitHub aplica
   límites secundarios más estrictos que los reintentos previstos, la cola se puede **Continuar** sin perder lo ya subido.
-- Un lote = un commit (también el arrastrar y soltar de varias fotos en la Ficha de una plantilla). Una foto suelta es su propio commit. Los blobs
+- Un lote = un commit (y en las plantillas del sistema las imágenes se publican, también en un commit, solo al guardar). Una foto suelta es su propio commit. Los blobs
   preparados que no llegan a publicarse (p. ej. una copia dentro del lote) los limpia GitHub solo.
 - Si entre la preparación y la publicación alguien mueve la rama, la publicación se rehace sobre la cabeza nueva (hasta 3 intentos).
 - El lote pasa por el token de GitHub: necesita *Contents: Read and write* (la API de datos de Git usa el mismo permiso). No se borra nada de GitHub desde la app. Las imágenes pueden proceder de terceros: respeta la política del repositorio (README de

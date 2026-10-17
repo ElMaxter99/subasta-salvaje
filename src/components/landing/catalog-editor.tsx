@@ -9,7 +9,7 @@ type Item = LoadedCatalog[number];
 const input = 'w-full rounded-lg border border-white/15 bg-night-950 px-3 py-2 text-base focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold/50 2xl:text-xl';
 
 /** Error del catálogo (o null): mismas reglas que el servidor (título 1–80, descripción ≤ 500, emoji ≤ 8, foto https ≤ 500, 1–100 elementos). */
-export function validateCatalog(items: LoadedCatalog): string | null {
+export function validateCatalog(items: LoadedCatalog, opts: { allowLocal?: boolean } = {}): string | null {
   if (items.length < 1) return 'El catálogo necesita al menos un elemento.';
   if (items.length > TEMPLATE_LIMITS.items) return `El catálogo admite como máximo ${TEMPLATE_LIMITS.items} elementos.`;
   for (const [i, it] of items.entries()) {
@@ -18,7 +18,7 @@ export function validateCatalog(items: LoadedCatalog): string | null {
     if (it.name.trim().length > 80) return `Elemento ${n} del catálogo: el título supera los 80 caracteres.`;
     if (it.description.length > 500) return `Elemento ${n} del catálogo: la descripción supera los 500 caracteres.`;
     if ((it.emoji ?? '').length > 8) return `Elemento ${n} del catálogo: el emoji es demasiado largo.`;
-    if (it.photoUrl && (!/^https:\/\//i.test(it.photoUrl.trim()) || it.photoUrl.length > 500)) return `Elemento ${n} («${it.name.trim()}»): la foto no es válida: súbela o elígela de la biblioteca.`;
+    if (it.photoUrl && !(opts.allowLocal && it.photoUrl.startsWith('blob:')) && (!/^https:\/\//i.test(it.photoUrl.trim()) || it.photoUrl.length > 500)) return `Elemento ${n} («${it.name.trim()}»): la foto no es válida: súbela o elígela de la biblioteca.`;
   }
   return null;
 }
@@ -34,7 +34,7 @@ export function CatalogEditor({ items, onChange, onClose, onUploadPhoto, onPickP
     [next[i], next[j]] = [next[j]!, next[i]!];
     onChange(next);
   };
-  const err = validateCatalog(items);
+  const err = validateCatalog(items, { allowLocal: Boolean(onUploadPhoto) });
   return (
     <section className="space-y-3 rounded-2xl border border-gold/40 bg-night-900 p-4 md:col-span-2" aria-label="Editar el catálogo" data-testid="catalog-editor">
       <div className="flex flex-wrap items-center justify-between gap-2">
