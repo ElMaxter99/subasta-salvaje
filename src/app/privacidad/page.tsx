@@ -25,7 +25,7 @@ export default function PrivacyPage() {
       </section>
       <section>
         <h2>Datos enviados a proveedores de IA</h2>
-        <p>Solo si el propietario ha configurado un proveedor de imágenes real (Cloudflare Workers AI u OpenAI), se envían a ese proveedor los textos (prompts construidos con el nombre del objeto comprado y el tema de la partida) y las imágenes necesarias (la imagen actual de la casa y, si el anfitrión la subió, la foto del objeto) para generar o editar la imagen. No envíes fotos de personas ni datos personales en los textos. Sin proveedor configurado, o en modo «pegatinas», no se envía nada fuera.</p>
+        <p>Solo si el propietario ha configurado un proveedor de imágenes real (Cloudflare Workers AI, Pollinations, AI Horde, Hugging Face u OpenAI), se envían a ese proveedor los textos (prompts construidos con el nombre del objeto comprado y el tema de la partida) y las imágenes necesarias (la imagen actual de la casa y, si el anfitrión la subió, la foto del objeto) para generar o editar la imagen. No envíes fotos de personas ni datos personales en los textos. Sin proveedor configurado, o en modo «pegatinas», no se envía nada fuera.</p>
       </section>
       <section>
         <h2>Encargados y servicios de terceros</h2>

@@ -52,7 +52,7 @@ function Choice({ checked, disabled, name, value, onChange, title, desc, tag }: 
   );
 }
 
-export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean; aiProvider: 'openai' | 'cloudflare' | 'pollinations' | 'demo' }) {
+export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean; aiProvider: 'openai' | 'cloudflare' | 'pollinations' | 'aihorde' | 'huggingface' | 'demo' }) {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [dir, setDir] = useState<1 | -1>(1);

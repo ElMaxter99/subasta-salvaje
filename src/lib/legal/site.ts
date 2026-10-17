@@ -113,5 +113,7 @@ export const SERVICE_PROVIDERS = [
   { name: 'Pollinations', role: 'Generación y edición de imágenes con IA, solo si el propietario lo configura (se envían el texto de la petición y, al editar, la imagen de la casa y del elemento).', url: 'https://pollinations.ai/' },
   { name: 'jsDelivr (GitHub)', role: 'Red de entrega (CDN) de las fotos de las partidas del sistema, solo si el propietario las aloja ahí: tu navegador carga la portada de cada plantilla directamente desde allí (recibe tu IP y los datos habituales de una petición web).', url: 'https://www.jsdelivr.com/terms/privacy-policy-jsdelivr-com' },
   { name: 'Resend', role: 'Envío de los correos de la cuenta (confirmación, recuperación de contraseña, invitaciones), solo si el propietario lo configura.', url: 'https://resend.com/legal/privacy-policy' },
+  { name: 'AI Horde', role: 'Generación de imágenes con IA por una red de voluntarios (GPU comunitaria), solo si el propietario la configura: el texto de la petición pasa por equipos de voluntarios y no se envía ningún dato personal.', url: 'https://aihorde.net/' },
+  { name: 'Hugging Face', role: 'Generación de imágenes con IA (Inference Providers), solo si el propietario la configura: se envía el texto de la petición.', url: 'https://huggingface.co/privacy' },
   { name: 'OpenAI', role: 'Generación y edición de imágenes con IA, solo si el propietario lo configura.', url: 'https://openai.com/policies/privacy-policy' },
 ] as const;

@@ -69,7 +69,7 @@ export interface ItemImageInput {
 /** Abstracción del proveedor de imágenes. Todas las llamadas se ejecutan en el servidor. */
 export interface ImageGenerationProvider {
   /** `demo` genera imágenes de muestra locales y NO usa IA. */
-  readonly id: 'openai' | 'cloudflare' | 'pollinations' | 'demo';
+  readonly id: 'openai' | 'cloudflare' | 'pollinations' | 'aihorde' | 'huggingface' | 'demo';
   /** Qué sabe hacer el modelo configurado. `edit=false`: sólo genera imágenes nuevas (no puede editar la casa existente). */
   readonly capabilities: { edit: boolean };
   generateInitialScene(input: InitialSceneInput): Promise<GeneratedImage>;

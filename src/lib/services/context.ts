@@ -1,11 +1,13 @@
 import path from 'node:path';
 import { createSettingsGate } from './ai-gate';
 import { createProviderChain } from '@/lib/ai/chain';
-import { cloudflareConfig, getImageProviderIds, pollinationsConfig, type ImageProviderId, getRuntimeMode, getSupabaseConfig, openAiKey } from '@/lib/config/env';
+import { cloudflareConfig, aiHordeConfig, getImageProviderIds, huggingFaceConfig, pollinationsConfig, type ImageProviderId, getRuntimeMode, getSupabaseConfig, openAiKey } from '@/lib/config/env';
 import { createCloudflareProvider } from '@/lib/ai/cloudflare';
 import { withEditFallback } from '@/lib/ai/compose';
 import { createDemoProvider } from '@/lib/ai/demo';
 import { createOpenAiProvider } from '@/lib/ai/openai';
+import { createAiHordeProvider } from '@/lib/ai/aihorde';
+import { createHuggingFaceProvider } from '@/lib/ai/huggingface';
 import { createPollinationsProvider } from '@/lib/ai/pollinations';
 import type { ImageGenerationProvider } from '@/lib/ai/types';
 import { createSupabaseDb } from '@/lib/db/supabase';
@@ -45,6 +47,9 @@ function buildOne(id: ImageProviderId): ImageGenerationProvider {
     });
   }
   if (id === 'pollinations') return withEditFallback(createPollinationsProvider(pollinationsConfig()!));
+  // Solo generan: la «edición» de la casa pasa por composición (gratis, con el objeto generado por el siguiente proveedor disponible).
+  if (id === 'aihorde') return withEditFallback(createAiHordeProvider(aiHordeConfig()));
+  if (id === 'huggingface') return withEditFallback(createHuggingFaceProvider(huggingFaceConfig()!));
   const cf = createCloudflareProvider(cloudflareConfig()!);
   // Edición real con foto de referencia (FLUX.2 klein). Si el modelo la rechaza, o no hay modelo de edición,
   // se usa la composición (gratis, misma cuota). IMAGE_EDIT_COMPOSE=false desactiva ese plan B.

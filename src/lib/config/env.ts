@@ -24,7 +24,7 @@ export function openAiKey(env: NodeJS.ProcessEnv = process.env): string | null {
   return env.OPENAI_API_KEY?.trim() || null;
 }
 
-export type ImageProviderId = 'cloudflare' | 'pollinations' | 'openai';
+export type ImageProviderId = 'cloudflare' | 'pollinations' | 'aihorde' | 'huggingface' | 'openai';
 
 export interface PollinationsConfig {
   apiKey: string;
@@ -33,6 +33,49 @@ export interface PollinationsConfig {
   /** Modelo de edición con imágenes de referencia (opcional; vacío = la edición no está disponible y se usa la composición). */
   editModel: string | null;
   size: string;
+}
+
+/**
+ * AI Horde (https://aihorde.net): GPU comunitaria gratuita y sin tarjeta. Funciona con la clave anónima (`0000000000`, la de
+ * menor prioridad en la cola); una clave propia (cuenta gratuita) mejora la prioridad. Solo GENERA (no edita). SIN verificar
+ * contra el servicio real. No hay credencial que lo active: solo entra en la cadena si se pide en IMAGE_PROVIDERS.
+ */
+export interface AiHordeConfig {
+  apiKey: string;
+  /** Modelos concretos (opcional; vacío = el que ponga la Horda). */
+  models: string[];
+  width: number;
+  height: number;
+  steps: number;
+  /** Máximo de espera total (cola + generación) antes de rendirse. */
+  maxWaitMs: number;
+}
+export function aiHordeConfig(env: NodeJS.ProcessEnv = process.env): AiHordeConfig {
+  const int = (v: string | undefined, d: number, min: number, max: number) => {
+    const n = Number(v);
+    return Number.isInteger(n) && n >= min && n <= max ? n : d;
+  };
+  const size = /^(\d{3,4})x(\d{3,4})$/.exec(env.AI_HORDE_SIZE?.trim() ?? '');
+  const round64 = (n: number) => Math.min(1024, Math.max(256, Math.round(n / 64) * 64));
+  return {
+    apiKey: env.AI_HORDE_API_KEY?.trim() || '0000000000',
+    models: (env.AI_HORDE_MODELS ?? '').split(',').map((m) => m.trim()).filter(Boolean),
+    width: size ? round64(Number(size[1])) : 768,
+    height: size ? round64(Number(size[2])) : 512,
+    steps: int(env.AI_HORDE_STEPS, 25, 5, 50),
+    maxWaitMs: int(env.AI_HORDE_MAX_WAIT_SECONDS, 90, 20, 240) * 1000,
+  };
+}
+
+/** Hugging Face Inference Providers (crédito gratuito mensual pequeño con cuenta gratuita; SIN verificar). Solo genera. */
+export interface HuggingFaceConfig {
+  token: string;
+  model: string;
+}
+export function huggingFaceConfig(env: NodeJS.ProcessEnv = process.env): HuggingFaceConfig | null {
+  const token = (env.HF_TOKEN ?? env.HUGGINGFACE_API_KEY)?.trim();
+  if (!token) return null;
+  return { token, model: env.HF_IMAGE_MODEL?.trim() || 'black-forest-labs/FLUX.1-schnell' };
 }
 
 /** Pollinations (gratuito con clave gratuita; límites y términos SIN verificar: ver docs/PENDIENTE.md). */
@@ -107,6 +150,8 @@ export function getImageProviderIds(env: NodeJS.ProcessEnv = process.env): Image
   for (const w of wanted) {
     if (w === 'cloudflare' && cloudflareConfig(env) && !out.includes('cloudflare')) out.push('cloudflare');
     else if (w === 'pollinations' && pollinationsConfig(env) && !out.includes('pollinations')) out.push('pollinations');
+    else if (w === 'aihorde' && !out.includes('aihorde')) out.push('aihorde'); // sin credencial: solo por petición explícita
+    else if (w === 'huggingface' && huggingFaceConfig(env) && !out.includes('huggingface')) out.push('huggingface');
     else if (w === 'openai' && openAiKey(env) && wanted.length === 1) out.push('openai');
   }
   return out;

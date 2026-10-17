@@ -291,3 +291,9 @@ El propietario descarta OpenAI (100 % de pago); su adaptador se conserva sin uso
 - **Hugging Face Inference Providers:** crédito gratuito mensual mínimo (~0,10 $); solo respaldo marginal.
 - **Google (Gemini/Imagen):** fuentes contradictorias sobre si hay capa gratuita de imagen (una habla de 500 imágenes/día; otra de ninguna). Verificar en la página oficial antes de nada.
 - Créditos de bienvenida de otros servicios (fal, Together, Replicate…): únicos, no recurrentes. No sirven para una cadena sostenida.
+
+## 11. Más proveedores gratuitos (17-10-2026)
+Implementados **sin probar contra el servicio real** (solo `fetch` simulado) y **solo generan** (la «edición» pasa por composición):
+- **AI Horde** (`aihorde`): red de GPU de voluntarios, gratuita y sin tarjeta; clave anónima `0000000000` (menor prioridad). Flujo asíncrono (`/generate/async` → sondeo → `/generate/status`), cancelación al agotar la espera (`AI_HORDE_MAX_WAIT_SECONDS`), filtro de contenido. Pros: gratis de verdad. Contras: la cola puede tardar minutos, calidad variable, y el texto pasa por voluntarios. **No se pudo leer su documentación oficial desde este entorno**: los campos vienen de la API conocida; si difieren, ajustar `src/lib/ai/aihorde.ts`.
+- **Hugging Face** (`huggingface`): `router.huggingface.co/hf-inference/models/{modelo}`; crédito mensual gratuito **pequeño** (cifra sin verificar): respaldo marginal; 402 = crédito agotado.
+- **Descartados por ahora:** Together AI (su acceso gratuito a FLUX schnell fue una promoción de 2024 con fecha de fin; no confirmado), Google Gemini/Imagen (fuentes contradictorias sobre una capa gratuita de imagen) y los servicios con créditos de bienvenida únicos.

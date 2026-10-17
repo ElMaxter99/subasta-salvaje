@@ -29,6 +29,10 @@ describe('ajustes de proveedores de IA (SQL)', () => {
     await expect(ctx.db.rpc('ss_settings_set', { key: 'ai_provider_limits', value: { cloudflare: 0 } })).rejects.toThrow();
     await expect(ctx.db.rpc('ss_settings_set', { key: 'ai_provider_limits', value: { cloudflare: 1.5 } })).rejects.toThrow();
     await expect(adminSetSetting(ctx, 'test', { key: 'ai_providers_off', value: ['raro'] })).rejects.toThrow();
+    // los proveedores nuevos también son válidos (migración 4800)
+    expect((await set('ai_providers_off', ['aihorde', 'huggingface'])).ai_providers_off).toEqual(['aihorde', 'huggingface']);
+    expect((await set('ai_provider_limits', { aihorde: 20 })).ai_provider_limits).toEqual({ aihorde: 20 });
+    await set('ai_provider_limits', {});
     const s = await set('ai_providers_off', ['pollinations']);
     expect(s.ai_providers_off).toEqual(['pollinations']);
     await set('ai_providers_off', []);
