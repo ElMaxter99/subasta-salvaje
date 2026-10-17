@@ -11,7 +11,7 @@ con emojis (sin IA) o edición por IA. Idioma del producto, comentarios y docs: 
 ## Stack
 Next.js 16 App Router (`proxy.ts`, `after()`, route handlers) · TypeScript estricto · Tailwind 4 · Zod 4 · Supabase
 (Postgres, Auth, Realtime Broadcast, Storage) · PGlite (Postgres WASM) para demo y tests · sharp · Vitest · Playwright.
-Despliegue: Vercel (+ cron). Node ≥ 20. Panel de superadmin en `/admin` (ver `docs/PLAN-SUPERADMIN.md`, `README`).
+Despliegue: Vercel (+ cron). Node ≥ 20. Panel de superadmin en `/admin` (usuarios, partidas, ajustes, **IA** y **plantillas del sistema**; ver `docs/PLAN-SUPERADMIN.md`, `docs/PLANTILLAS-SISTEMA.md`, `README`).
 
 ## Comandos
 ```bash
@@ -40,6 +40,7 @@ valida (Zod), autentica, llama a `ctx.db.rpc('ss_*', …)` y presenta. **No dupl
 
 ## Reglas que no se negocian
 - **Honestidad:** nunca simules IA ni despliegues. El modo pegatinas se etiqueta como «sin IA»; si algo no se ha probado contra el servicio real, dilo (README y `PENDIENTE.md`).
+- **Solo proveedores gratuitos en la cadena de IA:** OpenAI está descartado por ser de pago (su adaptador se conserva sin uso); tampoco R2 (pide método de pago). Fotos de plantillas del sistema: GitHub + jsDelivr.
 - **Nada de pago automático:** ningún cambio solo a un proveedor de pago; cuotas por partida/día, interruptor `IMAGE_AI_DISABLED`. No actives servicios de pago ni hagas despliegues sin autorización del propietario.
 - **Secretos:** jamás en el repo, logs ni chat (`redactSecrets`, `npm run scan:secrets`, `.vercelignore`). Si el usuario pega una clave, **no la guardes** y recomienda rotarla.
 - **Dinero:** céntimos enteros; cobro **una sola vez** (idempotencia + `ss_award_core` único para manual y automático). Los reintentos/restauraciones de imagen nunca tocan saldos.
@@ -53,9 +54,11 @@ valida (Zod), autentica, llama a `ctx.db.rpc('ss_*', …)` y presenta. **No dupl
 ```
 supabase/migrations/   SQL autoritativo (ver docs/ARQUITECTURA.md para el orden)
 src/lib/domain/        schemas Zod, tipos, errores, dinero, ranking, temáticas
-src/lib/services/      game-service, play-service, jobs-service, context (AppContext), seed, kick, page-data
+src/lib/services/      game-service, play-service, jobs-service, context (AppContext), seed, kick, page-data, system-template-service, auth-mail, ai-audit-service, ai-gate
 src/lib/db/            pglite.ts (demo/tests, migraciones con seguimiento) · supabase.ts (rpc)
-src/lib/ai/            proveedores de imagen (demo/pegatinas, cloudflare, openai), compose (edición gratis), prompts, validación
+src/lib/ai/            proveedores de imagen (demo/pegatinas, cloudflare, pollinations; openai sin uso), chain (fallback entre gratuitos), audit (uso de proveedores), compose, prompts, validación
+src/lib/images/        normalize.ts: imagen interna única (WebP, tamaños/pesos fijos); TODA escritura de imagen a Storage pasa por aquí (docs/IMAGEN-INTERNA.md)
+src/lib/mail/          plantillas de correo con marca (templates.ts), cliente de Resend; sin Resend la app no envía correos propios
 src/lib/{auth,security,realtime,storage,client,config}/
 src/app/               páginas y /api/*      src/components/{host,screen,play,ui,landing,mascot,admin}/
 public/assets/brand/   logo, mascota nueva (solo inicio y Loader), iconos (ver docs/MARCA.md; `npm run brand:build`)
