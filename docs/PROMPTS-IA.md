@@ -33,6 +33,14 @@ Fuentes: búsquedas web (sin acceso directo a las webs de los proveedores desde 
 5. **AI Horde:** comunitario y gratis, pero hace img2img clásico, no edición por instrucciones: no mejora esto.
 Conclusión: **probar primero FLUX.2 klein 9B / dev en Cloudflare** (misma integración, solo variable de entorno) y comparar con `npm run ai:lab`.
 
+## ¿Por qué se usó este proveedor? (historial → Detalles → «Por qué este proveedor»)
+Cada imagen generada con IA (también las normales, no solo las regeneradas) guarda una **nota del proveedor** (`image_versions.provider_note`):
+- **Cadena:** `cadena: cloudflare → pollinations; cloudflare falló (quota: …); respondió pollinations (2.º de 2)`. Explica el orden (el de `IMAGE_PROVIDERS`), qué proveedores se saltaron y por qué: **falló** (cuota, límite de ritmo, credenciales, red, servidor o sin capacidad), **en enfriamiento** (falló hace poco; hasta las 00:00 UTC si fue cuota diaria, 10 min si credenciales, 1 min si ritmo, 30 s en otros casos; el enfriamiento vive en la memoria de cada instancia), **apagado o con el tope diario alcanzado** (ajustes del superadmin) o **no edita** (sin modelo de edición). Si ningún proveedor puede editar de verdad se anota que se usó la composición (collage).
+- **Regenerar con…:** `Regenerado forzando cloudflare (se ignora la cadena)`. En «Regenerar» puedes elegir *Solo Cloudflare / Pollinations / AI Horde / Hugging Face* para comparar modelos sobre la misma compra; si ese proveedor no está en `IMAGE_PROVIDERS` o le faltan credenciales el trabajo falla con un mensaje claro y se conserva la imagen.
+- **Un solo proveedor** o **pegatinas**: «Único proveedor configurado: X» / «Pegatinas (sin IA)».
+- Si fallan todos, el error del trabajo incluye la misma explicación de la cadena.
+**Si solo ves Pollinations:** mira el orden en `IMAGE_PROVIDERS` (el primero manda), los ajustes del superadmin (`/admin/ia`: apagado o tope diario de Cloudflare) y el motivo de fallo de Cloudflare en la nota (cuota de neurons, `Cloudflare 400/404/422` por el modelo o el tamaño de las referencias, credenciales).
+
 ## Prueba A/B en una partida real (Pikachu + barca a pedales)
 1. **Prepara**: aplica las migraciones hasta `…5700` (+ `notify pgrst, 'reload schema';`) y despliega. En Vercel: `IMAGE_PROVIDERS` (p. ej. `cloudflare,pollinations`), `CLOUDFLARE_EDIT_MODEL`, `IMAGE_EDIT_GUARD`, claves. En `/admin/ajustes` sube temporalmente la cuota por partida y por día (cada generación y cada «regenerar» cuenta; por defecto 10/partida y 50/día).
 2. **Crea la partida** con «Cómo cambian las casas → Con IA», 1 jugador, la foto de la persona en la puerta como imagen inicial (subida) y un catálogo con *Pikachu* y *Una barca a pedales* con su foto (de la biblioteca o subida).

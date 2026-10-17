@@ -9,6 +9,8 @@ export interface GeneratedImage extends ImageData {
   model: string;
   /** Proveedor que respondió realmente (lo rellena la cadena; si falta, el `id` del proveedor usado). */
   provider?: string;
+  /** Qué pasó en la cadena antes de este resultado (p. ej. «cloudflare omitido: cuota agotada»); se anota en el historial. */
+  notes?: string;
 }
 
 /**
@@ -80,4 +82,6 @@ export interface ImageGenerationProvider {
    * la persistencia y los reintentos se resuelven con la tabla image_jobs.
    */
   getJobStatus?(externalId: string): Promise<{ status: 'pending' | 'completed' | 'failed' }>;
+  /** Solo la cadena: el proveedor `id` por sí solo (con los ajustes del superadmin), para forzarlo al regenerar; null si no está en la cadena. */
+  only?(id: string): ImageGenerationProvider | null;
 }

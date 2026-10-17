@@ -42,6 +42,9 @@ export function createProviderChain(members: ImageGenerationProvider[], opts: Ch
   if (members.length === 1) return opts.gate ? withGate(members[0]!, opts.gate) : members[0]!; // un solo proveedor: sin enfriamiento ni composición extra
   const now = opts.now ?? Date.now;
   const cooling = new Map<string, number>();
+  /** Por qué un proveedor está en enfriamiento (se anota en el historial para entender por qué no se usó). */
+  const coolWhy = new Map<string, string>();
+  const short = (t: string) => (t.length > 140 ? `${t.slice(0, 137)}…` : t);
   const gate = opts.gate;
 
   const available = (p: ImageGenerationProvider) => (cooling.get(p.id) ?? 0) <= now();
@@ -58,26 +61,39 @@ export function createProviderChain(members: ImageGenerationProvider[], opts: Ch
   }
 
   async function run<T extends GeneratedImage>(needsEdit: boolean, call: (p: ImageGenerationProvider) => Promise<T>): Promise<T> {
+    const notes: string[] = [`cadena: ${members.map((m) => m.id).join(' → ')}`];
+    for (const m of members) {
+      if (needsEdit && !m.capabilities.edit) notes.push(`${m.id} no edita imágenes`);
+      else if (!available(m)) notes.push(`${m.id} en enfriamiento (${coolWhy.get(m.id) ?? 'fallo reciente'})`);
+    }
     const candidates = await permitted(members.filter((m) => (!needsEdit || m.capabilities.edit) && available(m)));
+    for (const m of members) if ((!needsEdit || m.capabilities.edit) && available(m) && !candidates.includes(m)) notes.push(`${m.id} apagado o con el tope diario alcanzado (ajustes del superadmin)`);
     let last: ProviderError | null = null;
     for (const p of candidates) {
       try {
         const out = await call(p);
-        return { ...out, provider: p.id };
+        const pos = members.findIndex((m) => m.id === p.id) + 1;
+        return { ...out, provider: p.id, notes: `${notes.join('; ')}; respondió ${p.id} (${pos}.º de ${members.length})` };
       } catch (e) {
         if (!(e instanceof ProviderError) || !SKIPPABLE.has(e.kind)) throw e; // moderación, entrada inválida…: no se reparte
         last = e;
         cooling.set(p.id, cooldownUntil(e.kind, now()));
+        coolWhy.set(p.id, `${e.kind}: ${short(e.message)}`);
+        notes.push(`${p.id} falló (${e.kind}: ${short(e.message)})`);
         opts.onSkip?.({ provider: p.id, kind: e.kind, message: e.message });
       }
     }
-    if (last) throw last;
+    if (last) throw new ProviderError(`${last.message} [${notes.join('; ')}]`, last.retryable, last.consumed, last.kind);
     throw new ProviderError('Ningún proveedor de imágenes está disponible ahora mismo (en enfriamiento, apagado, con tope diario o sin capacidad). Se conserva la imagen anterior.', true, false, 'unsupported');
   }
 
   const self: ImageGenerationProvider = {
     id: members[0]!.id,
     capabilities: { edit: true }, // siempre hay composición como último recurso
+    only: (id: string) => {
+      const m = members.find((x) => x.id === id);
+      return m ? (gate ? withGate(m, gate) : m) : null;
+    },
     generateInitialScene: (i: InitialSceneInput) => run(false, (p) => p.generateInitialScene(i)),
     generateItemImage: (i: ItemImageInput) => run(false, (p) => p.generateItemImage(i)),
     async editScene(input: EditSceneInput): Promise<GeneratedImage> {
@@ -93,7 +109,7 @@ export function createProviderChain(members: ImageGenerationProvider[], opts: Ch
       // Plan B: composición con el objeto del siguiente proveedor que pueda generar (o con la foto del elemento).
       const generator: ImageGenerationProvider = { ...self, capabilities: { edit: false } };
       const composed = await withComposedEdit(generator).editScene(input);
-      return { ...composed, provider: composed.provider ?? self.id };
+      return { ...composed, provider: composed.provider ?? self.id, notes: `${composed.notes ? `${composed.notes}; ` : ''}ningún proveedor pudo editar de verdad: se usó la composición (collage)` };
     },
   };
   return self;

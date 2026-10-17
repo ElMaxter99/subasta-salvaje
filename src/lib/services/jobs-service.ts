@@ -30,6 +30,8 @@ interface ClaimedJob {
   purchase_id: string | null;
   base_storage_path: string | null;
   base_mime_type: string | null;
+  /** Proveedor forzado al regenerar (solo ese, sin la cadena). */
+  force_provider?: string | null;
 }
 
 export interface ProcessResult {
@@ -87,9 +89,21 @@ export async function processImageJobs(
 
 /** Elige el proveedor según el modo de imágenes de la partida del trabajo. */
 async function providerFor(ctx: Ctx, job: ClaimedJob): Promise<ImageGenerationProvider> {
-  if (!ctx.stickers) return ctx.provider!;
-  const snap = await ctx.db.rpc<{ game: { image_mode: 'stickers' | 'ai' } }>('ss_get_state', { room_code: job.room_code, view: 'public' });
-  return snap.game.image_mode === 'ai' && ctx.provider ? ctx.provider : ctx.stickers;
+  let chosen: ImageGenerationProvider;
+  if (!ctx.stickers) chosen = ctx.provider!;
+  else {
+    const snap = await ctx.db.rpc<{ game: { image_mode: 'stickers' | 'ai' } }>('ss_get_state', { room_code: job.room_code, view: 'public' });
+    chosen = snap.game.image_mode === 'ai' && ctx.provider ? ctx.provider : ctx.stickers;
+  }
+  // «Regenerar con…» fuerza UN proveedor (sin cadena) para comparar modelos; si no está configurado el trabajo falla con un mensaje claro.
+  if (job.force_provider && chosen === ctx.provider) {
+    const only = ctx.provider?.only?.(job.force_provider) ?? (ctx.provider?.id === job.force_provider ? ctx.provider : null);
+    if (only) return only;
+    const msg = `El proveedor ${job.force_provider} no está configurado en IMAGE_PROVIDERS (o no tiene sus credenciales). Se conserva la imagen anterior.`;
+    const fail = async (): Promise<never> => { throw new ProviderError(msg, false, false, 'unsupported'); };
+    return { ...chosen, generateInitialScene: fail, generateItemImage: fail, editScene: fail };
+  }
+  return chosen;
 }
 
 /**
@@ -176,6 +190,14 @@ async function jobContext(ctx: Ctx, job: ClaimedJob): Promise<{ itemEmoji: strin
   return { itemEmoji, previousItems, itemImagePath };
 }
 
+/** Por qué se usó este proveedor, para el historial: cadena y saltos, proveedor forzado al regenerar o proveedor único. */
+function providerNote(provider: ImageGenerationProvider, job: ClaimedJob, notes: string | undefined): string {
+  if (job.force_provider) return `Regenerado forzando ${job.force_provider} (se ignora la cadena)${notes && !notes.startsWith('proveedor forzado') ? `; ${notes}` : ''}`;
+  if (provider.id === 'demo') return 'Pegatinas (sin IA)';
+  if (notes) return notes.slice(0, 600);
+  return provider.only ? 'Cadena de proveedores' : `Único proveedor configurado: ${provider.id}`;
+}
+
 async function runJob(ctx: Ctx, provider: ImageGenerationProvider, job: ClaimedJob, workerId: string): Promise<boolean> {
   let reserved = false;
   try {
@@ -206,6 +228,7 @@ async function runJob(ctx: Ctx, provider: ImageGenerationProvider, job: ClaimedJ
       mime_type: mime,
       bytes: image.bytes.length,
       prompt: image.prompt,
+      provider_note: providerNote(provider, job, image.notes),
       provider: image.provider ?? provider.id,
       model: image.model ?? null,
     });

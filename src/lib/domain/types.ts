@@ -185,6 +185,8 @@ export interface ImageVersion {
   provider: string;
   /** Modelo de IA que generó la versión (null en versiones anteriores a registrarlo, subidas y pegatinas). */
   model?: string | null;
+  /** Por qué se usó ese proveedor (cadena y saltos, proveedor forzado…). */
+  provider_note?: string | null;
   prompt_used: string | null;
   generation_status: 'completed' | 'failed';
   is_approved: boolean;

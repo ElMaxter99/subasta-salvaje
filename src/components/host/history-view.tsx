@@ -44,6 +44,7 @@ function HistoryInner({ roomCode, initial, runtime }: Props) {
   const [bId, setB] = useState<string | null>(null);
   const [restoring, setRestoring] = useState<ImageVersion | null>(null);
   const [regenerating, setRegenerating] = useState<ImageVersion | null>(null);
+  const [regenProvider, setRegenProvider] = useState<'' | 'cloudflare' | 'pollinations' | 'aihorde' | 'huggingface'>('');
 
   const players = snapshot.players;
   const player = players.find((p) => p.id === playerId) ?? players[0];
@@ -137,7 +138,7 @@ function HistoryInner({ roomCode, initial, runtime }: Props) {
         onCancel={() => setRegenerating(null)}
         onConfirm={async () => {
           if (regenerating && player) {
-            const res = await run('regenerate', { type: 'image.regenerate', player_id: player.id, version_id: regenerating.id }, 'Regenerando… la nueva versión aparecerá en la línea de tiempo');
+            const res = await run('regenerate', { type: 'image.regenerate', player_id: player.id, version_id: regenerating.id, ...(regenProvider ? { provider: regenProvider } : {}) }, 'Regenerando… la nueva versión aparecerá en la línea de tiempo');
             if (res) setRegenerating(null);
           }
         }}
@@ -145,6 +146,17 @@ function HistoryInner({ roomCode, initial, runtime }: Props) {
         <p>
           Se vuelve a generar la imagen de <b>{player?.name}</b> partiendo de su <b>versión anterior</b>, con la IA que esté configurada ahora (otro modelo, otro prompt…). La versión actual <b>se conserva en el historial</b> para compararla. <b>No cobra ni cambia saldos ni compras</b>; cuenta como una generación más en la cuota. Máximo 10 por compra.
         </p>
+        <label className="mt-3 block text-sm font-semibold">
+          Proveedor
+          <select aria-label="Proveedor para regenerar" value={regenProvider} onChange={(e) => setRegenProvider(e.target.value as typeof regenProvider)} className="mt-1 w-full rounded-xl border border-white/15 bg-night-900 px-3 py-2 text-base">
+            <option value="">La cadena configurada (por defecto)</option>
+            <option value="cloudflare">Solo Cloudflare Workers AI</option>
+            <option value="pollinations">Solo Pollinations</option>
+            <option value="aihorde">Solo AI Horde</option>
+            <option value="huggingface">Solo Hugging Face</option>
+          </select>
+          <span className="mt-1 block text-xs font-normal text-white/60">Forzar uno sirve para comparar modelos sobre la misma compra. Si no está configurado (IMAGE_PROVIDERS y credenciales) la regeneración falla y se conserva la imagen.</span>
+        </label>
       </ConfirmDialog>
 
       <ConfirmDialog
@@ -236,6 +248,11 @@ function VersionItem({ v, parent, current, isA, isB, onA, onB, onRestore, onRege
           <p>
             <b className="text-white/60">Tipo:</b> {aiInfo(v).kind}
           </p>
+          {v.provider_note ? (
+            <p data-testid="provider-note">
+              <b className="text-white/60">Por qué este proveedor:</b> {v.provider_note}
+            </p>
+          ) : null}
           <p>
             <b className="text-white/60">Prompt usado:</b>
           </p>

@@ -126,3 +126,40 @@ describe('configuración de la cadena', () => {
     expect(getImageProviderIds({ IMAGE_PROVIDERS: 'cloudflare', IMAGE_AI_DISABLED: 'true', ...cf } as never)).toEqual([]);
   });
 });
+
+describe('la cadena explica por qué no usó a un proveedor y permite forzar uno', () => {
+  it('anota el fallo, luego el enfriamiento y el apagado por el superadmin en `notes`', async () => {
+    const t = Date.parse('2026-10-17T10:00:00Z');
+    const a = fake('cloudflare', { edit: true, fail: 'quota' }), b = fake('pollinations', { edit: true });
+    const chain = createProviderChain([a, b], { now: () => t });
+    const first = await chain.editScene(await editInput());
+    expect(first.provider).toBe('pollinations');
+    expect(first.notes).toMatch(/^cadena: cloudflare → pollinations; cloudflare falló \(quota: cloudflare falla: quota\); respondió pollinations \(2\.º de 2\)$/);
+    const second = await chain.editScene(await editInput()); // cloudflare ya está en enfriamiento hasta las 00:00 UTC
+    expect(second.notes).toMatch(/cloudflare en enfriamiento \(quota: /);
+    // Sin fallos también se explica: quién va primero y quién respondió
+    const ok = await createProviderChain([fake('cloudflare', { edit: true }), b]).editScene(await editInput());
+    expect(ok.notes).toBe('cadena: cloudflare → pollinations; respondió cloudflare (1.º de 2)');
+    // Si fallan todos, el error explica la cadena
+    const all = createProviderChain([fake('cloudflare', { edit: true, fail: 'quota' }), fake('pollinations', { edit: true, fail: 'rate_limit' })], { now: () => t });
+    await expect(all.generateItemImage({ theme: 't', itemName: 'x', itemDescription: '', itemEmoji: null })).rejects.toThrow(/\[cadena: cloudflare → pollinations; cloudflare falló \(quota.*pollinations falló \(rate_limit/);
+    // Apagado por el superadmin
+    const gated = createProviderChain([fake('cloudflare', { edit: true }), b], { gate: async (id) => (id === 'cloudflare' ? { ok: false, reason: 'disabled' } : { ok: true }) });
+    const g = await gated.editScene(await editInput());
+    expect(g.provider).toBe('pollinations');
+    expect(g.notes).toMatch(/cloudflare apagado o con el tope diario alcanzado/);
+    expect(t).toBeGreaterThan(0);
+  });
+
+  it('`only(id)` devuelve ese proveedor solo (respetando los ajustes) o null si no está en la cadena', async () => {
+    const a = fake('cloudflare', { edit: true }), b = fake('pollinations', { edit: true });
+    const chain = createProviderChain([a, b]);
+    const only = chain.only!('cloudflare')!;
+    await only.editScene(await editInput());
+    expect(a.calls).toEqual(['edit']);
+    expect(b.calls).toEqual([]);
+    expect(chain.only!('aihorde')).toBeNull();
+    const blocked = createProviderChain([a, b], { gate: async () => ({ ok: false, reason: 'disabled' }) }).only!('cloudflare')!;
+    await expect(blocked.editScene(await editInput())).rejects.toThrow(/apagado por el superadmin/);
+  });
+});
