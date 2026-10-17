@@ -6,15 +6,18 @@ import { slotFor } from './compose';
  * se le pide al modelo en el prompt), la imagen final se arma así: **fuera de la zona del objeto nuevo se conserva la imagen anterior
  * píxel a píxel** y dentro se toma lo que dibujó el modelo, con un borde suave. Así lo que hubiera en otras zonas no puede desaparecer.
  *
- * Es una red de seguridad honesta, no magia: si el modelo no puso el objeto en su zona (casi no hay cambio dentro) o devolvió otra
- * proporción, NO se toca el resultado. Un objeto más grande que su zona se recorta en el borde.
+ * Es una red de seguridad honesta, no magia: si el modelo no puso el objeto en su zona (casi no hay cambio dentro), devolvió otra
+ * proporción o transformó buena parte de la imagen (una mezcla, no un objeto añadido), NO se toca el resultado. Un objeto más grande que su zona se recorta en el borde.
  */
 export interface GuardResult { bytes: Uint8Array; applied: boolean; note: string }
 
 const BOX_HALF_W = 0.32; // media anchura de la zona (fracción del ancho)
 const BOX_UP = 0.7; // cuánto sube desde la base del objeto (fracción del alto)
 const BOX_DOWN = 0.08;
-const MIN_INSIDE_DIFF = 2; // diferencia media (0-255) dentro de la zona para entender que el modelo puso ahí el objeto
+const MIN_INSIDE_DIFF = 2;
+/** Si cambia más de esta fracción de la imagen no es «un objeto añadido» sino una mezcla (p. ej. salsa en un batido): no se toca. */
+const MAX_CHANGED_FRACTION = 0.4;
+const CHANGED_PIXEL = 40; // diferencia (0-255, en gris) a partir de la cual un píxel cuenta como cambiado // diferencia media (0-255) dentro de la zona para entender que el modelo puso ahí el objeto
 
 export function zoneBox(index: number, w: number, h: number): { left: number; top: number; width: number; height: number } {
   const [x, y] = slotFor(index);
@@ -44,6 +47,9 @@ export async function preserveOutsideZone(base: Uint8Array, candidate: Uint8Arra
     let inside = 0, n = 0;
     for (let y = sb.top; y < sb.top + sb.height; y++) for (let x = sb.left; x < sb.left + sb.width; x++) { inside += Math.abs(a[y * sw + x]! - c[y * sw + x]!); n++; }
     const insideDiff = n ? inside / n : 0;
+    let changed = 0;
+    for (let i = 0; i < a.length; i++) if (Math.abs(a[i]! - c[i]!) > CHANGED_PIXEL) changed++;
+    if (changed / a.length > MAX_CHANGED_FRACTION) return { bytes: candidate, applied: false, note: 'cambio global (mezcla): sin guardia' };
     if (insideDiff < MIN_INSIDE_DIFF) return { bytes: candidate, applied: false, note: 'el objeto no está en su zona' };
 
     // Máscara con borde suave: 255 dentro de la zona, 0 fuera.

@@ -45,8 +45,8 @@ describe('el tema fija el prompt base de la imagen inicial', () => {
 describe('mezclar la foto del elemento con la casa: proveedores', () => {
   it('el prompt describe imagen 0 = escena e imagen 1 = elemento y exige reproducirlo fielmente', () => {
     const p = buildEditPrompt(input({ itemImage: { bytes: new Uint8Array([1]), mime: 'image/png' } }));
-    expect(p).toMatch(/Image 0 is the existing/);
-    expect(p).toMatch(/Image 1 is a reference picture of the object "Conejo"/);
+    expect(p).toMatch(/Image 0 is the BASE picture/);
+    expect(p).toMatch(/Image 1 is a reference picture of the new element "Conejo"/);
     expect(p).toMatch(/faithfully/);
     expect(buildEditPrompt(input())).not.toMatch(/Image 1/); // sin foto: edición solo con texto
   });

@@ -24,44 +24,49 @@ export function regionFor(index: number): string {
 }
 
 /**
- * Lo ya comprado debe SEGUIR VISIBLE: los modelos de edición tienden a «reemplazar» el objeto anterior por el nuevo si se les
- * dice solo que añadan uno. Se pide explícitamente no taparlo ni sustituirlo y se sugiere una zona distinta.
+ * Lo ya añadido en rondas anteriores debe SEGUIR VISIBLE: los modelos de edición tienden a «reemplazar» el objeto anterior por el nuevo
+ * si se les dice solo que añadan uno. Se pide explícitamente no taparlo ni sustituirlo. La zona sugerida solo se pide si la imagen
+ * base es un lugar con espacio libre (la guardia de `region-guard.ts` usa esa misma zona); si no, el modelo decide cómo integrarlo.
  */
 function previousClause(input: EditSceneInput): string {
-  if (input.previousItems.length === 0) return `The scene is still empty apart from its original architecture. Put the new object preferably in the ${regionFor(0)} part of the scene.`;
-  return `Image 0 ALREADY contains ${input.previousItems.length === 1 ? 'this purchased object' : 'these purchased objects'}: ${input.previousItems.join(', ')}. ${input.previousItems.length === 1 ? 'It stays' : 'They all stay'} fully visible in the final image, with the same position, size and appearance: the new object must NOT replace, cover, overlap or hide ${input.previousItems.length === 1 ? 'it' : 'any of them'}. Put the new object in a different, empty spot, preferably in the ${regionFor(input.previousItems.length)} part of the scene.`;
+  const n = input.previousItems.length;
+  const zone = `If the base is a place or a scene with free space, put the new element preferably in the ${regionFor(n)} part of it; otherwise integrate it wherever it makes the most natural and funny sense.`;
+  if (n === 0) return `Nothing has been added to the base picture yet. ${zone}`;
+  return `Image 0 ALREADY contains ${n === 1 ? 'this element' : 'these elements'}, added in earlier rounds: ${input.previousItems.join(', ')}. ${n === 1 ? 'It stays' : 'They all stay'} fully visible and recognizable in the final image, with the same look: the new element must NOT replace, cover, overlap or hide ${n === 1 ? 'it' : 'any of them'}. ${zone}`;
 }
 
+/** Reglas comunes: la imagen base puede ser CUALQUIER cosa y el resultado debe ser una sola imagen coherente, natural y divertida. */
+const MIX_RULES = [
+  'Image 0 is the BASE picture of a funny photo-mixing game: it can be anything (a house, a room, a drink, a food, an object, an animal, a person, a landscape). You are given no further context, so decide by yourself from what you see.',
+  'Merge the new element into the base in the most natural, believable and funny way: if the base is a place or a scene, put the element in it as a real object that belongs there (same scale, perspective, lighting and cast shadows); if the base is a food, a drink or an object, use the element as something that is added to it (an ingredient, a topping, a decoration, an accessory) blended in naturally; if the base is a living being, the element becomes an accessory, a companion or a prop that interacts with it.',
+  'The final image must look like ONE coherent photograph or picture in the style of the base, not a collage: no sticker look, no cut-out edges, no white or dark halos around the element, no floating objects. Keep the base picture\'s framing, aspect ratio, colors and style. Do NOT redraw, restyle or remove anything that was already there.',
+];
+
 /**
- * Prompt de edición acumulativa. Prioriza: conservar escena y perspectiva, añadir SÓLO el
- * nuevo elemento, mantener lo anterior, integrar luz/escala/sombras, sin texto.
+ * Prompt de edición acumulativa (sin foto del elemento: se describe con texto). Prioriza: la base puede ser cualquier cosa, integrar
+ * de forma natural y divertida, conservar lo anterior, añadir SÓLO el nuevo elemento, sin texto.
  */
 export function buildEditPrompt(input: EditSceneInput): string {
   if (input.itemImage) return buildBlendPrompt(input);
-  const previous = previousClause(input);
   return [
-    `Edit the provided image of a "${input.theme}" scene by adding exactly ONE new element: "${input.itemName}" (${input.itemDescription || 'no further description'}).`,
-    'Keep the original composition, camera angle, perspective, architecture, colors and every existing object exactly as they are. Do NOT redraw the scene, do NOT remove, move, resize or restyle anything that is already there.',
-    previous,
-    'Place the new element in a free area where it fits naturally. Match the lighting, scale, materials, perspective and cast shadows of the existing scene so it looks like it was always part of it.',
-    'Add only the requested element and nothing else.',
+    `Add exactly ONE new element to image 0: "${input.itemName}" (${input.itemDescription || 'no further description'}).`,
+    ...MIX_RULES,
+    previousClause(input),
+    'Add only that element and nothing else.',
     NO_TEXT,
   ].join(' ');
 }
 
 /**
- * Mezcla de dos imágenes: la escena del jugador (imagen 0) y la foto del elemento comprado (imagen 1). El objeto debe verse
- * como en la foto de referencia (p. ej. un conejo rosa con un lazo azul sigue siendo rosa con lazo azul) pero integrado en la casa.
+ * Mezcla de dos imágenes: la base (imagen 0) y la foto del elemento comprado (imagen 1). El elemento debe verse como en la foto de
+ * referencia (p. ej. un conejo rosa con un lazo azul sigue siendo rosa con lazo azul) pero integrado de forma natural y divertida.
  */
 export function buildBlendPrompt(input: EditSceneInput): string {
-  const previous = previousClause(input);
   return [
-    `Image 0 is the existing "${input.theme}" scene. Image 1 is a reference picture of the object "${input.itemName}" (${input.itemDescription || 'no further description'}).`,
-    'Edit image 0 by adding exactly ONE new element: the object shown in image 1. Reproduce that object faithfully (its shape, colors, markings and distinctive details exactly as in the reference) and place it in the scene.',
-    'Keep the original composition, camera angle, perspective, architecture, colors and every existing object exactly as they are. Do NOT redraw the scene, do NOT remove, move, resize or restyle anything that is already there.',
-    previous,
-    'Place the object in a free area where it fits naturally, matching the lighting, scale, perspective and cast shadows of the scene so it looks like it was always part of it.',
-    'Add only that object and nothing else.',
+    `Image 1 is a reference picture of the new element "${input.itemName}" (${input.itemDescription || 'no further description'}). Add exactly ONE new element to image 0: the object shown in image 1, reproduced faithfully (its shape, colors, markings and distinctive details exactly as in the reference, without its original background).`,
+    ...MIX_RULES,
+    previousClause(input),
+    'Add only that element and nothing else.',
     NO_TEXT,
   ].join(' ');
 }

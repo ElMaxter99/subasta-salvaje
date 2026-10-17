@@ -41,16 +41,29 @@ describe('el historial guarda el modelo de IA de cada versión', () => {
   });
 });
 
+describe('prompt de edición: la base puede ser cualquier cosa y el resultado debe ser natural y divertido', () => {
+  it('no asume que la base es una casa: cubre lugares, comida/bebida, objetos y seres vivos, y pide una sola imagen coherente (sin collage ni halos)', () => {
+    const p = buildEditPrompt({ ...input, theme: 'batido de leche', previousItems: [] });
+    expect(p).toMatch(/can be anything \(a house, a room, a drink, a food/);
+    expect(p).toMatch(/if the base is a food, a drink or an object, use the element as something that is added to it/);
+    expect(p).toMatch(/if the base is a living being/);
+    expect(p).toMatch(/ONE coherent photograph or picture in the style of the base, not a collage/);
+    expect(p).toMatch(/no white or dark halos/);
+    expect(p).toMatch(/Do NOT redraw, restyle or remove anything/);
+  });
+});
+
 describe('prompt de edición: lo ya comprado debe seguir visible', () => {
   it('pide no tapar ni sustituir lo anterior, lo nombra y sugiere una zona distinta', () => {
     const first = buildEditPrompt({ ...input, previousItems: [] });
-    expect(first).toContain('still empty');
+    expect(first).toContain('Nothing has been added to the base picture yet');
+    expect(first).toContain(regionFor(0));
     const second = buildEditPrompt({ ...input, previousItems: ['Pikachu'] });
-    expect(second).toMatch(/ALREADY contains this purchased object: Pikachu/);
+    expect(second).toMatch(/ALREADY contains this element, added in earlier rounds: Pikachu/);
     expect(second).toMatch(/must NOT replace, cover, overlap or hide it/);
     expect(second).toContain(regionFor(1));
     const blend = buildBlendPrompt({ ...input, previousItems: ['Pikachu', 'Barca vieja'], itemImage: { bytes: new Uint8Array(), mime: 'image/png' } });
-    expect(blend).toMatch(/these purchased objects: Pikachu, Barca vieja/);
+    expect(blend).toMatch(/these elements, added in earlier rounds: Pikachu, Barca vieja/);
     expect(blend).toMatch(/They all stay fully visible/);
     expect(new Set([0, 1, 2, 3].map(regionFor)).size).toBe(4); // cada compra apunta a una zona distinta
   });

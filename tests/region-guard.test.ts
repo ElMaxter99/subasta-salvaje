@@ -46,6 +46,15 @@ describe('guardia de zona: lo anterior no puede desaparecer', () => {
     expect(await px(r.bytes, 30, 30)).toEqual([0, 255, 0]);
   });
 
+  it('si el modelo transformó buena parte de la imagen (mezcla, p. ej. salsa en un batido) no se toca', async () => {
+    const base = await canvas([previous]);
+    const mixed = await canvas([{ x: 0, y: 0, w: 640, h: 360, c: '#ffffff' }]); // todo el cuadro cambia
+    const r = await preserveOutsideZone(base, mixed, 1);
+    expect(r.applied).toBe(false);
+    expect(r.note).toMatch(/cambio global/);
+    expect(await px(r.bytes, 80, 270)).toEqual([255, 255, 255]);
+  });
+
   it('si el modelo devolvió otra proporción, no se toca; y nunca lanza con datos basura', async () => {
     const base = await canvas([previous]);
     const other = await canvas([], 400, 300); // 4:3 frente a 16:9

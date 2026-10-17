@@ -104,6 +104,9 @@ La colección con alfa real (`public/assets/mascot-vector/`) es vectorial. Para 
 - [ ] Las partidas creadas con una plantilla del sistema ya no copian sus fotos: TV y móviles las cargan de jsDelivr y la IA las lee por enlace. Requiere `GITHUB_ASSETS_REPO` definida en Vercel (sin ella se descargan como antes). **Sin probar contra jsDelivr real.** Revisa en una partida real que la casa y las fotos se ven y que una edición con IA lee la base.
 - [ ] Revisa el texto de `/privacidad` (jsDelivr recibe ahora también las peticiones de TV y móviles).
 
+## 5k. Pulir los prompts con el modelo real
+- [ ] Con `npm run ai:lab` (ver `docs/PROMPTS-IA.md`) prueba 2-3 bases distintas (una casa, un batido de leche, una mascota) con 2-3 elementos cada una y revisa `paso-N.png` y `prompts.txt`. Qué mirar: ¿se integra de forma natural y divertida?, ¿hay bordes/halos de collage?, ¿se conservan los elementos anteriores? Dime qué falla y ajusto el texto (`src/lib/ai/prompts.ts`).
+
 ## 6. Cron externo (opcional pero recomendado en producción)
 - [ ] El cron de `vercel.json` es diario (límite del plan *Hobby*). Para que los trabajos de imagen y el borrado se procesen con más frecuencia, programa en GitHub Actions o cron-job.org una llamada cada minuto a `/api/jobs/process` con la cabecera `Authorization: Bearer <CRON_SECRET>`.
 

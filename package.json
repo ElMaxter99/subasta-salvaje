@@ -29,7 +29,8 @@
     "size:functions": "node scripts/deploy/function-size.mjs",
     "legal:credits": "node scripts/legal/build-credits.mjs",
     "docs:screens": "node scripts/docs/screenshots.mjs",
-    "ai:measure": "node scripts/ai/measure-cloudflare.mjs"
+    "ai:measure": "node scripts/ai/measure-cloudflare.mjs",
+    "ai:lab": "tsx --env-file-if-exists=.env.local scripts/ai/prompt-lab.ts"
   },
   "engines": {
     "node": ">=20"

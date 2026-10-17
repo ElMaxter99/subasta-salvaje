@@ -26,6 +26,7 @@ una regla, una migración o una decisión, actualiza el documento correspondient
 - [`MARCA.md`](MARCA.md): identidad visual (logo, mascota oficial, tipografía, tokens, componentes y limitaciones).
 - [`OPEN-GRAPH.md`](OPEN-GRAPH.md): miniaturas al compartir enlaces (invitación con código, TV, resultados).
 - [`BIBLIOTECA.md`](BIBLIOTECA.md): biblioteca de medios del superadmin (subida masiva de imágenes a GitHub y catálogo general de productos reutilizable).
+- [`PROMPTS-IA.md`](PROMPTS-IA.md): cómo se redactan los prompts de mezcla de imágenes con IA (base cualquiera, natural y divertido), la guardia de zona y el laboratorio `npm run ai:lab`.
 - [`PLANTILLAS-SISTEMA.md`](PLANTILLAS-SISTEMA.md): partidas del sistema creadas por el superadmin, fotos en un CDN externo y lista blanca de servidores.
 - [`IMAGEN-INTERNA.md`](IMAGEN-INTERNA.md): formato y tamaño internos de todas las imágenes, y cómo preparar fotos para un CDN.
 - [`PLANTILLAS.md`](PLANTILLAS.md): plantillas de partida (JSON) con catálogo y fotos por URL, formato y seguridad.
