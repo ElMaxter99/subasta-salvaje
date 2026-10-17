@@ -15,6 +15,13 @@ export function createSupabaseStorage(): ImageStorage {
       if (error || !data) throw new Error(`Storage: ${error?.message ?? 'archivo no encontrado'}`);
       return { bytes: new Uint8Array(await data.arrayBuffer()), mime: data.type || 'application/octet-stream' };
     },
+    async deleteFiles(paths) {
+      for (let i = 0; i < paths.length; i += 100) {
+        const { error } = await bucket().remove(paths.slice(i, i + 100));
+        if (error) throw new Error(`Storage: ${error.message}`);
+      }
+      return paths.length;
+    },
     async deletePrefix(prefix) {
       // Lista recursivamente (las «carpetas» devuelven id null) y borra por lotes.
       const files: string[] = [];

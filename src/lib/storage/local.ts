@@ -19,6 +19,10 @@ export function createLocalStorage(root = path.join(/* turbopackIgnore: true */ 
       const bytes = await readFile(resolve(storagePath));
       return { bytes: new Uint8Array(bytes), mime: mimeForPath(storagePath) };
     },
+    async deleteFiles(paths) {
+      for (const p of paths) await rm(resolve(p), { force: true });
+      return paths.length;
+    },
     async deletePrefix(prefix) {
       const dir = resolve(prefix.replace(/\/$/, ''));
       await rm(dir, { recursive: true, force: true });
@@ -41,6 +45,10 @@ export function createMemoryStorage(): ImageStorage & { files: Map<string, { byt
       const f = files.get(p);
       if (!f) throw new Error('archivo no encontrado');
       return f;
+    },
+    async deleteFiles(paths) {
+      for (const p of paths) files.delete(p);
+      return paths.length;
     },
     async deletePrefix(prefix) {
       let n = 0;

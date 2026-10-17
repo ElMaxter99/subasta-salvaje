@@ -53,6 +53,7 @@ export const actionSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('game.pause') }),
   z.object({ type: z.literal('game.resume') }),
   z.object({ type: z.literal('game.finish') }),
+  z.object({ type: z.literal('game.reset') }),
   // Jugadores
   z.object({ type: z.literal('player.add'), name, color: color.optional() }),
   z.object({ type: z.literal('player.update'), player_id: uuid, name: name.optional(), color: color.optional() }),

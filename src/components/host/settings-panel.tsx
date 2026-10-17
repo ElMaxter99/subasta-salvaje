@@ -3,13 +3,14 @@
 import { MAX_PLAYERS } from '@/lib/domain/limits';
 import { useState } from 'react';
 import Link from 'next/link';
-import { Flag, History, Minus, Plus, Smartphone, Trophy, Tv } from 'lucide-react';
+import { Flag, History, RotateCcw, Minus, Plus, Smartphone, Trophy, Tv } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatEuros, parseEurosToCents } from '@/lib/domain/money';
 import type { ImageMode, JoinPolicy, PlayMode, RankingRule } from '@/lib/domain/types';
 import { TemplateExportCard } from './template-export-card';
 import { DeleteGameCard } from './delete-game-card';
 import { FinishGameDialog } from './finish-dialog';
+import { ResetGameDialog } from './reset-dialog';
 import { Card, Dot, Notice, inputCls } from './bits';
 import type { HostCtx } from './host-context';
 
@@ -45,6 +46,7 @@ export function SettingsPanel({ ctx }: { ctx: HostCtx }) {
   const [rounds, setRounds] = useState(String(game.total_rounds));
   const [maxPlayers, setMaxPlayers] = useState(String(game.max_players ?? MAX_PLAYERS));
   const [finishOpen, setFinishOpen] = useState(false);
+  const [resetOpen, setResetOpen] = useState(false);
   const minCents = parseEurosToCents(minBid);
 
   return (
@@ -284,7 +286,15 @@ export function SettingsPanel({ ctx }: { ctx: HostCtx }) {
         </Card>
       )}
 
+      <Card title="Reiniciar partida" className="border-rose/40">
+        <p className="mb-3 text-sm text-white/75">Deja la partida como en la sala de espera, antes de empezar: borra subastas, compras, historial y las imágenes generadas, y devuelve a cada jugador su imagen inicial y su presupuesto. Útil para repetir pruebas.</p>
+        <Button variant="danger" size="lg" disabled={busy !== null} onClick={() => setResetOpen(true)}>
+          <RotateCcw className="size-5" aria-hidden /> Reiniciar partida
+        </Button>
+      </Card>
+
       <FinishGameDialog ctx={ctx} open={finishOpen} onClose={() => setFinishOpen(false)} />
+      <ResetGameDialog ctx={ctx} open={resetOpen} onClose={() => setResetOpen(false)} />
 
       <DeleteGameCard ctx={ctx} />
     </div>

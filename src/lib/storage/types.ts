@@ -8,6 +8,8 @@ export interface ImageStorage {
   get(storagePath: string): Promise<StoredImage>;
   /** Borra TODOS los archivos bajo un prefijo (p. ej. `games/<id>/`). Devuelve cuántos borró. */
   deletePrefix(prefix: string): Promise<number>;
+  /** Borra archivos concretos (rutas de Storage). Las que no existan se ignoran. Devuelve cuántos intentó borrar. */
+  deleteFiles(storagePaths: string[]): Promise<number>;
   /** URL pública para el navegador. */
   publicUrl(storagePath: string): string;
 }

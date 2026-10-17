@@ -115,6 +115,8 @@ function toRpc(action: GameAction): { fn: string; params: Record<string, unknown
       return { fn: 'ss_set_play_mode', params: rest };
     case 'player.release':
       return { fn: 'ss_release_player', params: rest };
+    case 'game.reset':
+      return { fn: 'ss_reset_game', params: {} };
     case 'game.start':
     case 'game.pause':
     case 'game.resume':
@@ -174,6 +176,16 @@ export async function performAction(ctx: Ctx, roomCode: string, hostId: string, 
   if (action.type === 'image.set_initial_all') return setInitialFromCatalog(ctx, code, hostId, action.catalog_id, { current: action.scope_current, new: action.scope_new });;
   const { fn, params } = toRpc(action);
   const result = await ctx.db.rpc<Record<string, unknown>>(fn, { ...params, room_code: code, host_id: hostId });
+  if (action.type === 'game.reset') {
+    // Las referencias https (fotos alojadas en nuestro repositorio) nunca se borran: solo lo generado y guardado en Storage.
+    const paths = ((result.storage_paths as string[] | undefined) ?? []).filter((p) => p.startsWith('games/') && !isExternalRef(p));
+    delete result.storage_paths;
+    try {
+      await ctx.storage.deleteFiles(paths);
+    } catch (e) {
+      console.error('[reset] no se pudieron borrar algunos archivos de', code, redactSecrets((e as Error).message));
+    }
+  }
   const snapshot = await getHostState(ctx, code, hostId);
   await ctx.publisher.publish(code, snapshot.version);
   return { result, snapshot };
