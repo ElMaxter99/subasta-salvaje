@@ -5,7 +5,7 @@ import { providerLabel } from '@/lib/ai/labels';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
-import { ArrowLeft, ArrowRight, Pencil, Plus, Rocket, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Pencil, Plus, Rocket, Save, X } from 'lucide-react';
 import { Bubble, Mascot } from '@/components/mascot/mascot';
 import type { MascotId } from '@/components/mascot/assets';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,10 @@ import { Logo } from '@/components/ui/logo';
 import { createGameRequest, importPhotosRequest, saveTemplateRequest } from '@/lib/client/api';
 import { CatalogEditor, validateCatalog } from './catalog-editor';
 import { TemplateImport, type LoadedCatalog, type LoadedTemplate } from './template-import';
-import { CUSTOM_THEME, formToTemplate } from '@/lib/domain/template';
+import { CUSTOM_THEME, formToTemplate, parseTemplate, templateToForm, type Template } from '@/lib/domain/template';
+import { adminPost } from '@/lib/client/admin-api';
+import { uploadTemplateImageRequest } from '@/lib/client/template-upload';
+import { SystemTemplateStep, slugFromTitle, type SystemMeta } from '@/components/admin/system-template-step';
 import { ApiError, uploadItemImage } from '@/lib/client/api';
 import { formatEuros, parseEurosToCents } from '@/lib/domain/money';
 import { PLAYER_COLORS } from '@/lib/domain/schemas';
@@ -35,6 +38,22 @@ const STEPS: (StepInfo & { mascot: MascotId; say: string; title: string; hint: s
   { id: 'resumen', label: 'Resumen', mascot: 'expr-celebrando', say: '¡Todo listo!', title: 'Revisa y crea la partida', hint: 'Pulsa «Editar» en cualquier bloque para cambiar algo.' },
 ];
 
+/** Modo superadmin: mismo recorrido que el anfitrión, con un paso más («Ficha») antes del resumen. */
+const SYSTEM_STEPS: typeof STEPS = [
+  ...STEPS.slice(0, 5),
+  { id: 'ficha', label: 'Ficha', mascot: 'expr-guino', say: 'La tarjeta', title: 'Ficha de la partida del sistema', hint: 'Título, descripción, portada, casa inicial y fotos: lo que verán los anfitriones al elegirla.' },
+  { ...STEPS[5]!, title: 'Revisa y guarda el borrador', hint: 'Pulsa «Editar» en cualquier bloque. Publicarla se hace desde la lista de plantillas, tras comprobar las imágenes.' },
+];
+
+/** Plantilla del sistema que se edita (o null para una nueva). */
+export interface SystemDraft { id: string; slug: string; title: string; description: string; sort_order: number; data: Template }
+
+/** Catálogo editable a partir del de una temática (las plantillas del sistema siempre llevan catálogo propio). */
+function presetCatalog(themeChoice: string): LoadedCatalog {
+  const base = (THEME_PRESETS.find((t) => t.id === themeChoice) ?? getThemePreset('free'))?.items ?? [];
+  return base.map((i) => ({ name: i.name, description: i.description, emoji: i.emoji, photoUrl: null, photoPath: null, photoFile: null }));
+}
+
 const RANKING_LABEL = { none: 'Sin clasificación', balance: 'Gana quien conserve más dinero', items: 'Gana quien consiga más elementos', votes: 'Votación del público (la registras tú)' } as const;
 
 function Choice({ checked, disabled, name, value, onChange, title, desc, tag }: { checked: boolean; disabled?: boolean; name: string; value: string; onChange: () => void; title: ReactNode; desc: ReactNode; tag?: string }) {
@@ -52,34 +71,45 @@ function Choice({ checked, disabled, name, value, onChange, title, desc, tag }: 
   );
 }
 
-export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean; aiProvider: 'openai' | 'cloudflare' | 'pollinations' | 'aihorde' | 'huggingface' | 'demo' }) {
+export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvailable: boolean; systemEditor?: { draft: SystemDraft | null; uploadsEnabled: boolean }; aiProvider: 'openai' | 'cloudflare' | 'pollinations' | 'aihorde' | 'huggingface' | 'demo' }) {
   const router = useRouter();
+  const steps = systemEditor ? SYSTEM_STEPS : STEPS;
+  // Modo superadmin: el asistente arranca con la plantilla que se edita (o con el catálogo de la temática para poder personalizarlo).
+  const [init] = useState(() => (systemEditor?.draft ? templateToForm(systemEditor.draft.data) : null));
   const [step, setStep] = useState(0);
   const [dir, setDir] = useState<1 | -1>(1);
-  const [name, setName] = useState('Noche de Subasta Salvaje');
-  const [themeChoice, setThemeChoice] = useState('house');
-  const [customTheme, setCustomTheme] = useState('');
-  const [budget, setBudget] = useState('20');
-  const [minBid, setMinBid] = useState('1');
-  const [playMode, setPlayMode] = useState<'host' | 'mobile'>('host');
-  const [imageMode, setImageMode] = useState<'stickers' | 'ai'>('stickers');
-  const [ranking, setRanking] = useState<'none' | 'balance' | 'items' | 'votes'>('none');
-  const [maxRounds, setMaxRounds] = useState('');
-  const [integerBids, setIntegerBids] = useState(true);
+  const [name, setName] = useState(init?.name ?? (systemEditor ? 'Mi partida del sistema' : 'Noche de Subasta Salvaje'));
+  const [themeChoice, setThemeChoice] = useState(init?.themeChoice ?? 'house');
+  const [customTheme, setCustomTheme] = useState(init?.customTheme ?? '');
+  const [budget, setBudget] = useState(init?.budget ?? '20');
+  const [minBid, setMinBid] = useState(init?.minBid ?? '1');
+  const [playMode, setPlayMode] = useState<'host' | 'mobile'>(init?.playMode ?? 'host');
+  const [imageMode, setImageMode] = useState<'stickers' | 'ai'>(init?.imageMode === 'ai' && aiAvailable ? 'ai' : 'stickers');
+  const [ranking, setRanking] = useState<'none' | 'balance' | 'items' | 'votes'>(init?.ranking ?? 'none');
+  const [maxRounds, setMaxRounds] = useState(init?.maxRounds ?? '');
+  const [integerBids, setIntegerBids] = useState(init?.integerBids ?? true);
   // Sin jugadores de partida: se pueden crear luego en el panel o, en modo móviles, darse de alta ellos mismos.
-  const [players, setPlayers] = useState<string[]>([]);
-  const [initialImageUrl, setInitialImageUrl] = useState<string | null>(null);
+  const [players, setPlayers] = useState<string[]>(init?.players ?? []);
+  const [initialImageUrl, setInitialImageUrl] = useState<string | null>(init?.initialImageUrl ?? null);
   const [maxPlayersText, setMaxPlayersText] = useState(String(MAX_PLAYERS));
   const maxPlayers = maxPlayersText.trim() === '' ? MAX_PLAYERS : Number(maxPlayersText);
   // Catálogo propio cargado desde una plantilla (null = el de la temática)
-  const [items, setItems] = useState<LoadedCatalog | null>(null);
+  const [items, setItems] = useState<LoadedCatalog | null>(init?.items ? init.items.map((i) => ({ ...i, photoFile: null })) : systemEditor ? presetCatalog(init?.themeChoice ?? 'house') : null);
   const [busy, setBusy] = useState(false);
   const [busyLabel, setBusyLabel] = useState<string | null>(null);
   const [editingCatalog, setEditingCatalog] = useState(false);
   const [tplName, setTplName] = useState('');
   const [tplMsg, setTplMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [meta, setMeta] = useState<SystemMeta>(() => {
+    const d = systemEditor?.draft;
+    if (d) return { slug: d.slug, title: d.title, description: d.description, sortOrder: String(d.sort_order), portada: d.data.portada ?? null, creditos: d.data.creditos ?? '', slugTouched: true };
+    const title = 'Mi partida del sistema';
+    return { slug: slugFromTitle(title), title, description: '', sortOrder: '100', portada: null, creditos: '', slugTouched: false };
+  });
+  const patchMeta = (patch: Partial<SystemMeta>) => setMeta((m) => ({ ...m, ...patch }));
   const headingRef = useRef<HTMLHeadingElement>(null);
+  const [touched, setTouched] = useState(false);
 
   const preset = THEME_PRESETS.find((t) => t.id === themeChoice);
   const themeValue = themeChoice === CUSTOM ? customTheme.trim() : themeChoice;
@@ -107,7 +137,7 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
     }
   }
 
-  function applyTemplate(v: LoadedTemplate) {
+  function applyTemplate(v: LoadedTemplate, opts: { jump?: boolean } = {}) {
     setName(v.name);
     setThemeChoice(v.themeChoice);
     setCustomTheme(v.customTheme);
@@ -121,18 +151,23 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
     setPlayers(v.players);
     setItems(v.items);
     setInitialImageUrl(v.initialImageUrl ?? null);
-    go(STEPS.length - 1); // directo al resumen para revisar
+    if (systemEditor) {
+      setMeta((m) => ({ ...m, portada: v.portada ?? m.portada, creditos: v.creditos ?? m.creditos, title: m.slugTouched ? m.title : v.name, slug: m.slugTouched ? m.slug : slugFromTitle(v.name) }));
+      if (!v.items) setItems(presetCatalog(v.themeChoice)); // las plantillas del sistema llevan siempre catálogo explícito
+    }
+    if (opts.jump !== false) go(steps.length - 1); // directo al resumen para revisar
   }
 
-  const last = step === STEPS.length - 1;
-  const current = STEPS[step]!;
+
+  const last = step === steps.length - 1;
+  const current = steps[step]!;
 
   // Al cambiar de paso el foco pasa al título (lectores de pantalla y mando de TV) y se sube al inicio.
   useEffect(() => {
-    if (step === 0 && !headingRef.current?.dataset.touched) return;
+    if (step === 0 && !touched) return;
     headingRef.current?.focus();
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [step]);
+  }, [step, touched]);
 
   /** Mensaje de error del paso `i`, o null si es válido. */
   function validate(i: number): string | null {
@@ -147,6 +182,12 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
       if (integerBids && m % 100 !== 0) return 'Con pujas en euros enteros, la puja mínima también debe ser un euro entero (1, 2, 3…).';
       if (!Number.isInteger(roundsValue) || roundsValue < 1 || roundsValue > 500) return 'El máximo de rondas debe ser un número entre 1 y 500.';
     }
+    if (systemEditor && i === 5) {
+      if (!meta.title.trim()) return 'Escribe el título de la tarjeta.';
+      if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(meta.slug) || meta.slug.length < 2) return 'El identificador solo admite minúsculas, números y guiones (mínimo 2 caracteres).';
+      if (meta.portada && !/^https:\/\//i.test(meta.portada)) return 'La portada debe ser una URL https o una imagen subida.';
+      if (initialImageUrl && !/^https:\/\//i.test(initialImageUrl)) return 'La casa inicial debe ser una URL https o una imagen subida.';
+    }
     if (i === 4 && (!Number.isInteger(maxPlayers) || maxPlayers < 1 || maxPlayers > MAX_PLAYERS)) return `El máximo de jugadores debe estar entre 1 y ${MAX_PLAYERS}.`;
     if (i === 4 && names.length > maxPlayers) return `Has puesto ${names.length} jugadores y el máximo es ${maxPlayers}: quita alguno o sube el máximo.`;
     if (i === 4 && new Set(names.map((n) => n.toLowerCase())).size !== names.length) return 'Hay nombres de jugador repetidos.';
@@ -156,24 +197,24 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
   function go(to: number) {
     setError(null);
     setDir(to > step ? 1 : -1);
-    if (headingRef.current) headingRef.current.dataset.touched = '1';
+    setTouched(true);
     setStep(to);
   }
 
   function next() {
     const err = validate(step);
     if (err) return setError(err);
-    go(Math.min(step + 1, STEPS.length - 1));
+    go(Math.min(step + 1, steps.length - 1));
   }
 
   async function create() {
     const catalogErr = items ? validateCatalog(items) : null;
     if (catalogErr) {
-      go(STEPS.length - 1);
+      go(steps.length - 1);
       setEditingCatalog(true);
       return setError(catalogErr);
     }
-    for (let i = 0; i < STEPS.length - 1; i++) {
+    for (let i = 0; i < steps.length - 1; i++) {
       const err = validate(i);
       if (err) {
         go(i);
@@ -256,9 +297,61 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
     }
   }
 
+  /** Superadmin: guarda el borrador (sube antes las fotos incrustadas de un ZIP al repositorio de fotos). */
+  async function saveSystem() {
+    const list = items ?? [];
+    const catalogErr = validateCatalog(list);
+    if (catalogErr) {
+      go(steps.length - 1);
+      setEditingCatalog(true);
+      return setError(catalogErr);
+    }
+    for (let i = 0; i < steps.length - 1; i++) {
+      const err = validate(i);
+      if (err) {
+        go(i);
+        return setError(err);
+      }
+    }
+    setBusy(true);
+    setError(null);
+    try {
+      const resolved = [...list];
+      const pending = resolved.map((it, idx) => ({ it, idx })).filter((x) => x.it.photoFile);
+      for (const [n, { it, idx }] of pending.entries()) {
+        setBusyLabel(`Subiendo fotos ${n + 1}/${pending.length}…`);
+        const file = new File([it.photoFile!.data as BlobPart], it.photoFile!.name.split('/').pop() ?? 'foto', { type: it.photoFile!.type });
+        const up = await uploadTemplateImageRequest(meta.slug, 'item', file);
+        resolved[idx] = { ...it, photoUrl: up.url, photoFile: null, photoPath: null };
+      }
+      setBusyLabel('Guardando…');
+      const base = formToTemplate({ name, themeValue, budget, minBid, maxRounds: roundsValue, integerBids, ranking, playMode, imageMode, players: names, items: resolved });
+      const parsed = parseTemplate(JSON.stringify({ ...base, portada: meta.portada, casa_inicial: initialImageUrl, creditos: meta.creditos.trim() || null }));
+      if (!parsed.ok) throw new Error(parsed.errors[0] ?? 'La plantilla no es válida.');
+      const d = systemEditor?.draft;
+      await adminPost('system-templates', { op: 'save', ...(d ? { id: d.id } : {}), slug: meta.slug, title: meta.title.trim(), description: meta.description.trim(), sort_order: Number(meta.sortOrder) || 100, data: parsed.template });
+      router.push('/admin/plantillas?guardada=1');
+    } catch (err) {
+      setError((err as Error).message);
+      setBusy(false);
+      setBusyLabel(null);
+    }
+  }
+
+  async function uploadItemPhoto(index: number, file: File) {
+    if (!meta.slug) return setError('Pon primero el identificador en la ficha: las fotos se guardan en su carpeta.');
+    setError(null);
+    try {
+      const up = await uploadTemplateImageRequest(meta.slug, 'item', file);
+      setItems((cur) => (cur ? cur.map((it, k) => (k === index ? { ...it, photoUrl: up.url, photoFile: null, photoPath: null } : it)) : cur));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'No se pudo subir la foto.');
+    }
+  }
+
   function submit(e: FormEvent) {
     e.preventDefault(); // Enter dentro de un campo avanza de paso; solo en el último se crea la partida
-    if (last) void create();
+    if (last) void (systemEditor ? saveSystem() : create());
     else next();
   }
 
@@ -278,13 +371,13 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
     <main className="mx-auto min-h-dvh w-full max-w-3xl space-y-5 px-4 pb-32 pt-6 sm:px-6 2xl:max-w-5xl 2xl:space-y-8 2xl:pt-10">
       <div className="flex items-center justify-between">
         <Logo size="md" className="2xl:[&>img]:h-20" />
-        <Link href="/" className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-sm text-white/70 hover:text-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold/50 2xl:text-lg">
-          <ArrowLeft className="size-4" aria-hidden /> Inicio
+        <Link href={systemEditor ? '/admin/plantillas' : '/'} className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-sm text-white/70 hover:text-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold/50 2xl:text-lg">
+          <ArrowLeft className="size-4" aria-hidden /> {systemEditor ? 'Plantillas' : 'Inicio'}
         </Link>
       </div>
 
-      <h1 className="sr-only">Nueva partida</h1>
-      <Stepper steps={STEPS} current={step} onGo={go} />
+      <h1 className="sr-only">{systemEditor ? 'Plantilla del sistema' : 'Nueva partida'}</h1>
+      <Stepper steps={steps} current={step} onGo={go} />
 
       <form onSubmit={submit} noValidate className="space-y-5">
         {/* Guía: la mascota cambia de gesto y comenta cada paso */}
@@ -302,7 +395,7 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
         <div key={step} className={`${dir === 1 ? 'ss-step-in-right' : 'ss-step-in-left'} space-y-4`} data-testid={`wizard-step-${step + 1}`}>
           {step === 0 ? (
             <>
-              <TemplateImport onTemplate={applyTemplate} onCatalog={setItems} />
+              <TemplateImport onTemplate={(v) => applyTemplate(v)} onCatalog={setItems} fileOnly={Boolean(systemEditor)} />
               <fieldset className={card}>
                 <legend className="px-2 font-display text-xl 2xl:text-3xl">Quién puja</legend>
                 <Choice name="play_mode" value="host" checked={playMode === 'host'} onChange={() => setPlayMode('host')} title="Pujas del anfitrión" desc="Los jugadores pujan en voz alta y tú registras cada puja desde tu panel. No necesitan móvil ni cuenta." />
@@ -431,7 +524,19 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
             </section>
           ) : null}
 
-          {step === 5 ? (
+          {systemEditor && step === 5 ? (
+            <SystemTemplateStep
+              meta={meta}
+              onMeta={patchMeta}
+              initialImage={initialImageUrl}
+              onInitialImage={setInitialImageUrl}
+              itemTitles={(items ?? []).map((i) => i.name)}
+              onItemPhoto={(index, url) => setItems((cur) => (cur ? cur.map((it, k) => (k === index ? { ...it, photoUrl: url, photoFile: null, photoPath: null } : it)) : cur))}
+              uploadsEnabled={systemEditor.uploadsEnabled}
+            />
+          ) : null}
+
+          {last ? (
             <div className="grid gap-3 md:grid-cols-2">
               {summaryRow('Quién puja', 0, (
                 <p className="font-bold">{playMode === 'host' ? 'Pujas del anfitrión' : 'Cada jugador desde su móvil'}</p>
@@ -455,7 +560,7 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
                 </>
               ))}
               {items && editingCatalog ? (
-                <CatalogEditor items={items} onChange={setItems} onClose={() => setEditingCatalog(false)} />
+                <CatalogEditor items={items} onChange={setItems} onClose={() => setEditingCatalog(false)} onUploadPhoto={systemEditor?.uploadsEnabled ? (i, f) => void uploadItemPhoto(i, f) : undefined} />
               ) : items ? (
                 <div className="rounded-2xl border border-violet/40 bg-night-900 p-4 md:col-span-2" data-testid="summary-catalog">
                   <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
@@ -464,9 +569,11 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
                       <Button type="button" size="sm" variant="ghost" onClick={() => setEditingCatalog(true)} aria-label="Editar el catálogo">
                         <Pencil className="size-4" aria-hidden /> Editar catálogo
                       </Button>
-                      <Button type="button" size="sm" variant="ghost" onClick={() => setItems(null)} aria-label="Usar el catálogo de la temática">
-                        <X className="size-4" aria-hidden /> Usar el de la temática
-                      </Button>
+                      {systemEditor ? null : (
+                        <Button type="button" size="sm" variant="ghost" onClick={() => setItems(null)} aria-label="Usar el catálogo de la temática">
+                          <X className="size-4" aria-hidden /> Usar el de la temática
+                        </Button>
+                      )}
                     </span>
                   </div>
                   <p className="text-base 2xl:text-xl">
@@ -492,7 +599,14 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
                   <p className="text-base 2xl:text-xl"><b>{defaultRounds}</b> elementos de «{preset ? preset.label : 'temática libre'}». Puedes cambiarlos, añadir los tuyos y ponerles foto.</p>
                 </div>
               )}
-              <div className="rounded-2xl border border-white/10 bg-night-900 p-4 md:col-span-2" data-testid="save-template">
+              {systemEditor ? summaryRow('Ficha del sistema', 5, (
+                <>
+                  <p className="font-bold">{meta.title || '—'} <span className="font-mono text-sm font-normal text-white/60">{meta.slug}</span></p>
+                  <p className="text-white/70">{meta.description || 'Sin descripción'}</p>
+                  <p className="text-white/70">Portada: {meta.portada ? '✔' : 'falta'} · Casa inicial: {initialImageUrl ? '✔' : 'falta'} · Fotos: {(items ?? []).filter((i) => i.photoUrl).length}/{(items ?? []).length}</p>
+                </>
+              )) : null}
+              <div className={`rounded-2xl border border-white/10 bg-night-900 p-4 md:col-span-2 ${systemEditor ? 'hidden' : ''}`} data-testid="save-template">
                 <h3 className="mb-2 text-sm font-bold uppercase tracking-wide text-white/60 2xl:text-base">Guardar como plantilla</h3>
                 <div className="flex flex-wrap items-end gap-2">
                   <div className="min-w-0 flex-1">
@@ -530,7 +644,7 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
             </Button>
             {last ? (
               <Button type="submit" variant="primary" size="xl" loading={busy} className="flex-1 sm:flex-none sm:min-w-72">
-                <Rocket className="size-6" aria-hidden /> {busyLabel ?? 'Crear partida'}
+                {systemEditor ? <Save className="size-6" aria-hidden /> : <Rocket className="size-6" aria-hidden />} {busyLabel ?? (systemEditor ? 'Guardar borrador' : 'Crear partida')}
               </Button>
             ) : (
               <Button type="submit" variant="primary" size="lg" className="flex-1 sm:flex-none sm:min-w-56 2xl:min-h-16 2xl:text-xl">

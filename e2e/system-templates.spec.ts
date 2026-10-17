@@ -16,6 +16,11 @@ const template = {
   ],
 };
 
+/** Avanza `n` pasos del asistente del superadmin con «Siguiente». */
+async function next(page: import('@playwright/test').Page, n: number) {
+  for (let i = 0; i < n; i++) await page.getByRole('button', { name: /Siguiente/ }).click();
+}
+
 test('partidas del sistema: el superadmin crea y publica una plantilla; el anfitrión la ve, la carga y crea la partida', async ({ browser }) => {
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   expect((await ctx.request.post('/api/auth/demo')).ok()).toBeTruthy(); // en demo el anfitrión local es superadmin
@@ -25,18 +30,23 @@ test('partidas del sistema: el superadmin crea y publica una plantilla; el anfit
   await page.goto('/new-game');
   await expect(page.getByTestId('template-import')).toBeVisible({ timeout: 60_000 });
 
-  // Superadmin: nueva plantilla con JSON no válido → errores; válido → borrador
+  // Superadmin: el MISMO asistente que el anfitrión, con un paso de ficha; se importa el JSON y se guarda como borrador
   await page.goto('/admin/plantillas');
-  await page.getByRole('button', { name: 'Nueva plantilla' }).click();
-  await page.getByLabel('Título', { exact: true }).fill(TITLE);
-  await page.getByLabel('Identificador').fill(`noche-luna-${stamp}`);
-  await page.getByLabel('Descripción', { exact: true }).fill('Una subasta lunar para empezar rápido');
-  await page.getByLabel('Plantilla JSON', { exact: true }).fill('{ "formato": "mal" }');
-  await expect(page.locator('ul[role="alert"]')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Guardar borrador' })).toBeDisabled();
-  await page.getByLabel('Plantilla JSON', { exact: true }).fill(JSON.stringify(template));
-  await expect(page.getByTestId('template-valid')).toContainText('2 elementos');
+  await page.getByRole('link', { name: 'Nueva plantilla' }).click();
+  await expect(page.getByTestId('wizard-step-1')).toBeVisible({ timeout: 60_000 });
+  await page.waitForTimeout(2500);
+  await page.getByTestId('template-open').click();
+  await page.getByTestId('template-input').setInputFiles({ name: 'mala.json', mimeType: 'application/json', buffer: Buffer.from('{ "formato": "mal" }') });
+  await expect(page.getByTestId('template-errors')).toBeVisible();
+  await page.getByTestId('template-input').setInputFiles({ name: 'buena.json', mimeType: 'application/json', buffer: Buffer.from(JSON.stringify(template)) });
+  await expect(page.getByTestId('summary-catalog')).toContainText('2 elementos'); // salta al resumen con la plantilla cargada
+  await page.getByRole('button', { name: 'Editar Ficha del sistema' }).click();
+  await expect(page.getByTestId('system-step')).toBeVisible();
+  await page.getByLabel('Identificador (carpeta de las fotos)').fill(`noche-luna-${stamp}`);
+  await page.getByLabel('Descripción (hasta 300 caracteres)').fill('Una subasta lunar para empezar rápido');
+  await next(page, 1);
   await page.getByRole('button', { name: 'Guardar borrador' }).click();
+  await page.waitForURL(/\/admin\/plantillas(\?|$)/, { timeout: 30_000 });
   const row = page.getByTestId('system-template-row').filter({ hasText: TITLE });
   await expect(row).toContainText('Borrador');
 
@@ -103,19 +113,22 @@ test('arrastrar y soltar: las imágenes se suben al repositorio de fotos (simula
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } });
     expect((await ctx.request.post('/api/auth/demo')).ok()).toBeTruthy();
     const page = await ctx.newPage();
-    await page.goto('/admin/plantillas');
-    await page.getByRole('button', { name: 'Nueva plantilla' }).click();
-    await expect(page.getByTestId('template-dropzone')).toBeVisible({ timeout: 60_000 });
+    await page.goto('/admin/plantillas/editor');
+    await expect(page.getByTestId('wizard-step-1')).toBeVisible({ timeout: 60_000 });
+    await page.waitForTimeout(2500);
+    await next(page, 5); // Quién puja → Casas → Partida → Reglas → Jugadores → Ficha
+    await expect(page.getByTestId('template-dropzone')).toBeVisible();
 
     const photo = (color: string) => sharp({ create: { width: 1600, height: 1200, channels: 3, background: color } }).jpeg().toBuffer();
     const file = async (name: string, color: string) => ({ name, mimeType: 'image/jpeg', buffer: await photo(color) });
 
     // Sin slug no se sube nada y se explica
+    await page.getByLabel('Identificador (carpeta de las fotos)').fill('');
     await page.getByLabel('Elegir imágenes').setInputFiles(await file('portada.jpg', '#cc3333'));
     await expect(page.getByText('Pon primero el identificador')).toBeVisible();
 
-    await page.getByLabel('Título', { exact: true }).fill(`Subida ${stamp}`);
-    await page.getByLabel('Identificador').fill(`subida-${stamp}`);
+    await page.getByLabel('Título de la tarjeta').fill(`Subida ${stamp}`);
+    await page.getByLabel('Identificador (carpeta de las fotos)').fill(`subida-${stamp}`);
     await page.getByLabel('Elegir imágenes').setInputFiles([await file('portada.jpg', '#cc3333'), await file('Casa-Inicial.jpg', '#33cc33'), await file('piscina-infinita.jpg', '#3333cc'), await file('IMG_0001.jpg', '#cccc33')]);
     const list = page.getByTestId('upload-list');
     await expect(list.getByText(/^Portada · \d+×\d+/)).toBeVisible({ timeout: 60_000 });
@@ -126,20 +139,24 @@ test('arrastrar y soltar: las imágenes se suben al repositorio de fotos (simula
     // La imagen suelta se asigna a mano a un elemento
     await list.getByLabel('Asignar IMG_0001.jpg').selectOption({ label: 'Elemento · Sofá gigante' });
     await expect(list.getByText(/^Elemento · Sofá gigante · \d+×\d+/)).toBeVisible({ timeout: 60_000 });
-
-    // El JSON ahora lleva los enlaces fijados al commit y nada se guardó en Supabase (solo llamadas al repositorio simulado)
-    const json = JSON.parse(await page.getByLabel('Plantilla JSON', { exact: true }).inputValue()) as { portada: string; casa_inicial: string; catalogo: { titulo: string; foto?: string }[] };
-    expect(json.portada).toMatch(new RegExp(`^https://cdn\\.jsdelivr\\.net/gh/e2e/fotos@stub0000sha/plantillas/subida-${stamp}/cover-portada-[0-9a-f]{12}\\.webp$`));
-    expect(json.casa_inicial).toContain('/scene-casa-inicial-');
-    expect(json.catalogo.find((i) => i.titulo === 'Piscina infinita')!.foto).toContain('/item-piscina-infinita-');
-    expect(json.catalogo.find((i) => i.titulo === 'Sofá gigante')!.foto).toContain('/item-img-0001-');
     expect(puts).toHaveLength(4);
     expect(puts.every((p) => p.endsWith('.webp'))).toBe(true);
 
-    // Guardar el borrador con esos enlaces y borrarlo
+    // Resumen y guardado: la plantilla lleva los enlaces fijados al commit (nada se guardó en Supabase)
+    await next(page, 1);
+    await expect(page.getByText(/Portada: ✔ · Casa inicial: ✔ · Fotos: 2\//)).toBeVisible();
     await page.getByRole('button', { name: 'Guardar borrador' }).click();
+    await page.waitForURL(/\/admin\/plantillas(\?|$)/, { timeout: 30_000 });
     const row = page.getByTestId('system-template-row').filter({ hasText: `subida-${stamp}` });
     await expect(row).toContainText('casa inicial');
+    const id = (await (await ctx.request.get('/api/admin/system-templates')).json()).templates.find((t: { slug: string }) => t.slug === `subida-${stamp}`).id as string;
+    const full = (await (await ctx.request.post('/api/admin/system-templates', { data: { op: 'get', id }, headers: { origin: 'http://localhost:3210' } })).json()) as { data: { portada: string; casa_inicial: string; catalogo: { titulo: string; foto?: string }[] } };
+    expect(full.data.portada).toMatch(new RegExp(`^https://cdn\\.jsdelivr\\.net/gh/e2e/fotos@stub0000sha/plantillas/subida-${stamp}/cover-portada-[0-9a-f]{12}\\.webp$`));
+    expect(full.data.casa_inicial).toContain('/scene-casa-inicial-');
+    expect(full.data.catalogo.find((i) => i.titulo === 'Piscina infinita')!.foto).toContain('/item-piscina-infinita-');
+    expect(full.data.catalogo.find((i) => i.titulo === 'Sofá gigante')!.foto).toContain('/item-img-0001-');
+
+    // Borrar el borrador de la prueba
     await row.getByRole('button', { name: 'Borrar' }).click();
     await page.getByRole('dialog').getByRole('button', { name: 'Borrar' }).click();
     await expect(row).toHaveCount(0);
@@ -154,47 +171,40 @@ test('editor visual: editar sin tocar el JSON (espacios, catálogo, orden, créd
   expect((await ctx.request.post('/api/auth/demo')).ok()).toBeTruthy();
   const page = await ctx.newPage();
   const TV = `Visual ${stamp}`;
-  await page.goto('/admin/plantillas');
-  await page.getByRole('button', { name: 'Nueva plantilla' }).click();
-  await expect(page.getByTestId('template-form')).toBeVisible({ timeout: 60_000 });
-  await page.getByLabel('Título', { exact: true }).fill(TV);
-  await page.getByLabel('Identificador').fill(`visual-${stamp}`);
+  await page.goto('/admin/plantillas/editor');
+  await expect(page.getByTestId('wizard-step-1')).toBeVisible({ timeout: 60_000 });
+  await page.waitForTimeout(2500);
+  await next(page, 2); // Quién puja → Casas → Partida
 
   // Escribir con espacios no se «come» el espacio final mientras se teclea
   const nombre = page.getByLabel('Nombre de la partida');
   await nombre.fill('');
   await nombre.pressSequentially('Noche de prueba total');
   await expect(nombre).toHaveValue('Noche de prueba total');
+  await next(page, 3); // Reglas → Jugadores → Ficha
 
-  // Quitar la portada de ejemplo (así no hay imágenes que descargar al publicar) y poner créditos
-  await page.locator('#tpl-portada').fill('');
-  await page.getByLabel('Créditos de las imágenes').fill('Dibujos propios y Wikimedia Commons');
+  // Ficha: título, identificador y créditos (sin portada, así no hay imágenes que descargar al publicar)
+  await page.getByLabel('Título de la tarjeta').fill(TV);
+  await page.getByLabel('Identificador (carpeta de las fotos)').fill(`visual-${stamp}`);
+  await page.getByLabel('Créditos de las imágenes (opcional)').fill('Dibujos propios y Wikimedia Commons');
+  await next(page, 1);
 
-  // Catálogo: la plantilla vacía trae 3 elementos; añadir uno, renombrarlo, subirlo al principio y quitar otro
-  await expect(page.getByTestId('catalog-item')).toHaveCount(3);
+  // Catálogo (el de la temática, ya editable): añadir uno, renombrarlo, subirlo al principio y quitar otro
+  await page.getByRole('button', { name: 'Editar el catálogo' }).click();
+  const total = await page.locator('[data-testid^="catalog-row-"]').count();
   await page.getByRole('button', { name: 'Añadir elemento' }).click();
-  await expect(page.getByTestId('catalog-item')).toHaveCount(4);
-  await page.getByLabel('Título del elemento 4').fill('Calabaza gigante');
-  await page.getByLabel('Crédito de la foto del elemento 4').fill('Autor X · CC BY');
-  for (let i = 4; i > 1; i--) await page.getByLabel(`Subir el elemento ${i}`).click();
-  await expect(page.getByLabel('Título del elemento 1')).toHaveValue('Calabaza gigante');
-  await page.getByLabel('Quitar el elemento 2').click(); // el que era el primero
-  await expect(page.getByTestId('catalog-item')).toHaveCount(3);
-
-  // El JSON refleja el formulario (y viceversa)
-  const read = async () => JSON.parse(await page.getByLabel('Plantilla JSON', { exact: true }).inputValue()) as { nombre: string; creditos: string; portada?: string | null; catalogo: { titulo: string; credito?: string }[] };
-  const json = await read();
-  expect(json.nombre).toBe('Noche de prueba total');
-  expect(json.creditos).toBe('Dibujos propios y Wikimedia Commons');
-  expect(json.catalogo[0]!.titulo).toBe('Calabaza gigante');
-  expect(json.catalogo[0]!.credito).toBe('Autor X · CC BY');
-  json.catalogo[1]!.titulo = 'Editado en el JSON';
-  for (const it of json.catalogo as { foto?: string | null }[]) it.foto = null; // la plantilla vacía trae una foto de ejemplo: sin imágenes no hay nada que descargar al publicar
-  await page.getByLabel('Plantilla JSON', { exact: true }).fill(JSON.stringify(json));
-  await expect(page.getByLabel('Título del elemento 2')).toHaveValue('Editado en el JSON');
+  await expect(page.locator('[data-testid^="catalog-row-"]')).toHaveCount(total + 1);
+  await page.getByLabel(`Título del elemento ${total + 1}`).fill('Calabaza gigante');
+  await page.getByLabel(`Crédito de la foto del elemento ${total + 1}`).fill('Autor X · CC BY');
+  for (let i = total + 1; i > 1; i--) await page.getByLabel(`Subir el elemento ${i}`).click();
+  await expect(page.getByLabel('Título del elemento 1', { exact: true })).toHaveValue('Calabaza gigante');
+  await page.getByLabel('Quitar el elemento 2', { exact: true }).click();
+  await expect(page.locator('[data-testid^="catalog-row-"]')).toHaveCount(total);
+  await page.getByRole('button', { name: 'Listo' }).click();
 
   // Guardar, publicar y ver la tarjeta con sus créditos
   await page.getByRole('button', { name: 'Guardar borrador' }).click();
+  await page.waitForURL(/\/admin\/plantillas(\?|$)/, { timeout: 30_000 });
   const row = page.getByTestId('system-template-row').filter({ hasText: TV });
   await expect(row).toContainText('Borrador');
   await row.getByRole('button', { name: 'Publicar' }).click();

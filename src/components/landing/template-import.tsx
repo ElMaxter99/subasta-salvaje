@@ -19,7 +19,7 @@ export type LoadedCatalog = NonNullable<ZipFormValues['items']>;
  * Todo se valida en el navegador antes de usarlo y el servidor vuelve a validar al crear la partida. Nada se crea hasta pulsar
  * «Crear partida». Un CSV solo trae el catálogo: el resto del asistente se queda como está.
  */
-export function TemplateImport({ onTemplate, onCatalog }: { onTemplate: (values: LoadedTemplate) => void; onCatalog: (items: LoadedCatalog) => void }) {
+export function TemplateImport({ onTemplate, onCatalog, fileOnly = false }: { onTemplate: (values: LoadedTemplate) => void; onCatalog: (items: LoadedCatalog) => void; /** Superadmin: solo importar archivos (sin listas de partidas del sistema ni plantillas del anfitrión). */ fileOnly?: boolean }) {
   const input = useRef<HTMLInputElement>(null);
   const [errors, setErrors] = useState<string[]>([]);
   const [warnings, setWarnings] = useState<string[]>([]);
@@ -39,16 +39,17 @@ export function TemplateImport({ onTemplate, onCatalog }: { onTemplate: (values:
   }, [open]);
 
   function openPicker() {
-    setSource(system.length > 0 ? 'system' : saved.length > 0 ? 'mine' : 'file');
+    setSource(fileOnly ? 'file' : system.length > 0 ? 'system' : saved.length > 0 ? 'mine' : 'file');
     setOpen(true);
   }
 
   useEffect(() => {
+    if (fileOnly) return;
     let alive = true;
     listTemplatesRequest().then((l) => alive && setSaved(l)).catch(() => undefined); // sin sesión o sin plantillas: no se muestra nada
     listSystemTemplatesRequest().then((l) => alive && setSystem(l)).catch(() => undefined);
     return () => { alive = false; };
-  }, []);
+  }, [fileOnly]);
 
   async function loadSaved(t: SavedTemplateSummary) {
     setErrors([]);

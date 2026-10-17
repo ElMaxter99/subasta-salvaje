@@ -67,7 +67,10 @@ export interface TemplateFormValues {
   players: string[];
   /** Imagen inicial de la casa (URL https) que trae la plantilla: se copia a la partida al crearla. */
   initialImageUrl: string | null;
-  items: { name: string; description: string; emoji: string | null; photoUrl: string | null; /** Ruta de una foto DENTRO de un ZIP (p. ej. fotos/sofa.jpg) */ photoPath: string | null }[] | null;
+  /** Solo plantillas del sistema: portada de la tarjeta y créditos de las imágenes. */
+  portada?: string | null;
+  creditos?: string | null;
+  items: { name: string; description: string; emoji: string | null; photoUrl: string | null; /** Ruta de una foto DENTRO de un ZIP (p. ej. fotos/sofa.jpg) */ photoPath: string | null; /** Solo plantillas del sistema: autoría de la foto. */ credito?: string | null }[] | null;
 }
 
 export const CUSTOM_THEME = '__custom__';
@@ -152,12 +155,14 @@ export function templateToForm(t: Template): TemplateFormValues {
     imageMode: t.reglas.modo_imagenes === 'ia' ? 'ai' : 'stickers',
     players: t.jugadores,
     initialImageUrl: t.casa_inicial && /^https:\/\//i.test(t.casa_inicial) ? t.casa_inicial : null,
-    items: t.catalogo ? t.catalogo.map((i) => ({ name: i.titulo, description: i.descripcion, emoji: i.emoji ?? null, photoUrl: i.foto && /^https:\/\//i.test(i.foto) ? i.foto : null, photoPath: i.foto && isLocalPhotoPath(i.foto) ? i.foto.replace(/\\/g, '/') : null })) : null,
+    portada: t.portada ?? null,
+    creditos: t.creditos ?? null,
+    items: t.catalogo ? t.catalogo.map((i) => ({ name: i.titulo, description: i.descripcion, emoji: i.emoji ?? null, photoUrl: i.foto && /^https:\/\//i.test(i.foto) ? i.foto : null, credito: i.credito ?? null, photoPath: i.foto && isLocalPhotoPath(i.foto) ? i.foto.replace(/\\/g, '/') : null })) : null,
   };
 }
 
 /** Plantilla a partir de los valores del asistente (para «Guardar como plantilla»). Las fotos incrustadas en un ZIP no se guardan (solo URLs). */
-export function formToTemplate(v: { name: string; themeValue: string; budget: string; minBid: string; maxRounds: number; integerBids: boolean; ranking: TemplateFormValues['ranking']; playMode: TemplateFormValues['playMode']; imageMode: TemplateFormValues['imageMode']; players: string[]; items: { name: string; description: string; emoji: string | null; photoUrl: string | null }[] | null }): Template {
+export function formToTemplate(v: { name: string; themeValue: string; budget: string; minBid: string; maxRounds: number; integerBids: boolean; ranking: TemplateFormValues['ranking']; playMode: TemplateFormValues['playMode']; imageMode: TemplateFormValues['imageMode']; players: string[]; items: { name: string; description: string; emoji: string | null; photoUrl: string | null; credito?: string | null }[] | null }): Template {
   const euros = (s: string, d: number) => {
     const n = Number(s.trim().replace(',', '.'));
     return Number.isFinite(n) && n >= 0 ? n : d;
@@ -169,7 +174,7 @@ export function formToTemplate(v: { name: string; themeValue: string; budget: st
     tematica: preset ? preset.label : v.themeValue || 'Casa',
     reglas: { presupuesto: euros(v.budget, 20), puja_minima: Math.max(euros(v.minBid, 1), 0.01), rondas_maximas: v.maxRounds, pujas_enteras: v.integerBids, clasificacion: RANKING_BACK[v.ranking], modo_juego: v.playMode === 'mobile' ? 'movil' : 'anfitrion', modo_imagenes: v.imageMode === 'ai' ? 'ia' : 'pegatinas' },
     jugadores: v.players,
-    catalogo: v.items ? v.items.map((i) => ({ titulo: i.name, descripcion: i.description, emoji: i.emoji, foto: i.photoUrl })) : undefined,
+    catalogo: v.items ? v.items.map((i) => ({ titulo: i.name, descripcion: i.description, emoji: i.emoji, foto: i.photoUrl, ...(i.credito ? { credito: i.credito } : {}) })) : undefined,
   };
 }
 

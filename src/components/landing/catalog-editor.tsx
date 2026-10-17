@@ -24,7 +24,8 @@ export function validateCatalog(items: LoadedCatalog): string | null {
 }
 
 /** Editor del catálogo dentro del asistente: cambiar, añadir, borrar y reordenar elementos (título, descripción, emoji y foto por URL). */
-export function CatalogEditor({ items, onChange, onClose }: { items: LoadedCatalog; onChange: (items: LoadedCatalog) => void; onClose: () => void }) {
+/** `onUploadPhoto` (solo superadmin) añade «Subir foto» a cada elemento: sube al repositorio de fotos y pone la URL. */
+export function CatalogEditor({ items, onChange, onClose, onUploadPhoto }: { items: LoadedCatalog; onChange: (items: LoadedCatalog) => void; onClose: () => void; onUploadPhoto?: (index: number, file: File) => void }) {
   const set = (i: number, patch: Partial<Item>) => onChange(items.map((it, k) => (k === i ? { ...it, ...patch } : it)));
   const move = (i: number, d: -1 | 1) => {
     const j = i + d;
@@ -59,8 +60,19 @@ export function CatalogEditor({ items, onChange, onClose }: { items: LoadedCatal
                 <Button type="button" size="sm" variant="ghost" onClick={() => set(i, { photoFile: null, photoPath: null })} aria-label={`Quitar la foto del elemento ${i + 1}`}><ImageOff className="size-4" aria-hidden /> Quitar</Button>
               </p>
             ) : (
-              <input aria-label={`Foto (URL https) del elemento ${i + 1}`} className={input} maxLength={500} inputMode="url" value={it.photoUrl ?? ''} onChange={(e) => set(i, { photoUrl: e.target.value.trim() || null })} placeholder="Foto: https://… (opcional)" />
+              <div className="flex gap-2">
+                <input aria-label={`Foto (URL https) del elemento ${i + 1}`} className={input} maxLength={500} inputMode="url" value={it.photoUrl ?? ''} onChange={(e) => set(i, { photoUrl: e.target.value.trim() || null })} placeholder="Foto: https://… (opcional)" />
+                {onUploadPhoto ? (
+                  <label className="inline-flex min-h-11 shrink-0 cursor-pointer items-center rounded-xl border border-white/15 px-3 text-sm font-semibold hover:bg-white/10">
+                    Subir
+                    <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" aria-label={`Subir la foto del elemento ${i + 1}`} onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) onUploadPhoto(i, f); }} />
+                  </label>
+                ) : null}
+              </div>
             )}
+            {onUploadPhoto ? (
+              <input aria-label={`Crédito de la foto del elemento ${i + 1}`} className={input} maxLength={120} value={it.credito ?? ''} onChange={(e) => set(i, { credito: e.target.value || null })} placeholder="Autoría de la foto (opcional)" />
+            ) : null}
           </li>
         ))}
       </ol>
