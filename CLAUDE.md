@@ -11,7 +11,7 @@ con emojis (sin IA) o edición por IA. Idioma del producto, comentarios y docs: 
 ## Stack
 Next.js 16 App Router (`proxy.ts`, `after()`, route handlers) · TypeScript estricto · Tailwind 4 · Zod 4 · Supabase
 (Postgres, Auth, Realtime Broadcast, Storage) · PGlite (Postgres WASM) para demo y tests · sharp · Vitest · Playwright.
-Despliegue: Vercel (+ cron). Node ≥ 20. Panel de superadmin en `/admin` (usuarios, partidas, ajustes, **IA** y **plantillas del sistema**; ver `docs/PLAN-SUPERADMIN.md`, `docs/PLANTILLAS-SISTEMA.md`, `README`).
+Despliegue: Vercel (+ cron). Node ≥ 20. Panel de superadmin en `/admin` (usuarios, partidas, ajustes, **IA** y **plantillas del sistema** y **biblioteca de medios**; ver `docs/PLAN-SUPERADMIN.md`, `docs/PLANTILLAS-SISTEMA.md`, `README`).
 
 ## Comandos
 ```bash
@@ -54,7 +54,7 @@ valida (Zod), autentica, llama a `ctx.db.rpc('ss_*', …)` y presenta. **No dupl
 ```
 supabase/migrations/   SQL autoritativo (ver docs/ARQUITECTURA.md para el orden)
 src/lib/domain/        schemas Zod, tipos, errores, dinero, ranking, temáticas
-src/lib/services/      game-service, play-service, jobs-service, context (AppContext), seed, kick, page-data, system-template-service, auth-mail, ai-audit-service, ai-gate
+src/lib/services/      game-service, play-service, jobs-service, context (AppContext), seed, kick, page-data, system-template-service, library-service (biblioteca de medios: imágenes en GitHub + catálogo general), auth-mail, ai-audit-service, ai-gate
 src/lib/db/            pglite.ts (demo/tests, migraciones con seguimiento) · supabase.ts (rpc)
 src/lib/ai/            proveedores de imagen (demo/pegatinas, cloudflare, pollinations; openai sin uso), chain (fallback entre gratuitos), audit (uso de proveedores), compose, prompts, validación
 src/lib/images/        normalize.ts: imagen interna única (WebP, tamaños/pesos fijos); TODA escritura de imagen a Storage pasa por aquí (docs/IMAGEN-INTERNA.md)

@@ -1,0 +1,138 @@
+'use client';
+
+import { useCallback, useEffect, useState } from 'react';
+import { Section } from './widgets';
+import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { libraryApi, type CollectionCount, type LibraryImage } from '@/lib/client/library-api';
+import { LibraryUpload } from './library-upload';
+import { LibraryItems } from './library-items';
+
+const input = 'w-full rounded-xl border border-white/15 bg-night-900 px-3 py-2';
+const PAGE = 60;
+
+type Tab = 'images' | 'items';
+
+/** Biblioteca de medios del superadmin: subida masiva de imágenes y catálogo general de productos. */
+export function LibraryPanel({ uploadsEnabled }: { uploadsEnabled: boolean }) {
+  const [tab, setTab] = useState<Tab>('images');
+  const [images, setImages] = useState<LibraryImage[]>([]);
+  const [total, setTotal] = useState(0);
+  const [collections, setCollections] = useState<CollectionCount[]>([]);
+  const [q, setQ] = useState('');
+  const [collection, setCollection] = useState('');
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [bulkCollection, setBulkCollection] = useState('');
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [version, setVersion] = useState(0);
+
+  const refresh = useCallback(() => setVersion((v) => v + 1), []);
+
+  useEffect(() => {
+    let alive = true;
+    const t = setTimeout(() => {
+      libraryApi.images({ q, collection: collection || null, limit: PAGE, offset: 0 })
+        .then((r) => { if (alive) { setImages(r.images); setTotal(r.total); setCollections(r.collections); } })
+        .catch((e) => alive && setMsg({ ok: false, text: e instanceof Error ? e.message : 'Error' }));
+    }, q ? 250 : 0);
+    return () => { alive = false; clearTimeout(t); };
+  }, [q, collection, version]);
+
+  async function more() {
+    const r = await libraryApi.images({ q, collection: collection || null, limit: PAGE, offset: images.length });
+    setImages((cur) => [...cur, ...r.images.filter((i) => !cur.some((c) => c.id === i.id))]);
+  }
+
+  const toggle = (id: string) => setSelected((s) => { const n = new Set(s); if (n.has(id)) n.delete(id); else n.add(id); return n; });
+  const ids = [...selected];
+
+  async function act(fn: () => Promise<string>) {
+    setBusy(true);
+    setMsg(null);
+    try { setMsg({ ok: true, text: await fn() }); refresh(); } catch (e) { setMsg({ ok: false, text: e instanceof Error ? e.message : 'Error' }); } finally { setBusy(false); }
+  }
+
+  return (
+    <div className="space-y-5">
+      {msg ? <p role="status" className={`rounded-2xl px-4 py-2 text-sm font-semibold ${msg.ok ? 'bg-teal/15 text-teal' : 'bg-rose/20 text-rose'}`}>{msg.text}</p> : null}
+
+      <div role="tablist" aria-label="Biblioteca" className="flex gap-2">
+        {([['images', `Imágenes (${total})`], ['items', 'Productos del catálogo']] as const).map(([id, label]) => (
+          <button key={id} role="tab" aria-selected={tab === id} onClick={() => setTab(id)} className={`min-h-11 rounded-xl px-4 py-2 text-sm font-bold ${tab === id ? 'bg-gold text-night-950' : 'bg-white/10 hover:bg-white/15'}`}>{label}</button>
+        ))}
+      </div>
+
+      {tab === 'images' ? (
+        <>
+          <Section title="Subida masiva" hint={<>Imágenes generales (paisajes, objetos divertidos…) que se reutilizan en cualquier partida o plantilla: se guardan <b>una sola vez</b> en tu repositorio público de fotos y aquí solo queda el enlace.</>}>
+            <LibraryUpload enabled={uploadsEnabled} collections={collections.map((c) => c.name).filter(Boolean)} onDone={refresh} />
+          </Section>
+
+          <Section title="Imágenes" hint="Selecciona varias para cambiarlas de colección, borrarlas o convertirlas en productos del catálogo.">
+            <div className="mb-3 grid gap-2 md:grid-cols-3">
+              <input aria-label="Buscar imágenes" placeholder="Buscar por título, etiqueta o colección…" value={q} onChange={(e) => setQ(e.target.value)} className={input} />
+              <select aria-label="Filtrar por colección" value={collection} onChange={(e) => setCollection(e.target.value)} className={input}>
+                <option value="">Todas las colecciones</option>
+                {collections.map((c) => <option key={c.name} value={c.name}>{c.name || '(sin colección)'} · {c.count}</option>)}
+              </select>
+              <div className="flex gap-2">
+                <Button variant="ghost" onClick={() => setSelected(new Set(images.map((i) => i.id)))} disabled={images.length === 0}>Seleccionar todo lo visible</Button>
+                <Button variant="ghost" onClick={() => setSelected(new Set())} disabled={selected.size === 0}>Quitar selección</Button>
+              </div>
+            </div>
+
+            {selected.size > 0 ? (
+              <div className="sticky top-2 z-10 mb-3 flex flex-wrap items-end gap-2 rounded-2xl border border-gold/40 bg-night-900/95 p-3 backdrop-blur" data-testid="library-bulk">
+                <span className="font-bold">{selected.size} seleccionadas</span>
+                <label className="text-xs font-semibold">Mover a colección
+                  <input list="library-collections-bulk" aria-label="Nueva colección" value={bulkCollection} onChange={(e) => setBulkCollection(e.target.value)} className={`${input} mt-1 w-48`} />
+                  <datalist id="library-collections-bulk">{collections.map((c) => <option key={c.name} value={c.name} />)}</datalist>
+                </label>
+                <Button size="sm" variant="secondary" disabled={busy} onClick={() => void act(async () => { const r = await libraryApi.updateImages(ids, { collection: bulkCollection }); setSelected(new Set()); return `${r.updated} imágenes movidas a «${bulkCollection || 'sin colección'}»`; })}>Mover</Button>
+                <Button size="sm" variant="primary" disabled={busy} onClick={() => setTab('items')} data-testid="library-to-items">Crear productos…</Button>
+                <Button size="sm" variant="danger" disabled={busy} onClick={() => setConfirmDelete(true)}>Borrar</Button>
+              </div>
+            ) : null}
+
+            {images.length === 0 ? <p className="text-sm text-white/70">Todavía no hay imágenes{q || collection ? ' con ese filtro' : ''}.</p> : (
+              <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6" data-testid="library-grid">
+                {images.map((i) => (
+                  <li key={i.id} data-testid="library-image" className={`overflow-hidden rounded-2xl border bg-night-900 ${selected.has(i.id) ? 'border-gold' : 'border-white/10'}`}>
+                    <label className="block cursor-pointer">
+                      {/* eslint-disable-next-line @next/next/no-img-element -- alojada en el CDN del propietario */}
+                      <img src={i.url} alt={i.title} loading="lazy" referrerPolicy="no-referrer" className="aspect-square w-full object-cover" />
+                      <span className="flex items-start gap-2 p-2 text-xs">
+                        <input type="checkbox" checked={selected.has(i.id)} onChange={() => toggle(i.id)} aria-label={`Seleccionar ${i.title}`} className="mt-0.5 size-4 accent-[#fbbf24]" />
+                        <span className="min-w-0">
+                          <span className="block truncate font-bold">{i.title || '(sin título)'}</span>
+                          <span className="block truncate text-white/60">{i.collection || 'sin colección'}</span>
+                        </span>
+                      </span>
+                    </label>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {images.length < total ? <div className="mt-3 text-center"><Button variant="secondary" onClick={() => void more()}>Cargar más ({images.length}/{total})</Button></div> : null}
+          </Section>
+        </>
+      ) : (
+        <LibraryItems selectedImageIds={ids} onClearSelection={() => setSelected(new Set())} />
+      )}
+
+      <ConfirmDialog
+        open={confirmDelete}
+        title="Borrar imágenes de la biblioteca"
+        confirmLabel="Borrar"
+        variant="danger"
+        loading={busy}
+        onCancel={() => setConfirmDelete(false)}
+        onConfirm={async () => { await act(async () => { const r = await libraryApi.deleteImages(ids); setSelected(new Set()); return `${r.deleted} imágenes quitadas de la biblioteca`; }); setConfirmDelete(false); }}
+      >
+        <p>Se quitarán {selected.size} imágenes de la biblioteca. <b>El archivo permanece en el repositorio de fotos</b> (no se borra de GitHub) y las partidas ya creadas no cambian. Los productos que las usaban se quedan sin foto.</p>
+      </ConfirmDialog>
+    </div>
+  );
+}

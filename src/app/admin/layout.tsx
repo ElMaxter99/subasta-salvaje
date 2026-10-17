@@ -13,6 +13,7 @@ const NAV = [
   { href: '/admin/usuarios', label: 'Usuarios' },
   { href: '/admin/partidas', label: 'Partidas' },
   { href: '/admin/plantillas', label: 'Plantillas' },
+  { href: '/admin/biblioteca', label: 'Biblioteca' },
   { href: '/admin/ia', label: 'IA' },
   { href: '/admin/ajustes', label: 'Ajustes' },
   { href: '/admin/auditoria', label: 'Auditoría' },

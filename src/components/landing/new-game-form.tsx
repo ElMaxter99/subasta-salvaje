@@ -12,6 +12,8 @@ import { Button } from '@/components/ui/button';
 import { Logo } from '@/components/ui/logo';
 import { createGameRequest, importPhotosRequest, saveTemplateRequest } from '@/lib/client/api';
 import { CatalogEditor, validateCatalog } from './catalog-editor';
+import { LibraryPicker } from './library-picker';
+import { TEMPLATE_LIMITS } from '@/lib/domain/template';
 import { TemplateImport, type LoadedCatalog, type LoadedTemplate } from './template-import';
 import { CUSTOM_THEME, formToTemplate, parseTemplate, templateToForm, type Template } from '@/lib/domain/template';
 import { adminPost } from '@/lib/client/admin-api';
@@ -98,6 +100,7 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
   const [busy, setBusy] = useState(false);
   const [busyLabel, setBusyLabel] = useState<string | null>(null);
   const [editingCatalog, setEditingCatalog] = useState(false);
+  const [pickerOpen, setPickerOpen] = useState(false);
   const [tplName, setTplName] = useState('');
   const [tplMsg, setTplMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -122,6 +125,16 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
     const base = (preset ?? getThemePreset('free'))?.items ?? [];
     setItems(base.map((i) => ({ name: i.name, description: i.description, emoji: i.emoji, photoUrl: null, photoPath: null, photoFile: null })));
     setEditingCatalog(true);
+  }
+
+  /** Añade productos de la biblioteca al catálogo (el de la temática pasa a ser propio); los nombres repetidos se omiten. */
+  function importFromLibrary(picked: LoadedCatalog) {
+    const base = items ?? presetCatalog(themeChoice);
+    const names = new Set(base.map((i) => i.name.trim().toLowerCase()));
+    const fresh = picked.filter((p) => !names.has(p.name.trim().toLowerCase())).slice(0, Math.max(0, TEMPLATE_LIMITS.items - base.length));
+    setItems([...base, ...fresh]);
+    setPickerOpen(false);
+    setError(fresh.length < picked.length ? `Se añadieron ${fresh.length} de ${picked.length} productos (los repetidos o los que superan el máximo de ${TEMPLATE_LIMITS.items} se omiten).` : null);
   }
 
   async function saveAsTemplate() {
@@ -566,6 +579,9 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
                   <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
                     <h3 className="text-sm font-bold uppercase tracking-wide text-white/60 2xl:text-base">Catálogo propio</h3>
                     <span className="flex gap-1">
+                      <Button type="button" size="sm" variant="ghost" onClick={() => setPickerOpen(true)} aria-label="Importar productos de la biblioteca">
+                        <Plus className="size-4" aria-hidden /> De la biblioteca
+                      </Button>
                       <Button type="button" size="sm" variant="ghost" onClick={() => setEditingCatalog(true)} aria-label="Editar el catálogo">
                         <Pencil className="size-4" aria-hidden /> Editar catálogo
                       </Button>
@@ -592,9 +608,14 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
                 <div className="rounded-2xl border border-white/10 bg-night-900 p-4 md:col-span-2" data-testid="summary-catalog-theme">
                   <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
                     <h3 className="text-sm font-bold uppercase tracking-wide text-white/60 2xl:text-base">Catálogo de la temática</h3>
-                    <Button type="button" size="sm" variant="ghost" onClick={customizeCatalog} aria-label="Personalizar el catálogo">
-                      <Pencil className="size-4" aria-hidden /> Personalizar catálogo
-                    </Button>
+                    <span className="flex gap-1">
+                      <Button type="button" size="sm" variant="ghost" onClick={() => setPickerOpen(true)} aria-label="Importar productos de la biblioteca">
+                        <Plus className="size-4" aria-hidden /> De la biblioteca
+                      </Button>
+                      <Button type="button" size="sm" variant="ghost" onClick={customizeCatalog} aria-label="Personalizar el catálogo">
+                        <Pencil className="size-4" aria-hidden /> Personalizar catálogo
+                      </Button>
+                    </span>
                   </div>
                   <p className="text-base 2xl:text-xl"><b>{defaultRounds}</b> elementos de «{preset ? preset.label : 'temática libre'}». Puedes cambiarlos, añadir los tuyos y ponerles foto.</p>
                 </div>
@@ -633,6 +654,8 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
             </div>
           ) : null}
         </div>
+
+        <LibraryPicker open={pickerOpen} onClose={() => setPickerOpen(false)} onPick={importFromLibrary} taken={new Set((items ?? presetCatalog(themeChoice)).map((i) => i.name.trim().toLowerCase()))} />
 
         {error ? <p role="alert" data-testid="wizard-error" className="rounded-xl bg-rose/20 px-4 py-3 font-semibold text-rose 2xl:text-xl">{error}</p> : null}
 

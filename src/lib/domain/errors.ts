@@ -69,6 +69,7 @@ export const ERROR_MESSAGES: Record<string, string> = {
   template_not_found: 'No existe esa plantilla.',
   slug_taken: 'Ya existe una plantilla del sistema con ese identificador.',
   template_images_failed: 'Hay imágenes de la plantilla que no se pueden usar: revisa el informe de imágenes.',
+  library_not_found: 'No existe ese elemento de la biblioteca.',
   template_limit: 'Ya tienes 20 plantillas guardadas: borra alguna para guardar otra.',
   template_too_large: 'La plantilla es demasiado grande (máximo 256 KB).',
   migration_pending: 'Falta aplicar una migración de la base de datos (ejecuta «npx supabase db push»).',
@@ -100,6 +101,7 @@ function statusFor(code: string): number {
     case 'job_not_found':
     case 'version_not_found':
     case 'template_not_found':
+    case 'library_not_found':
       return 404;
     case 'rate_limited':
       return 429;

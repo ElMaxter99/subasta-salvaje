@@ -88,6 +88,12 @@ La colección con alfa real (`public/assets/mascot-vector/`) es vectorial. Para 
 - [ ] En `/admin/plantillas` crea una plantilla con fotos reales, pulsa «Comprobar imágenes» y publícala. **Sin probar contra un CDN real.**
 - [ ] Añadir a la política de privacidad/créditos el proveedor de fotos que elijas (nuevo tercero que sirve imágenes a los visitantes).
 
+## 5h. Biblioteca de medios
+- [ ] Aplica las migraciones `…5000`/`…5100` (tablas `library_images` y `library_items`) y `notify pgrst, 'reload schema';`.
+- [ ] Usa las mismas variables `GITHUB_ASSETS_*` que las plantillas (token con *Contents: Read and write*).
+- [ ] **Sin probar contra GitHub/jsDelivr reales.** Prueba primero con 5-10 fotos y luego con un lote grande: si GitHub aplica límites secundarios (429/403) más estrictos que los reintentos previstos, copia el mensaje. La cola se puede parar y continuar.
+- [ ] Decide la política del repositorio de fotos (licencias/retirada) antes de subir cientos de imágenes de terceros.
+
 ## 6. Cron externo (opcional pero recomendado en producción)
 - [ ] El cron de `vercel.json` es diario (límite del plan *Hobby*). Para que los trabajos de imagen y el borrado se procesen con más frecuencia, programa en GitHub Actions o cron-job.org una llamada cada minuto a `/api/jobs/process` con la cabecera `Authorization: Bearer <CRON_SECRET>`.
 
