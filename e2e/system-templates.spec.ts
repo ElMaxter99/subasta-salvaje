@@ -30,7 +30,7 @@ test('partidas del sistema: el superadmin crea y publica una plantilla; el anfit
   await page.getByRole('button', { name: 'Nueva plantilla' }).click();
   await page.getByLabel('Título', { exact: true }).fill(TITLE);
   await page.getByLabel('Identificador').fill(`noche-luna-${stamp}`);
-  await page.getByLabel('Descripción').fill('Una subasta lunar para empezar rápido');
+  await page.getByLabel('Descripción', { exact: true }).fill('Una subasta lunar para empezar rápido');
   await page.getByLabel('Plantilla JSON', { exact: true }).fill('{ "formato": "mal" }');
   await expect(page.locator('ul[role="alert"]')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Guardar borrador' })).toBeDisabled();
@@ -174,8 +174,8 @@ test('editor visual: editar sin tocar el JSON (espacios, catálogo, orden, créd
   await page.getByLabel('Título del elemento 4').fill('Calabaza gigante');
   await page.getByLabel('Crédito de la foto del elemento 4').fill('Autor X · CC BY');
   for (let i = 4; i > 1; i--) await page.getByLabel(`Subir el elemento ${i}`).click();
-  await expect(page.getByLabel('Título del elemento 2')).toHaveValue('Calabaza gigante');
-  await page.getByLabel('Quitar el elemento 1').click();
+  await expect(page.getByLabel('Título del elemento 1')).toHaveValue('Calabaza gigante');
+  await page.getByLabel('Quitar el elemento 2').click(); // el que era el primero
   await expect(page.getByTestId('catalog-item')).toHaveCount(3);
 
   // El JSON refleja el formulario (y viceversa)
