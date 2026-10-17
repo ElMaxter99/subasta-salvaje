@@ -1,5 +1,5 @@
 import { HolderBlock, LegalPage } from '@/components/legal/legal-page';
-import { APP_NAME, REPO_URL } from '@/lib/legal/site';
+import { APP_NAME, AUTHOR_NAME, AUTHOR_URL, REPO_URL } from '@/lib/legal/site';
 
 export const metadata = { title: 'Aviso legal', description: 'Aviso legal y datos del titular de Subasta Salvaje.', robots: { index: true, follow: true } };
 
@@ -8,6 +8,7 @@ export default function LegalNoticePage() {
     <LegalPage title="Aviso legal" intro={`Información general sobre ${APP_NAME}, una aplicación web de subastas creativas multijugador para juegos entre amigos.`}>
       <section>
         <h2>Titular del sitio</h2>
+        <p>Autor del proyecto: <a href={AUTHOR_URL} target="_blank" rel="noopener noreferrer">{AUTHOR_NAME}</a> (GitHub). Código abierto en <a href={REPO_URL} target="_blank" rel="noopener noreferrer">{REPO_URL}</a>.</p>
         <HolderBlock />
         <p className="text-sm text-white/70">Estos datos los configura el propietario mediante variables de entorno. Si ves el aviso de «pendiente», aún no se han completado y no debe darse por válido ningún dato de titularidad.</p>
       </section>
@@ -25,7 +26,7 @@ export default function LegalNoticePage() {
       </section>
       <section>
         <h2>Propiedad intelectual</h2>
-        <p>El código, el logotipo, la mascota y los demás recursos gráficos pertenecen a su propietario o a terceros que se citan en <a href="/creditos">Créditos y licencias de terceros</a>. Consulta la <a href="/licencia">página de licencia</a> para saber qué se permite hacer con el código.</p>
+        <p>El código es de código abierto bajo licencia MIT (autor: {AUTHOR_NAME}). El logotipo, la mascota y las demás imágenes de la marca se generaron con herramientas de IA para esta aplicación y no son una marca registrada. Las dependencias, tipografías e iconos de terceros mantienen sus licencias y se citan en <a href="/creditos">Créditos y licencias de terceros</a>. Consulta la <a href="/licencia">página de licencia</a> para ver qué se permite hacer.</p>
       </section>
       <section>
         <h2>Responsabilidad</h2>

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { APP_NAME, APP_VERSION, LEGAL_LINKS, REPO_URL } from '@/lib/legal/site';
+import { APP_NAME, APP_VERSION, AUTHOR_NAME, AUTHOR_URL, LEGAL_LINKS, REPO_URL } from '@/lib/legal/site';
 
 const LINK = 'rounded-md px-1 py-1 text-white/75 underline-offset-4 hover:text-gold hover:underline focus-visible:outline-3 focus-visible:outline-offset-2 focus-visible:outline-gold';
 
@@ -11,6 +11,11 @@ export function SiteFooter() {
         <p className="text-white/70">
           <span className="font-display text-base text-white">{APP_NAME}</span>{' '}
           <span data-testid="app-version" className="rounded-full bg-white/10 px-2 py-0.5 text-xs font-bold text-white/80">v{APP_VERSION}</span>
+          <span className="mt-1 block text-xs">
+            Hecho por{' '}
+            <a href={AUTHOR_URL} target="_blank" rel="noopener noreferrer" className={LINK} data-testid="footer-author">{AUTHOR_NAME}<span className="sr-only"> (perfil de GitHub, se abre en una pestaña nueva)</span></a>
+            {' · '}Licencia MIT
+          </span>
         </p>
         <nav aria-label="Información legal y del proyecto">
           <ul className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 md:justify-end">
@@ -21,7 +26,7 @@ export function SiteFooter() {
             ))}
             <li>
               <a href={REPO_URL} target="_blank" rel="noopener noreferrer" className={LINK}>
-                Repositorio<span className="sr-only"> (se abre en una pestaña nueva)</span>
+                Repositorio en GitHub<span className="sr-only"> (se abre en una pestaña nueva)</span>
               </a>
             </li>
           </ul>

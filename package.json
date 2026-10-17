@@ -2,6 +2,10 @@
   "name": "subasta-salvaje",
   "version": "1.0.0",
   "license": "MIT",
+  "author": "ElMaxter99 (https://github.com/ElMaxter99)",
+  "homepage": "https://github.com/ElMaxter99/subasta-salvaje#readme",
+  "repository": { "type": "git", "url": "git+https://github.com/ElMaxter99/subasta-salvaje.git" },
+  "bugs": { "url": "https://github.com/ElMaxter99/subasta-salvaje/issues" },
   "private": true,
   "description": "Subasta Salvaje: subastas creativas multijugador con edici\u00f3n de im\u00e1genes por IA",
   "scripts": {

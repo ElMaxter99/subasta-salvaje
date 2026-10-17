@@ -1,7 +1,7 @@
 import { LegalPage } from '@/components/legal/legal-page';
-import { LICENSE_FILE_URL, LICENSE_NAME, REPO_URL } from '@/lib/legal/site';
+import { AUTHOR_NAME, AUTHOR_URL, LICENSE_FILE_URL, LICENSE_NAME, REPO_URL } from '@/lib/legal/site';
 
-export const metadata = { title: 'Licencia', description: 'Licencia del código de Subasta Salvaje (MIT) y alcance de la marca.', robots: { index: true, follow: true } };
+export const metadata = { title: 'Licencia', description: 'Licencia MIT de Subasta Salvaje: código e imágenes.', robots: { index: true, follow: true } };
 
 export default function LicensePage() {
   return (
@@ -18,10 +18,10 @@ export default function LicensePage() {
         </p>
       </section>
       <section>
-        <h2>Qué NO cubre la licencia</h2>
-        <p role="status" className="rounded-2xl border border-warning/40 bg-warning/10 px-4 py-3">
-          La licencia {LICENSE_NAME} cubre el <strong>código</strong>. <strong>El nombre «Subasta Salvaje», el logotipo y la mascota</strong> (imágenes de <code>public/assets/brand/</code>, <code>public/assets/mascot/</code> y
-          el paquete <code>subasta-salvaje-assets/</code>) son la marca del proyecto y <strong>sus derechos quedan reservados por el propietario</strong>: si redistribuyes o publicas tu propia versión, sustituye la marca por la tuya.
+        <h2>Logotipo, mascota e imágenes</h2>
+        <p>
+          El logotipo, la mascota y las demás imágenes de la marca <strong>se generaron con herramientas de IA para esta aplicación</strong> y <strong>no hay ninguna marca registrada</strong>. Se publican junto al código bajo los mismos términos de la
+          licencia {LICENSE_NAME}, en la medida en que existan derechos sobre ellas (el estatus legal de las obras generadas con IA varía según la jurisdicción). Autor del proyecto: <a href={AUTHOR_URL} target="_blank" rel="noopener noreferrer">{AUTHOR_NAME}</a>.
         </p>
       </section>
       <section>

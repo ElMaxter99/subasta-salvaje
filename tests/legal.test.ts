@@ -84,8 +84,11 @@ describe('páginas legales', () => {
     expect((pkg as Record<string, unknown>).license).toBe('MIT');
     const text = readFileSync(path.join(process.cwd(), 'LICENSE'), 'utf8');
     expect(text.startsWith('MIT License')).toBe(true);
-    expect(text).toMatch(/Copyright \(c\) 2026 \S+/);
-    expect(text).toMatch(/NO cubre la marca/); // la marca queda fuera de la licencia
+    expect(text).toMatch(/Copyright \(c\) 2026 ElMaxter99/);
+    expect(text).toMatch(/generaron con herramientas de IA/); // origen de logo y mascota
+    expect(text).toContain('https://github.com/ElMaxter99/subasta-salvaje');
+    expect((pkg as Record<string, unknown>).author).toMatch(/ElMaxter99/);
+    expect(JSON.stringify((pkg as Record<string, unknown>).repository)).toContain('github.com/ElMaxter99/subasta-salvaje');
   });
 
   it('todas las dependencias directas tienen licencia permisiva compatible con MIT', () => {

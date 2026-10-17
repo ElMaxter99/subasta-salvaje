@@ -61,7 +61,9 @@ describe('README.md', () => {
     const lic = JSON.parse(readFileSync(path.join(ROOT, 'package.json'), 'utf8')).license;
     expect(lic).toBe('MIT');
     expect(readme).toMatch(/licencia \*\*MIT\*\*/i);
-    expect(readme).toMatch(/marca/i);
+    expect(readme).toMatch(/ElMaxter99/);
+    expect(readme).toContain('https://github.com/ElMaxter99/subasta-salvaje');
+    expect(readme).toMatch(/no hay ninguna marca registrada/i);
     expect(readme).not.toMatch(/Sin licencia declarada/i);
   });
 });

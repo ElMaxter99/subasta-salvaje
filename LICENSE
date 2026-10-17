@@ -1,6 +1,6 @@
 MIT License
 
-Copyright (c) 2026 ElMaxter99 y colaboradores de Subasta Salvaje
+Copyright (c) 2026 ElMaxter99
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -21,9 +21,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 ---------------------------------------------------------------------------
-Alcance (aviso del propietario): esta licencia MIT cubre el CÓDIGO FUENTE del
-repositorio. NO cubre la marca «Subasta Salvaje»: el nombre, el logotipo y la
-mascota (public/assets/brand/, public/assets/mascot/, subasta-salvaje-assets/),
-cuyos derechos quedan reservados por su propietario. Las dependencias y las
-tipografías de terceros (Baloo 2 y Nunito, SIL OFL 1.1) mantienen sus propias
-licencias: ver /creditos y docs/LEGAL.md.
+Aviso del autor (ElMaxter99): el logotipo, la mascota y demás imágenes de la marca
+de «Subasta Salvaje» se generaron con herramientas de IA generativa para esta
+aplicación; no hay ninguna marca registrada. Se publican junto al código bajo
+los mismos términos MIT, en la medida en que existan derechos sobre ellos (el
+estatus de las obras generadas con IA varía según la jurisdicción).
+Las dependencias y las tipografías de terceros (Baloo 2 y Nunito, SIL OFL 1.1)
+mantienen sus propias licencias: ver /creditos y docs/LEGAL.md.
+Repositorio: https://github.com/ElMaxter99/subasta-salvaje

@@ -7,6 +7,9 @@ import pkg from '../../../package.json';
 export const APP_NAME = 'Subasta Salvaje';
 export const APP_VERSION: string = pkg.version;
 export const REPO_URL = 'https://github.com/ElMaxter99/subasta-salvaje';
+/** Autor del proyecto (cuenta de GitHub). */
+export const AUTHOR_NAME = 'ElMaxter99';
+export const AUTHOR_URL = 'https://github.com/ElMaxter99';
 
 /** Fecha (ISO) de la última revisión de los textos legales. Actualízala cuando cambies cualquiera de ellos. */
 export const LEGAL_UPDATED = '2026-10-17';
@@ -14,7 +17,7 @@ export const LEGAL_UPDATED_LABEL = '17 de octubre de 2026';
 
 /**
  * Licencia del CÓDIGO: MIT (archivo LICENSE y campo `license` de package.json; un test comprueba que coinciden).
- * La marca (nombre, logotipo y mascota) NO está incluida en la licencia: ver `/licencia` y el aviso de LICENSE.
+ * Logo y mascota (hechos con IA para la app, sin marca registrada) se publican también bajo MIT: ver `/licencia` y LICENSE.
  */
 export const LICENSE_NAME = pkg.license;
 export const LICENSE_DECLARED = Boolean(LICENSE_NAME);
@@ -97,10 +100,9 @@ export const EXTRA_CREDITS: ExtraCredit[] = [
 ];
 
 export const PROJECT_ASSET_NOTES: string[] = [
-  'Logotipo y mascota nueva (public/assets/brand/): los entregó el propietario del proyecto como imagen; las versiones recortadas se generan a partir de ese original. Pertenecen al propietario del proyecto.',
-  'Expresiones, poses y objetos de la mascota (public/assets/mascot/): recortes de la lámina de referencia entregada por el propietario. Pertenecen al propietario del proyecto.',
+  'Logotipo y mascota (public/assets/brand/ y public/assets/mascot/): imágenes generadas con herramientas de IA generativa para esta aplicación y aportadas por su autor, ElMaxter99; las versiones recortadas se generan a partir de esos originales. No hay ninguna marca registrada. Se publican bajo los mismos términos MIT que el código, en la medida en que existan derechos sobre ellas (el estatus de las obras generadas con IA varía según la jurisdicción).',
   'Mini héroe vectorial, favicon simplificado y paquete de recursos subasta-salvaje-assets/: dibujos vectoriales propios del proyecto generados por scripts (no son renders 3D ni imágenes de IA).',
-  'No se ha verificado en el repositorio ninguna licencia concreta para estos recursos gráficos más allá de lo anterior: no se concede ninguna licencia de reutilización sobre ellos.',
+  'Herramientas de desarrollo con IA: el proyecto se ha construido con la ayuda de Claude Code (Anthropic).',
 ];
 
 export const SERVICE_PROVIDERS = [

@@ -23,9 +23,9 @@ Los créditos que no son npm (Baloo 2, Nunito, recursos gráficos) están a mano
 
 ## Qué NO está resuelto (decisiones del propietario)
 1. **Titular**: nombre, contacto, domicilio y NIF (variables de entorno).
-2. ~~**Licencia del código**~~ **Decidida: MIT** (17-10-2026, el propietario delegó la elección: «el proyecto es todo gratis»). Están `LICENSE`, `"license": "MIT"` en `package.json` y `LICENSE_NAME` (lee package.json). La **marca** (nombre, logotipo, mascota) queda **fuera** de la licencia, con derechos reservados; el titular del copyright figura como «ElMaxter99 y colaboradores» (cuenta del repositorio): el propietario puede poner su nombre real en `LICENSE`.
+2. ~~**Licencia del código**~~ **Decidida: MIT** (17-10-2026, el propietario delegó la elección: «el proyecto es todo gratis»). Están `LICENSE`, `"license": "MIT"` en `package.json` y `LICENSE_NAME` (lee package.json). Aclaración posterior del propietario: el repo es público, **no hay marca registrada** y logo y mascota están **hechos con IA para la app**, así que se publican también bajo MIT (sin reservas de marca). Autor/copyright: **ElMaxter99**. El repositorio de GitHub y el autor se enlazan en el footer, en `/legal`, `/licencia`, README y `package.json`.
 3. **Revisión jurídica** de aviso legal, privacidad y cookies (incluida la conclusión de que no hace falta banner).
-4. Licencia/origen exacto de los recursos gráficos de marca (hoy: entregados por el propietario; **fuera de la MIT**, derechos reservados). Si el propietario quiere liberarlos (p. ej. CC BY 4.0), habría que declararlo en `LICENSE`, `/licencia` y el README.
+4. Origen de los recursos gráficos: generados con IA para la app (herramienta concreta no registrada). El estatus de derechos de las obras generadas con IA varía por jurisdicción; el texto lo dice y no afirma titularidad exclusiva.
 
 ## Regla de mantenimiento
 Al añadir **una dependencia** → `node scripts/legal/build-credits.mjs`. Una **cookie o clave de localStorage/sessionStorage** → `STORAGE_INVENTORY` en `site.ts` (el test lo comprueba) y, si no es técnica, banner de consentimiento. Un **proveedor o dato nuevo** (analítica, IA, correo…) → `SERVICE_PROVIDERS` y `/privacidad`. Actualiza `LEGAL_UPDATED` al cambiar los textos.
