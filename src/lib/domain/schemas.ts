@@ -46,7 +46,7 @@ export const actionSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('game.set_rules'), max_players: z.number().int().min(1).max(MAX_PLAYERS).optional(), max_rounds: z.number().int().min(1).max(500).nullable().optional(), integer_bids: z.boolean().optional() }),
   /** Subasta automática: anuncia los elementos por orden, adjudica sola y espera `gap_seconds` entre subastas. */
   z.object({ type: z.literal('game.set_sound'), sound_enabled: z.boolean().optional(), music_enabled: z.boolean().optional() }),
-  z.object({ type: z.literal('game.set_auto_run'), enabled: z.boolean(), gap_seconds: z.number().int().min(3).max(300), idle_seconds: z.number().int().min(10).max(600), auto_award_seconds: z.number().int().min(3).max(300).optional() }),
+  z.object({ type: z.literal('game.set_auto_run'), enabled: z.boolean(), gap_seconds: z.number().int().min(3).max(300), idle_seconds: z.number().int().min(10).max(600), auto_award_seconds: z.number().int().min(3).max(300).optional(), random: z.boolean().optional() }),
   z.object({ type: z.literal('game.set_join_policy'), join_policy: z.enum(['open', 'slots', 'closed']) }),
   z.object({ type: z.literal('player.release'), player_id: uuid }),
   z.object({ type: z.literal('game.start') }),

@@ -144,6 +144,8 @@ export interface GameInfo {
   auto_run_idle_seconds?: number;
   /** Hora (del servidor) en la que se anunciará la siguiente subasta, o null. */
   auto_run_next_at?: string | null;
+  /** Subasta automática: elige los elementos al azar en vez de seguir el orden del catálogo. */
+  auto_run_random?: boolean;
   /** Efectos y música de la TV (los controla el anfitrión). */
   sound_enabled?: boolean;
   music_enabled?: boolean;

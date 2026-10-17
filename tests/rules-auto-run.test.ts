@@ -209,6 +209,32 @@ describe('subasta automática', () => {
     expect(s.game.status).toBe('finished');
   });
 
+  it('la subasta automática puede elegir los elementos AL AZAR (sin seguir el orden) y por defecto sigue el orden', async () => {
+    const firsts = new Set<string>();
+    for (let i = 0; i < 10; i++) {
+      const host = newHost();
+      const room = await lobby(host);
+      await act(ctx, room, host, { type: 'game.start' });
+      const gid = (await getHostState(ctx, room, host)).game.id;
+      await act(ctx, room, host, { ...settings(3, 10), random: true });
+      expect((await getHostState(ctx, room, host)).game.auto_run_random).toBe(true);
+      await back(gid, "update games set auto_run_since = now() - interval '10 seconds' where id = $1");
+      await autoAwardTick(ctx, room);
+      firsts.add((await getHostState(ctx, room, host)).auction!.item.name);
+    }
+    expect(firsts.size).toBeGreaterThan(1); // con el orden fijo siempre saldría «Elemento 1»
+    // Sin pedirlo, el orden del catálogo (y detener la subasta no cambia la preferencia)
+    const host = newHost();
+    const room = await lobby(host);
+    await act(ctx, room, host, { type: 'game.start' });
+    const gid = (await getHostState(ctx, room, host)).game.id;
+    await act(ctx, room, host, settings(3, 10));
+    expect((await getHostState(ctx, room, host)).game.auto_run_random).toBe(false);
+    await back(gid, "update games set auto_run_since = now() - interval '10 seconds' where id = $1");
+    await autoAwardTick(ctx, room);
+    expect((await getHostState(ctx, room, host)).auction!.item.name).toBe('Elemento 1');
+  });
+
   it('cancelar a mano: sin pujas el elemento queda perdido; con pujas vuelve al catálogo', async () => {
     const host = newHost();
     const room = await lobby(host);
