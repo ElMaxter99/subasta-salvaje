@@ -130,7 +130,7 @@ export function SettingsPanel({ ctx }: { ctx: HostCtx }) {
               Guardar
             </Button>
           </div>
-          <p className="text-xs text-white/55">Al jugarse todas las rondas la partida termina sola. Mínimo: las rondas ya jugadas ({game.rounds_completed}); máximo: los {snapshot.items.length} elementos del catálogo.</p>
+          <p className="text-xs text-white/55">Al jugarse todas las rondas (adjudicadas o canceladas) la partida termina sola. Mínimo: las rondas ya jugadas ({game.rounds_completed}); máximo: los {snapshot.items.length} elementos del catálogo.</p>
         </form>
         <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-2xl border border-white/10 bg-night-900 p-3">
           <input

@@ -235,6 +235,48 @@ describe('subasta automática', () => {
     expect((await getHostState(ctx, room, host)).auction!.item.name).toBe('Elemento 1');
   });
 
+  it('una subasta cancelada (por el anfitrión o por falta de pujas) cuenta como ronda jugada y deja terminar la partida; deshacer una adjudicación no cuenta', async () => {
+    const host = newHost();
+    const room = await lobby(host, { max_rounds: 2 });
+    await act(ctx, room, host, { type: 'game.start' });
+    const gid = (await getHostState(ctx, room, host)).game.id;
+    const s0 = await getHostState(ctx, room, host);
+    const a = await act(ctx, room, host, { type: 'auction.announce', item_id: s0.items[0]!.id });
+    await act(ctx, room, host, { type: 'auction.cancel', auction_id: a.snapshot.auction!.id });
+    expect((await getHostState(ctx, room, host)).game.rounds_completed).toBe(1); // la cancelada ya es una ronda
+    const sold = await sell(room, host, 'Ana');
+    expect((await getHostState(ctx, room, host)).game.rounds_completed).toBe(2);
+    // Deshacer la adjudicación devuelve esa ronda (la cancelada por deshacer NO cuenta)
+    const purchase = (sold.snapshot.last_award as { purchase_id: string }).purchase_id;
+    await act(ctx, room, host, { type: 'auction.undo_award', purchase_id: purchase, idempotency_key: key() });
+    expect((await getHostState(ctx, room, host)).game.rounds_completed).toBe(1);
+    // Se vuelve a jugar y, agotadas las 2 rondas, la partida termina sola
+    await sell(room, host, 'Beto');
+    await back(gid, "update auctions set closed_at = now() - interval '20 seconds' where game_id = $1");
+    await autoAwardTick(ctx, room);
+    expect((await getHostState(ctx, room, host)).game.status).toBe('finished');
+  });
+
+  it('con la subasta automática, las rondas que quedan sin pujas también consumen rondas y la partida termina', async () => {
+    const host = newHost();
+    const room = await lobby(host, { max_rounds: 2 });
+    await act(ctx, room, host, { type: 'game.start' });
+    const gid = (await getHostState(ctx, room, host)).game.id;
+    await act(ctx, room, host, settings(3, 10));
+    await back(gid, "update games set auto_run_since = now() - interval '10 seconds' where id = $1");
+    await autoAwardTick(ctx, room);
+    for (let i = 0; i < 2; i++) {
+      await back(gid, "update auctions set opened_at = now() - interval '20 seconds' where game_id = $1 and status = 'open'");
+      await autoAwardTick(ctx, room); // nadie puja: perdido y cuenta como ronda
+      await back(gid, "update auctions set closed_at = now() - interval '20 seconds' where game_id = $1");
+      await autoAwardTick(ctx, room);
+    }
+    const s = await getHostState(ctx, room, host);
+    expect(s.game.rounds_completed).toBe(2);
+    expect(s.game.status).toBe('finished');
+    expect(s.items.filter((i) => i.status === 'lost')).toHaveLength(2);
+  });
+
   it('cancelar a mano: sin pujas el elemento queda perdido; con pujas vuelve al catálogo', async () => {
     const host = newHost();
     const room = await lobby(host);

@@ -83,11 +83,11 @@ export function AuctionPanel({ ctx }: { ctx: HostCtx }) {
       >
         {live && live.bids.length === 0 ? (
           <p>
-            Nadie ha pujado por <b>{live.item.name}</b>: se da por <b>perdido</b> (no lo quiere nadie) y <b>no volverá a salir</b> en otra ronda. La TV lo anunciará. <b>No se descuenta dinero a nadie.</b>
+            Nadie ha pujado por <b>{live.item.name}</b>: se da por <b>perdido</b> (no lo quiere nadie) y <b>no volverá a salir</b> en otra ronda. La TV lo anunciará. <b>No se descuenta dinero a nadie.</b> Cuenta como una ronda jugada.
           </p>
         ) : (
           <p>
-            El elemento <b>{live?.item.name}</b> vuelve al catálogo y las pujas se descartan. <b>No se descuenta dinero a nadie.</b>
+            El elemento <b>{live?.item.name}</b> vuelve al catálogo y las pujas se descartan. <b>No se descuenta dinero a nadie.</b> Cuenta como una ronda jugada.
           </p>
         )}
       </ConfirmDialog>
