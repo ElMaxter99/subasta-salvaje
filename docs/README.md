@@ -15,6 +15,7 @@
 | [DECISIONES.md](DECISIONES.md) | Registro de decisiones (qué, por qué, alternativas) |
 | [HISTORIAL.md](HISTORIAL.md) | Cronología de las peticiones del propietario y lo entregado |
 | [PLAN-SUPERADMIN.md](PLAN-SUPERADMIN.md) | Plan (sin implementar) del panel de superadmin: usuarios, partidas, IA/cuotas y peso de Supabase |
+| [PLAN-PLANTILLAS-SISTEMA.md](PLAN-PLANTILLAS-SISTEMA.md) | Plan (sin implementar) de las partidas del sistema creadas por el superadmin, la imagen interna única y las fotos en un CDN externo |
 | [PENDIENTE.md](PENDIENTE.md) | Tareas manuales del propietario y lo no verificado |
 
 El `README.md` de la raíz es la guía de usuario/despliegue (muy completa). Estos documentos son la memoria técnica: **si cambias
