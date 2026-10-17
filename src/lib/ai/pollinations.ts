@@ -24,6 +24,27 @@ export interface PollinationsProviderOptions extends PollinationsConfig {
   baseUrl?: string;
 }
 
+/**
+ * Tamaño de la imagen editada. Por defecto 1024x768 (4:3), pero la casa suele tener otra proporción (p. ej. 16:9): pedir otra
+ * hace que el modelo recorte y redibuje los bordes y «pierda» objetos. Se mantiene la proporción de la imagen de partida
+ * (lado mayor = el del tamaño configurado, múltiplos de 64) salvo que el propietario fije POLLINATIONS_IMAGE_SIZE.
+ */
+export async function editSize(baseBytes: Uint8Array, cfg: { size: string; sizeFixed?: boolean }): Promise<string> {
+  if (cfg.sizeFixed) return cfg.size;
+  try {
+    const { default: sharp } = await import('sharp');
+    const meta = await sharp(Buffer.from(baseBytes)).metadata();
+    const [cw, ch] = cfg.size.split('x').map(Number) as [number, number];
+    if (!meta.width || !meta.height) return cfg.size;
+    const long = Math.max(cw, ch);
+    const k = long / Math.max(meta.width, meta.height);
+    const round = (n: number) => Math.min(long, Math.max(256, Math.round((n * k) / 64) * 64));
+    return `${round(meta.width)}x${round(meta.height)}`;
+  } catch {
+    return cfg.size;
+  }
+}
+
 export function createPollinationsProvider(cfg: PollinationsProviderOptions): ImageGenerationProvider {
   const doFetch = cfg.fetchImpl ?? fetch;
   const timeout = cfg.timeoutMs ?? 90_000;
@@ -82,7 +103,7 @@ export function createPollinationsProvider(cfg: PollinationsProviderOptions): Im
       const form = new FormData();
       form.set('prompt', prompt);
       form.set('model', cfg.editModel);
-      form.set('size', cfg.size);
+      form.set('size', await editSize(input.base.bytes, cfg));
       form.set('response_format', 'b64_json');
       form.append('image', new Blob([(await toReferencePng(input.base, REF_MAX_SIDE)) as BlobPart], { type: 'image/png' }), 'scene.png');
       if (input.itemImage) form.append('image', new Blob([(await toReferencePng(input.itemImage, REF_MAX_SIDE)) as BlobPart], { type: 'image/png' }), 'item.png');

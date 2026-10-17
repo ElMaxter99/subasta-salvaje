@@ -177,6 +177,7 @@ async function runJob(ctx: Ctx, provider: ImageGenerationProvider, job: ClaimedJ
       bytes: image.bytes.length,
       prompt: image.prompt,
       provider: image.provider ?? provider.id,
+      model: image.model ?? null,
     });
     // Si la cadena respondió con otro proveedor, el uso (y los topes diarios) se atribuyen al que respondió.
     if (reserved && image.provider && image.provider !== provider.id) {

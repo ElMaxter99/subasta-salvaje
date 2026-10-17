@@ -1,4 +1,5 @@
 'use client';
+import { providerLabel, type ProviderLabelId } from '@/lib/ai/labels';
 import { Loader } from '@/components/ui/loader';
 import { ItemIcon } from '@/components/mascot/mascot';
 
@@ -150,6 +151,21 @@ function HistoryInner({ roomCode, initial, runtime }: Props) {
   );
 }
 
+/** Qué IA (o no-IA) hizo una versión: proveedor, modelo y tipo de trabajo, para entender por qué se ve como se ve. */
+function aiInfo(v: ImageVersion): { who: string; kind: string } {
+  if (v.provider === 'uploaded' || v.origin === 'uploaded') return { who: 'Imagen subida', kind: 'No se generó con IA' };
+  if (v.provider === 'catalog') return { who: 'Galería', kind: 'No se generó con IA' };
+  if (v.provider === 'demo') return { who: 'Pegatinas con emojis', kind: 'Sin IA: pegatinas sobre la imagen' };
+  const who = `${providerLabel(v.provider as ProviderLabelId)}${v.model ? ` · ${v.model.replace(/\+compose$/, '')}` : ''}`;
+  const composed = (v.model ?? '').endsWith('+compose') || (v.prompt_used ?? '').startsWith('[composición]');
+  const kind = composed
+    ? 'Composición (collage): la IA solo dibuja el objeto y se pega sobre la imagen anterior; no es una edición real'
+    : v.origin === 'edit'
+      ? 'Edición con IA: se envía la imagen anterior (y la foto del objeto, si la hay) y el modelo la vuelve a dibujar'
+      : 'Generación con IA desde cero';
+  return { who, kind };
+}
+
 function VersionItem({ v, parent, current, isA, isB, onA, onB, onRestore, busy }: { v: ImageVersion; parent: ImageVersion | null; current: boolean; isA: boolean; isB: boolean; onA: () => void; onB: () => void; onRestore: () => void; busy: boolean }) {
   const [open, setOpen] = useState(false);
   const failed = v.generation_status === 'failed';
@@ -165,7 +181,7 @@ function VersionItem({ v, parent, current, isA, isB, onA, onB, onRestore, busy }
             {v.provider === 'demo' ? <Pill tone="violet">Pegatinas</Pill> : v.provider === 'catalog' ? <Pill>Galería</Pill> : <Pill>{v.provider}</Pill>}
             <Pill tone={failed ? 'rose' : 'teal'}>{failed ? 'Fallida' : 'Completada'}</Pill>
           </div>
-          <p className="text-sm text-white/60">{fmtDateTime(v.created_at)}</p>
+          <p className="text-sm text-white/60">{fmtDateTime(v.created_at)} · {aiInfo(v).who}</p>
           {failed && v.error_message ? <p className="text-sm text-rose">{v.error_message}</p> : null}
         </div>
       </div>
@@ -187,6 +203,12 @@ function VersionItem({ v, parent, current, isA, isB, onA, onB, onRestore, busy }
         <div className="mt-3 space-y-2 rounded-xl bg-night-950 p-3 text-sm">
           <p>
             <b className="text-white/60">Versión padre:</b> {parent ? `${versionLabel(parent)} · ${fmtDateTime(parent.created_at)}` : v.parent_version_id ? 'no disponible' : 'ninguna (origen)'}
+          </p>
+          <p>
+            <b className="text-white/60">IA:</b> {aiInfo(v).who}
+          </p>
+          <p>
+            <b className="text-white/60">Tipo:</b> {aiInfo(v).kind}
           </p>
           <p>
             <b className="text-white/60">Prompt usado:</b>

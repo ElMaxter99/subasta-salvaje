@@ -181,6 +181,8 @@ export interface ImageVersion {
   item_name: string | null;
   origin: 'initial' | 'uploaded' | 'edit';
   provider: string;
+  /** Modelo de IA que generó la versión (null en versiones anteriores a registrarlo, subidas y pegatinas). */
+  model?: string | null;
   prompt_used: string | null;
   generation_status: 'completed' | 'failed';
   is_approved: boolean;

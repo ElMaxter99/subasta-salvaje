@@ -1,3 +1,4 @@
+import { slotFor } from './compose';
 import type { EditSceneInput, InitialSceneInput, ItemImageInput } from './types';
 
 const STYLE =
@@ -14,15 +15,30 @@ export function buildInitialScenePrompt(input: InitialSceneInput): string {
   ].join(' ');
 }
 
+/** Zona sugerida (en palabras) para el elemento n.º `index`: reparte las compras para que no se pisen entre sí. */
+export function regionFor(index: number): string {
+  const [x, y] = slotFor(index);
+  const h = x < 0.33 ? 'left' : x < 0.66 ? 'center' : 'right';
+  const v = y >= 0.85 ? 'foreground' : y >= 0.72 ? 'lower-middle' : 'middle';
+  return `${v} ${h}`;
+}
+
+/**
+ * Lo ya comprado debe SEGUIR VISIBLE: los modelos de edición tienden a «reemplazar» el objeto anterior por el nuevo si se les
+ * dice solo que añadan uno. Se pide explícitamente no taparlo ni sustituirlo y se sugiere una zona distinta.
+ */
+function previousClause(input: EditSceneInput): string {
+  if (input.previousItems.length === 0) return 'The scene is still empty apart from its original architecture.';
+  return `Image 0 ALREADY contains ${input.previousItems.length === 1 ? 'this purchased object' : 'these purchased objects'}: ${input.previousItems.join(', ')}. ${input.previousItems.length === 1 ? 'It stays' : 'They all stay'} fully visible in the final image, with the same position, size and appearance: the new object must NOT replace, cover, overlap or hide ${input.previousItems.length === 1 ? 'it' : 'any of them'}. Put the new object in a different, empty spot, preferably in the ${regionFor(input.previousItems.length)} part of the scene.`;
+}
+
 /**
  * Prompt de edición acumulativa. Prioriza: conservar escena y perspectiva, añadir SÓLO el
  * nuevo elemento, mantener lo anterior, integrar luz/escala/sombras, sin texto.
  */
 export function buildEditPrompt(input: EditSceneInput): string {
   if (input.itemImage) return buildBlendPrompt(input);
-  const previous = input.previousItems.length
-    ? `The scene already contains these purchased items, which must remain exactly where they are and unchanged: ${input.previousItems.join(', ')}.`
-    : 'The scene is still empty apart from its original architecture.';
+  const previous = previousClause(input);
   return [
     `Edit the provided image of a "${input.theme}" scene by adding exactly ONE new element: "${input.itemName}" (${input.itemDescription || 'no further description'}).`,
     'Keep the original composition, camera angle, perspective, architecture, colors and every existing object exactly as they are. Do NOT redraw the scene, do NOT remove, move, resize or restyle anything that is already there.',
@@ -38,9 +54,7 @@ export function buildEditPrompt(input: EditSceneInput): string {
  * como en la foto de referencia (p. ej. un conejo rosa con un lazo azul sigue siendo rosa con lazo azul) pero integrado en la casa.
  */
 export function buildBlendPrompt(input: EditSceneInput): string {
-  const previous = input.previousItems.length
-    ? `The scene already contains these purchased items, which must remain exactly where they are and unchanged: ${input.previousItems.join(', ')}.`
-    : 'The scene is still empty apart from its original architecture.';
+  const previous = previousClause(input);
   return [
     `Image 0 is the existing "${input.theme}" scene. Image 1 is a reference picture of the object "${input.itemName}" (${input.itemDescription || 'no further description'}).`,
     'Edit image 0 by adding exactly ONE new element: the object shown in image 1. Reproduce that object faithfully (its shape, colors, markings and distinctive details exactly as in the reference) and place it in the scene.',

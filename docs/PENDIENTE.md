@@ -94,6 +94,11 @@ La colección con alfa real (`public/assets/mascot-vector/`) es vectorial. Para 
 - [ ] **Sin probar contra GitHub/jsDelivr reales.** Prueba primero con 5-10 fotos y luego con un lote grande: si GitHub aplica límites secundarios (429/403) más estrictos que los reintentos previstos, copia el mensaje. La cola se puede parar y continuar.
 - [ ] Decide la política del repositorio de fotos (licencias/retirada) antes de subir cientos de imágenes de terceros.
 
+## 5i. Edición de imágenes con IA (Pollinations)
+- [ ] Aplica las migraciones `…5200`/`…5300` (modelo de cada versión en el historial).
+- [ ] Vuelve a probar dos compras seguidas en una partida con IA: el historial (Detalles) muestra ahora IA, modelo y tipo, y el prompt pide que la compra anterior siga visible y la nueva vaya a otra zona. **No verificado contra Pollinations real**: si la 2.ª compra sigue tapando la 1.ª, copia las dos imágenes y los prompts; la alternativa fiable es la composición (collage), que conserva la imagen anterior píxel a píxel.
+- [ ] Si Pollinations rechaza el tamaño con la proporción de la casa (p. ej. `1024x576`), fija `POLLINATIONS_IMAGE_SIZE=1024x768` y avisa.
+
 ## 6. Cron externo (opcional pero recomendado en producción)
 - [ ] El cron de `vercel.json` es diario (límite del plan *Hobby*). Para que los trabajos de imagen y el borrado se procesen con más frecuencia, programa en GitHub Actions o cron-job.org una llamada cada minuto a `/api/jobs/process` con la cabecera `Authorization: Bearer <CRON_SECRET>`.
 
