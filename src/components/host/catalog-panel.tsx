@@ -7,6 +7,7 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import type { AuctionItem } from '@/lib/domain/types';
 import { useToast } from '@/components/ui/toast';
 import { uploadItemImage } from '@/lib/client/api';
+import { EmojiInput } from '@/components/ui/emoji-input';
 import { Card, Notice, Pill, Thumb, inputCls } from './bits';
 import type { HostCtx } from './host-context';
 
@@ -30,12 +31,12 @@ function ItemForm({ initial, submitLabel, busyKey, ctx, onSubmit, onCancel }: { 
         }
       }}
     >
-      <div className="grid grid-cols-[5rem_1fr] gap-2">
+      <div className="grid grid-cols-[6.5rem_1fr] gap-2">
         <div>
           <label htmlFor={`emoji-${id}`} className="text-sm font-semibold text-white/80">
             Emoji
           </label>
-          <input id={`emoji-${id}`} className={`${inputCls} text-center text-2xl`} value={emoji} maxLength={8} onChange={(e) => setEmoji(e.target.value)} placeholder="🎁" />
+          <EmojiInput id={`emoji-${id}`} ariaLabel="Emoji" className={`${inputCls} text-center text-2xl`} value={emoji} onChange={setEmoji} />
         </div>
         <div>
           <label htmlFor={`iname-${id}`} className="text-sm font-semibold text-white/80">

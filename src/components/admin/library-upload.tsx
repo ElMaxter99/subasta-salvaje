@@ -1,12 +1,12 @@
 'use client';
 
-import { useRef, useState } from 'react';
-import { FolderUp, ImagePlus, Square } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { FolderUp, ImagePlus, Square, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ApiError } from '@/lib/client/api';
 import { commitLibraryRequest, stageLibraryImageRequest, type StagedImage, type UploadMeta } from '@/lib/client/library-api';
 
-interface Row { id: number; file: File; state: 'wait' | 'sending' | 'ready' | 'ok' | 'dup' | 'error'; message?: string; staged?: StagedImage }
+interface Row { id: number; file: File; url: string; state: 'wait' | 'sending' | 'ready' | 'ok' | 'dup' | 'error'; message?: string; staged?: StagedImage }
 
 const input = 'w-full rounded-xl border border-white/15 bg-night-900 px-3 py-2';
 const IMAGE = /\.(jpe?g|png|webp)$/i;
@@ -14,7 +14,8 @@ const COMMIT_CHUNK = 500;
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /**
- * Subida masiva en dos fases: (1) cada foto se envía de UNA en una y se deja preparada en GitHub (sin commit; las ya registradas
+ * Las imágenes elegidas NO se suben al momento: quedan en una cuadrícula de miniaturas para revisarlas y quitar las que sobren (✕);
+ * la subida empieza al pulsar «Subir». Subida masiva en dos fases: (1) cada foto se envía de UNA en una y se deja preparada en GitHub (sin commit; las ya registradas
  * se detectan por su contenido y se saltan); (2) al terminar, TODAS las preparadas se publican en UN SOLO commit. Si GitHub limita
  * el ritmo se espera y se reintenta. Se puede parar; lo ya preparado se publica con «Publicar preparadas». Si falla la publicación,
  * no se registra nada y se reintenta con la misma lista.
@@ -26,9 +27,12 @@ export function LibraryUpload({ enabled, collections, onDone }: { enabled: boole
   const [publishing, setPublishing] = useState(false);
   const [commitError, setCommitError] = useState<string | null>(null);
   const [over, setOver] = useState(false);
+  const [ignored, setIgnored] = useState(0);
   const stop = useRef(false);
   const seq = useRef(0);
   const rowsRef = useRef<Row[]>([]);
+
+  useEffect(() => () => { for (const r of rowsRef.current) URL.revokeObjectURL(r.url); }, []);
 
   const update = (fn: (all: Row[]) => Row[]) => setRows((all) => { const n = fn(all); rowsRef.current = n; return n; });
   const patch = (id: number, p: Partial<Row>) => update((all) => all.map((r) => (r.id === id ? { ...r, ...p } : r)));
@@ -85,11 +89,21 @@ export function LibraryUpload({ enabled, collections, onDone }: { enabled: boole
 
   function add(files: File[]) {
     const valid = files.filter((f) => IMAGE.test(f.name) || /^image\/(jpeg|png|webp)$/.test(f.type));
-    const skipped = files.length - valid.length;
-    const batch: Row[] = valid.map((file) => ({ id: ++seq.current, file, state: 'wait' }));
-    const extra: Row[] = skipped > 0 ? [{ id: ++seq.current, file: new File([], `${skipped} archivo(s) que no son JPG, PNG ni WebP`), state: 'error', message: 'Ignorados' }] : [];
-    update((all) => [...all, ...batch, ...extra]);
-    if (!running && !publishing && batch.length > 0) void stageAll(batch);
+    setIgnored((n) => n + files.length - valid.length);
+    const batch: Row[] = valid.map((file) => ({ id: ++seq.current, file, url: URL.createObjectURL(file), state: 'wait' }));
+    update((all) => [...all, ...batch]);
+  }
+
+  /** Quita una imagen de la lista (solo si aún no se ha publicado). */
+  function remove(id: number) {
+    const r = rowsRef.current.find((x) => x.id === id);
+    if (r) URL.revokeObjectURL(r.url);
+    update((all) => all.filter((x) => x.id !== id));
+  }
+
+  function clearDone() {
+    for (const r of rowsRef.current) if (r.state === 'ok' || r.state === 'dup') URL.revokeObjectURL(r.url);
+    update((all) => all.filter((r) => r.state === 'wait' || r.state === 'ready' || r.state === 'error'));
   }
 
   const finished = rows.filter((r) => r.state === 'ready' || r.state === 'ok' || r.state === 'dup' || r.state === 'error').length;
@@ -146,27 +160,38 @@ export function LibraryUpload({ enabled, collections, onDone }: { enabled: boole
         )}
       </div>
 
-      {rows.length > 0 ? (
+      {rows.length > 0 || ignored > 0 ? (
         <div className="space-y-2" data-testid="library-queue">
           <div className="flex flex-wrap items-center gap-3 text-sm">
             <progress value={finished} max={rows.length} className="h-2 min-w-40 flex-1 accent-[#fbbf24]" aria-label="Progreso de la subida" />
             <span data-testid="library-progress" className="font-semibold">{finished}/{rows.length} · {count('ok') + ready} nuevas · {count('dup')} repetidas · {count('error')} con error</span>
             {running ? <Button size="sm" variant="secondary" onClick={() => { stop.current = true; }}><Square className="size-4" aria-hidden /> Parar</Button> : null}
-            {!busy && pending > 0 ? <Button size="sm" variant="primary" onClick={() => void stageAll(rowsRef.current.filter((r) => r.state === 'wait'))}>Continuar</Button> : null}
+            {!busy && pending > 0 ? <Button size="sm" variant="primary" onClick={() => void stageAll(rowsRef.current.filter((r) => r.state === 'wait'))} data-testid="library-start">{finished > 0 ? `Continuar (${pending})` : `Subir ${pending} imágenes`}</Button> : null}
+            {!busy && pending > 0 ? <Button size="sm" variant="ghost" onClick={() => { for (const r of rowsRef.current) if (r.state === 'wait') URL.revokeObjectURL(r.url); update((all) => all.filter((r) => r.state !== 'wait')); }}>Quitar las pendientes</Button> : null}
             {!busy && ready > 0 ? <Button size="sm" variant="primary" onClick={() => void publish()} data-testid="library-publish">Publicar {ready} preparadas en un commit</Button> : null}
-            {!busy ? <Button size="sm" variant="ghost" onClick={() => update((all) => all.filter((r) => r.state === 'wait' || r.state === 'ready' || r.state === 'error'))}>Limpiar lo hecho</Button> : null}
+            {!busy ? <Button size="sm" variant="ghost" onClick={clearDone}>Limpiar lo hecho</Button> : null}
           </div>
           {publishing ? <p role="status" data-testid="library-publishing" className="rounded-xl bg-gold/10 px-3 py-2 text-sm font-semibold text-gold-soft">Publicando {ready} imágenes en un único commit…</p> : null}
           {commitError ? <p role="alert" className="rounded-xl bg-rose/15 px-3 py-2 text-sm text-rose">No se pudo publicar el lote (no se ha registrado nada): {commitError}. Pulsa «Publicar» para reintentarlo.</p> : null}
-          <ul className="max-h-64 space-y-1 overflow-y-auto" aria-label="Cola de subida">
-            {rows.map((r) => (
-              <li key={r.id} className="flex flex-wrap items-center gap-2 rounded-xl bg-night-900 px-3 py-1.5 text-sm">
-                <span className={r.state === 'ok' ? 'text-teal' : r.state === 'error' ? 'text-rose' : r.state === 'dup' || r.state === 'ready' ? 'text-gold-soft' : 'text-white/60'} aria-hidden>{r.state === 'ok' ? '✔' : r.state === 'dup' ? '＝' : r.state === 'ready' ? '◔' : r.state === 'error' ? '✖' : '…'}</span>
-                <span className="font-semibold">{r.file.name}</span>
-                <span className="text-xs text-white/65">{r.state === 'wait' ? 'en cola' : r.state === 'sending' ? (r.message ?? 'preparando…') : r.message}</span>
-              </li>
-            ))}
+          <ul className="grid max-h-[28rem] grid-cols-3 gap-2 overflow-y-auto sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8" aria-label="Imágenes elegidas" data-testid="library-queue-grid">
+            {rows.map((r) => {
+              const removable = r.state === 'wait' || r.state === 'ready' || r.state === 'error';
+              const tone = r.state === 'ok' ? 'text-teal' : r.state === 'error' ? 'text-rose' : r.state === 'dup' || r.state === 'ready' ? 'text-gold-soft' : 'text-white/70';
+              return (
+                <li key={r.id} data-testid="library-queue-item" data-state={r.state} title={`${r.file.name}${r.message ? ` · ${r.message}` : ''}`} className={`relative overflow-hidden rounded-xl border bg-night-900 ${r.state === 'error' ? 'border-rose/60' : 'border-white/10'}`}>
+                  {/* eslint-disable-next-line @next/next/no-img-element -- vista previa local (blob:) */}
+                  <img src={r.url} alt="" loading="lazy" decoding="async" className={`aspect-square w-full object-cover ${r.state === 'dup' ? 'opacity-50' : ''}`} />
+                  {removable && !publishing && !(running && r.state !== 'wait') ? (
+                    <button type="button" onClick={() => remove(r.id)} aria-label={`Quitar ${r.file.name}`} className="absolute right-1 top-1 grid size-7 place-items-center rounded-full bg-night-950/85 text-white hover:bg-rose focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/70"><X className="size-4" aria-hidden /></button>
+                  ) : null}
+                  <span className={`absolute left-1 top-1 grid size-6 place-items-center rounded-full bg-night-950/85 text-xs font-bold ${tone}`} aria-hidden>{r.state === 'ok' ? '✔' : r.state === 'dup' ? '＝' : r.state === 'ready' ? '◔' : r.state === 'error' ? '✖' : r.state === 'sending' ? '…' : ''}</span>
+                  <span className="block truncate px-1.5 pt-1 text-[11px] font-semibold">{r.file.name}</span>
+                  <span className={`block truncate px-1.5 pb-1 text-[10px] ${r.state === 'error' ? 'text-rose' : 'text-white/60'}`}>{r.state === 'wait' ? 'pendiente' : r.state === 'sending' ? (r.message ?? 'preparando…') : r.message}</span>
+                </li>
+              );
+            })}
           </ul>
+          {ignored > 0 ? <p className="text-xs text-white/60" data-testid="library-ignored">{ignored} archivo(s) ignorados: solo se admiten JPG, PNG y WebP.</p> : null}
         </div>
       ) : null}
     </div>

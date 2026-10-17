@@ -17,7 +17,7 @@ duplicar nada.
 Dos vistas, con pestañas arriba: **Imágenes** (`/admin/biblioteca`, solo fotos) y **Productos del catálogo** (`/admin/catalogo`).
 
 ### Imágenes (solo fotos)
-- *Subida masiva*: arrastra archivos o una **carpeta entera** (o elige). Colección, etiquetas y crédito se aplican a todo el lote; el título sale
+- *Subida masiva*: arrastra archivos o una **carpeta entera** (o elige). Lo elegido **no se sube al momento**: queda en una **cuadrícula de miniaturas** para revisarlo; quita las que sobren con la ✕ (o «Quitar las pendientes») y pulsa **«Subir N imágenes»**. Colección, etiquetas y crédito se aplican a todo el lote; el título sale
   del nombre del archivo (`sombrilla_roja-01.jpg` → «Sombrilla roja 01»). La subida es en **dos fases y todo el lote entra en UN solo commit**:
   (1) cada foto se envía de una en una: el servidor la normaliza, mira si ya está registrada y, si es nueva, la deja *preparada* en GitHub como
   objeto de Git (blob), sin crear commit; (2) al acabar, **todas las preparadas se publican juntas** (árbol + un commit + mover la rama con la

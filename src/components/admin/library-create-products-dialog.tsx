@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { EmojiInput } from '@/components/ui/emoji-input';
 import { libraryApi, type LibraryImage } from '@/lib/client/library-api';
 
 const field = 'w-full rounded-xl border border-white/15 bg-night-900 px-3 py-2 text-base';
@@ -66,14 +67,14 @@ export function CreateProductsDialog({ images, collections, onClose, onDone }: {
             </label>
             <ul className="space-y-2">
               {rows.map((f, idx) => (
-                <li key={f.id} className="grid gap-2 rounded-xl bg-night-900 p-2 sm:grid-cols-[4rem_1fr_5rem]">
+                <li key={f.id} className="grid gap-2 rounded-xl bg-night-900 p-2 sm:grid-cols-[4rem_1fr_6.5rem]">
                   {/* eslint-disable-next-line @next/next/no-img-element -- alojada en el CDN del propietario */}
                   <img src={f.url} alt="" referrerPolicy="no-referrer" className="size-16 rounded-lg object-cover" />
                   <div className="space-y-2">
                     <input aria-label={`Nombre del producto ${idx + 1}`} maxLength={80} value={f.name} onChange={(e) => setRow(f.id, { name: e.target.value })} className={field} />
                     <input aria-label={`Descripción del producto ${idx + 1}`} maxLength={500} value={f.description} onChange={(e) => setRow(f.id, { description: e.target.value })} className={field} placeholder="Descripción (opcional)" />
                   </div>
-                  <input aria-label={`Emoji del producto ${idx + 1}`} maxLength={8} value={f.emoji} onChange={(e) => setRow(f.id, { emoji: e.target.value })} className={`${field} text-center sm:self-start`} placeholder="📦" />
+                  <EmojiInput ariaLabel={`Emoji del producto ${idx + 1}`} value={f.emoji} onChange={(emoji) => setRow(f.id, { emoji })} className={`${field} text-center`} placeholder="📦" />
                 </li>
               ))}
             </ul>

@@ -2,6 +2,7 @@
 
 import { ArrowDown, ArrowUp, ImageOff, Plus, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { EmojiInput } from '@/components/ui/emoji-input';
 import { TEMPLATE_LIMITS } from '@/lib/domain/template';
 import type { LoadedCatalog } from './template-import';
 
@@ -47,7 +48,7 @@ export function CatalogEditor({ items, onChange, onClose, onUploadPhoto, onPickP
           <li key={i} className="space-y-2 rounded-xl border border-white/10 bg-night-800/70 p-3" data-testid={`catalog-row-${i + 1}`}>
             <div className="flex items-center gap-2">
               <span className="w-6 shrink-0 text-center text-sm font-bold text-white/50">{i + 1}</span>
-              <input aria-label={`Emoji del elemento ${i + 1}`} className={`${input} !w-16 text-center`} maxLength={8} value={it.emoji ?? ''} onChange={(e) => set(i, { emoji: e.target.value || null })} placeholder="📦" />
+              <EmojiInput ariaLabel={`Emoji del elemento ${i + 1}`} className={`${input} !w-24 text-center`} value={it.emoji ?? ''} onChange={(emoji) => set(i, { emoji: emoji || null })} placeholder="📦" />
               <input aria-label={`Título del elemento ${i + 1}`} className={input} maxLength={80} value={it.name} onChange={(e) => set(i, { name: e.target.value })} placeholder="Título" />
               <Button type="button" size="sm" variant="ghost" onClick={() => move(i, -1)} disabled={i === 0} aria-label={`Subir el elemento ${i + 1}`}><ArrowUp className="size-4" aria-hidden /></Button>
               <Button type="button" size="sm" variant="ghost" onClick={() => move(i, 1)} disabled={i === items.length - 1} aria-label={`Bajar el elemento ${i + 1}`}><ArrowDown className="size-4" aria-hidden /></Button>

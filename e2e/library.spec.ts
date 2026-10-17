@@ -45,9 +45,17 @@ test('biblioteca: subida masiva (con repetida y archivo no válido), productos d
       await file(`fantasma_${stamp}.jpg`, `rgb(238, ${k + 20}, 255)`),
       await file(`murcielago_${stamp}.jpg`, `rgb(34, 17, ${k + 20})`),
       await file(`copia_de_fantasma_${stamp}.jpg`, `rgb(238, ${k + 20}, 255)`),
+      await file(`sobra_${stamp}.jpg`, `rgb(1, ${k + 20}, 2)`),
       { name: 'notas.txt', mimeType: 'text/plain', buffer: Buffer.from('no soy una imagen') },
     ]);
-    await expect(page.getByTestId('library-progress')).toContainText('3 nuevas · 1 repetidas · 1 con error', { timeout: 90_000 });
+    // Primero se revisan las miniaturas: nada se sube hasta pulsar «Subir»; una sobra se quita con la ✕
+    await expect(page.getByTestId('library-queue-item')).toHaveCount(5);
+    await expect(page.getByTestId('library-ignored')).toContainText('1 archivo(s) ignorados');
+    expect(blobs).toBe(0);
+    await page.getByRole('button', { name: `Quitar sobra_${stamp}.jpg` }).click();
+    await expect(page.getByTestId('library-queue-item')).toHaveCount(4);
+    await page.getByTestId('library-start').click();
+    await expect(page.getByTestId('library-progress')).toContainText('3 nuevas · 1 repetidas · 0 con error', { timeout: 90_000 });
     await expect(page.getByTestId('library-queue')).toContainText('Publicada en el commit', { timeout: 30_000 });
     expect(blobs).toBeGreaterThanOrEqual(3); // (una copia dentro del lote puede dejar un blob sin usar: no entra en el commit)
     expect(commits).toBe(1); // ...y las tres nuevas entraron en UN solo commit
@@ -98,6 +106,14 @@ test('biblioteca: subida masiva (con repetida y archivo no válido), productos d
     await page.getByTestId('library-item').getByRole('button', { name: 'Guardar cambios' }).click();
     await expect(page.getByText('Producto actualizado')).toBeVisible({ timeout: 30_000 });
     await expect(page.getByTestId('library-item')).toContainText('Con motor de ceniza');
+    // Selector de emojis desplegable (sin teclado de emojis en el PC)
+    await page.getByRole('button', { name: 'Editar Escoba voladora' }).click();
+    await page.getByTestId('library-item').getByRole('button', { name: 'Selector de emojis' }).click();
+    await page.getByLabel('Buscar emoji').fill('barca');
+    await page.getByRole('button', { name: 'Emoji 🚣' }).click();
+    await expect(page.getByTestId('library-item').getByLabel('Emoji del producto')).toHaveValue('🚣');
+    await page.getByTestId('library-item').getByRole('button', { name: 'Guardar cambios' }).click();
+    await expect(page.getByTestId('library-item')).toContainText('🚣');
     await expect(page.getByRole('button', { name: 'Subir foto de Escoba voladora' })).toBeVisible();
 
     // Asociar una imagen a un producto que ya existe (la escoba no tiene foto)

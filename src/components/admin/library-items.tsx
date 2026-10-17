@@ -9,6 +9,7 @@ import {
   commitLibraryRequest, generateItemImageRequest, libraryApi, stageLibraryImageRequest, type CollectionCount, type LibraryImage, type LibraryItem, type LibraryItemInput,
 } from '@/lib/client/library-api';
 import { parseItemLines } from '@/lib/services/library-parse';
+import { EmojiInput } from '@/components/ui/emoji-input';
 import { LibraryImagePicker } from './library-image-picker';
 
 const input = 'w-full rounded-xl border border-white/15 bg-night-900 px-3 py-2';
@@ -30,9 +31,9 @@ function ItemForm({ initial, collections, submitLabel, busy, onSubmit, onCancel 
         if (ok && !initial) setD({ name: '', description: '', emoji: '', collection: d.collection });
       }}
     >
-      <div className="grid grid-cols-[5rem_1fr] gap-2">
+      <div className="grid grid-cols-[6.5rem_1fr] gap-2">
         <label className="text-sm font-semibold">Emoji
-          <input aria-label="Emoji del producto" className={`${input} mt-1 text-center text-2xl`} value={d.emoji} maxLength={8} onChange={(e) => setD({ ...d, emoji: e.target.value })} placeholder="🎁" />
+          <EmojiInput ariaLabel="Emoji del producto" className={`${input} mt-1 text-center text-2xl`} value={d.emoji} onChange={(emoji) => setD({ ...d, emoji })} />
         </label>
         <label className="text-sm font-semibold">Nombre
           <input aria-label="Nombre del producto" className={`${input} mt-1`} value={d.name} maxLength={80} onChange={(e) => setD({ ...d, name: e.target.value })} placeholder="Nombre del producto" />
