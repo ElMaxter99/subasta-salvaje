@@ -1,5 +1,6 @@
 'use client';
 
+import { joinedPlayers } from '@/lib/domain/players';
 import { useState } from 'react';
 import { Check, Vote } from 'lucide-react';
 import { HouseImage } from '@/components/screen/house-image';
@@ -16,7 +17,7 @@ export function GalleryVote({ roomCode, snapshot, me, onSnapshot, onNotPlayer }:
   if (!g || !g.enabled || snapshot.game.play_mode !== 'mobile') return null;
 
   const voted = g.voters.includes(me.id);
-  const others = snapshot.players.filter((p) => p.id !== me.id);
+  const others = joinedPlayers(snapshot.players).filter((p) => p.id !== me.id);
 
   async function vote(id: string) {
     if (busy) return;

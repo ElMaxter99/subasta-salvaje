@@ -8,7 +8,7 @@
 
 export type SoundName =
   | 'click' | 'announce' | 'bid' | 'tick' | 'tickUrgent' | 'closed' | 'award' | 'finish'
-  | 'outbid' | 'leading' | 'won' | 'bidSent' | 'event';
+  | 'outbid' | 'leading' | 'won' | 'bidSent' | 'event' | 'join' | 'leave' | 'allReady';
 export type MusicScene = 'waiting' | 'lobby' | 'auction' | 'tense' | null;
 export type AudioRole = 'tv' | 'host' | 'play';
 
@@ -178,6 +178,14 @@ export function play(name: SoundName, n = 0): void {
     case 'leading': tone(o, midi(79), t, 0.12, { type: 'square', gain: 0.1 }); tone(o, midi(84), t + 0.08, 0.2, { gain: 0.15 }); break;
     case 'won': [76, 79, 84, 88].forEach((m, i) => tone(o, midi(m), t + i * 0.08, 0.4, { type: 'sawtooth', gain: 0.12 })); break;
     case 'bidSent': tone(o, midi(84), t, 0.07, { type: 'square', gain: 0.08 }); break;
+    // Presencia en la TV: entrar = dos notas que suben (sonrisa), salir = dos que bajan (suave) y «todos listos» = fanfarria corta y acorde final
+    case 'join': tone(o, midi(74), t, 0.12, { type: 'sine', gain: 0.2 }); tone(o, midi(81), t + 0.1, 0.25, { type: 'sine', gain: 0.22 }); break;
+    case 'leave': tone(o, midi(67), t, 0.14, { type: 'triangle', gain: 0.16 }); tone(o, midi(60), t + 0.12, 0.3, { type: 'triangle', gain: 0.14 }); break;
+    case 'allReady':
+      [67, 67, 72].forEach((m, i) => tone(o, midi(m), t + i * 0.12, 0.14, { type: 'square', gain: 0.1 }));
+      [72, 76, 79, 84].forEach((m) => tone(o, midi(m), t + 0.42, 0.9, { type: 'sawtooth', gain: 0.1 }));
+      [96, 100, 103].forEach((m, i) => tone(o, midi(m), t + 0.55 + i * 0.07, 0.3, { type: 'sine', gain: 0.08 }));
+      break;
     case 'event': tone(o, midi(60), t, 0.5, { type: 'sawtooth', gain: 0.15, slideTo: midi(84) }); break;
   }
 }

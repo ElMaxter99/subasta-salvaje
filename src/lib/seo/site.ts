@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { getRuntimeMode } from '@/lib/config/env';
+import { joinedPlayers } from '@/lib/domain/players';
 import { computeRanking } from '@/lib/domain/ranking';
 
 export const SITE_NAME = 'Subasta Salvaje';
@@ -30,7 +31,7 @@ export async function loadGameCard(code: string): Promise<GameCard | null> {
     const { getContext } = await import('@/lib/services/context');
     const { getPublicState } = await import('@/lib/services/game-service');
     const snap = await getPublicState(await getContext(), code);
-    const ranking = snap.game.status === 'finished' ? computeRanking(snap.players, snap.game.ranking_rule) : null;
+    const ranking = snap.game.status === 'finished' ? computeRanking(joinedPlayers(snap.players), snap.game.ranking_rule) : null;
     return {
       code: snap.game.room_code,
       name: snap.game.name,

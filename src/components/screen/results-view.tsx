@@ -8,6 +8,7 @@ import { GameGone } from '@/components/ui/game-gone';
 import { useLiveGame } from '@/lib/client/use-live-game';
 import { ConnectionBadge, DemoBanner } from '@/components/ui/status';
 import { formatEuros } from '@/lib/domain/money';
+import { joinedPlayers } from '@/lib/domain/players';
 import { computeHighlights, computePodium, computeRanking, rankingRuleLabel } from '@/lib/domain/ranking';
 import { Podium } from './podium';
 import { themeLabel } from '@/lib/domain/themes';
@@ -134,7 +135,7 @@ function galleryInfo(snapshot: PublicSnapshot) {
   if (!g || !g.enabled || snapshot.game.play_mode !== 'mobile') return null;
   const votes = new Map((g.results ?? []).map((r) => [r.player_id, r.votes]));
   const top = g.closed && g.results?.length ? Math.max(...g.results.map((r) => r.votes)) : 0;
-  const winners = g.closed && top > 0 ? snapshot.players.filter((p) => (votes.get(p.id) ?? 0) === top) : [];
+  const winners = g.closed && top > 0 ? joinedPlayers(snapshot.players).filter((p) => (votes.get(p.id) ?? 0) === top) : [];
   return { g, votes: g.closed ? votes : null, top, winners };
 }
 
@@ -166,10 +167,11 @@ function GalleryBanner({ snapshot, tv }: { snapshot: PublicSnapshot; tv: boolean
 
 /** Pantalla final: casas, antes/después, estadísticas y clasificación opcional. */
 export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapshot; tv?: boolean }) {
-  const { game, players, stats } = snapshot;
+  const { game, stats } = snapshot;
+  const players = joinedPlayers(snapshot.players); // quien nunca entró (modo móviles) no sale en el resultado
   const rule = game.ranking_rule;
   const ranking = computeRanking(players, rule);
-  const hl = computeHighlights(snapshot);
+  const hl = computeHighlights({ ...snapshot, players });
   const ordered = ranking ? ranking.map((r) => ({ player: r.player, rank: r.rank })) : players.map((player) => ({ player, rank: null as number | null }));
 
   const n = players.length;

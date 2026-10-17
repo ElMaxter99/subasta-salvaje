@@ -47,6 +47,8 @@ export interface Player {
   votes: number;
   /** true si un móvil ya ha reclamado a este jugador (modo móviles). */
   claimed: boolean;
+  /** false = en modo móviles nunca ha entrado: no sale en el resultado final ni cuenta en la votación. */
+  joined?: boolean;
   current_image_version_id: string | null;
   current_image: ImageRef | null;
   initial_image: ImageRef | null;

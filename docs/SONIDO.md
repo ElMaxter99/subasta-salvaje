@@ -11,6 +11,12 @@ Todo se **sintetiza en el navegador con Web Audio** (`src/lib/audio/engine.ts`):
 
 Los sonidos salen de **comparar cada instantánea con la anterior** (nada suena en el primer render). El sonido nunca aporta información exclusiva: todo sigue escrito en pantalla.
 
+## Presencia de jugadores (TV, modo móviles)
+La TV suena cuando alguien **entra** (dos notas que suben), cuando alguien **se sale** (dos notas que bajan, más suaves) y, distinto de ambos, cuando
+entra el último de los **previstos en la sala de espera (el 100 %)**: una fanfarria corta con acorde final que avisa de que ya se puede empezar
+(sustituye al sonido de entrada de ese último jugador). A mitad de partida la entrada de alguien es un «entrar» normal. La lógica está en
+`src/lib/audio/presence.ts` (`presenceSound`, con test) y se rige por los mismos interruptores de sonido que el resto de efectos de la TV.
+
 ## Control del anfitrión
 En el panel (`host/sound-controls.tsx`):
 - **TV → Sonido / Música (visible en todas las secciones del panel, también en móvil):** interruptores **de la partida** (`games.sound_enabled`, `games.music_enabled`; acción `game.set_sound` → `ss_set_sound`, migraciones `3000`/`3100`). La TV los lee en su siguiente actualización (≈1–2 s) y silencia efectos o música aunque tenga el sonido activo localmente. Sirve para hablar o controlar algo sin tocar la tele.

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useSyncExternalStore } from 'react';
 import { useAutoAwardCountdown } from '@/lib/client/auto-award';
 import type { Player, PublicSnapshot } from '@/lib/domain/types';
+import { presenceSound, type Presence } from './presence';
 import { getAudioSnapshot, getServerAudioSnapshot, initAudio, play, resumeMusic, setGate, setMusicScene, subscribeAudio, type AudioRole, type MusicScene } from './engine';
 
 export const useAudioState = () => useSyncExternalStore(subscribeAudio, getAudioSnapshot, getServerAudioSnapshot);
@@ -23,6 +24,20 @@ export function useGameAudio(snap: PublicSnapshot, role: Extract<AudioRole, 'tv'
   useEffect(() => {
     setGate(role === 'tv' ? { effects: game.sound_enabled !== false, music: game.sound_enabled !== false && game.music_enabled !== false } : { effects: true, music: false });
   }, [role, game.sound_enabled, game.music_enabled]);
+
+  // Presencia (solo TV y modo móviles): suena cuando alguien entra o sale y, distinto, cuando están todos los previstos.
+  const connected = snap.players.filter((p) => p.claimed).length;
+  const presence: Presence | null = role === 'tv' && game.play_mode === 'mobile' ? { connected, total: snap.players.length, lobby: game.status === 'lobby' } : null;
+  const prevPresence = useRef<Presence | null>(null);
+  const presenceKey = presence ? `${presence.connected}/${presence.total}/${presence.lobby}` : '';
+  useEffect(() => {
+    const before = prevPresence.current;
+    prevPresence.current = presence;
+    if (!before || !presence) return;
+    const s = presenceSound(before, presence);
+    if (s) play(s);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- solo cuando cambia la presencia
+  }, [presenceKey]);
 
   const awardId = last_award ? String(last_award.purchase_id) : null;
   useEffect(() => {

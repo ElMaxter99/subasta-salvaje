@@ -63,3 +63,33 @@ describe('motor de audio: pausa y reanuda la música según lo que permita el an
     expect(oscillators).toBeGreaterThan(n);
   });
 });
+
+describe('motor de audio: sonidos de presencia', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    oscillators = 0;
+    const store: Record<string, string> = {};
+    Object.assign(globalThis, {
+      window: globalThis,
+      AudioContext: FakeCtx,
+      localStorage: { getItem: (k: string) => store[k] ?? null, setItem: (k: string, v: string) => { store[k] = v; } },
+      addEventListener: () => undefined,
+    });
+    vi.resetModules();
+  });
+  afterEach(() => vi.useRealTimers());
+
+  it('entrar, salir y «todos listos» producen sonido y «todos listos» es el más rico', async () => {
+    const e = await import('@/lib/audio/engine');
+    e.initAudio('tv');
+    await e.arm();
+    const count = (name: 'join' | 'leave' | 'allReady') => { const before = oscillators; e.play(name); return oscillators - before; };
+    const join = count('join');
+    const leave = count('leave');
+    const ready = count('allReady');
+    expect(join).toBeGreaterThan(0);
+    expect(leave).toBeGreaterThan(0);
+    expect(ready).toBeGreaterThan(join);
+  });
+});
+
