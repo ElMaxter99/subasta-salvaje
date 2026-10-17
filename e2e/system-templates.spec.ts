@@ -186,6 +186,7 @@ test('editor visual: editar sin tocar el JSON (espacios, catálogo, orden, créd
   expect(json.catalogo[0]!.titulo).toBe('Calabaza gigante');
   expect(json.catalogo[0]!.credito).toBe('Autor X · CC BY');
   json.catalogo[1]!.titulo = 'Editado en el JSON';
+  for (const it of json.catalogo as { foto?: string | null }[]) it.foto = null; // la plantilla vacía trae una foto de ejemplo: sin imágenes no hay nada que descargar al publicar
   await page.getByLabel('Plantilla JSON', { exact: true }).fill(JSON.stringify(json));
   await expect(page.getByLabel('Título del elemento 2')).toHaveValue('Editado en el JSON');
 
