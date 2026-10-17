@@ -1,6 +1,6 @@
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
-import { requireSuperadmin } from '@/lib/auth/host';
+import { notFound, redirect } from 'next/navigation';
+import { requireSuperadmin, resolveHost } from '@/lib/auth/host';
 import { getRuntimeInfo } from '@/lib/services/context';
 import { DemoBanner } from '@/components/ui/status';
 import { Mascot } from '@/components/mascot/mascot';
@@ -19,7 +19,11 @@ const NAV = [
 /** Solo superadmin: cualquier otra persona (o sin sesión) ve un 404, como si el panel no existiera. */
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const admin = await requireSuperadmin().catch(() => null);
-  if (!admin) notFound();
+  if (!admin) {
+    // Superadmin por correo al que solo le falta el segundo factor: se le lleva a configurarlo/verificarlo.
+    if ((await resolveHost()).mfa) redirect('/seguridad-admin');
+    notFound();
+  }
   return (
     <>
       <DemoBanner runtime={getRuntimeInfo()} />

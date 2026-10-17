@@ -16,6 +16,20 @@ export interface HostIdentity {
 
 export type HostDenial = 'blocked' | 'closed';
 
+/** Segundo factor del superadmin: `enroll` = aún no tiene TOTP; `verify` = lo tiene pero no lo ha introducido en esta sesión. */
+export type MfaPending = 'enroll' | 'verify';
+
+/** ¿Se exige TOTP al superadmin? Opt-in con SUPERADMIN_REQUIRE_MFA=true (para no dejar a nadie fuera por sorpresa). */
+export function superadminMfaRequired(env: NodeJS.ProcessEnv = process.env): boolean {
+  return /^(1|true|yes)$/i.test(env.SUPERADMIN_REQUIRE_MFA?.trim() ?? '');
+}
+
+/** Traduce el nivel de aseguramiento de Supabase (aal1/aal2) a lo que falta por hacer. null = ya está en aal2. */
+export function mfaPendingFor(level: { currentLevel: string | null; nextLevel: string | null } | null): MfaPending | null {
+  if (level?.currentLevel === 'aal2') return null;
+  return level?.nextLevel === 'aal2' ? 'verify' : 'enroll';
+}
+
 /** Correos de superadmin (variable de entorno SUPERADMIN_EMAILS, separados por comas). */
 export function superadminEmails(env: NodeJS.ProcessEnv = process.env): string[] {
   return (env.SUPERADMIN_EMAILS ?? '').split(',').map((e) => e.trim().toLowerCase()).filter(Boolean);
@@ -46,6 +60,8 @@ export interface HostResolution {
   /** Hay sesión de Supabase pero no se permite el acceso (cuenta bloqueada o registro cerrado sin invitación). */
   denial: HostDenial | null;
   email: string | null;
+  /** Superadmin (por correo) al que le falta el segundo factor: no tiene poderes de admin hasta completarlo. */
+  mfa?: MfaPending;
 }
 
 /** Resuelve quién es el anfitrión y si tiene acceso. */
@@ -72,13 +88,20 @@ export async function resolveHost(): Promise<HostResolution> {
     const email = data.user.email ?? null;
     // Opcional: restringe quién puede ser anfitrión (evita que cualquiera con la URL gaste créditos de IA).
     const allowed = process.env.ALLOWED_HOST_EMAILS?.split(',').map((e) => e.trim().toLowerCase()).filter(Boolean);
-    const superadmin = Boolean(email && data.user.email_confirmed_at && superadminEmails().includes(email.toLowerCase()));
-    if (!superadmin && allowed?.length && !allowed.includes((email ?? '').toLowerCase())) return { identity: null, denial: 'closed', email };
+    const superEmail = Boolean(email && data.user.email_confirmed_at && superadminEmails().includes(email.toLowerCase()));
+    // Con SUPERADMIN_REQUIRE_MFA, los poderes de admin exigen sesión aal2 (TOTP verificado). Como anfitrión normal sigue entrando.
+    let mfa: MfaPending | undefined;
+    if (superEmail && superadminMfaRequired()) {
+      const aal = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+      mfa = mfaPendingFor(aal.error ? null : aal.data) ?? undefined;
+    }
+    const superadmin = superEmail && !mfa;
+    if (!superEmail && allowed?.length && !allowed.includes((email ?? '').toLowerCase())) return { identity: null, denial: 'closed', email };
     // El superadmin nunca queda fuera (ni por bloqueo ni por registro cerrado).
-    const denial = superadmin ? null : await hostDenial({ id: data.user.id, email });
+    const denial = superEmail ? null : await hostDenial({ id: data.user.id, email });
     if (denial) return { identity: null, denial, email };
-    if (superadmin) await hostDenial({ id: data.user.id, email }).catch(() => undefined); // registra su perfil
-    return { identity: { id: data.user.id, email, demo: false, superadmin }, denial: null, email };
+    if (superEmail) await hostDenial({ id: data.user.id, email }).catch(() => undefined); // registra su perfil
+    return { identity: { id: data.user.id, email, demo: false, superadmin }, denial: null, email, ...(mfa ? { mfa } : {}) };
   }
   if (mode === 'demo') {
     const v = store.get(DEMO_COOKIE)?.value;

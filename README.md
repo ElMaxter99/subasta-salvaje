@@ -171,6 +171,7 @@ Plantilla sin valores: [`.env.example`](.env.example). Nunca subas `.env*` al re
 | `OPENAI_IMAGE_MODEL` / `_SIZE` / `_QUALITY` / `_INPUT_FIDELITY` / `OPENAI_BASE_URL` | No | servidor | Ajustes del proveedor. |
 | `ALLOWED_HOST_EMAILS` | Recomendada | servidor | Correos autorizados como anfitrión (evita gasto de IA por terceros). |
 | `GAME_TTL_HOURS` | No (168) | servidor | Horas de inactividad tras las que una partida se borra sola (7 días). El superadmin lo cambia en caliente desde `/admin`. |
+| `SUPERADMIN_REQUIRE_MFA` | No | servidor | `true` = el panel `/admin` exige verificación en dos pasos (TOTP de Supabase Auth). Antes hay que activar MFA/TOTP en Supabase. Sin probar contra Supabase real; si algo falla, quita la variable. |
 | `SUPERADMIN_EMAILS` | Para usar `/admin` | servidor | Correo(s) del superadmin (con el correo confirmado). Sin ella `/admin` da 404. En modo demo el anfitrión local es superadmin. |
 | `SUPABASE_PLAN_DB_MB` / `SUPABASE_PLAN_STORAGE_MB` | No (500 / 1024) | servidor | Topes del plan de Supabase que muestran las barras del panel (solo informativos). |
 | `RESEND_API_KEY` | Opcional (con `MAIL_FROM`) | **solo servidor** | Clave de Resend (`re_…`) para que la app envíe sus propios correos con su marca (confirmación, recuperación, invitaciones). Sin ella, el registro es solo por invitación y la recuperación usa el correo de Supabase. |
@@ -409,7 +410,7 @@ En *Catálogo* cada elemento tiene **«Generar imagen»** (la IA usa nombre + de
 <details>
 <summary><b>Panel de superadmin (<code>/admin</code>)</b></summary>
 
-Solo para el correo de `SUPERADMIN_EMAILS` (confirmado); cualquier otra persona recibe un **404**. Requiere las migraciones `…2200` y `…2300`.
+Solo para el correo de `SUPERADMIN_EMAILS` (confirmado); cualquier otra persona recibe un **404**. Con `SUPERADMIN_REQUIRE_MFA=true`, además hay que pasar la verificación en dos pasos (`/seguridad-admin`: alta con QR la primera vez y código de 6 dígitos después); mientras falte, el superadmin sigue entrando como anfitrión normal pero sin poderes de admin. Requiere las migraciones `…2200` y `…2300`.
 - **Resumen:** barras de peso de la base de datos y del almacenamiento frente a los topes del plan (configurables, solo informativas: **sin alertas**), peso por tabla, contadores y la **cuota de IA** (hoy/mes/total, 14 días, por proveedor y quién más la usa). Tráfico de salida y mensajes de Realtime no son medibles desde la app: se consultan en el panel de Supabase.
 - **Usuarios:** lista de anfitriones (incluye cuentas de Supabase sin perfil), bloquear/desbloquear, dar o quitar la IA a un usuario (sus partidas en modo IA pasan a pegatinas), **invitaciones** y **borrado total** (cuenta de Auth, partidas, jugadores, pujas, imágenes y archivos; hay que escribir el correo para confirmar). El superadmin no puede bloquearse ni borrarse.
 - **Partidas:** todas, con dueño, peso, IA usada y última actividad; borrar una o «purgar caducadas ahora».
