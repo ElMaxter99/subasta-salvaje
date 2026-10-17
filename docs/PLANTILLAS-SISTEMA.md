@@ -17,10 +17,10 @@ Cada elemento del catálogo puede llevar `foto` (URL https). En plantillas del s
 ## Dónde guardar las fotos (tu CDN)
 La aplicación **no sube** nada a ningún servicio: dejas las fotos ya preparadas en el proveedor que elijas y pegas los enlaces.
 1. Prepara las fotos: `npm run assets:normalize -- ./mis-fotos --kind=item` (y `--kind=scene` para casas, `--kind=cover` para portadas). Salen en `./mis-fotos/normalizadas/*.webp`.
-2. Súbelas a tu proveedor y copia los enlaces públicos (https). Opciones:
-   - **Cloudflare R2** (bucket público con dominio propio): sin coste de salida; ya usas Cloudflare. *(límites sin verificar: mira su página oficial)*
-   - **GitHub + jsDelivr** (carpeta de un repositorio público): gratis, con CDN y versionado por commits.
-   - Evita Dropbox/Drive como «CDN»: los enlaces directos cambian y tienen límites de tráfico.
+2. Súbelas a tu proveedor y copia los enlaces públicos (https). Recomendado, **sin tarjeta ni riesgo de cobro**:
+   - **GitHub + jsDelivr**: crea un repositorio **público** solo para las fotos (no las metas en el de la app), sube la carpeta con un commit y usa enlaces con una **etiqueta o commit fijo** (no `@main`, que se cachea horas):
+     `https://cdn.jsdelivr.net/gh/TU_USUARIO/TU_REPO@v1/plantillas/noche-luna/sombrilla.webp` → `ASSET_CDN_HOSTS=cdn.jsdelivr.net`. Gratis para contenido de código abierto, con CDN; no hace falta cuenta aparte. *(Condiciones de uso de jsDelivr sin verificar desde este entorno: léelas.)* Ese ajuste deja pasar cualquier repositorio servido por jsDelivr, no solo el tuyo; es un riesgo menor porque solo el superadmin pega enlaces.
+   - Descartado: **Cloudflare R2** pide un método de pago para activarse y un exceso se cobra; Dropbox/Drive como «CDN»: los enlaces directos cambian y tienen límites de tráfico.
 3. En Vercel define `ASSET_CDN_HOSTS=cdn.tudominio.com` (lista separada por comas): solo se aceptarán fotos de esos servidores. Sin definirla se acepta cualquier https (el panel te lo avisa).
 
 ## Cómo se usan las fotos

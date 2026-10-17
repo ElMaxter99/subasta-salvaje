@@ -16,7 +16,7 @@
 - **Lo que falta para el punto 3:** hoy las subidas solo se *validan* (tipo real, ≤ 7 MB, `image-validation.ts`) pero **se guardan tal cual**; las salidas de IA (JPEG de Cloudflare, PNG de Pollinations) también. No hay reducción ni conversión.
 
 ## 0. Decisiones tomadas (17-10-2026)
-Tamaños y formato de §3: **aprobados**. Imágenes de partidas en **Supabase** (lo más barato y sencillo; tienen 10 GB). Las **plantillas del sistema** guardan sus fotos en un **proveedor externo** (el propietario elige cuál; recomendado R2 o jsDelivr) y **se copian a la partida al crearla**. Las plantillas pueden llevar **catálogo, reglas e imagen inicial de la casa**. Los **borradores solo los ve el superadmin**. Se normalizan **solo las imágenes nuevas**.
+Tamaños y formato de §3: **aprobados**. Imágenes de partidas en **Supabase** (lo más barato y sencillo; tienen 10 GB). Las **plantillas del sistema** guardan sus fotos en un **proveedor externo**: **R2 descartado** (exige método de pago, riesgo de cobro); se usa **GitHub + jsDelivr** (gratis, sin tarjeta) y **se copian a la partida al crearla**. Las plantillas pueden llevar **catálogo, reglas e imagen inicial de la casa**. Los **borradores solo los ve el superadmin**. Se normalizan **solo las imágenes nuevas**.
 **Estado:** fases 1 (imagen interna), 2 (SQL/servicio/API), 3 (panel `/admin/plantillas`), 4 (lista blanca `ASSET_CDN_HOSTS`, copia al crear, `assets:normalize`) y 5 (galería en Nueva partida, con casa inicial) implementadas — ver `IMAGEN-INTERNA.md` y `PLANTILLAS-SISTEMA.md`. Pendiente: capturas del README y validación con un CDN real.
 
 ## 3. Imagen interna única (fase 1, la base de todo)

@@ -75,7 +75,7 @@ Después de cada migración nueva, vuelve a probar a mano: crear partida, pujar,
 
 ## 5g. Partidas del sistema
 - [ ] Aplica las migraciones `…4200`/`…4300` (tabla `system_templates`).
-- [ ] Elige dónde guardar las fotos (R2 o jsDelivr; ver `docs/PLANTILLAS-SISTEMA.md`), prepáralas con `npm run assets:normalize` y define `ASSET_CDN_HOSTS` en Vercel.
+- [ ] Fotos en **GitHub + jsDelivr** (R2 descartado: pide tarjeta; ver `docs/PLANTILLAS-SISTEMA.md`): crea un repositorio público de fotos, prepáralas con `npm run assets:normalize`, súbelas con un commit/etiqueta y define `ASSET_CDN_HOSTS=cdn.jsdelivr.net` en Vercel.
 - [ ] En `/admin/plantillas` crea una plantilla con fotos reales, pulsa «Comprobar imágenes» y publícala. **Sin probar contra un CDN real.**
 - [ ] Añadir a la política de privacidad/créditos el proveedor de fotos que elijas (nuevo tercero que sirve imágenes a los visitantes).
 
