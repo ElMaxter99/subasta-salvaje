@@ -1,5 +1,6 @@
 'use client';
 
+import { MAX_PLAYERS } from '@/lib/domain/limits';
 import { useRef, useState } from 'react';
 import Link from 'next/link';
 import { ArrowDown, ArrowUp, History, Pencil, Plus, Smartphone, Sparkles, Trash2, Upload, Wallet } from 'lucide-react';
@@ -31,6 +32,7 @@ function ColorPicker({ value, onChange, label }: { value: string; onChange: (c: 
 export function PlayersPanel({ ctx }: { ctx: HostCtx }) {
   const { snapshot, busy, run } = ctx;
   const { game, players } = snapshot;
+  const maxPlayers = game.max_players ?? MAX_PLAYERS;
   const lobby = game.status === 'lobby';
   const finished = game.status === 'finished';
   const unusedColor = PLAYER_COLORS.find((c) => !players.some((p) => p.color === c)) ?? PLAYER_COLORS[0]!;
@@ -115,10 +117,10 @@ export function PlayersPanel({ ctx }: { ctx: HostCtx }) {
               <input id="new-player" className={inputCls} value={name} maxLength={40} onChange={(e) => setName(e.target.value)} placeholder="Nombre del jugador" autoComplete="off" />
             </div>
             <ColorPicker value={color ?? unusedColor} onChange={setColor} label="Color del jugador" />
-            <Button type="submit" variant="primary" size="lg" className="w-full" disabled={!name.trim() || players.length >= 12 || busy !== null} loading={busy === 'player-add'}>
+            <Button type="submit" variant="primary" size="lg" className="w-full" disabled={!name.trim() || players.length >= maxPlayers || busy !== null} loading={busy === 'player-add'}>
               <Plus className="size-5" aria-hidden /> Añadir jugador
             </Button>
-            {players.length >= 12 ? <p className="text-sm text-white/60">Máximo 12 jugadores.</p> : null}
+            {players.length >= maxPlayers ? <p className="text-sm text-white/60">Máximo {maxPlayers} jugadores en esta partida (se cambia en Ajustes).</p> : null}
           </form>
         </Card>
       ) : finished ? null : (

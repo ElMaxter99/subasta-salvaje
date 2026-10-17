@@ -1,5 +1,6 @@
 'use client';
 
+import { MAX_PLAYERS } from '@/lib/domain/limits';
 import { providerLabel } from '@/lib/ai/labels';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -67,6 +68,8 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
   const [integerBids, setIntegerBids] = useState(true);
   // Sin jugadores de partida: se pueden crear luego en el panel o, en modo móviles, darse de alta ellos mismos.
   const [players, setPlayers] = useState<string[]>([]);
+  const [maxPlayersText, setMaxPlayersText] = useState(String(MAX_PLAYERS));
+  const maxPlayers = maxPlayersText.trim() === '' ? MAX_PLAYERS : Number(maxPlayersText);
   // Catálogo propio cargado desde una plantilla (null = el de la temática)
   const [items, setItems] = useState<LoadedCatalog | null>(null);
   const [busy, setBusy] = useState(false);
@@ -142,6 +145,8 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
       if (integerBids && m % 100 !== 0) return 'Con pujas en euros enteros, la puja mínima también debe ser un euro entero (1, 2, 3…).';
       if (!Number.isInteger(roundsValue) || roundsValue < 1 || roundsValue > 500) return 'El máximo de rondas debe ser un número entre 1 y 500.';
     }
+    if (i === 4 && (!Number.isInteger(maxPlayers) || maxPlayers < 1 || maxPlayers > MAX_PLAYERS)) return `El máximo de jugadores debe estar entre 1 y ${MAX_PLAYERS}.`;
+    if (i === 4 && names.length > maxPlayers) return `Has puesto ${names.length} jugadores y el máximo es ${maxPlayers}: quita alguno o sube el máximo.`;
     if (i === 4 && new Set(names.map((n) => n.toLowerCase())).size !== names.length) return 'Hay nombres de jugador repetidos.';
     return null;
   }
@@ -185,6 +190,7 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
         play_mode: playMode,
         image_mode: imageMode,
         max_rounds: roundsValue,
+        max_players: maxPlayers,
         integer_bids: integerBids,
         players: names.map((n, i) => ({ name: n, color: PLAYER_COLORS[i % PLAYER_COLORS.length] })),
         ...(items ? { items: items.map((i) => ({ name: i.name, description: i.description, emoji: i.emoji })) } : {}),
@@ -396,6 +402,11 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
                   <li>Para empezar necesitarás al menos 2 jugadores.</li>
                 </ul>
               </div>
+              <div>
+                <label htmlFor="max-players" className="text-sm font-bold 2xl:text-lg">Máximo de jugadores (1–{MAX_PLAYERS})</label>
+                <input id="max-players" inputMode="numeric" value={maxPlayersText} onChange={(e) => setMaxPlayersText(e.target.value.replace(/\D/g, '').slice(0, 2))} className={`${field} mt-1 w-28`} />
+                <p className="mt-1 text-xs text-white/60 2xl:text-base">Nadie más podrá unirse a la partida al llegar a este número, aunque tenga el código. {MAX_PLAYERS} es el límite de la aplicación.</p>
+              </div>
               {players.length === 0 ? <p className="text-sm text-white/60 2xl:text-lg">Todavía no has añadido ninguno.</p> : null}
               {players.map((p, i) => (
                 <div key={i} className="flex items-center gap-2">
@@ -406,7 +417,7 @@ export function NewGameForm({ aiAvailable, aiProvider }: { aiAvailable: boolean;
                   </Button>
                 </div>
               ))}
-              {players.length < 12 ? (
+              {players.length < Math.min(maxPlayers, MAX_PLAYERS) ? (
                 <Button type="button" variant={players.length === 0 ? 'primary' : 'secondary'} onClick={() => setPlayers([...players, ''])}>
                   <Plus className="size-4" aria-hidden /> Añadir jugador
                 </Button>

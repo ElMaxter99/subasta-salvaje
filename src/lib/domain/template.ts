@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { MAX_PLAYERS } from './limits';
 import { formatEuros } from './money';
 import { THEME_PRESETS } from './themes';
 import type { HostSnapshot } from './types';
@@ -9,7 +10,7 @@ import type { HostSnapshot } from './types';
  * Es entrada NO confiable: se valida entera con Zod y nunca se interpreta como HTML ni se ejecuta.
  */
 export const TEMPLATE_FORMAT = 'subasta-salvaje/plantilla@1';
-export const TEMPLATE_LIMITS = { items: 100, players: 12, fileBytes: 512 * 1024 } as const;
+export const TEMPLATE_LIMITS = { items: 100, players: MAX_PLAYERS, fileBytes: 512 * 1024 } as const;
 
 const text = (msg: string) => z.string({ error: msg });
 const clean = (s: string) => s.normalize('NFKC').replace(/\s+/g, ' ').replace(/[\p{Cc}\p{Cf}]/gu, '').trim();

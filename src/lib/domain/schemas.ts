@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { MAX_PLAYERS } from './limits';
 import { THEME_PRESETS } from './themes';
 
 const uuid = z.string().uuid();
@@ -25,7 +26,9 @@ export const createGameSchema = z.object({
   max_rounds: z.number().int().min(1).max(500).optional(),
   /** Pujas solo en euros enteros (por defecto sí). */
   integer_bids: z.boolean().default(true),
-  players: z.array(z.object({ name, color: color.optional() })).max(12).default([]),
+  players: z.array(z.object({ name, color: color.optional() })).max(MAX_PLAYERS).default([]),
+  /** Máximo de jugadores de la partida (1..MAX_PLAYERS; por defecto MAX_PLAYERS). Lo vuelve a comprobar SQL. */
+  max_players: z.number().int().min(1).max(MAX_PLAYERS).optional(),
   /** Si se omite, se usa el catálogo de la plantilla de temática (o vacío si es temática libre). */
   items: z
     .array(z.object({ name: z.string().trim().min(1).max(80), description: z.string().trim().max(500).default(''), emoji: z.string().max(8).nullable().optional() }))
@@ -40,7 +43,7 @@ export const actionSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('game.set_mode'), play_mode: z.enum(['host', 'mobile']) }),
   z.object({ type: z.literal('game.set_image_mode'), image_mode: z.enum(['stickers', 'ai']) }),
   z.object({ type: z.literal('game.set_auto_award'), enabled: z.boolean(), seconds: z.number().int().min(3).max(300) }),
-  z.object({ type: z.literal('game.set_rules'), max_rounds: z.number().int().min(1).max(500).nullable().optional(), integer_bids: z.boolean().optional() }),
+  z.object({ type: z.literal('game.set_rules'), max_players: z.number().int().min(1).max(MAX_PLAYERS).optional(), max_rounds: z.number().int().min(1).max(500).nullable().optional(), integer_bids: z.boolean().optional() }),
   /** Subasta automática: anuncia los elementos por orden, adjudica sola y espera `gap_seconds` entre subastas. */
   z.object({ type: z.literal('game.set_sound'), sound_enabled: z.boolean().optional(), music_enabled: z.boolean().optional() }),
   z.object({ type: z.literal('game.set_auto_run'), enabled: z.boolean(), gap_seconds: z.number().int().min(3).max(300), idle_seconds: z.number().int().min(10).max(600), auto_award_seconds: z.number().int().min(3).max(300).optional() }),

@@ -1,5 +1,6 @@
 'use client';
 
+import { MAX_PLAYERS } from '@/lib/domain/limits';
 import { useState } from 'react';
 import Link from 'next/link';
 import { Flag, History, Minus, Plus, Smartphone, Trophy, Tv } from 'lucide-react';
@@ -42,6 +43,7 @@ export function SettingsPanel({ ctx }: { ctx: HostCtx }) {
   const [name, setName] = useState(game.name);
   const [minBid, setMinBid] = useState('');
   const [rounds, setRounds] = useState(String(game.total_rounds));
+  const [maxPlayers, setMaxPlayers] = useState(String(game.max_players ?? MAX_PLAYERS));
   const [finishOpen, setFinishOpen] = useState(false);
   const minCents = parseEurosToCents(minBid);
 
@@ -82,6 +84,28 @@ export function SettingsPanel({ ctx }: { ctx: HostCtx }) {
             </Button>
           </div>
           <p className="text-xs text-white/55">No se puede cambiar mientras hay una subasta abierta.</p>
+        </form>
+      </Card>
+
+ <Card title="Jugadores" icon={<Flag className="size-5 text-gold" aria-hidden />}>
+        <form
+          className="space-y-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            const n = Number(maxPlayers);
+            if (Number.isInteger(n) && n >= 1 && n <= MAX_PLAYERS) void run('maxplayers', { type: 'game.set_rules', max_players: n }, 'Máximo de jugadores actualizado');
+          }}
+        >
+          <label htmlFor="max-players" className="text-sm font-semibold text-white/80">
+            Máximo de jugadores (ahora {game.max_players ?? MAX_PLAYERS}; hay {snapshot.players.length})
+          </label>
+          <div className="flex gap-2">
+            <input id="max-players" className={inputCls} inputMode="numeric" value={maxPlayers} disabled={finished} onChange={(e) => setMaxPlayers(e.target.value.replace(/\D/g, '').slice(0, 2))} />
+            <Button type="submit" variant="secondary" disabled={finished || !maxPlayers || Number(maxPlayers) < 1 || Number(maxPlayers) > MAX_PLAYERS || Number(maxPlayers) === (game.max_players ?? MAX_PLAYERS) || busy !== null} loading={busy === 'maxplayers'}>
+              Guardar
+            </Button>
+          </div>
+          <p className="text-xs text-white/55">Entre 1 y {MAX_PLAYERS} (límite de la aplicación). Con el máximo alcanzado nadie más puede unirse, ni siquiera con el código de la partida.</p>
         </form>
       </Card>
 

@@ -383,6 +383,7 @@ Requieren las migraciones `…1800` y `…1900` (ver `docs/PENDIENTE.md`).
 <details>
 <summary><b>Rondas, pujas enteras y subasta automática</b></summary>
 
+- **Máximo de jugadores** por partida: 10 por defecto y 10 como tope de la aplicación (`MAX_PLAYERS` / `ss_max_players_cap()`). El anfitrión puede fijar uno menor al crearla (paso «Jugadores») o en Ajustes → *Jugadores*; al llegar al máximo nadie más entra, ni siquiera con el código de la partida (lo hace cumplir SQL).
 - **Máximo de rondas** al crear la partida (por defecto, los elementos del catálogo): al jugarse todas, la partida termina sola. Editable en Ajustes → *Rondas y pujas*.
 - **Solo pujas en euros enteros** (por defecto): 1, 2, 3… €; si lo desactivas se admiten 1,50 €, etc.
 - **Jugadores en el asistente:** ninguno por defecto; se pueden crear luego en el panel o, en modo móviles, darse de alta ellos mismos.

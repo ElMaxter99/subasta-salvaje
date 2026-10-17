@@ -123,6 +123,8 @@ export interface GameInfo {
   auto_award_seconds: number;
   /** Pujas solo en euros enteros. */
   integer_bids?: boolean;
+  /** Máximo de jugadores de la partida (1..10, por defecto 10). */
+  max_players?: number;
   /** Máximo de rondas (null = todos los elementos). `total_rounds` ya incorpora este límite. */
   max_rounds?: number | null;
   /** Subasta automática (anuncia sola los elementos por orden). */

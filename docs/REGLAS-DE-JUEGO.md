@@ -1,7 +1,7 @@
 # Reglas de juego (negocio)
 
 ## Partida
-Estados: `lobby` → `active` ⇄ `paused` → `finished`. Código de sala de 6 caracteres (sin 0/O/1/I). Hasta **12 jugadores**; mínimo 2 y
+Estados: `lobby` → `active` ⇄ `paused` → `finished`. Código de sala de 6 caracteres (sin 0/O/1/I). Hasta **10 jugadores** (el máximo de la aplicación; el anfitrión puede fijar uno menor al crear la partida o en Ajustes, y SQL lo hace cumplir también a quien se una con el código); mínimo 2 y
 1 elemento para empezar. Presupuesto inicial y puja mínima configurables (céntimos). Regla de clasificación opcional: `none`, `balance`
 (más dinero), `items` (más elementos), `votes` (votos del público apuntados a mano por el anfitrión con `votes.adjust`).
 Temáticas con catálogo de elementos de ejemplo (`domain/themes.ts`). **Borrado automático** a los 7 días (168 h, ajuste `game_ttl_hours` del superadmin; respaldo `GAME_TTL_HOURS`) sin actividad

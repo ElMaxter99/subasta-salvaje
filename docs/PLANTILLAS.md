@@ -30,7 +30,7 @@ Una plantilla es un archivo **JSON** que el anfitrión rellena fuera de la app (
 | `reglas.clasificacion` | no | `ninguna`, `saldo`, `elementos`, `votos` |
 | `reglas.modo_juego` | no | `anfitrion` (por defecto) o `movil` |
 | `reglas.modo_imagenes` | no | `pegatinas` (por defecto) o `ia` (sin IA configurada se cambia a pegatinas) |
-| `jugadores` | no | hasta 12 nombres (1–40 caracteres, sin repetir) |
+| `jugadores` | no | hasta 10 nombres (el máximo de la aplicación) (1–40 caracteres, sin repetir) |
 | `catalogo` | no | hasta 100 elementos; si falta se usa el de la temática |
 | `catalogo[].titulo` | sí | 1–80 caracteres |
 | `catalogo[].descripcion` / `emoji` / `foto` | no | ≤ 500 · ≤ 8 · URL **https** ≤ 500 |
