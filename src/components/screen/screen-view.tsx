@@ -65,10 +65,13 @@ export function ScreenView({ roomCode, initial, runtime }: { roomCode: string; i
   const progress = Math.min(100, Math.round(((live?.status === 'awarded' ? round : round - 1) / total) * 100));
   const pill = statusPill(snapshot);
   const generating = players.some((p) => p.generating.length > 0);
-  const { cols, rows } = gridFor(players.length);
+  // Modo móviles: en la TV solo aparecen los jugadores que están dentro (con su móvil identificado). Si alguien entra en mitad de la
+  // partida aparece su puesto y si se sale desaparece, así los puestos vacíos no ocupan pantalla. En modo anfitrión se ven todos.
+  const mobile = game.play_mode === 'mobile';
+  const shown = mobile ? players.filter((p) => p.claimed) : players;
+  const { cols, rows } = gridFor(shown.length);
   const leaderId = live && live.status !== 'awarded' ? live.current_bidder_id : null;
   const dense = rows > 1;
-  const mobile = game.play_mode === 'mobile';
   const presence = mobile ? (game.status === 'lobby' ? 'lobby' : 'game') : null;
   const maxChips = cols >= 5 ? 5 : cols === 4 ? 6 : 8;
 
@@ -144,17 +147,18 @@ export function ScreenView({ roomCode, initial, runtime }: { roomCode: string; i
         style={{ height: rows === 1 ? '33%' : '46%' }}
         aria-label="Jugadores"
       >
-        {players.length === 0 ? (
-          <p className="flex h-full items-center justify-center rounded-2xl border border-dashed border-white/20 text-[1.6rem] text-white/60">Aún no hay jugadores en la sala.</p>
+        {shown.length === 0 ? (
+          <p className="flex h-full items-center justify-center rounded-2xl border border-dashed border-white/20 text-[1.6rem] text-white/60">{mobile ? 'Aún no hay jugadores conectados: entrad desde el móvil.' : 'Aún no hay jugadores en la sala.'}</p>
         ) : (
           <div className="mx-auto flex h-full flex-col gap-[1rem]">
-            {Array.from({ length: rows }, (_, r) => players.slice(r * cols, (r + 1) * cols)).map((row, r) => (
+            {Array.from({ length: rows }, (_, r) => shown.slice(r * cols, (r + 1) * cols)).map((row, r) => (
               // Cada fila se centra por separado: la última (incompleta) queda centrada, no pegada a la izquierda.
               <div key={r} className="flex min-h-0 flex-1 justify-center gap-[1rem]">
                 {row.map((p) => (
                   <div
                     key={p.id}
-                    className="min-h-0"
+                    data-testid="screen-player"
+                    className="min-h-0 animate-float-in"
                     style={{ width: `calc((100% - ${(cols - 1) * 1}rem) / ${cols})`, maxWidth: rows === 1 ? '28rem' : undefined }}
                   >
                     <PlayerCard player={p} leading={p.id === leaderId} maxChips={maxChips} dense={dense} presence={presence} />

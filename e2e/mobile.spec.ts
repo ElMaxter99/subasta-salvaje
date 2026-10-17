@@ -30,6 +30,15 @@ test('modo móviles: unirse con el código, pujar desde el móvil, adjudicar y s
   const beto = await phone('Beto');
   await expect.poll(async () => (await state()).players.filter((x: { claimed: boolean }) => x.claimed).length).toBe(2);
 
+  // TV: en modo móviles solo salen los puestos de quienes ya están dentro (4 jugadores creados, 2 conectados → 2 puestos)
+  const tv = await context.newPage();
+  await tv.goto(`/game/${code}/screen`);
+  await expect(tv.getByTestId('screen-player')).toHaveCount(2, { timeout: 60_000 });
+  const carla = await phone('Carla'); // entra otro: aparece su puesto
+  await expect(tv.getByTestId('screen-player')).toHaveCount(3, { timeout: 30_000 });
+  await carla.ctx.close();
+  await tv.close();
+
   // El mismo nombre no se puede reclamar desde otro móvil
   const anaId = (await state()).players.find((x: { name: string }) => x.name === 'Ana').id;
   const intruder = await browser.newContext();

@@ -399,6 +399,7 @@ Requieren las migraciones `…1800` y `…1900` (ver `docs/PENDIENTE.md`).
 - **Máximo de jugadores** por partida: 10 por defecto y 10 como tope de la aplicación (`MAX_PLAYERS` / `ss_max_players_cap()`). El anfitrión puede fijar uno menor al crearla (paso «Jugadores») o en Ajustes → *Jugadores*; al llegar al máximo nadie más entra, ni siquiera con el código de la partida (lo hace cumplir SQL).
 - **Máximo de rondas** al crear la partida (por defecto, los elementos del catálogo): al jugarse todas, la partida termina sola. Editable en Ajustes → *Rondas y pujas*.
 - **Solo pujas en euros enteros** (por defecto): 1, 2, 3… €; si lo desactivas se admiten 1,50 €, etc.
+- **TV en modo móviles:** solo se ven los puestos de los jugadores que están dentro; si alguien entra a mitad de partida aparece su puesto y si se sale desaparece (en modo anfitrión se ven todos).
 - **Jugadores en el asistente:** ninguno por defecto; se pueden crear luego en el panel o, en modo móviles, darse de alta ellos mismos.
 - **Imagen inicial obligatoria:** no se puede empezar la partida hasta que todos los jugadores tengan su casa de partida (subida, de la galería o generada).
 - **Subasta automática** (Resumen): anuncia por orden los elementos disponibles, adjudica sola (con el último tiempo usado o el que indiques) y espera una **pausa configurable** entre subastas; si nadie puja, salta al siguiente; al acabar las rondas finaliza. El servidor avanza cuando hay una pantalla (TV, móvil o panel) abierta. Requiere las migraciones `…2600`/`…2700`.
