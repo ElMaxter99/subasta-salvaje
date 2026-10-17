@@ -51,6 +51,10 @@ Después de cada migración nueva, vuelve a probar a mano: crear partida, pujar,
 - [ ] La edición real usa FLUX.2 klein por defecto (sin probar contra la API real: confirma el nombre de los campos multipart y el coste). Con `flux-1-schnell` solo se **genera**; el plan B de «edición» usa por defecto una composición gratuita (collage del objeto sobre la casa; ver README). Prueba una vez con la API real que el recorte del fondo blanco funciona. Solo se **genera** (imagen inicial y de elementos); **no edita** la casa existente. Para editar define `CLOUDFLARE_EDIT_MODEL=@cf/black-forest-labs/flux-2-klein-4b` (implementado según la documentación, **sin probar** contra la API real) u otro proveedor con edición.
 - [ ] Contrasta con la documentación vigente de Cloudflare los parámetros del modelo y los precios, y haz una primera generación de prueba con límites bajos.
 
+## 5b. Correos propios con Resend (opcional)
+- [ ] Verificar tu dominio en Resend (SPF/DKIM) y crear una API key. En Vercel: `RESEND_API_KEY` (*Sensitive*), `MAIL_FROM`, opcional `MAIL_REPLY_TO`; confirmar `NEXT_PUBLIC_SITE_URL`; redesplegar. Probar: recuperar contraseña, registro con confirmación y «Enviar correo» en `/admin/usuarios`. **Sin probar contra Resend real.**
+- [ ] En Supabase → Authentication → Sign In / Providers, desactivar «Allow new users to sign up» (el registro de la app ya no lo usa). Para borrar usuarios ya creados: Authentication → Users, o desde `/admin/usuarios`.
+
 ## 6. Cron externo (opcional pero recomendado en producción)
 - [ ] El cron de `vercel.json` es diario (límite del plan *Hobby*). Para que los trabajos de imagen y el borrado se procesen con más frecuencia, programa en GitHub Actions o cron-job.org una llamada cada minuto a `/api/jobs/process` con la cabecera `Authorization: Bearer <CRON_SECRET>`.
 

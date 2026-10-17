@@ -1,7 +1,18 @@
 # Recuperar contraseña y correos de la app
 
 ## Quién envía los correos
-La app **no envía correos propios**: todos los correos de autenticación los envía **Supabase Auth**. Las invitaciones del superadmin (`/admin`) son registros en base de datos (una lista de correos permitidos), **no mandan ningún correo**: avisa tú a la persona. Por eso la «maqueta» son las **plantillas de Supabase** con la imagen de la app.
+Hay dos modos, según las variables de entorno:
+
+| Modo | Condición | Qué ocurre |
+|---|---|---|
+| **Correo propio (Resend)** | `RESEND_API_KEY` + `MAIL_FROM` definidas | La app envía con su marca (`src/lib/mail/templates.ts`): **confirmación de registro**, **recuperación de contraseña** e **invitación del superadmin** (botón «Enviar correo» en `/admin/usuarios`). El enlace se genera con la API de administración de Supabase (`generateLink`) y apunta a `/auth/callback`. |
+| **Sin correo propio** | faltan esas variables | La recuperación la envía Supabase (con las plantillas de abajo, plan B). El registro crea la cuenta ya confirmada en el servidor (solo si el correo está invitado o el registro abierto); **no se comprueba que el correo sea de quien se registra**. Las invitaciones no envían nada: avisa tú. |
+
+**Registro sin pasar por Supabase público:** `POST /api/auth/signup` crea la cuenta con la clave de servicio (`auth.admin`), no con `signUp` de la clave pública. Por eso puedes desactivar *Authentication → Sign In / Providers → «Allow new users to sign up»* en Supabase y la app sigue funcionando; el acceso queda controlado solo desde `/admin` (registro abierto/cerrado e invitaciones). Los enlaces usan el origen de confianza (`NEXT_PUBLIC_SITE_URL`), nunca cabeceras de la petición.
+
+**Resend (pasos del propietario):** crear cuenta, verificar tu dominio (DNS SPF/DKIM), crear una API key y definir en Vercel `RESEND_API_KEY` (*Sensitive*), `MAIL_FROM` (p. ej. `Subasta Salvaje <no-reply@tudominio.com>`) y opcionalmente `MAIL_REPLY_TO`; redesplegar. **Sin probar contra Resend real** (los tests usan un `fetch` simulado). El plan gratuito de Resend tiene límites diarios/mensuales: revísalos en su web.
+
+Las **plantillas de Supabase** de abajo son el plan B (se generan desde la misma fuente que los correos propios).
 
 ## Plantillas (`supabase/templates/`, generadas con `npm run emails:build`)
 | Plantilla (Supabase → Authentication → Email Templates) | Archivo | Asunto sugerido |

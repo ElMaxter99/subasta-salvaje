@@ -171,6 +171,9 @@ Plantilla sin valores: [`.env.example`](.env.example). Nunca subas `.env*` al re
 | `GAME_TTL_HOURS` | No (168) | servidor | Horas de inactividad tras las que una partida se borra sola (7 días). El superadmin lo cambia en caliente desde `/admin`. |
 | `SUPERADMIN_EMAILS` | Para usar `/admin` | servidor | Correo(s) del superadmin (con el correo confirmado). Sin ella `/admin` da 404. En modo demo el anfitrión local es superadmin. |
 | `SUPABASE_PLAN_DB_MB` / `SUPABASE_PLAN_STORAGE_MB` | No (500 / 1024) | servidor | Topes del plan de Supabase que muestran las barras del panel (solo informativos). |
+| `RESEND_API_KEY` | Opcional (con `MAIL_FROM`) | **solo servidor** | Clave de Resend (`re_…`) para que la app envíe sus propios correos con su marca (confirmación, recuperación, invitaciones). Sin ella, el registro es solo por invitación y la recuperación usa el correo de Supabase. |
+| `MAIL_FROM` | Con `RESEND_API_KEY` | servidor | Remitente de un dominio verificado en Resend, p. ej. `Subasta Salvaje <no-reply@tudominio.com>`. |
+| `MAIL_REPLY_TO` | No | servidor | Dirección de respuesta. |
 | `CRON_SECRET` | Recomendada | servidor | Protege `/api/jobs/process` y `/api/jobs/purge`. |
 | `NEXT_PUBLIC_SITE_URL` | No | cliente+servidor | URL pública del despliegue (enlaces absolutos, Open Graph, correos). |
 | `FORCE_DEMO_MODE`, `ALLOW_DEMO_MODE`, `DEMO_DATA_DIR`, `WORKER_INTERVAL_MS` | No | servidor | Desarrollo / worker. |
@@ -447,7 +450,7 @@ El bucket `game-images` admite `image/svg+xml` solo para el modo pegatinas y la 
 <summary><b>Cómo se evita filtrar credenciales al desplegar</b></summary>
 
 - **Solo en variables de entorno.** `.env`, `.env.local` y similares están en `.gitignore` (y en `.vercelignore` para despliegues con la CLI); solo se versiona `.env.example`, sin valores. Las credenciales reales (Supabase, Cloudflare, OpenAI, `CRON_SECRET`) se definen en *Vercel → Settings → Environment Variables*.
-- **Nunca en el navegador.** Solo las variables `NEXT_PUBLIC_…` (URL y clave *publishable/anon* de Supabase, públicas por diseño) llegan al cliente. `CLOUDFLARE_API_TOKEN`, `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY` y `CRON_SECRET` se leen únicamente en el servidor; ningún componente cliente importa los módulos que los usan (lo comprueba un test).
+- **Nunca en el navegador.** Solo las variables `NEXT_PUBLIC_…` (URL y clave *publishable/anon* de Supabase, públicas por diseño) llegan al cliente. `CLOUDFLARE_API_TOKEN`, `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, `RESEND_API_KEY` y `CRON_SECRET` se leen únicamente en el servidor; ningún componente cliente importa los módulos que los usan (lo comprueba un test).
 - **Redacción en errores y logs.** Los mensajes de error de los proveedores, de la base de datos y de los trabajos de imagen pasan por `redactSecrets` (por formato `cfut_…`, `sb_secret_…`, `sk-…`, JWT, `Bearer …` y por el valor exacto de las variables secretas) antes de guardarse o registrarse.
 - **Escáner antes de desplegar:** `npm run build && npm run scan:secrets` busca credenciales en los archivos versionados, en todo el historial de git y en el bundle del navegador (`.next/static`), incluidos los valores exactos de tu `.env.local`. Falla con código 1 si encuentra algo. `npm test` incluye comprobaciones equivalentes sobre los archivos versionados.
 - **Si un secreto se publicó** (en un commit, un chat o un log), **rótalo** en su proveedor: borrarlo del historial no basta.

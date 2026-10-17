@@ -11,6 +11,7 @@
 | `IMAGE_PROVIDER` (`cloudflare`\|`openai`), `IMAGE_AI_DISABLED` | proveedor de IA real e interruptor |
 | `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_IMAGE_MODEL`, `CLOUDFLARE_IMAGE_STEPS`, `CLOUDFLARE_EDIT_MODEL` (`off` desactiva), `CLOUDFLARE_EDIT_WIDTH/HEIGHT` | Cloudflare Workers AI |
 | `IMAGE_EDIT_COMPOSE` (`false` desactiva el plan B) | edición por composición |
+| `RESEND_API_KEY`, `MAIL_FROM`, `MAIL_REPLY_TO` | correos propios con Resend (opcional) |
 | `OPENAI_API_KEY`, `OPENAI_IMAGE_*`, `OPENAI_BASE_URL` | OpenAI (de pago, opcional) |
 | `IMAGE_QUOTA_PER_GAME` (10), `IMAGE_QUOTA_PER_DAY` (50) | cuotas propias |
 | `GAME_TTL_HOURS` (168) | borrado por inactividad (respaldo; el superadmin lo cambia en caliente) |

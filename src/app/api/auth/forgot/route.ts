@@ -4,6 +4,8 @@ import { z } from 'zod';
 import { assertSameOrigin, handle, json, limit } from '@/lib/api';
 import { getRuntimeMode, getSupabaseConfig } from '@/lib/config/env';
 import { DomainError } from '@/lib/domain/errors';
+import { sendRecovery } from '@/lib/services/auth-mail';
+import { getAuthMailDeps } from '@/lib/services/auth-mail-context';
 
 const bodySchema = z.object({ email: z.string().trim().email().max(254) });
 
@@ -26,6 +28,8 @@ export const POST = handle(async (req: Request) => {
   const body = bodySchema.safeParse(await req.json().catch(() => null));
   if (!body.success) throw new DomainError('invalid_input', 'Escribe un correo electrónico válido.', 400);
   limit(req, 'forgot-mail', body.data.email.toLowerCase(), 3, 600_000);
+  // Con Resend configurado el correo (con la marca de la app) lo envía la app; si no, el de Supabase.
+  if (await sendRecovery(body.data.email, getAuthMailDeps())) return json({ ok: true });
   const cfg = getSupabaseConfig();
   const store = await cookies();
   const supabase = createServerClient(cfg.url, cfg.anonKey, {

@@ -5,6 +5,8 @@ import { assertSameOrigin, handle, json, limit } from '@/lib/api';
 import { getRuntimeMode, getSupabaseConfig } from '@/lib/config/env';
 import { DomainError } from '@/lib/domain/errors';
 import { getContext } from '@/lib/services/context';
+import { signUpWithEmail } from '@/lib/services/auth-mail';
+import { getAuthMailDeps } from '@/lib/services/auth-mail-context';
 
 const bodySchema = z.object({ email: z.string().trim().email().max(254), password: z.string().min(8).max(200) });
 
@@ -18,9 +20,8 @@ export const GET = handle(async () => {
 
 /**
  * Alta de anfitrión. La comprueba el SERVIDOR contra el ajuste del superadmin (registro abierto o correo invitado)
- * antes de llamar a Supabase Auth. Limitación: quien llame directamente a la API de Supabase Auth con la clave pública
- * puede crear una cuenta, pero esa cuenta no tendrá acceso a la app (lo impide ss_host_access); para cerrarlo del todo
- * desactiva «Allow new users to sign up» en Supabase → Authentication.
+ * y crea la cuenta con la API de administración (clave de servicio), sin usar el registro público de Supabase: así se puede
+ * desactivar «Allow new users to sign up» en Supabase → Authentication y la app sigue funcionando.
  */
 export const POST = handle(async (req: Request) => {
   assertSameOrigin(req);
@@ -31,12 +32,16 @@ export const POST = handle(async (req: Request) => {
   const ctx = await getContext();
   const gate = await ctx.db.rpc<{ allowed: boolean }>('ss_signup_allowed', { email: body.data.email });
   if (!gate.allowed) throw new DomainError('signups_closed');
+  const deps = getAuthMailDeps();
+  const r = await signUpWithEmail(body.data.email, body.data.password, deps);
+  if (r.status === 'confirmation_sent') return json({ ok: true, session: false, confirmation: true });
+  // Sin correo propio la cuenta ya está confirmada: se inicia sesión en el servidor con las credenciales recién creadas.
   const cfg = getSupabaseConfig();
   const store = await cookies();
   const supabase = createServerClient(cfg.url, cfg.anonKey, {
     cookies: { getAll: () => store.getAll(), setAll: (list) => list.forEach(({ name, value, options }) => store.set(name, value, options)) },
   });
-  const { data, error } = await supabase.auth.signUp(body.data);
+  const { data, error } = await supabase.auth.signInWithPassword(body.data);
   if (error) throw new DomainError('invalid_input', error.message, 400);
-  return json({ ok: true, session: Boolean(data.session) });
+  return json({ ok: true, session: Boolean(data.session), confirmation: false });
 });

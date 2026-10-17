@@ -17,7 +17,7 @@ function safeNext(next: string | undefined): string {
   return next && next.startsWith('/') && !next.startsWith('//') && !next.includes('\\') ? next : '/';
 }
 
-export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; link?: string }> }) {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; link?: string; mode?: string }> }) {
   const sp = await searchParams;
   const next = safeNext(sp.next);
   if (getRuntimeMode() === 'unconfigured') redirect('/setup');
@@ -54,7 +54,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
               <DemoLoginButton next={next} />
             </div>
           ) : (
-            <LoginForm next={next} supabaseUrl={runtime.supabaseUrl!} supabaseAnonKey={runtime.supabaseAnonKey!} signupsOpen={signupsOpen} />
+            <LoginForm next={next} supabaseUrl={runtime.supabaseUrl!} supabaseAnonKey={runtime.supabaseAnonKey!} signupsOpen={signupsOpen} initialMode={sp.mode === 'signup' ? 'signup' : 'signin'} />
           )}
         </div>
       </main>

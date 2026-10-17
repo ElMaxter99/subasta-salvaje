@@ -9,7 +9,7 @@ import { adminPost } from '@/lib/client/admin-api';
 import type { AdminInvite, AdminUser } from '@/lib/services/admin-service';
 import { Section, Table, fmtDate } from './widgets';
 
-export function UsersPanel({ users, invites, signupsOpen, meId }: { users: AdminUser[]; invites: AdminInvite[]; signupsOpen: boolean; meId: string }) {
+export function UsersPanel({ users, invites, signupsOpen, meId, mailReady = false }: { users: AdminUser[]; invites: AdminInvite[]; signupsOpen: boolean; meId: string; mailReady?: boolean }) {
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
@@ -49,7 +49,9 @@ export function UsersPanel({ users, invites, signupsOpen, meId }: { users: Admin
           <input id="invite-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="correo@ejemplo.com" className="min-w-64 flex-1 rounded-xl border border-white/15 bg-night-900 px-4 py-2.5" />
           <Button type="submit" variant="primary" loading={busy === 'invite'}>Invitar</Button>
         </form>
-        <p className="mt-2 text-xs text-white/55">La invitación no envía ningún correo: avisa tú a la persona para que se registre con ese mismo correo en la pantalla de acceso.</p>
+        <p className="mt-2 text-xs text-white/55">
+          {mailReady ? 'Con «Enviar correo» la persona recibe un aviso con el enlace para registrarse con ese mismo correo.' : 'La invitación no envía ningún correo (falta configurar RESEND_API_KEY y MAIL_FROM): avisa tú a la persona para que se registre con ese mismo correo en la pantalla de acceso.'}
+        </p>
         <Table head={['Correo', 'Invitado', 'Estado', '']} empty={invites.length === 0 ? 'Sin invitaciones.' : undefined}>
           {invites.map((i) => (
             <tr key={i.email}>
@@ -57,6 +59,9 @@ export function UsersPanel({ users, invites, signupsOpen, meId }: { users: Admin
               <td className="px-2 py-1.5">{fmtDate(i.invited_at)}</td>
               <td className="px-2 py-1.5">{i.used_at ? `Usada ${fmtDate(i.used_at)}` : 'Pendiente'}</td>
               <td className="px-2 py-1.5 text-right">
+                {mailReady && !i.used_at ? (
+                  <Button size="sm" variant="ghost" disabled={busy !== null} onClick={() => run(`mail-${i.email}`, 'invites', { op: 'notify', email: i.email }, `Correo enviado a ${i.email}`)}>Enviar correo</Button>
+                ) : null}
                 <Button size="sm" variant="ghost" disabled={busy !== null} onClick={() => run(`rm-${i.email}`, 'invites', { op: 'remove', email: i.email }, 'Invitación eliminada')}>Quitar</Button>
               </td>
             </tr>

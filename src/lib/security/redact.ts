@@ -5,11 +5,12 @@ const PATTERNS: RegExp[] = [
   /sb_secret_[A-Za-z0-9_-]{8,}/g,
   /sb_publishable_[A-Za-z0-9_-]{8,}/g,
   /sk-[A-Za-z0-9_-]{16,}/g,
+  /re_[A-Za-z0-9_]{16,}/g, // clave de Resend
   /eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}/g,
   /Bearer\s+[A-Za-z0-9._~+/=-]{12,}/gi,
 ];
 
-const SECRET_ENV = ['CLOUDFLARE_API_TOKEN', 'OPENAI_API_KEY', 'SUPABASE_SERVICE_ROLE_KEY', 'CRON_SECRET'] as const;
+const SECRET_ENV = ['CLOUDFLARE_API_TOKEN', 'OPENAI_API_KEY', 'SUPABASE_SERVICE_ROLE_KEY', 'CRON_SECRET', 'RESEND_API_KEY'] as const;
 
 /**
  * Elimina credenciales de un texto antes de guardarlo (errores de trabajos, logs, respuestas):

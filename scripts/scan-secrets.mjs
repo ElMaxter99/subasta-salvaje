@@ -15,9 +15,10 @@ const PATTERNS = [
   ['Token de Cloudflare', /cf[ua]t_[A-Za-z0-9_-]{16,}/],
   ['Clave secreta de Supabase', /sb_secret_[A-Za-z0-9_-]{8,}/],
   ['Clave de OpenAI', /sk-(?:proj-)?[A-Za-z0-9_-]{20,}/],
+  ['Clave de Resend', /\bre_[A-Za-z0-9]{8,}_[A-Za-z0-9]{16,}/],
   ['JWT (p. ej. service_role)', /eyJ[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}/],
 ];
-const SECRET_VARS = ['CLOUDFLARE_API_TOKEN', 'OPENAI_API_KEY', 'SUPABASE_SERVICE_ROLE_KEY', 'CRON_SECRET'];
+const SECRET_VARS = ['CLOUDFLARE_API_TOKEN', 'OPENAI_API_KEY', 'SUPABASE_SERVICE_ROLE_KEY', 'CRON_SECRET', 'RESEND_API_KEY'];
 let problems = 0;
 const fail = (msg) => {
   problems++;

@@ -5,9 +5,9 @@ import { useState, type FormEvent } from 'react';
 import { createBrowserClient } from '@supabase/ssr';
 import { Button } from '@/components/ui/button';
 
-export function LoginForm({ next, supabaseUrl, supabaseAnonKey, signupsOpen = true }: { next: string; supabaseUrl: string; supabaseAnonKey: string; signupsOpen?: boolean }) {
+export function LoginForm({ next, supabaseUrl, supabaseAnonKey, signupsOpen = true, initialMode = 'signin' }: { next: string; supabaseUrl: string; supabaseAnonKey: string; signupsOpen?: boolean; initialMode?: 'signin' | 'signup' }) {
   const router = useRouter();
-  const [mode, setMode] = useState<'signin' | 'signup' | 'forgot'>('signin');
+  const [mode, setMode] = useState<'signin' | 'signup' | 'forgot'>(signupsOpen ? initialMode : 'signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [busy, setBusy] = useState(false);

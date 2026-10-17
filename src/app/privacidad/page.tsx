@@ -13,7 +13,7 @@ export default function PrivacyPage() {
       <section>
         <h2>Qué datos tratamos y para qué</h2>
         <ul>
-          <li><strong>Cuenta de anfitrión:</strong> correo electrónico y contraseña (gestionados por Supabase Auth; la contraseña no la vemos en claro). Sirve para iniciar sesión y recuperar tus partidas. En modo demo no hay cuentas.</li>
+          <li><strong>Cuenta de anfitrión:</strong> correo electrónico y contraseña (gestionados por Supabase Auth; la contraseña no la vemos en claro). Sirve para iniciar sesión y recuperar tus partidas. Si el propietario configura el envío de correo, tu dirección se comunica a Resend únicamente para enviarte los correos de la cuenta (confirmación, recuperación de contraseña, invitaciones). En modo demo no hay cuentas.</li>
           <li><strong>Partidas:</strong> nombre, ajustes, catálogo de objetos (nombres, descripciones, fotos que subas) y resultados.</li>
           <li><strong>Jugadores:</strong> solo un alias o nombre que elige el anfitrión o el propio jugador. No hay cuenta ni correo de jugador. En el modo «móviles» se guarda en el dispositivo una cookie técnica con un token para reconocerlo (ver <a href="/cookies">Cookies</a>).</li>
           <li><strong>Pujas y compras:</strong> importes ficticios, quién pujó y qué se adjudicó.</li>
