@@ -73,7 +73,7 @@ export async function importPhotosRequest(roomCode: string, photos: { name: stri
   return parse<PhotoImportResult & { initial?: { ok: boolean; reason?: string } }>(res);
 }
 
-export interface SystemTemplateCard { id: string; slug: string; title: string; description: string; cover_url: string | null; items: number; players: number; has_initial_image: boolean }
+export interface SystemTemplateCard { id: string; slug: string; title: string; description: string; cover_url: string | null; items: number; players: number; has_initial_image: boolean; credits?: string | null }
 export async function listSystemTemplatesRequest(): Promise<SystemTemplateCard[]> {
   return (await parse<{ templates: SystemTemplateCard[] }>(await fetch('/api/system-templates'))).templates;
 }

@@ -113,6 +113,19 @@ describe('plantillas del sistema (SQL + servicio)', () => {
   });
 });
 
+describe('créditos en la tarjeta', () => {
+  it('el resumen de una plantilla publicada incluye los créditos (y null si no hay)', async () => {
+    const a = await saveSystemTemplate(ctx, 'a', body({ slug: 'con-creditos', data: tpl({ portada: null, casa_inicial: null, creditos: 'Wikimedia Commons (CC BY-SA)', catalogo: [{ titulo: 'Sombrilla', descripcion: '' }] }) }));
+    expect(a.credits).toBe('Wikimedia Commons (CC BY-SA)');
+    const b = await saveSystemTemplate(ctx, 'a', body({ slug: 'sin-creditos', data: tpl({ portada: null, casa_inicial: null, catalogo: [{ titulo: 'Hamaca', descripcion: '' }] }) }));
+    expect(b.credits).toBeNull();
+    await setSystemTemplateStatus(ctx, 'a', a.id, 'published');
+    expect((await listSystemTemplates(ctx)).find((t) => t.slug === 'con-creditos')!.credits).toBe('Wikimedia Commons (CC BY-SA)');
+    await deleteSystemTemplate(ctx, 'a', a.id);
+    await deleteSystemTemplate(ctx, 'a', b.id);
+  });
+});
+
 describe('imagen inicial de la casa que trae la plantilla', () => {
   it('se descarga, se normaliza (WebP) y se aplica a los jugadores actuales y a los nuevos', async () => {
     const host = newHost();

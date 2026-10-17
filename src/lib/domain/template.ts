@@ -21,6 +21,8 @@ const itemSchema = z.object({
   emoji: text('el emoji debe ser un texto').max(8, 'el emoji es demasiado largo').nullable().optional(),
   /** URL https de la foto del elemento (se descarga al crear la partida). */
   foto: text('la foto debe ser una URL').trim().max(500, 'la URL de la foto supera los 500 caracteres').nullable().optional(),
+  /** Autoría o fuente de la foto (opcional, solo informativo; p. ej. «Wikimedia Commons · CC BY-SA»). */
+  credito: text('el crédito debe ser un texto').transform(clean).pipe(z.string().max(120, 'el crédito supera los 120 caracteres')).nullable().optional(),
 });
 
 export const templateSchema = z.object({
@@ -42,6 +44,8 @@ export const templateSchema = z.object({
   jugadores: z.array(text('cada jugador debe ser un texto').transform(clean).pipe(z.string().min(1, 'hay un nombre de jugador vacío').max(40, 'un nombre de jugador supera los 40 caracteres')), { error: '«jugadores» debe ser una lista de nombres' }).max(TEMPLATE_LIMITS.players, `como máximo ${TEMPLATE_LIMITS.players} jugadores`).optional().default([]),
   /** Solo plantillas del sistema: URL https de la portada de la tarjeta y de la imagen inicial de la casa (se copia a la partida). */
   portada: text('la portada debe ser una URL').trim().max(500, 'la URL de la portada supera los 500 caracteres').nullable().optional(),
+  /** Autoría o fuente de las imágenes de la plantilla (se muestra en la tarjeta de «Partidas del sistema»). */
+  creditos: text('los créditos deben ser un texto').transform(clean).pipe(z.string().max(200, 'los créditos superan los 200 caracteres')).nullable().optional(),
   casa_inicial: text('la casa inicial debe ser una URL').trim().max(500, 'la URL de la casa inicial supera los 500 caracteres').nullable().optional(),
   catalogo: z.array(itemSchema, { error: '«catalogo» debe ser una lista de elementos' }).max(TEMPLATE_LIMITS.items, `como máximo ${TEMPLATE_LIMITS.items} elementos`).optional(),
 });
@@ -102,7 +106,7 @@ export function parseTemplate(raw: string, opts: { zip?: boolean } = {}): Templa
   }
   const t = r.data;
   const warnings: string[] = [];
-  const known = new Set(['formato', 'nombre', 'tematica', 'reglas', 'jugadores', 'catalogo', 'portada', 'casa_inicial']);
+  const known = new Set(['formato', 'nombre', 'tematica', 'reglas', 'jugadores', 'catalogo', 'portada', 'casa_inicial', 'creditos']);
   for (const k of Object.keys(data as object)) if (!known.has(k)) warnings.push(`Se ignora el campo desconocido «${k}».`);
   const names = t.jugadores.map((n) => n.toLowerCase());
   if (new Set(names).size !== names.length) return { ok: false, errors: ['jugadores: hay nombres repetidos.'] };

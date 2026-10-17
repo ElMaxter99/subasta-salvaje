@@ -6,10 +6,11 @@ Plantillas creadas por el superadmin que cualquier anfitrión ve en **Nueva part
 El mismo formato `subasta-salvaje/plantilla@1` (ver `PLANTILLAS.md`: reglas, jugadores, catálogo) más dos campos opcionales:
 - `portada`: URL https de la imagen de la tarjeta (1200×630).
 - `casa_inicial`: URL https de la **imagen inicial de la casa**; al crear la partida se copia y se aplica a los jugadores actuales y a los que se unan después.
-Cada elemento del catálogo puede llevar `foto` (URL https). En plantillas del sistema no se admiten rutas de ZIP.
+- `creditos`: autoría o fuente de las imágenes (≤ 200 caracteres; se muestra, en pequeño, en la tarjeta de «Partidas del sistema»).
+Cada elemento del catálogo puede llevar `foto` (URL https) y un `credito` opcional (≤ 120 caracteres; solo lo ves en el editor). En plantillas del sistema no se admiten rutas de ZIP.
 
 ## Superadmin: `/admin/plantillas`
-- **Nueva plantilla / Importar JSON / Editar**: editor con validación en vivo (los mismos errores que ve cualquier anfitrión). Se guarda siempre como **borrador**.
+- **Nueva plantilla / Importar JSON / Editar**: editor **visual** (formulario) con el JSON en un desplegable «Avanzado»; ambos se reflejan entre sí. El formulario cubre nombre, temática, créditos, reglas, jugadores sugeridos, portada y casa inicial (con miniatura y botón «Subir») y el **catálogo** (añadir, quitar, reordenar, título, emoji, descripción, foto con miniatura, crédito y «Subir» por elemento). Validación en vivo (los mismos errores que ve cualquier anfitrión). Se guarda siempre como **borrador**.
 - **Comprobar imágenes**: descarga cada foto (con las defensas SSRF de `safe-fetch`) y muestra formato, tamaño, peso y si está en el *formato interno* (ver `IMAGEN-INTERNA.md`). Una foto fuera del formato interno se acepta y se reduce al copiarla, pero conviene prepararla con `npm run assets:normalize`.
 - **Publicar**: solo si **todas** las imágenes se descargan y se leen; si alguna falla no se publica y el informe dice cuál. **Retirar** la vuelve a dejar en borrador. **Borrar** no afecta a las partidas ya creadas.
 - Todo queda en **Auditoría** (creada, modificada, publicada, retirada, borrada).
@@ -46,5 +47,5 @@ Tabla `system_templates` (migraciones `…4200`/`…4300`, RLS cerrada); funcion
 
 ## Límites / pendiente
 - No se probó contra un CDN real desde este entorno (sin red): la descarga y el informe se prueban con transporte simulado.
-- Editor: JSON con validación en vivo. Un editor visual (catálogo con vista previa) queda como mejora.
+- Los créditos son informativos: anotarlos **no** sustituye a tener derecho a usar la imagen (ver «Derechos de las fotos»).
 - Pendiente de decisión: filtros por idioma/etiquetas en la galería.

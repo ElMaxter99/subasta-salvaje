@@ -8,6 +8,7 @@ import { adminPost } from '@/lib/client/admin-api';
 import { blankTemplate, parseTemplate, type Template } from '@/lib/domain/template';
 import { applyAsset, matchTarget, targetLabel, type AssetTarget } from '@/lib/domain/template-assets';
 import { uploadTemplateImageRequest } from '@/lib/client/template-upload';
+import { TemplateFormEditor } from './template-form-editor';
 import type { ImageCheck, SystemTemplate, SystemTemplateSummary } from '@/lib/services/system-template-service';
 import { Section, Table, fmtDate } from './widgets';
 
@@ -18,11 +19,24 @@ interface Draft {
   description: string;
   sort_order: string;
   json: string;
+  /** Copia SIN normalizar de la plantilla para el formulario (así se pueden escribir espacios al final mientras se teclea). */
+  tpl: Template | null;
+}
+
+/** Lee el JSON tal cual (sin pasar por Zod) y rellena lo imprescindible para el formulario; null si no es un objeto. */
+function rawTemplate(json: string): Template | null {
+  try {
+    const o = JSON.parse(json) as Partial<Template> | null;
+    if (!o || typeof o !== 'object' || Array.isArray(o)) return null;
+    return { ...(o as Template), nombre: o.nombre ?? '', tematica: o.tematica ?? '', reglas: o.reglas ?? {}, jugadores: Array.isArray(o.jugadores) ? o.jugadores : [] };
+  } catch {
+    return null;
+  }
 }
 
 function emptyDraft(): Draft {
   const t = { ...blankTemplate(), portada: 'https://cdn.tudominio.com/plantillas/mi-plantilla/portada.webp', casa_inicial: null, nombre: 'Mi partida del sistema' };
-  return { slug: '', title: '', description: '', sort_order: '100', json: JSON.stringify(t, null, 2) };
+  return { slug: '', title: '', description: '', sort_order: '100', json: JSON.stringify(t, null, 2), tpl: t as Template };
 }
 
 interface UploadRow { id: number; name: string; state: 'sending' | 'ok' | 'error' | 'unassigned'; message?: string; url?: string; file?: File }
@@ -59,7 +73,7 @@ export function SystemTemplatesPanel({ templates, cdnHosts, uploadsEnabled = fal
     setMsg(null);
     try {
       const full = await adminPost<SystemTemplate>('system-templates', { op: 'get', id: t.id });
-      setDraft({ id: full.id, slug: full.slug, title: full.title, description: full.description, sort_order: String(full.sort_order), json: JSON.stringify(full.data, null, 2) });
+      setDraft({ id: full.id, slug: full.slug, title: full.title, description: full.description, sort_order: String(full.sort_order), json: JSON.stringify(full.data, null, 2), tpl: full.data });
     } catch (e) {
       setMsg({ ok: false, text: e instanceof Error ? e.message : 'Error' });
     } finally {
@@ -75,7 +89,7 @@ export function SystemTemplatesPanel({ templates, cdnHosts, uploadsEnabled = fal
       const parsed = parseTemplate(text);
       if (!parsed.ok) return setMsg({ ok: false, text: `El archivo no es una plantilla válida: ${parsed.errors[0]}` });
       const slug = parsed.template.nombre.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60);
-      setDraft({ slug, title: parsed.template.nombre, description: '', sort_order: '100', json: JSON.stringify(parsed.template, null, 2) });
+      setDraft({ slug, title: parsed.template.nombre, description: '', sort_order: '100', json: JSON.stringify(parsed.template, null, 2), tpl: parsed.template });
       setMsg({ ok: true, text: 'Plantilla cargada en el editor: revísala y guarda el borrador.' });
     });
   }
@@ -97,8 +111,9 @@ export function SystemTemplatesPanel({ templates, cdnHosts, uploadsEnabled = fal
       if (!target) { set({ state: 'unassigned', message: 'No encaja con la portada, la casa ni ningún elemento: asígnala abajo', file }); continue; }
       try {
         const up = await uploadTemplateImageRequest(slug, KIND_OF[target.kind], file);
-        json = JSON.stringify(applyAsset(parsed.template as Template, target, up.url), null, 2);
-        setDraft((d) => (d ? { ...d, json } : d));
+        const applied = applyAsset(parsed.template as Template, target, up.url);
+        json = JSON.stringify(applied, null, 2);
+        setDraft((d) => (d ? { ...d, json, tpl: applied } : d));
         set({ state: 'ok', message: `${targetLabel(target, parsed.template)} · ${up.width}×${up.height} · ${Math.round(up.bytes / 1024)} KB`, url: up.url });
       } catch (e) {
         set({ state: 'error', message: e instanceof Error ? e.message : 'No se pudo subir' });
@@ -233,10 +248,23 @@ export function SystemTemplatesPanel({ templates, cdnHosts, uploadsEnabled = fal
                 ))}
               </ul>
             ) : null}
-            <label className="block text-sm font-semibold">
-              Plantilla (JSON)
-              <textarea aria-label="Plantilla JSON" spellCheck={false} rows={18} value={draft.json} onChange={(e) => setDraft({ ...draft, json: e.target.value })} className={`${input} mt-1 font-mono text-xs`} />
-            </label>
+            {draft.tpl ? (
+              <TemplateFormEditor
+                template={draft.tpl}
+                uploadsEnabled={uploadsEnabled}
+                onChange={(t) => setDraft((d) => (d ? { ...d, tpl: t, json: JSON.stringify(t, null, 2) } : d))}
+                onUpload={(file, target) => void handleFiles([file], target)}
+              />
+            ) : (
+              <p className="rounded-xl bg-gold/10 px-3 py-2 text-sm text-gold-soft">El editor visual necesita un JSON legible: arregla el JSON de abajo (o empieza de nuevo con «Nueva plantilla»).</p>
+            )}
+            <details open className="rounded-2xl border border-white/10 p-3">
+              <summary className="cursor-pointer text-sm font-bold">Avanzado: plantilla en JSON (los cambios del formulario y del JSON se reflejan entre sí)</summary>
+              <label className="mt-2 block text-sm font-semibold">
+                Plantilla (JSON)
+                <textarea aria-label="Plantilla JSON" spellCheck={false} rows={14} value={draft.json} onChange={(e) => setDraft({ ...draft, json: e.target.value, tpl: rawTemplate(e.target.value) })} className={`${input} mt-1 font-mono text-xs`} />
+              </label>
+            </details>
             {live && !live.ok ? (
               <ul role="alert" className="space-y-1">
                 {live.errors.map((er) => <li key={er} className="rounded-xl bg-rose/15 px-3 py-1.5 text-sm text-rose">{er}</li>)}

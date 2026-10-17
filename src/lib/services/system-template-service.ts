@@ -25,6 +25,8 @@ export interface SystemTemplateSummary {
   items: number;
   players: number;
   has_initial_image: boolean;
+  /** Autoría/fuente de las imágenes (se muestra en la tarjeta). */
+  credits?: string | null;
 }
 export type SystemTemplate = SystemTemplateSummary & { data: Template };
 

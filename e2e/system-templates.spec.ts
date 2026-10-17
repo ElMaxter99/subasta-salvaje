@@ -145,3 +145,66 @@ test('arrastrar y soltar: las imágenes se suben al repositorio de fotos (simula
     await new Promise<void>((r) => stub.close(() => r()));
   }
 });
+
+test('editor visual: editar sin tocar el JSON (espacios, catálogo, orden, créditos) y ver los créditos en la tarjeta', async ({ browser }) => {
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 1000 } });
+  expect((await ctx.request.post('/api/auth/demo')).ok()).toBeTruthy();
+  const page = await ctx.newPage();
+  const TV = `Visual ${stamp}`;
+  await page.goto('/admin/plantillas');
+  await page.getByRole('button', { name: 'Nueva plantilla' }).click();
+  await expect(page.getByTestId('template-form')).toBeVisible({ timeout: 60_000 });
+  await page.getByLabel('Título', { exact: true }).fill(TV);
+  await page.getByLabel('Identificador').fill(`visual-${stamp}`);
+
+  // Escribir con espacios no se «come» el espacio final mientras se teclea
+  const nombre = page.getByLabel('Nombre de la partida');
+  await nombre.fill('');
+  await nombre.pressSequentially('Noche de prueba total');
+  await expect(nombre).toHaveValue('Noche de prueba total');
+
+  // Quitar la portada de ejemplo (así no hay imágenes que descargar al publicar) y poner créditos
+  await page.locator('#tpl-portada').fill('');
+  await page.getByLabel('Créditos de las imágenes').fill('Dibujos propios y Wikimedia Commons');
+
+  // Catálogo: la plantilla vacía trae 3 elementos; añadir uno, renombrarlo, subirlo al principio y quitar otro
+  await expect(page.getByTestId('catalog-item')).toHaveCount(3);
+  await page.getByRole('button', { name: 'Añadir elemento' }).click();
+  await expect(page.getByTestId('catalog-item')).toHaveCount(4);
+  await page.getByLabel('Título del elemento 4').fill('Calabaza gigante');
+  await page.getByLabel('Crédito de la foto del elemento 4').fill('Autor X · CC BY');
+  for (let i = 4; i > 1; i--) await page.getByLabel(`Subir el elemento ${i}`).click();
+  await expect(page.getByLabel('Título del elemento 2')).toHaveValue('Calabaza gigante');
+  await page.getByLabel('Quitar el elemento 1').click();
+  await expect(page.getByTestId('catalog-item')).toHaveCount(3);
+
+  // El JSON refleja el formulario (y viceversa)
+  const read = async () => JSON.parse(await page.getByLabel('Plantilla JSON', { exact: true }).inputValue()) as { nombre: string; creditos: string; portada?: string | null; catalogo: { titulo: string; credito?: string }[] };
+  const json = await read();
+  expect(json.nombre).toBe('Noche de prueba total');
+  expect(json.creditos).toBe('Dibujos propios y Wikimedia Commons');
+  expect(json.catalogo[0]!.titulo).toBe('Calabaza gigante');
+  expect(json.catalogo[0]!.credito).toBe('Autor X · CC BY');
+  json.catalogo[1]!.titulo = 'Editado en el JSON';
+  await page.getByLabel('Plantilla JSON', { exact: true }).fill(JSON.stringify(json));
+  await expect(page.getByLabel('Título del elemento 2')).toHaveValue('Editado en el JSON');
+
+  // Guardar, publicar y ver la tarjeta con sus créditos
+  await page.getByRole('button', { name: 'Guardar borrador' }).click();
+  const row = page.getByTestId('system-template-row').filter({ hasText: TV });
+  await expect(row).toContainText('Borrador');
+  await row.getByRole('button', { name: 'Publicar' }).click();
+  await expect(row).toContainText('Publicada');
+  await page.goto('/new-game');
+  const card = page.getByTestId('system-template-card').filter({ hasText: TV });
+  await expect(card).toBeVisible({ timeout: 30_000 });
+  await expect(card.getByTestId('system-template-credits')).toContainText('Dibujos propios y Wikimedia Commons');
+
+  // Limpieza
+  await page.goto('/admin/plantillas');
+  const r2 = page.getByTestId('system-template-row').filter({ hasText: TV });
+  await r2.getByRole('button', { name: 'Borrar' }).click();
+  await page.getByRole('dialog').getByRole('button', { name: 'Borrar' }).click();
+  await expect(r2).toHaveCount(0);
+  await ctx.close();
+});
