@@ -87,7 +87,7 @@ export function createProviderChain(members: ImageGenerationProvider[], opts: Ch
       try {
         const out = await call(p);
         const pos = order.findIndex((m) => m.id === p.id) + 1;
-        return { ...out, provider: p.id, notes: `${notes.join('; ')}; respondió ${p.id} (${pos}.º de ${order.length})` };
+        return { ...out, provider: p.id, notes: `${notes.join('; ')}; respondió ${p.id} (${pos}.º de ${order.length})${out.notes ? `; ${out.notes}` : ''}` };
       } catch (e) {
         if (!(e instanceof ProviderError) || !SKIPPABLE.has(e.kind)) throw e; // moderación, entrada inválida…: no se reparte
         last = e;

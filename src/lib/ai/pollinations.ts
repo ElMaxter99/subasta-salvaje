@@ -89,8 +89,9 @@ export function createPollinationsProvider(cfg: PollinationsProviderOptions): Im
 
   async function generate(prompt: string): Promise<GeneratedImage> {
     const text = prompt.slice(0, MAX_PROMPT);
-    const bytes = await call('/v1/images/generations', { json: { prompt: text, model: cfg.model, size: cfg.size, response_format: 'b64_json', seed: newSeed() } });
-    return { bytes, mime: 'image/png', prompt: text, model: cfg.model };
+    const seed = newSeed();
+    const bytes = await call('/v1/images/generations', { json: { prompt: text, model: cfg.model, size: cfg.size, response_format: 'b64_json', seed } });
+    return { bytes, mime: 'image/png', prompt: text, model: cfg.model, notes: `semilla ${seed}` };
   }
 
   return {
@@ -108,11 +109,12 @@ export function createPollinationsProvider(cfg: PollinationsProviderOptions): Im
       form.set('model', cfg.editModel);
       form.set('size', await editSize(input.base.bytes, cfg));
       form.set('response_format', 'b64_json');
-      form.set('seed', String(newSeed()));
+      const seed = newSeed();
+      form.set('seed', String(seed));
       form.append('image', new Blob([(await toReferencePng(input.base, REF_MAX_SIDE)) as BlobPart], { type: 'image/png' }), 'scene.png');
       if (input.itemImage) form.append('image', new Blob([(await toReferencePng(input.itemImage, REF_MAX_SIDE)) as BlobPart], { type: 'image/png' }), 'item.png');
       const bytes = await call('/v1/images/edits', { form });
-      return { bytes, mime: 'image/png', prompt, model: cfg.editModel };
+      return { bytes, mime: 'image/png', prompt, model: cfg.editModel, notes: `semilla ${seed}` };
     },
   };
 }
