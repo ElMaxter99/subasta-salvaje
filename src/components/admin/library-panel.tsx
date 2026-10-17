@@ -6,16 +6,14 @@ import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { libraryApi, type CollectionCount, type LibraryImage } from '@/lib/client/library-api';
 import { LibraryUpload } from './library-upload';
-import { LibraryItems } from './library-items';
+import { LibraryImageDialog } from './library-image-dialog';
+import { CreateProductsDialog } from './library-create-products-dialog';
 
 const input = 'w-full rounded-xl border border-white/15 bg-night-900 px-3 py-2';
 const PAGE = 60;
 
-type Tab = 'images' | 'items';
-
-/** Biblioteca de medios del superadmin: subida masiva de imágenes y catálogo general de productos. */
+/** Imágenes de la biblioteca del superadmin: subida masiva y galería (solo fotos). Los productos del catálogo viven en /admin/catalogo. */
 export function LibraryPanel({ uploadsEnabled }: { uploadsEnabled: boolean }) {
-  const [tab, setTab] = useState<Tab>('images');
   const [images, setImages] = useState<LibraryImage[]>([]);
   const [total, setTotal] = useState(0);
   const [collections, setCollections] = useState<CollectionCount[]>([]);
@@ -27,6 +25,8 @@ export function LibraryPanel({ uploadsEnabled }: { uploadsEnabled: boolean }) {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [busy, setBusy] = useState(false);
   const [version, setVersion] = useState(0);
+  const [viewing, setViewing] = useState<LibraryImage | null>(null);
+  const [creating, setCreating] = useState<LibraryImage[]>([]);
 
   const refresh = useCallback(() => setVersion((v) => v + 1), []);
 
@@ -58,19 +58,12 @@ export function LibraryPanel({ uploadsEnabled }: { uploadsEnabled: boolean }) {
     <div className="space-y-5">
       {msg ? <p role="status" className={`rounded-2xl px-4 py-2 text-sm font-semibold ${msg.ok ? 'bg-teal/15 text-teal' : 'bg-rose/20 text-rose'}`}>{msg.text}</p> : null}
 
-      <div role="tablist" aria-label="Biblioteca" className="flex gap-2">
-        {([['images', `Imágenes (${total})`], ['items', 'Productos del catálogo']] as const).map(([id, label]) => (
-          <button key={id} role="tab" aria-selected={tab === id} onClick={() => setTab(id)} className={`min-h-11 rounded-xl px-4 py-2 text-sm font-bold ${tab === id ? 'bg-gold text-night-950' : 'bg-white/10 hover:bg-white/15'}`}>{label}</button>
-        ))}
-      </div>
-
-      {tab === 'images' ? (
-        <>
+      <>
           <Section title="Subida masiva" hint={<>Imágenes generales (paisajes, objetos divertidos…) que se reutilizan en cualquier partida o plantilla: se guardan <b>una sola vez</b> en tu repositorio público de fotos y aquí solo queda el enlace.</>}>
             <LibraryUpload enabled={uploadsEnabled} collections={collections.map((c) => c.name).filter(Boolean)} onDone={refresh} />
           </Section>
 
-          <Section title="Imágenes" hint="Selecciona varias para cambiarlas de colección, borrarlas o convertirlas en productos del catálogo.">
+          <Section title="Imágenes" hint="Pulsa una imagen para inspeccionarla y crear o asociar un producto del catálogo. Marca varias para moverlas de colección, borrarlas o crear productos.">
             <div className="mb-3 grid gap-2 md:grid-cols-3">
               <input aria-label="Buscar imágenes" placeholder="Buscar por título, etiqueta o colección…" value={q} onChange={(e) => setQ(e.target.value)} className={input} />
               <select aria-label="Filtrar por colección" value={collection} onChange={(e) => setCollection(e.target.value)} className={input}>
@@ -91,7 +84,7 @@ export function LibraryPanel({ uploadsEnabled }: { uploadsEnabled: boolean }) {
                   <datalist id="library-collections-bulk">{collections.map((c) => <option key={c.name} value={c.name} />)}</datalist>
                 </label>
                 <Button size="sm" variant="secondary" disabled={busy} onClick={() => void act(async () => { const r = await libraryApi.updateImages(ids, { collection: bulkCollection }); setSelected(new Set()); return `${r.updated} imágenes movidas a «${bulkCollection || 'sin colección'}»`; })}>Mover</Button>
-                <Button size="sm" variant="primary" disabled={busy} onClick={() => setTab('items')} data-testid="library-to-items">Crear productos…</Button>
+                <Button size="sm" variant="primary" disabled={busy} onClick={() => setCreating(images.filter((i) => selected.has(i.id)))} data-testid="library-to-items">Crear productos…</Button>
                 <Button size="sm" variant="danger" disabled={busy} onClick={() => setConfirmDelete(true)}>Borrar</Button>
               </div>
             ) : null}
@@ -100,15 +93,15 @@ export function LibraryPanel({ uploadsEnabled }: { uploadsEnabled: boolean }) {
               <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-6" data-testid="library-grid">
                 {images.map((i) => (
                   <li key={i.id} data-testid="library-image" className={`overflow-hidden rounded-2xl border bg-night-900 ${selected.has(i.id) ? 'border-gold' : 'border-white/10'}`}>
-                    <label className="block cursor-pointer">
+                    <button type="button" onClick={() => setViewing(i)} aria-label={`Ver ${i.title || 'imagen'}`} className="block w-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold/50">
                       {/* eslint-disable-next-line @next/next/no-img-element -- alojada en el CDN del propietario */}
                       <img src={i.url} alt={i.title} loading="lazy" referrerPolicy="no-referrer" className="aspect-square w-full object-cover" />
-                      <span className="flex items-start gap-2 p-2 text-xs">
-                        <input type="checkbox" checked={selected.has(i.id)} onChange={() => toggle(i.id)} aria-label={`Seleccionar ${i.title}`} className="mt-0.5 size-4 accent-[#fbbf24]" />
-                        <span className="min-w-0">
-                          <span className="block truncate font-bold">{i.title || '(sin título)'}</span>
-                          <span className="block truncate text-white/60">{i.collection || 'sin colección'}</span>
-                        </span>
+                    </button>
+                    <label className="flex cursor-pointer items-start gap-2 p-2 text-xs">
+                      <input type="checkbox" checked={selected.has(i.id)} onChange={() => toggle(i.id)} aria-label={`Seleccionar ${i.title}`} className="mt-0.5 size-4 accent-[#fbbf24]" />
+                      <span className="min-w-0">
+                        <span className="block truncate font-bold">{i.title || '(sin título)'}</span>
+                        <span className="block truncate text-white/60">{i.collection || 'sin colección'}</span>
                       </span>
                     </label>
                   </li>
@@ -117,10 +110,22 @@ export function LibraryPanel({ uploadsEnabled }: { uploadsEnabled: boolean }) {
             )}
             {images.length < total ? <div className="mt-3 text-center"><Button variant="secondary" onClick={() => void more()}>Cargar más ({images.length}/{total})</Button></div> : null}
           </Section>
-        </>
-      ) : (
-        <LibraryItems selectedImageIds={ids} onClearSelection={() => setSelected(new Set())} />
-      )}
+      </>
+
+      <LibraryImageDialog
+        image={viewing}
+        collections={collections.map((c) => c.name).filter(Boolean)}
+        onClose={() => setViewing(null)}
+        onChanged={(text) => { setMsg({ ok: true, text }); setViewing(null); refresh(); }}
+        onCreateProduct={(img) => { setViewing(null); setCreating([img]); }}
+        onDelete={(img) => { setViewing(null); setSelected(new Set([img.id])); setConfirmDelete(true); }}
+      />
+      <CreateProductsDialog
+        images={creating}
+        collections={collections.map((c) => c.name).filter(Boolean)}
+        onClose={() => setCreating([])}
+        onDone={(text) => { setMsg({ ok: true, text }); setCreating([]); setSelected(new Set()); }}
+      />
 
       <ConfirmDialog
         open={confirmDelete}

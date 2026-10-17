@@ -2,9 +2,10 @@ import sharp from 'sharp';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { GithubBatchAssets } from '@/lib/storage/github-assets';
 import {
-  addLibraryItems, commitLibraryImages, deleteLibraryImages, deleteLibraryItems, listLibraryImages, listLibraryItems, parseItemLines, stageLibraryImage, titleFromFilename,
+  addLibraryItems, commitLibraryImages, deleteLibraryImages, generateLibraryItemImage, deleteLibraryItems, listLibraryImages, listLibraryItems, parseItemLines, stageLibraryImage, titleFromFilename,
   updateLibraryImages, updateLibraryItem,
 } from '@/lib/services/library-service';
+import { invalidateSettings } from '@/lib/services/settings';
 import { makeCtx, type TestCtx } from './helpers';
 
 let ctx: TestCtx;
@@ -178,5 +179,42 @@ describe('cliente de GitHub: lote en un solo commit (API de datos de Git, fetch 
     const r = await createGithubAssets(CFG, f as never).commitMany([{ path: 'biblioteca/x/a-0000000000000000.webp', blobSha: 'a'.repeat(40) }], 'm');
     expect(heads).toBe(2);
     expect(r.sha.startsWith('c2')).toBe(true);
+  });
+});
+
+describe('biblioteca: imagen de un producto generada con IA', () => {
+  const provider = (fail = false) => ({
+    id: 'pollinations' as const, capabilities: { edit: false },
+    generateInitialScene: async () => { throw new Error('no aplica'); },
+    editScene: async () => { throw new Error('no aplica'); },
+    generateItemImage: async () => {
+      if (fail) throw new Error('proveedor caído');
+      return { bytes: new Uint8Array(await photo(10, 200, 90)), mime: 'image/jpeg', prompt: 'p', model: 'modelo-x', provider: 'pollinations' as const, notes: 'semilla 1' };
+    },
+  });
+
+  it('genera, publica la imagen en la biblioteca y la asocia al producto; cuenta en el tope diario', async () => {
+    const r = await addLibraryItems(ctx, 'admin@test', [{ name: 'Seta mágica', description: 'Roja con puntos', emoji: '🍄', collection: 'Bosque' }]);
+    const item = (await listLibraryItems(ctx, { q: 'Seta mágica' })).items[0]!;
+    expect(r.added).toBe(1);
+    const before = commits.length;
+    const g = await generateLibraryItemImage({ db: ctx.db, provider: provider() }, 'admin@test', { id: item.id, name: item.name, description: item.description, emoji: item.emoji, collection: item.collection }, assets);
+    expect(commits.length - before).toBe(1);
+    expect(g.item.image_id).toBe(g.image.id);
+    expect(g.image).toMatchObject({ collection: 'Bosque', tags: ['ia'] });
+    expect(g.image.credit).toContain('modelo-x');
+    expect(g.provider).toBe('pollinations');
+    expect(await ctx.db.rpc<Record<string, number>>('ss_provider_usage', {})).toMatchObject({ pollinations: 1 });
+  });
+
+  it('sin proveedor real no inventa nada, y si el tope diario se alcanza se niega', async () => {
+    const item = (await listLibraryItems(ctx, { q: 'Seta mágica' })).items[0]!;
+    const input = { id: item.id, name: item.name, collection: item.collection };
+    await expect(generateLibraryItemImage({ db: ctx.db, provider: null }, 'a', input, assets)).rejects.toMatchObject({ code: 'ai_not_available' });
+    await ctx.db.rpc('ss_settings_set', { key: 'quota_per_day', value: 1 });
+    invalidateSettings(ctx.db);
+    await expect(generateLibraryItemImage({ db: ctx.db, provider: provider() }, 'a', input, assets)).rejects.toThrow(/Cuota diaria/);
+    await ctx.db.rpc('ss_settings_set', { key: 'quota_per_day', value: null });
+    invalidateSettings(ctx.db);
   });
 });

@@ -1,18 +1,66 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { ImageOff, Images, Pencil, Plus, Sparkles, Trash2, Upload } from 'lucide-react';
 import { Section } from './widgets';
 import { Button } from '@/components/ui/button';
-import { libraryApi, type CollectionCount, type LibraryImage, type LibraryItem, type LibraryItemInput } from '@/lib/client/library-api';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import {
+  commitLibraryRequest, generateItemImageRequest, libraryApi, stageLibraryImageRequest, type CollectionCount, type LibraryImage, type LibraryItem, type LibraryItemInput,
+} from '@/lib/client/library-api';
 import { parseItemLines } from '@/lib/services/library-parse';
+import { LibraryImagePicker } from './library-image-picker';
 
 const input = 'w-full rounded-xl border border-white/15 bg-night-900 px-3 py-2';
+const PAGE = 100;
+const PHOTO_TYPES = ['image/png', 'image/jpeg', 'image/webp'];
+
+interface Draft { name: string; description: string; emoji: string; collection: string }
+
+function ItemForm({ initial, collections, submitLabel, busy, onSubmit, onCancel }: { initial?: LibraryItem; collections: string[]; submitLabel: string; busy: boolean; onSubmit: (d: Draft) => Promise<boolean>; onCancel?: () => void }) {
+  const [d, setD] = useState<Draft>({ name: initial?.name ?? '', description: initial?.description ?? '', emoji: initial?.emoji ?? '', collection: initial?.collection ?? '' });
+  const id = initial?.id ?? 'new';
+  const listId = `item-collections-${id}`;
+  return (
+    <form
+      className="space-y-3"
+      onSubmit={async (e) => {
+        e.preventDefault();
+        const ok = await onSubmit({ ...d, name: d.name.trim(), description: d.description.trim(), emoji: d.emoji.trim(), collection: d.collection.trim() });
+        if (ok && !initial) setD({ name: '', description: '', emoji: '', collection: d.collection });
+      }}
+    >
+      <div className="grid grid-cols-[5rem_1fr] gap-2">
+        <label className="text-sm font-semibold">Emoji
+          <input aria-label="Emoji del producto" className={`${input} mt-1 text-center text-2xl`} value={d.emoji} maxLength={8} onChange={(e) => setD({ ...d, emoji: e.target.value })} placeholder="🎁" />
+        </label>
+        <label className="text-sm font-semibold">Nombre
+          <input aria-label="Nombre del producto" className={`${input} mt-1`} value={d.name} maxLength={80} onChange={(e) => setD({ ...d, name: e.target.value })} placeholder="Nombre del producto" />
+        </label>
+      </div>
+      <label className="block text-sm font-semibold">Colección
+        <input list={listId} aria-label="Colección del producto" className={`${input} mt-1`} value={d.collection} maxLength={60} onChange={(e) => setD({ ...d, collection: e.target.value })} placeholder="Halloween, Chocolates…" />
+        <datalist id={listId}>{collections.map((c) => <option key={c} value={c} />)}</datalist>
+      </label>
+      <label className="block text-sm font-semibold">Descripción
+        <textarea aria-label="Descripción del producto" className={`${input} mt-1 min-h-20`} value={d.description} maxLength={500} onChange={(e) => setD({ ...d, description: e.target.value })} placeholder="Qué es y cómo se ve (se usa para generar la imagen)" />
+      </label>
+      <div className="flex gap-2">
+        <Button type="submit" variant={initial ? 'success' : 'primary'} disabled={!d.name.trim() || busy} loading={busy}>
+          {!initial ? <Plus className="size-5" aria-hidden /> : null} {submitLabel}
+        </Button>
+        {onCancel ? <Button type="button" variant="ghost" onClick={onCancel}>Cancelar</Button> : null}
+      </div>
+    </form>
+  );
+}
 
 /**
- * Catálogo general de productos: se crean en bloque (a partir de imágenes seleccionadas o de texto «Nombre; Descripción; Emoji»)
- * y luego se importan en cualquier partida o plantilla desde el catálogo del asistente.
+ * Catálogo general de productos del superadmin, con la misma presentación que el catálogo del anfitrión: buscador, filtro por colección,
+ * lista con foto y, en cada producto, generar imagen con IA, subir o elegir de la biblioteca su foto, quitarla, editarlo y eliminarlo.
+ * Los productos se importan después en cualquier partida o plantilla desde el asistente.
  */
-export function LibraryItems({ selectedImageIds, onClearSelection }: { selectedImageIds: string[]; onClearSelection: () => void }) {
+export function LibraryItems({ aiConfigured = false, uploadsEnabled = true }: { aiConfigured?: boolean; uploadsEnabled?: boolean }) {
   const [items, setItems] = useState<LibraryItem[]>([]);
   const [total, setTotal] = useState(0);
   const [collections, setCollections] = useState<CollectionCount[]>([]);
@@ -21,46 +69,50 @@ export function LibraryItems({ selectedImageIds, onClearSelection }: { selectedI
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [text, setText] = useState('');
   const [targetCollection, setTargetCollection] = useState('');
-  const [fromImages, setFromImages] = useState<{ id: string; name: string; emoji: string; description: string; collection: string }[]>([]);
-  const [chosen, setChosen] = useState<Set<string>>(new Set());
+  const [editing, setEditing] = useState<string | null>(null);
+  const [removing, setRemoving] = useState<LibraryItem | null>(null);
+  const [picking, setPicking] = useState<LibraryItem | null>(null);
   const [version, setVersion] = useState(0);
-  const [busy, setBusy] = useState(false);
+  const [busy, setBusy] = useState<string | null>(null);
+  const files = useRef<Record<string, HTMLInputElement | null>>({});
   const refresh = useCallback(() => setVersion((v) => v + 1), []);
+  const names = collections.map((c) => c.name).filter(Boolean);
 
   useEffect(() => {
     let alive = true;
     const t = setTimeout(() => {
-      libraryApi.items({ q, collection: collection || null, limit: 500 })
+      libraryApi.items({ q, collection: collection || null, limit: PAGE, offset: 0 })
         .then((r) => { if (alive) { setItems(r.items); setTotal(r.total); setCollections(r.collections); } })
         .catch((e) => alive && setMsg({ ok: false, text: e instanceof Error ? e.message : 'Error' }));
     }, q ? 250 : 0);
     return () => { alive = false; clearTimeout(t); };
   }, [q, collection, version]);
 
-  // Imágenes seleccionadas en la otra pestaña → borrador de productos (nombre = título de la imagen, editable).
-  useEffect(() => {
-    if (selectedImageIds.length === 0) return;
-    let alive = true;
-    (async () => {
-      const found: LibraryImage[] = [];
-      for (let offset = 0; found.length < selectedImageIds.length && offset < 5000; offset += 200) {
-        const r = await libraryApi.images({ limit: 200, offset });
-        found.push(...r.images.filter((i) => selectedImageIds.includes(i.id)));
-        if (offset + 200 >= r.total) break;
-      }
-      if (alive) setFromImages(found.map((i) => ({ id: i.id, name: i.title, emoji: '', description: '', collection: i.collection })));
-    })().catch(() => undefined);
-    return () => { alive = false; };
-  }, [selectedImageIds]);
+  async function more() {
+    const r = await libraryApi.items({ q, collection: collection || null, limit: PAGE, offset: items.length });
+    setItems((cur) => [...cur, ...r.items.filter((i) => !cur.some((c) => c.id === i.id))]);
+  }
 
-  async function run(fn: () => Promise<string>) {
-    setBusy(true);
+  async function run(key: string, fn: () => Promise<string>): Promise<boolean> {
+    setBusy(key);
     setMsg(null);
-    try { setMsg({ ok: true, text: await fn() }); refresh(); } catch (e) { setMsg({ ok: false, text: e instanceof Error ? e.message : 'Error' }); } finally { setBusy(false); }
+    try { setMsg({ ok: true, text: await fn() }); refresh(); return true; } catch (e) { setMsg({ ok: false, text: e instanceof Error ? e.message : 'Error' }); return false; } finally { setBusy(null); }
+  }
+
+  const toPayload = (d: Draft): LibraryItemInput => ({ name: d.name, description: d.description, emoji: d.emoji || null, collection: d.collection });
+
+  async function uploadPhoto(it: LibraryItem, file: File) {
+    if (!PHOTO_TYPES.includes(file.type)) return setMsg({ ok: false, text: 'Formato no válido. Usa PNG, JPEG o WebP.' });
+    await run(`photo-${it.id}`, async () => {
+      const r = await stageLibraryImageRequest(file, { collection: it.collection, tags: '', credit: '', kind: 'item' });
+      const image: LibraryImage = r.existed ? r.image : (await commitLibraryRequest([r.staged])).images[0]!;
+      await libraryApi.updateItem(it.id, { image_id: image.id });
+      return `Foto de «${it.name}» guardada`;
+    });
   }
 
   async function addFromText() {
-    await run(async () => {
+    await run('bulk', async () => {
       const imgs = (await libraryApi.images({ collection: targetCollection || null, limit: 200 })).images;
       const { items: parsed, ignored } = parseItemLines(text, imgs, targetCollection.trim());
       if (parsed.length === 0) throw new Error('Escribe al menos un producto: «Nombre; Descripción; Emoji», uno por línea.');
@@ -71,82 +123,119 @@ export function LibraryItems({ selectedImageIds, onClearSelection }: { selectedI
     });
   }
 
-  async function addFromImages() {
-    await run(async () => {
-      const r = await libraryApi.addItems(fromImages.map((f) => ({ name: f.name || 'Sin nombre', description: f.description, emoji: f.emoji || null, image_id: f.id, collection: targetCollection.trim() || f.collection })));
-      setFromImages([]);
-      onClearSelection();
-      return `${r.added} productos creados a partir de las imágenes${r.skipped ? ` (${r.skipped} repetidos omitidos)` : ''}.`;
-    });
-  }
-
-  const toggle = (id: string) => setChosen((s) => { const n = new Set(s); if (n.has(id)) n.delete(id); else n.add(id); return n; });
-
   return (
     <div className="space-y-5">
       {msg ? <p role="status" className={`rounded-2xl px-4 py-2 text-sm font-semibold ${msg.ok ? 'bg-teal/15 text-teal' : 'bg-rose/20 text-rose'}`}>{msg.text}</p> : null}
+      <p className="rounded-2xl border border-white/10 bg-night-800/70 px-4 py-3 text-sm text-white/75">
+        📷 Cada producto puede tener su <b>foto</b> (la subes, la eliges de Imágenes o la genera la IA). Al importarlo en una partida, la IA mezcla esa foto con la casa del jugador. {aiConfigured ? 'La generación con IA usa la cadena de proveedores gratuitos y cuenta en el tope diario.' : 'La IA no está configurada en el servidor: «Generar imagen» está desactivada.'}
+      </p>
 
-      {fromImages.length > 0 ? (
-        <Section title={`Crear ${fromImages.length} productos desde las imágenes`} hint="El nombre sale del título de la imagen; edítalo y añade emoji o descripción si quieres.">
-          <div className="space-y-2" data-testid="library-from-images">
-            <label className="block text-sm font-semibold">Colección de los productos (vacío = la de cada imagen)
-              <input list="library-item-collections" aria-label="Colección de los productos" value={targetCollection} onChange={(e) => setTargetCollection(e.target.value)} className={`${input} mt-1`} />
-            </label>
-            <ul className="max-h-96 space-y-2 overflow-y-auto">
-              {fromImages.map((f, idx) => (
-                <li key={f.id} className="grid gap-2 rounded-xl bg-night-900 p-2 md:grid-cols-[1fr_5rem_2fr]">
-                  <input aria-label={`Nombre del producto ${idx + 1}`} maxLength={80} value={f.name} onChange={(e) => setFromImages((all) => all.map((x) => (x.id === f.id ? { ...x, name: e.target.value } : x)))} className={input} />
-                  <input aria-label={`Emoji del producto ${idx + 1}`} maxLength={8} value={f.emoji} onChange={(e) => setFromImages((all) => all.map((x) => (x.id === f.id ? { ...x, emoji: e.target.value } : x)))} className={`${input} text-center`} placeholder="📦" />
-                  <input aria-label={`Descripción del producto ${idx + 1}`} maxLength={500} value={f.description} onChange={(e) => setFromImages((all) => all.map((x) => (x.id === f.id ? { ...x, description: e.target.value } : x)))} className={input} placeholder="Descripción (opcional)" />
-                </li>
-              ))}
-            </ul>
-            <div className="flex gap-2">
-              <Button variant="primary" loading={busy} onClick={() => void addFromImages()}>Crear productos</Button>
-              <Button variant="ghost" onClick={() => { setFromImages([]); onClearSelection(); }}>Cancelar</Button>
-            </div>
-          </div>
-        </Section>
-      ) : null}
-
-      <Section title="Añadir productos en bloque" hint={<>Una línea por producto: <code>Nombre; Descripción; Emoji</code> (descripción y emoji opcionales). Si hay una imagen de la biblioteca con el mismo título (en esa colección), se enlaza sola.</>}>
-        <div className="space-y-2">
-          <label className="block text-sm font-semibold">Colección
-            <input list="library-item-collections" aria-label="Colección de los productos nuevos" value={targetCollection} onChange={(e) => setTargetCollection(e.target.value)} placeholder="Halloween, Chocolates…" className={`${input} mt-1`} />
-            <datalist id="library-item-collections">{collections.map((c) => <option key={c.name} value={c.name} />)}</datalist>
-          </label>
-          <textarea aria-label="Lista de productos" rows={6} value={text} onChange={(e) => setText(e.target.value)} placeholder={'Calabaza gigante; Con una vela dentro; 🎃\nFantasma\nMurciélago;;🦇'} className={`${input} font-mono text-sm`} />
-          <Button variant="primary" loading={busy} disabled={!text.trim()} onClick={() => void addFromText()}>Añadir productos</Button>
-        </div>
-      </Section>
-
-      <Section title={`Productos del catálogo general (${total})`} hint="Al configurar una partida, «Importar de la biblioteca» en el catálogo los añade a su catálogo (las fotos se usan por enlace, sin copiarlas).">
-        <div className="mb-3 grid gap-2 md:grid-cols-3">
-          <input aria-label="Buscar productos" placeholder="Buscar…" value={q} onChange={(e) => setQ(e.target.value)} className={input} />
+      <Section title={`Productos del catálogo general (${total})`} hint="Los productos se importan en cualquier partida o plantilla desde «Importar de la biblioteca» (las fotos se usan por enlace, sin copiarlas).">
+        <div className="mb-3 grid gap-2 md:grid-cols-2">
+          <input aria-label="Buscar productos" placeholder="Buscar por nombre, descripción o colección…" value={q} onChange={(e) => setQ(e.target.value)} className={input} />
           <select aria-label="Filtrar productos por colección" value={collection} onChange={(e) => setCollection(e.target.value)} className={input}>
             <option value="">Todas las colecciones</option>
             {collections.map((c) => <option key={c.name} value={c.name}>{c.name || '(sin colección)'} · {c.count}</option>)}
           </select>
-          <Button variant="danger" disabled={chosen.size === 0 || busy} onClick={() => void run(async () => { const r = await libraryApi.deleteItems([...chosen]); setChosen(new Set()); return `${r.deleted} productos borrados`; })}>Borrar seleccionados ({chosen.size})</Button>
         </div>
         {items.length === 0 ? <p className="text-sm text-white/70">Todavía no hay productos{q || collection ? ' con ese filtro' : ''}.</p> : (
-          <ul className="space-y-2" data-testid="library-items">
+          <ul className="space-y-3" data-testid="library-items">
             {items.map((it) => (
-              <li key={it.id} data-testid="library-item" className="flex flex-wrap items-center gap-3 rounded-2xl border border-white/10 bg-night-900 p-2">
-                <input type="checkbox" checked={chosen.has(it.id)} onChange={() => toggle(it.id)} aria-label={`Seleccionar ${it.name}`} className="size-4 accent-[#fbbf24]" />
-                {it.photo_url ? (
-                  // eslint-disable-next-line @next/next/no-img-element -- alojada en el CDN del propietario
-                  <img src={it.photo_url} alt="" loading="lazy" referrerPolicy="no-referrer" className="size-12 rounded-lg object-cover" />
-                ) : <span className="grid size-12 place-items-center rounded-lg bg-night-950 text-xl" aria-hidden>{it.emoji ?? '📦'}</span>}
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate font-bold">{it.emoji ? `${it.emoji} ` : ''}{it.name}</span>
-                  <span className="block truncate text-xs text-white/60">{it.collection || 'sin colección'}{it.description ? ` · ${it.description}` : ''}</span>
-                </span>
+              <li key={it.id} data-testid="library-item" className="rounded-3xl border border-white/10 bg-night-800/80 p-4">
+                <div className="flex items-start gap-3">
+                  {it.photo_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element -- alojada en el CDN del propietario
+                    <img src={it.photo_url} alt={it.name} loading="lazy" referrerPolicy="no-referrer" className="size-16 shrink-0 rounded-xl object-cover" />
+                  ) : <span className="flex size-16 shrink-0 items-center justify-center rounded-xl bg-night-950 text-4xl" aria-hidden>{it.emoji ?? '🎁'}</span>}
+                  <div className="min-w-0 flex-1">
+                    <h3 className="font-bold">{it.emoji ? `${it.emoji} ` : ''}{it.name}</h3>
+                    <p className="line-clamp-2 text-sm text-white/65">{it.description || 'Sin descripción'}</p>
+                    <p className="mt-1 text-xs text-white/55">{it.collection || 'sin colección'}{it.photo_credit ? ` · ${it.photo_credit}` : ''}</p>
+                  </div>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Button size="md" variant="secondary" disabled={!aiConfigured || !uploadsEnabled || busy !== null} loading={busy === `gen-${it.id}`} title={aiConfigured ? undefined : 'Requiere un proveedor de IA configurado'} aria-label={`Generar imagen de ${it.name}`}
+                    onClick={() => void run(`gen-${it.id}`, async () => { const r = await generateItemImageRequest(it); return `Imagen de «${it.name}» generada con ${r.provider}${r.model ? ` (${r.model})` : ''}`; })}>
+                    <Sparkles className="size-4" aria-hidden /> {busy === `gen-${it.id}` ? 'Generando…' : 'Generar imagen'}
+                  </Button>
+                  <input ref={(el) => { files.current[it.id] = el; }} type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" tabIndex={-1} aria-label={`Archivo de foto de ${it.name}`}
+                    onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; if (f) void uploadPhoto(it, f); }} />
+                  <Button size="md" variant="secondary" disabled={!uploadsEnabled || busy !== null} loading={busy === `photo-${it.id}`} aria-label={`Subir foto de ${it.name}`} onClick={() => files.current[it.id]?.click()}>
+                    <Upload className="size-4" aria-hidden /> {it.photo_url ? 'Cambiar foto' : 'Subir foto'}
+                  </Button>
+                  <Button size="md" variant="secondary" disabled={busy !== null} aria-label={`Elegir foto de ${it.name} de la biblioteca`} onClick={() => setPicking(it)}>
+                    <Images className="size-4" aria-hidden /> De la biblioteca
+                  </Button>
+                  {it.photo_url ? (
+                    <Button size="md" variant="ghost" disabled={busy !== null} loading={busy === `clear-${it.id}`} aria-label={`Quitar foto de ${it.name}`} onClick={() => void run(`clear-${it.id}`, async () => { await libraryApi.updateItem(it.id, { image_id: null }); return 'Foto quitada'; })}>
+                      <ImageOff className="size-4" aria-hidden /> Quitar foto
+                    </Button>
+                  ) : null}
+                  <Button size="md" variant="ghost" disabled={busy !== null} aria-label={`Editar ${it.name}`} onClick={() => setEditing(editing === it.id ? null : it.id)}>
+                    <Pencil className="size-4" aria-hidden /> Editar
+                  </Button>
+                  <Button size="md" variant="ghost" className="text-rose" disabled={busy !== null} aria-label={`Eliminar ${it.name}`} onClick={() => setRemoving(it)}>
+                    <Trash2 className="size-4" aria-hidden /> Eliminar
+                  </Button>
+                </div>
+                {editing === it.id ? (
+                  <div className="mt-3 rounded-2xl bg-night-900 p-3">
+                    <ItemForm
+                      initial={it}
+                      collections={names}
+                      submitLabel="Guardar cambios"
+                      busy={busy === `edit-${it.id}`}
+                      onCancel={() => setEditing(null)}
+                      onSubmit={async (d) => {
+                        const ok = await run(`edit-${it.id}`, async () => { await libraryApi.updateItem(it.id, { name: d.name, description: d.description, emoji: d.emoji || null, collection: d.collection }); return 'Producto actualizado'; });
+                        if (ok) setEditing(null);
+                        return ok;
+                      }}
+                    />
+                  </div>
+                ) : null}
               </li>
             ))}
           </ul>
         )}
+        {items.length < total ? <div className="mt-3 text-center"><Button variant="secondary" onClick={() => void more()}>Cargar más ({items.length}/{total})</Button></div> : null}
       </Section>
+
+      <Section title="Añadir producto" hint="Crea un producto nuevo; después le pones foto (subirla, elegirla de Imágenes o generarla con IA).">
+        <ItemForm collections={names} submitLabel="Añadir al catálogo" busy={busy === 'add'} onSubmit={(d) => run('add', async () => { const r = await libraryApi.addItems([toPayload(d)]); return r.added ? `«${d.name}» añadido` : `«${d.name}» ya existe en esa colección`; })} />
+      </Section>
+
+      <details className="rounded-3xl border border-white/10 bg-night-800/70 p-4">
+        <summary className="cursor-pointer font-bold">Añadir muchos productos a la vez (texto)</summary>
+        <div className="mt-3 space-y-2">
+          <p className="text-sm text-white/70">Una línea por producto: <code>Nombre; Descripción; Emoji</code> (descripción y emoji opcionales). Si hay una imagen de la biblioteca con el mismo título (en esa colección), se enlaza sola.</p>
+          <label className="block text-sm font-semibold">Colección
+            <input list="library-item-collections" aria-label="Colección de los productos nuevos" value={targetCollection} onChange={(e) => setTargetCollection(e.target.value)} placeholder="Halloween, Chocolates…" className={`${input} mt-1`} />
+            <datalist id="library-item-collections">{names.map((c) => <option key={c} value={c} />)}</datalist>
+          </label>
+          <textarea aria-label="Lista de productos" rows={6} value={text} onChange={(e) => setText(e.target.value)} placeholder={'Calabaza gigante; Con una vela dentro; 🎃\nFantasma\nMurciélago;;🦇'} className={`${input} font-mono text-sm`} />
+          <Button variant="primary" loading={busy === 'bulk'} disabled={!text.trim() || busy !== null} onClick={() => void addFromText()}>Añadir productos</Button>
+        </div>
+      </details>
+
+      <LibraryImagePicker
+        open={picking !== null}
+        title={picking ? `Foto de «${picking.name}»` : 'Elegir foto'}
+        onClose={() => setPicking(null)}
+        onPick={(image) => { const it = picking; setPicking(null); if (it) void run(`pick-${it.id}`, async () => { await libraryApi.updateItem(it.id, { image_id: image.id }); return `Foto de «${it.name}» actualizada`; }); }}
+      />
+
+      <ConfirmDialog
+        open={!!removing}
+        title="Eliminar producto"
+        confirmLabel="Sí, eliminar"
+        variant="danger"
+        loading={busy === 'remove'}
+        onCancel={() => setRemoving(null)}
+        onConfirm={async () => { if (removing) await run('remove', async () => { await libraryApi.deleteItems([removing.id]); return `«${removing.name}» eliminado`; }); setRemoving(null); }}
+      >
+        <p>Se eliminará <b>{removing?.name}</b> del catálogo general. Las partidas que ya lo importaron no cambian. La imagen sigue en Imágenes.</p>
+      </ConfirmDialog>
     </div>
   );
 }

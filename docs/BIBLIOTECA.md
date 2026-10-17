@@ -13,8 +13,10 @@ duplicar nada.
 - **Sin duplicados:** la identidad de una imagen es el hash de su contenido ya normalizado. Subir otra vez la misma foto (aunque tenga otro
   nombre) no llega a GitHub y devuelve la existente.
 
-## `/admin/biblioteca`
-**Pestaña Imágenes**
+## Superadmin → Biblioteca
+Dos vistas, con pestañas arriba: **Imágenes** (`/admin/biblioteca`, solo fotos) y **Productos del catálogo** (`/admin/catalogo`).
+
+### Imágenes (solo fotos)
 - *Subida masiva*: arrastra archivos o una **carpeta entera** (o elige). Colección, etiquetas y crédito se aplican a todo el lote; el título sale
   del nombre del archivo (`sombrilla_roja-01.jpg` → «Sombrilla roja 01»). La subida es en **dos fases y todo el lote entra en UN solo commit**:
   (1) cada foto se envía de una en una: el servidor la normaliza, mira si ya está registrada y, si es nueva, la deja *preparada* en GitHub como
@@ -22,15 +24,21 @@ duplicar nada.
   API de datos de Git). Barra de progreso, contadores (nuevas / repetidas / con error), **Parar** (lo ya preparado se publica con «Publicar N
   preparadas») y reintento si GitHub pide ir más despacio (429: espera 20 s, hasta 3 veces). Si falla la publicación **no se registra nada** y se
   reintenta con la misma lista. Las copias dentro del mismo lote se detectan por contenido. Lo que no es JPG, PNG o WebP se descarta y se avisa.
-- *Galería*: búsqueda (título, etiquetas, colección), filtro por colección, «Cargar más», selección múltiple → **mover de colección**, **borrar** o
+- *Galería*: búsqueda (título, etiquetas, colección), filtro por colección, «Cargar más» y selección múltiple → **mover de colección**, **borrar** o
   **crear productos**.
+- **Pulsar una imagen abre una ventana** para inspeccionarla (grande, con medidas, peso y fecha; enlace para abrirla aparte) con estas opciones:
+  **Crear producto del catálogo** (nombre, emoji y descripción editables), **Asociar a un producto** (buscador del catálogo; la imagen pasa a ser
+  la foto de ese producto), editar título/colección/etiquetas/crédito y **Borrar**.
 - Borrar una imagen quita el registro; **el archivo sigue en el repositorio de fotos** (no se borra de GitHub) y los productos que la usaban quedan sin foto.
 
-**Pestaña Productos del catálogo**
-- *Desde imágenes*: selecciona imágenes y «Crear productos…»: el nombre sale del título (editable), con emoji y descripción opcionales.
-- *En bloque por texto*: una línea por producto, `Nombre; Descripción; Emoji`. Si hay una imagen de la biblioteca (en esa colección) con el mismo
-  título, se **enlaza sola**. Los repetidos (misma colección y nombre) se omiten.
-- Lista filtrable y borrado múltiple.
+### Productos del catálogo
+Misma presentación que el catálogo del anfitrión: buscador (nombre, descripción, colección), filtro por colección y lista con foto. En cada producto:
+- **Generar imagen** con IA (cadena de proveedores gratuitos y ajustes del superadmin; cuenta en el tope diario global; migración `…6400`/`…6500`).
+  La imagen generada es la única que se guarda: se publica en la biblioteca (un commit, colección del producto, etiqueta `ia`, crédito con proveedor y
+  modelo) y se asocia al producto. Si la IA no está configurada o está apagada, el botón está desactivado: nunca se simula.
+- **Subir foto / Cambiar foto** (se reduce y publica en la biblioteca), **De la biblioteca** (modal con las imágenes) y **Quitar foto**.
+- **Editar** (nombre, emoji, colección, descripción) y **Eliminar**. **Añadir producto** crea uno nuevo; «Añadir muchos productos a la vez» acepta
+  una línea por producto, `Nombre; Descripción; Emoji`, y enlaza sola la imagen con el mismo título. Los repetidos (misma colección y nombre) se omiten.
 
 ## Usarlo al configurar una partida
 En el asistente de «Nueva partida» (y en el editor del superadmin), en el **Resumen → catálogo**: **«De la biblioteca»** abre un modal flotante

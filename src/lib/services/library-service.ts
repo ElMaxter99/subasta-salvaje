@@ -7,6 +7,7 @@ import { slugify } from '@/lib/domain/template-assets';
 import { normalizeImage, NormalizeError } from '@/lib/images/normalize';
 import { AssetUploadError, createGithubAssets, type GithubBatchAssets } from '@/lib/storage/github-assets';
 import type { AppContext } from './context';
+import { effectiveQuota, getSettings } from './settings';
 
 type Ctx = Pick<AppContext, 'db'>;
 
@@ -224,6 +225,41 @@ export async function deleteLibraryItems(ctx: Ctx, actor: string, rawIds: unknow
   const ids = idsSchema.safeParse(rawIds);
   if (!ids.success) throw new DomainError('invalid_input');
   return ctx.db.rpc('ss_admin_library_item_delete', { actor, ids: ids.data });
+}
+
+const generateSchema = z.object({
+  id: z.string().uuid(),
+  name: z.string().trim().min(1).max(80),
+  description: z.string().trim().max(500).default(''),
+  emoji: z.string().trim().max(8).nullish(),
+  collection: z.string().trim().max(60).default(''),
+});
+
+/**
+ * Genera con IA la imagen de un producto del catálogo general (solo superadmin). Usa la misma cadena de proveedores (gratuitos) y los mismos
+ * ajustes que las partidas; cuenta en el tope diario global. La imagen generada es la ÚNICA que se guarda: se publica en la biblioteca
+ * (repositorio de fotos, un commit) y se asocia al producto. Si la IA no está configurada o falla, no se inventa nada.
+ */
+export async function generateLibraryItemImage(
+  ctx: Pick<AppContext, 'db' | 'provider'>,
+  actor: string,
+  raw: unknown,
+  assets: GithubBatchAssets | null = defaultAssets(),
+): Promise<{ item: LibraryItem; image: LibraryImage; provider: string; model: string | null; notes: string | null }> {
+  const input = generateSchema.safeParse(raw);
+  if (!input.success) throw new DomainError('invalid_input');
+  if (!assets) throw new DomainError('invalid_input', 'La subida de imágenes no está configurada (GITHUB_ASSETS_REPO y GITHUB_ASSETS_TOKEN).');
+  const settings = await getSettings(ctx.db);
+  if (!ctx.provider || ctx.provider.id === 'demo' || !settings.ai_enabled) throw new DomainError('ai_not_available');
+  const q = effectiveQuota(settings);
+  const quota = await ctx.db.rpc<{ ok: boolean; used?: number; limit?: number }>('ss_reserve_admin_image_quota', { provider: ctx.provider.id, day_limit: q.perDay });
+  if (!quota.ok) throw new DomainError('invalid_input', `Cuota diaria de generaciones alcanzada (${quota.used}/${quota.limit}); se renueva a las 00:00 UTC.`, 429);
+  const gen = await ctx.provider.generateItemImage({ theme: input.data.collection || 'objeto', itemName: input.data.name, itemDescription: input.data.description, itemEmoji: input.data.emoji ?? null });
+  const credit = `Generada con IA (${gen.provider ?? ctx.provider.id}${gen.model ? ` · ${gen.model}` : ''})`.slice(0, 200);
+  const staged = await stageLibraryImage(ctx, { name: `${input.data.name}.png`, bytes: gen.bytes, collection: input.data.collection, tags: ['ia'], credit, title: input.data.name, kind: 'item' }, assets);
+  const image = staged.existed ? staged.image : (await commitLibraryImages(ctx, actor, [staged.staged], assets)).images[0]!;
+  const item = await updateLibraryItem(ctx, actor, input.data.id, { image_id: image.id });
+  return { item, image, provider: gen.provider ?? ctx.provider.id, model: gen.model ?? null, notes: gen.notes ?? null };
 }
 
 export { parseItemLines } from './library-parse';

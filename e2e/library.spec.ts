@@ -59,21 +59,59 @@ test('biblioteca: subida masiva (con repetida y archivo no válido), productos d
     await page.getByRole('button', { name: 'Seleccionar todo lo visible' }).click();
     await expect(page.getByTestId('library-bulk')).toContainText('3 seleccionadas');
 
-    // Productos desde las imágenes (el nombre sale del título del archivo)
+    // Pulsar una imagen abre su ventana: se inspecciona y se crea UN producto del catálogo con ella
+    await page.getByRole('button', { name: /^Ver Calabaza gigante/ }).click();
+    await expect(page.getByTestId('library-image-dialog')).toBeVisible();
+    await page.getByTestId('library-create-product').click();
+    await expect(page.getByLabel('Nombre del producto 1')).toHaveValue(/Calabaza gigante/, { timeout: 30_000 });
+    await page.getByRole('button', { name: 'Crear productos', exact: true }).click();
+    await expect(page.getByText(/1 producto creado/)).toBeVisible({ timeout: 30_000 });
+
+    // Selección múltiple → crear productos (el nombre sale del título; el repetido se omite)
+    await page.getByRole('button', { name: 'Seleccionar todo lo visible' }).click();
     await page.getByTestId('library-to-items').click();
-    const from = page.getByTestId('library-from-images');
-    await expect(from).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId('library-from-images')).toBeVisible({ timeout: 30_000 });
     await expect(page.getByLabel('Nombre del producto 1')).not.toHaveValue('');
     await page.getByRole('button', { name: 'Crear productos', exact: true }).click();
-    await expect(page.getByText(/3 productos creados/)).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByText(/2 productos creados/)).toBeVisible({ timeout: 30_000 });
+
+    // Los productos se gestionan en su propia página (la de imágenes solo tiene fotos)
+    await expect(page.getByLabel('Lista de productos')).toHaveCount(0);
+    await page.goto('/admin/catalogo');
+    await expect(page.getByLabel('Filtrar productos por colección')).toBeVisible({ timeout: 60_000 });
+    await page.waitForTimeout(2500);
     await page.getByLabel('Filtrar productos por colección').selectOption(COLLECTION);
     await expect(page.getByTestId('library-item')).toHaveCount(3);
 
     // Añadir en bloque por texto: uno nuevo (con emoji) y uno repetido que se omite
+    await page.getByText('Añadir muchos productos a la vez').click();
     await page.getByLabel('Colección de los productos nuevos').fill(COLLECTION);
     await page.getByLabel('Lista de productos').fill(`Escoba voladora; Para llegar a tiempo; 🧹\nFantasma ${stamp}`);
     await page.getByRole('button', { name: 'Añadir productos' }).click();
     await expect(page.getByText(/productos añadidos/)).toBeVisible({ timeout: 30_000 });
+
+    // Vista de catálogo: buscar, editar un producto, y la IA está desactivada si no hay proveedor
+    await page.getByLabel('Buscar productos').fill('Escoba');
+    await expect(page.getByTestId('library-item')).toHaveCount(1, { timeout: 30_000 });
+    await page.getByRole('button', { name: 'Editar Escoba voladora' }).click();
+    await page.getByTestId('library-item').getByLabel('Descripción del producto').fill('Con motor de ceniza');
+    await page.getByTestId('library-item').getByRole('button', { name: 'Guardar cambios' }).click();
+    await expect(page.getByText('Producto actualizado')).toBeVisible({ timeout: 30_000 });
+    await expect(page.getByTestId('library-item')).toContainText('Con motor de ceniza');
+    await expect(page.getByRole('button', { name: 'Subir foto de Escoba voladora' })).toBeVisible();
+
+    // Asociar una imagen a un producto que ya existe (la escoba no tiene foto)
+    await page.goto('/admin/biblioteca');
+    await expect(page.getByTestId('library-dropzone')).toBeVisible({ timeout: 60_000 });
+    await page.waitForTimeout(2500);
+    await page.getByLabel('Filtrar por colección').selectOption(COLLECTION);
+    await page.getByRole('button', { name: new RegExp(`^Ver Murcielago ${stamp}`) }).click();
+    await page.getByTestId('library-associate').click();
+    await page.getByLabel('Buscar productos del catálogo').fill('Escoba');
+    await page.getByTestId('library-associate-item').filter({ hasText: COLLECTION }).getByRole('button', { name: 'Asociar a Escoba voladora' }).click();
+    await expect(page.getByText(/Imagen asociada a «Escoba voladora»/)).toBeVisible({ timeout: 30_000 });
+    const withPhoto = ((await (await ctx.request.post('/api/admin/library', { data: { op: 'items.list', collection: COLLECTION }, headers: ORIGIN })).json()) as { items: { name: string; image_id: string | null }[] }).items;
+    expect(withPhoto.find((i) => i.name === 'Escoba voladora')?.image_id).toBeTruthy();
 
     // Un anfitrión los importa al catálogo de su partida desde el modal
     await page.goto('/new-game');

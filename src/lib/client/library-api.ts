@@ -30,6 +30,10 @@ export async function stageLibraryImageRequest(file: File, meta: UploadMeta): Pr
 /** Fase 2: publica todas las imágenes preparadas en UN solo commit y las registra. */
 export const commitLibraryRequest = (staged: StagedImage[]) => adminPost<{ commit: string; added: number; existed: number; images: LibraryImage[] }>('library/commit', { staged });
 
+export interface GeneratedItemImage { item: LibraryItem; image: LibraryImage; provider: string; model: string | null; notes: string | null }
+/** Genera con IA la imagen de un producto del catálogo general (consume cuota diaria) y la deja asociada. */
+export const generateItemImageRequest = (item: Pick<LibraryItem, 'id' | 'name' | 'description' | 'emoji' | 'collection'>) => adminPost<GeneratedItemImage>('library/generate', item);
+
 export interface ImageList { total: number; images: LibraryImage[]; collections: CollectionCount[]; uploadsEnabled: boolean }
 export interface ItemList { total: number; items: LibraryItem[]; collections: CollectionCount[] }
 
