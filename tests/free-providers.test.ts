@@ -3,7 +3,7 @@ import sharp from 'sharp';
 import { createAiHordeProvider } from '@/lib/ai/aihorde';
 import { createHuggingFaceProvider } from '@/lib/ai/huggingface';
 import { createProviderChain } from '@/lib/ai/chain';
-import { aiHordeConfig, getImageProviderIds, huggingFaceConfig } from '@/lib/config/env';
+import { aiHordeConfig, DEFAULT_HF_MODELS, getImageProviderIds, huggingFaceConfig } from '@/lib/config/env';
 import { ProviderError } from '@/lib/ai/types';
 import { redactSecrets } from '@/lib/security/redact';
 
@@ -104,6 +104,29 @@ describe('Hugging Face (fetch simulado)', () => {
     expect(out.bytes.length).toBe(bytes.length);
   });
 
+  it('un modelo retirado (410) se salta y prueba el siguiente; si no queda ninguno, el error es saltable y la cadena sigue con otro proveedor', async () => {
+    const bytes = await png();
+    const calls: string[] = [];
+    const f = (async (u: string) => {
+      calls.push(u.split('/models/')[1]!);
+      return calls.at(-1) === 'viejo/modelo'
+        ? new Response('{"error":"The requested model is deprecated and no longer supported by provider hf-inference"}', { status: 410 })
+        : new Response(bytes as BodyInit, { status: 200, headers: { 'content-type': 'image/png' } });
+    }) as never;
+    const p = createHuggingFaceProvider({ token: HF, model: 'viejo/modelo, nuevo/modelo', fetchImpl: f });
+    expect((await p.generateItemImage(item)).model).toBe('nuevo/modelo');
+    await p.generateItemImage(item);
+    expect(calls).toEqual(['viejo/modelo', 'nuevo/modelo', 'nuevo/modelo']); // el retirado no se vuelve a pedir
+
+    const dead = createHuggingFaceProvider({ token: HF, model: 'viejo/modelo', fetchImpl: (async () => new Response('{"error":"deprecated"}', { status: 410 })) as never });
+    const err = await dead.generateInitialScene(input).catch((e) => e);
+    expect(err.kind).toBe('unsupported'); // saltable: no tumba la generación
+    expect(err.message).toMatch(/HF_IMAGE_MODEL/);
+    // En la cadena, el siguiente proveedor responde en su lugar
+    const chain = createProviderChain([dead, { id: 'pollinations', capabilities: { edit: false }, generateInitialScene: async () => ({ bytes, mime: 'image/png', prompt: 'p', model: 'm' }), generateItemImage: async () => ({ bytes, mime: 'image/png', prompt: 'p', model: 'm' }), editScene: async () => { throw new Error('x'); } } as never]);
+    expect((await chain.generateInitialScene(input)).provider).toBe('pollinations');
+  });
+
   it.each([[401, 'auth', false], [402, 'quota', false], [429, 'rate_limit', false], [503, 'server', false], [500, 'server', true], [400, 'input', false]] as const)('HTTP %s → %s (consumida: %s) sin filtrar el token', async (status, kind, consumed) => {
     const p = createHuggingFaceProvider({ ...cfg, fetchImpl: (async () => new Response(`error ${HF}`, { status, headers: { 'content-type': 'application/json' } })) as never });
     const err = await p.generateInitialScene(input).catch((e) => e);
@@ -114,7 +137,7 @@ describe('Hugging Face (fetch simulado)', () => {
 
   it('configuración y redacción del token', () => {
     expect(huggingFaceConfig({} as never)).toBeNull();
-    expect(huggingFaceConfig({ HF_TOKEN: HF } as never)).toEqual({ token: HF, model: 'black-forest-labs/FLUX.1-schnell' });
+    expect(huggingFaceConfig({ HF_TOKEN: HF } as never)).toEqual({ token: HF, model: DEFAULT_HF_MODELS });
     expect(huggingFaceConfig({ HUGGINGFACE_API_KEY: HF, HF_IMAGE_MODEL: 'otro/modelo' } as never)).toMatchObject({ model: 'otro/modelo' });
     expect(redactSecrets(`x ${HF} y`, {} as never)).not.toContain(HF);
   });

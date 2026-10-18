@@ -70,6 +70,9 @@ export function aiHordeConfig(env: NodeJS.ProcessEnv = process.env): AiHordeConf
 }
 
 /** Hugging Face Inference Providers (crédito gratuito mensual pequeño con cuenta gratuita; SIN verificar). Solo genera. */
+/** Modelos por defecto de Hugging Face (se prueban en orden; los retirados se saltan). Sin verificar contra el servicio real: ajusta HF_IMAGE_MODEL si dejan de servirse. */
+export const DEFAULT_HF_MODELS = 'black-forest-labs/FLUX.1-schnell,stabilityai/stable-diffusion-xl-base-1.0';
+
 export interface HuggingFaceConfig {
   token: string;
   model: string;
@@ -77,7 +80,7 @@ export interface HuggingFaceConfig {
 export function huggingFaceConfig(env: NodeJS.ProcessEnv = process.env): HuggingFaceConfig | null {
   const token = (env.HF_TOKEN ?? env.HUGGINGFACE_API_KEY)?.trim();
   if (!token) return null;
-  return { token, model: env.HF_IMAGE_MODEL?.trim() || 'black-forest-labs/FLUX.1-schnell' };
+  return { token, model: env.HF_IMAGE_MODEL?.trim() || DEFAULT_HF_MODELS };
 }
 
 /** Pollinations (gratuito con clave gratuita; límites y términos SIN verificar: ver docs/PENDIENTE.md). */
