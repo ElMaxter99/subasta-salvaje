@@ -44,13 +44,14 @@ export async function loadGameCard(code: string): Promise<GameCard | null> {
   }
 }
 
-export type GameLinkKind = 'invite' | 'tv' | 'results';
+export type GameLinkKind = 'invite' | 'tv' | 'results' | 'watch';
 
 /** Título y descripción de cada tipo de enlace de partida. */
 export function gameLinkText(kind: GameLinkKind, g: GameCard | null): { title: string; description: string } {
   if (!g) return { title: SITE_NAME, description: SITE_DESCRIPTION };
   if (kind === 'invite') return { title: `Te han invitado a «${g.name}»`, description: `Entra con el código ${g.code} y puja desde tu móvil en Subasta Salvaje.` };
   if (kind === 'tv') return { title: `Pantalla de TV · ${g.name}`, description: `Sala ${g.code}. Abre este enlace en la tele para seguir la subasta en directo.` };
+  if (kind === 'watch') return { title: `Sigue en directo «${g.name}»`, description: `Mira la subasta, las pujas y las casas de ${g.players.length} jugadores sin cuenta ni código. Solo lectura.` };
   return { title: g.winner ? `Resultados de «${g.name}»: gana ${g.winner}` : `Resultados de «${g.name}»`, description: `Así quedaron las casas de ${g.players.length} jugadores en Subasta Salvaje.` };
 }
 
@@ -58,9 +59,9 @@ export function gameLinkText(kind: GameLinkKind, g: GameCard | null): { title: s
 export async function gameMetadata(code: string, kind: GameLinkKind): Promise<Metadata> {
   const g = await loadGameCard(code.toUpperCase());
   const { title, description } = gameLinkText(kind, g);
-  const path = kind === 'invite' ? `/game/${code.toUpperCase()}/play` : kind === 'tv' ? `/game/${code.toUpperCase()}/screen` : `/game/${code.toUpperCase()}/results`;
+  const path = kind === 'invite' ? `/game/${code.toUpperCase()}/play` : kind === 'tv' ? `/game/${code.toUpperCase()}/screen` : kind === 'watch' ? `/game/${code.toUpperCase()}/watch` : `/game/${code.toUpperCase()}/results`;
   return {
-    title: kind === 'invite' ? 'Jugar desde el móvil' : kind === 'tv' ? 'Pantalla de TV' : 'Resultados',
+    title: kind === 'invite' ? 'Jugar desde el móvil' : kind === 'tv' ? 'Pantalla de TV' : kind === 'watch' ? 'Espectador' : 'Resultados',
     description,
     robots: { index: false, follow: false }, // las partidas son privadas: que no las indexe ningún buscador
     alternates: { canonical: path },

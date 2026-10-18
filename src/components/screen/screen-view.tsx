@@ -19,7 +19,7 @@ import { PlayerCard } from './player-card';
 import { WildTaxBanner } from './wild-tax-banner';
 import { MascotCue } from './mascot-cue';
 import { Logo } from '@/components/ui/logo';
-import { CompactInvite } from './join-invite';
+import { CompactInvite, SpectatorBadge } from './join-invite';
 import { FinalResults } from './results-view';
 import { useFullscreenControls } from './use-fullscreen';
 import './screen.css';
@@ -118,6 +118,7 @@ export function ScreenView({ roomCode, initial, runtime }: { roomCode: string; i
     return (
       <main className={`relative h-dvh w-screen overflow-hidden bg-night-950 text-white ${fs.visible ? '' : 'cursor-none'}`}>
         <FinalResults snapshot={snapshot} tv />
+        <SpectatorBadge roomCode={roomCode} enabled={game.spectator_enabled !== false} className="absolute bottom-2 left-4 z-20 opacity-90" />
         {controls}
         <KeepAwakeVideo videoRef={keep.videoRef} onPlay={keep.onPlay} onPause={keep.onPause} />
         <ConnectionBadge state={connection} runtime={runtime} className="absolute bottom-2 right-4 z-20 opacity-80" />

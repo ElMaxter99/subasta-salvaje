@@ -2,6 +2,7 @@
 
 import { ImportNotice } from './import-notice';
 import { HostSoundControls } from './sound-controls';
+import { SpectatorCard } from './spectator-card';
 import { useGameAudio } from '@/lib/audio/use-audio';
 import { useRef, useState, type ComponentType } from 'react';
 import Link from 'next/link';
@@ -104,6 +105,9 @@ function HostInner({ roomCode, initial, runtime, identity }: Props) {
       <ImportNotice roomCode={roomCode} />
       <div className="mx-auto max-w-6xl px-4 pt-3">
         <HostSoundControls ctx={ctx} />
+      </div>
+      <div className="mx-auto max-w-6xl px-4 pt-3">
+        <SpectatorCard ctx={ctx} />
       </div>
 
       <div className="mx-auto grid max-w-6xl gap-6 px-4 pt-4 md:grid-cols-[13rem_1fr]">
