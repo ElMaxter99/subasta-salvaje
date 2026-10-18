@@ -8,6 +8,7 @@ import { Mascot } from '@/components/mascot/mascot';
 import './screen.css';
 import { allPlayersBroke } from '@/lib/domain/broke';
 import { Ohros } from '@/components/ui/ohros';
+import { AutoRunClock } from './auto-run-clock';
 
 function ItemVisual({ item }: { item: Auction['item'] }) {
   return (
@@ -87,6 +88,7 @@ function ActiveAuction({ snap, auction, players, compact }: { snap: PublicSnapsh
               <Gavel className="size-8" aria-hidden /> ¡Puja cerrada! Última palabra…
             </p>
           ) : null}
+          <div className="mt-2 empty:hidden"><AutoRunClock snapshot={snap} /></div>
           {countdown !== null && !closed && !awarded ? (
             <p
               className={`mt-2 inline-flex items-center gap-3 rounded-2xl px-5 py-2 font-display text-[2rem] tabular-nums ${countdown <= 5 ? 'bg-rose text-night-950' : 'bg-night-700 text-gold-soft'}`}
@@ -204,5 +206,11 @@ function LobbyMessage({ game, count }: { game: GameInfo; count: number }) {
 export function AuctionStage({ snap, compact }: { snap: PublicSnapshot; compact: boolean }) {
   const a = snap.auction;
   const live = a && a.status !== 'cancelled';
-  return live ? <ActiveAuction snap={snap} auction={a} players={snap.players} compact={compact} /> : <IdleStage snap={snap} />;
+  if (live) return <ActiveAuction snap={snap} auction={a} players={snap.players} compact={compact} />;
+  return (
+    <>
+      <IdleStage snap={snap} />
+      <div className="pointer-events-none absolute left-1/2 top-[8rem] z-20 -translate-x-1/2 empty:hidden"><AutoRunClock snapshot={snap} /></div>
+    </>
+  );
 }
