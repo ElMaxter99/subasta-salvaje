@@ -9,7 +9,8 @@ import { GameGone } from '@/components/ui/game-gone';
 import { useLiveGame } from '@/lib/client/use-live-game';
 import { ConnectionBadge } from '@/components/ui/status';
 import { themeLabel } from '@/lib/domain/themes';
-import { AuctionStage } from './auction-stage';
+import { AuctionCenter, AuctionStage, SpotlightBanner } from './auction-stage';
+import { RingLayout, SpotlightGrid, ringSplit } from './ring-layout';
 import { AwardOverlay } from './award-overlay';
 import { UnsoldOverlay } from './unsold-overlay';
 import { ReactionOverlay } from './reaction-overlay';
@@ -73,7 +74,9 @@ export function ScreenView({ roomCode, initial, runtime }: { roomCode: string; i
   const mobile = game.play_mode === 'mobile';
   const shown = mobile ? players.filter((p) => p.claimed) : players;
   const { cols, rows } = gridFor(shown.length);
-  const leaderId = live && live.status !== 'awarded' ? live.current_bidder_id : null;
+  const lobby = game.status === 'lobby';
+  const liveAuction = !lobby && live && (live.status === 'open' || live.status === 'closed') ? live : null;
+  const leaderId = liveAuction ? liveAuction.current_bidder_id : null;
   const dense = rows > 1;
   const presence = mobile ? (game.status === 'lobby' ? 'lobby' : 'game') : null;
   const maxChips = cols >= 5 ? 5 : cols === 4 ? 6 : 8;
@@ -81,6 +84,9 @@ export function ScreenView({ roomCode, initial, runtime }: { roomCode: string; i
   const keep = useKeepAwake();
   const audio = useAudioState();
   const needsSound = (audio.enabled && !audio.armed) || game.sound_enabled === false; // «Activar sonido» siempre visible hasta que el navegador lo permita
+  // Mientras la barra de controles está visible (preparación de sonido/pantalla o actividad reciente) el contenido baja un poco para no taparse.
+  const controlsShown = fs.visible || needsSound || keep.state === 'off';
+  const padTop = controlsShown ? 'pt-[3.8rem]' : 'pt-[1rem]';
   const controls = (
     <div className={`absolute right-4 top-[5.9rem] z-30 flex items-center gap-3 transition-opacity duration-500 ${fs.visible || needsSound || keep.state === 'off' ? 'opacity-100' : 'pointer-events-none opacity-0'}`}>
       {keep.state === 'off' ? (
@@ -152,37 +158,71 @@ export function ScreenView({ roomCode, initial, runtime }: { roomCode: string; i
         </div>
       </header>
 
-      <section className="min-h-0 flex-1 px-[2rem] py-[1.2rem]">
-        <AuctionStage snap={snapshot} compact={dense} />
-      </section>
+      {lobby ? (
+        <>
+        <section className="min-h-0 flex-1 px-[2rem] py-[1.2rem]">
+          <AuctionStage snap={snapshot} />
+        </section>
 
-      <section
-        className="shrink-0 px-[2rem] pb-[1.2rem]"
-        style={{ height: rows === 1 ? '33%' : '46%' }}
-        aria-label="Jugadores"
-      >
-        {shown.length === 0 ? (
-          <p className="flex h-full items-center justify-center rounded-2xl border border-dashed border-white/20 text-[1.6rem] text-white/60">{mobile ? 'Aún no hay jugadores conectados: entrad desde el móvil.' : 'Aún no hay jugadores en la sala.'}</p>
-        ) : (
-          <div className="mx-auto flex h-full flex-col gap-[1rem]">
-            {Array.from({ length: rows }, (_, r) => shown.slice(r * cols, (r + 1) * cols)).map((row, r) => (
-              // Cada fila se centra por separado: la última (incompleta) queda centrada, no pegada a la izquierda.
-              <div key={r} className="flex min-h-0 flex-1 justify-center gap-[1rem]">
-                {row.map((p) => (
-                  <div
-                    key={p.id}
-                    data-testid="screen-player"
-                    className="min-h-0 animate-float-in"
-                    style={{ width: `calc((100% - ${(cols - 1) * 1}rem) / ${cols})`, maxWidth: rows === 1 ? '28rem' : undefined }}
-                  >
-                    <PlayerCard player={p} leading={p.id === leaderId} maxChips={maxChips} dense={dense} presence={presence} />
-                  </div>
-                ))}
+        <section
+          className="shrink-0 px-[2rem] pb-[1.2rem]"
+          style={{ height: rows === 1 ? '33%' : '46%' }}
+          aria-label="Jugadores"
+        >
+          {shown.length === 0 ? (
+            <p className="flex h-full items-center justify-center rounded-2xl border border-dashed border-white/20 text-[1.6rem] text-white/60">{mobile ? 'Aún no hay jugadores conectados: entrad desde el móvil.' : 'Aún no hay jugadores en la sala.'}</p>
+          ) : (
+            <div className="mx-auto flex h-full flex-col gap-[1rem]">
+              {Array.from({ length: rows }, (_, r) => shown.slice(r * cols, (r + 1) * cols)).map((row, r) => (
+                // Cada fila se centra por separado: la última (incompleta) queda centrada, no pegada a la izquierda.
+                <div key={r} className="flex min-h-0 flex-1 justify-center gap-[1rem]">
+                  {row.map((p) => (
+                    <div
+                      key={p.id}
+                      data-testid="screen-player"
+                      className="min-h-0 animate-float-in"
+                      style={{ width: `calc((100% - ${(cols - 1) * 1}rem) / ${cols})`, maxWidth: rows === 1 ? '28rem' : undefined }}
+                    >
+                      <PlayerCard player={p} leading={p.id === leaderId} maxChips={maxChips} dense={dense} presence={presence} />
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+        </>
+      ) : liveAuction ? (
+        <section className={`min-h-0 flex-1 px-[2rem] pb-[1rem] transition-[padding] duration-500 ${padTop}`} aria-label="Subasta y jugadores">
+          <RingLayout
+            players={shown}
+            center={<AuctionCenter snap={snapshot} auction={liveAuction} players={players} compact={ringSplit(shown.length).bottom > 0} />}
+            renderCard={(p, side) => (
+              <div data-testid="screen-player" className="h-full min-h-0 animate-float-in">
+                <PlayerCard player={p} leading={p.id === leaderId} maxChips={5} dense={shown.length >= 4 || side === 'bottom'} presence={presence} />
               </div>
-            ))}
+            )}
+          />
+        </section>
+      ) : (
+        <section className={`flex min-h-0 flex-1 flex-col gap-[0.8rem] px-[2rem] pb-[1rem] transition-[padding] duration-500 ${padTop}`} aria-label="Jugadores">
+          <SpotlightBanner snap={snapshot} />
+          <div className="min-h-0 flex-1">
+            {shown.length === 0 ? (
+              <p className="flex h-full items-center justify-center rounded-2xl border border-dashed border-white/20 text-[1.6rem] text-white/60">Aún no hay jugadores conectados: entrad desde el móvil.</p>
+            ) : (
+              <SpotlightGrid
+                players={shown}
+                renderCard={(p, dense) => (
+                  <div data-testid="screen-player" className="h-full min-h-0 animate-float-in">
+                    <PlayerCard player={p} leading={false} maxChips={dense ? 5 : 8} dense={dense} presence={presence} />
+                  </div>
+                )}
+              />
+            )}
           </div>
-        )}
-      </section>
+        </section>
+      )}
 
       {game.status === 'paused' ? (
         <div className="absolute inset-0 z-30 flex flex-col items-center justify-center gap-4 bg-night-950/85 backdrop-blur-sm" role="status">
