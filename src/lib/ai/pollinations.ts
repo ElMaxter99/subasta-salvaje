@@ -1,3 +1,4 @@
+import { newSeed } from './seed';
 import type { PollinationsConfig } from '@/lib/config/env';
 import { redactSecrets } from '@/lib/security/redact';
 import { toReferencePng } from './reference';
@@ -44,9 +45,6 @@ export async function editSize(baseBytes: Uint8Array, cfg: { size: string; sizeF
     return cfg.size;
   }
 }
-
-/** Semilla nueva en cada llamada: sin ella Pollinations puede devolver siempre la misma imagen para el mismo prompt. */
-const newSeed = () => Math.floor(Math.random() * 2_147_483_647);
 
 export function createPollinationsProvider(cfg: PollinationsProviderOptions): ImageGenerationProvider {
   const doFetch = cfg.fetchImpl ?? fetch;

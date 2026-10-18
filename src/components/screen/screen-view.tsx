@@ -3,7 +3,7 @@
 import { SoundToggle } from '@/components/ui/sound-toggle';
 import { useAudioState, useGameAudio } from '@/lib/audio/use-audio';
 import { useEffect } from 'react';
-import { Maximize2, Minimize2, Pause, Loader2 } from 'lucide-react';
+import { Maximize2, Minimize2, Pause, Loader2, Sun } from 'lucide-react';
 import type { PublicSnapshot, RuntimeInfo } from '@/lib/domain/types';
 import { GameGone } from '@/components/ui/game-gone';
 import { useLiveGame } from '@/lib/client/use-live-game';
@@ -12,6 +12,7 @@ import { themeLabel } from '@/lib/domain/themes';
 import { AuctionStage } from './auction-stage';
 import { AwardOverlay } from './award-overlay';
 import { UnsoldOverlay } from './unsold-overlay';
+import { KeepAwakeVideo, useKeepAwake } from './use-keep-awake';
 import { PlayerCard } from './player-card';
 import { WildTaxBanner } from './wild-tax-banner';
 import { MascotCue } from './mascot-cue';
@@ -76,10 +77,20 @@ export function ScreenView({ roomCode, initial, runtime }: { roomCode: string; i
   const presence = mobile ? (game.status === 'lobby' ? 'lobby' : 'game') : null;
   const maxChips = cols >= 5 ? 5 : cols === 4 ? 6 : 8;
 
+  const keep = useKeepAwake();
   const audio = useAudioState();
   const needsSound = (audio.enabled && !audio.armed) || game.sound_enabled === false; // «Activar sonido» siempre visible hasta que el navegador lo permita
   const controls = (
-    <div className={`absolute right-4 top-[5.9rem] z-30 flex items-center gap-3 transition-opacity duration-500 ${fs.visible || needsSound ? 'opacity-100' : 'pointer-events-none opacity-0'}`}>
+    <div className={`absolute right-4 top-[5.9rem] z-30 flex items-center gap-3 transition-opacity duration-500 ${fs.visible || needsSound || keep.state === 'off' ? 'opacity-100' : 'pointer-events-none opacity-0'}`}>
+      {keep.state === 'off' ? (
+        <button type="button" onClick={keep.enable} data-testid="keep-awake-enable" className="flex items-center gap-2 rounded-xl border border-gold/60 bg-night-800/90 px-4 py-2 text-[1.1rem] font-bold text-gold hover:bg-night-700">
+          <Sun className="size-5" aria-hidden /> Mantener pantalla encendida
+        </button>
+      ) : (
+        <span data-testid="keep-awake-on" className="flex items-center gap-2 rounded-xl bg-night-950/80 px-3 py-2 text-[1rem] font-semibold text-white/70" title={keep.state === 'wakelock' ? 'Bloqueo de pantalla activo' : 'Vídeo de pantalla activa en marcha'}>
+          <Sun className="size-4" aria-hidden /> Pantalla activa
+        </span>
+      )}
       <SoundToggle music mutedByHost={game.sound_enabled === false} className="rounded-xl bg-night-950/80 p-1" />
       <button
         type="button"
@@ -99,6 +110,7 @@ export function ScreenView({ roomCode, initial, runtime }: { roomCode: string; i
       <main className={`relative h-dvh w-screen overflow-hidden bg-night-950 text-white ${fs.visible ? '' : 'cursor-none'}`}>
         <FinalResults snapshot={snapshot} tv />
         {controls}
+        <KeepAwakeVideo videoRef={keep.videoRef} onPlay={keep.onPlay} onPause={keep.onPause} />
         <ConnectionBadge state={connection} runtime={runtime} className="absolute bottom-2 right-4 z-20 opacity-80" />
       </main>
     );
@@ -182,6 +194,7 @@ export function ScreenView({ roomCode, initial, runtime }: { roomCode: string; i
       <AwardOverlay award={snapshot.last_award} players={players} />
       <UnsoldOverlay unsold={snapshot.last_unsold} />
       <WildTaxBanner snapshot={snapshot} />
+      <KeepAwakeVideo videoRef={keep.videoRef} onPlay={keep.onPlay} onPause={keep.onPause} />
       {controls}
     </main>
   );

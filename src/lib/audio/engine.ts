@@ -8,7 +8,7 @@
 
 export type SoundName =
   | 'click' | 'announce' | 'bid' | 'tick' | 'tickUrgent' | 'closed' | 'award' | 'finish'
-  | 'outbid' | 'leading' | 'won' | 'bidSent' | 'event' | 'join' | 'leave' | 'allReady';
+  | 'outbid' | 'leading' | 'won' | 'bidSent' | 'event' | 'join' | 'leave' | 'allReady' | 'unsold' | 'draw';
 export type MusicScene = 'waiting' | 'lobby' | 'auction' | 'tense' | null;
 export type AudioRole = 'tv' | 'host' | 'play';
 
@@ -185,6 +185,14 @@ export function play(name: SoundName, n = 0): void {
       [67, 67, 72].forEach((m, i) => tone(o, midi(m), t + i * 0.12, 0.14, { type: 'square', gain: 0.1 }));
       [72, 76, 79, 84].forEach((m) => tone(o, midi(m), t + 0.42, 0.9, { type: 'sawtooth', gain: 0.1 }));
       [96, 100, 103].forEach((m, i) => tone(o, midi(m), t + 0.55 + i * 0.07, 0.3, { type: 'sine', gain: 0.08 }));
+      break;
+    case 'unsold': // «¡Nadie lo quiere!»: trombón triste descendente
+      [67, 66, 65].forEach((m, i) => tone(o, midi(m), t + i * 0.32, 0.3, { type: 'sawtooth', gain: 0.13 }));
+      tone(o, midi(64), t + 0.96, 0.9, { type: 'sawtooth', gain: 0.14, slideTo: midi(58) });
+      break;
+    case 'draw': // sorteo del elemento al azar: traqueteo de dado y campanilla
+      [0, 1, 2, 3, 4, 5].forEach((i) => tone(o, midi(72 + ((i * 5) % 9)), t + i * 0.07, 0.05, { type: 'square', gain: 0.08 }));
+      [79, 84].forEach((m, i) => tone(o, midi(m), t + 0.5 + i * 0.1, 0.35, { gain: 0.18 }));
       break;
     case 'event': tone(o, midi(60), t, 0.5, { type: 'sawtooth', gain: 0.15, slideTo: midi(84) }); break;
   }

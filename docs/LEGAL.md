@@ -27,5 +27,10 @@ Los créditos que no son npm (Baloo 2, Nunito, recursos gráficos) están a mano
 3. **Revisión jurídica** de aviso legal, privacidad y cookies (incluida la conclusión de que no hace falta banner).
 4. Origen de los recursos gráficos: generados con IA para la app (herramienta concreta no registrada). El estatus de derechos de las obras generadas con IA varía por jurisdicción; el texto lo dice y no afirma titularidad exclusiva.
 
+## Biblioteca de imágenes y fotos de terceros
+- La biblioteca del superadmin (`docs/BIBLIOTECA.md`) puede reunir fotos libres de **Wikimedia Commons** (por defecto solo CC0 / dominio público; con `--allow-by`, también CC BY y CC BY-SA, que **exigen atribución**). Cada foto conserva autor, licencia y enlace de origen en su campo «crédito» y en `FUENTES.md` del repositorio de fotos. Está anotado en `PROJECT_ASSET_NOTES` (créditos).
+- Esas fotos se sirven desde el repositorio público de fotos por **jsDelivr** (ya declarado como proveedor en la política de privacidad). Política: sin ánimo de lucro, sin licencia concedida por la app y **retirada a petición** del titular.
+- La pantalla de TV pide el bloqueo de pantalla del navegador (Screen Wake Lock) y reproduce un vídeo mudo propio de unos KB para evitar el salvapantallas: no usa cookies, almacenamiento ni servidores de terceros.
+
 ## Regla de mantenimiento
 Al añadir **una dependencia** → `node scripts/legal/build-credits.mjs`. Una **cookie o clave de localStorage/sessionStorage** → `STORAGE_INVENTORY` en `site.ts` (el test lo comprueba) y, si no es técnica, banner de consentimiento. Un **proveedor o dato nuevo** (analítica, IA, correo…) → `SERVICE_PROVIDERS` y `/privacidad`. Actualiza `LEGAL_UPDATED` al cambiar los textos.

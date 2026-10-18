@@ -1,0 +1,32 @@
+# Colección: Transportes
+# Tipo: item
+Coche clásico; Coche antiguo restaurado; 🚗; vintage car
+Coche deportivo; Deportivo rojo; 🏎️; sports car
+Autobús; Autobús urbano; 🚌; city bus
+Tranvía; Tranvía en la ciudad; 🚋; tram
+Tren de vapor; Locomotora de vapor; 🚂; steam locomotive
+Tren de alta velocidad; Tren moderno aerodinámico; 🚄; high speed train
+Metro; Tren de metro en el andén; 🚇; subway train
+Bicicleta; Bicicleta urbana con cesta; 🚲; city bicycle
+Moto; Motocicleta clásica; 🏍️; motorcycle
+Scooter; Moto scooter; 🛵; scooter vespa
+Camión; Camión grande; 🚚; truck
+Tractor; Tractor verde en el campo; 🚜; tractor field
+Ambulancia; Ambulancia blanca; 🚑; ambulance
+Camión de bomberos; Camión rojo de bomberos; 🚒; fire truck
+Coche de policía; Coche patrulla; 🚓; police car
+Taxi; Taxi amarillo; 🚕; yellow taxi
+Avioneta; Avioneta de hélice; 🛩️; propeller airplane
+Avión de pasajeros; Avión comercial; ✈️; passenger airplane
+Helicóptero; Helicóptero amarillo; 🚁; helicopter
+Globo aerostático; Globo de aire caliente; 🎈; hot air balloon
+Cohete; Cohete espacial despegando; 🚀; rocket launch
+Velero; Velero de velas blancas; ⛵; sailboat
+Lancha; Lancha motora; 🚤; motorboat
+Barca de remos; Barca de madera en un lago; 🚣; rowboat lake
+Barca a pedales; Barca de pedales en forma de cisne; 🚣; pedal boat swan
+Submarino; Submarino amarillo; 🚢; submarine
+Góndola; Góndola veneciana; 🛶; gondola venice
+Teleférico; Cabina de teleférico; 🚡; cable car
+Carro de caballos; Carruaje con caballos; 🐴; horse carriage
+Patinete eléctrico; Patinete plegable; 🛴; electric scooter

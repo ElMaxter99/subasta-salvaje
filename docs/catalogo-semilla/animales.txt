@@ -1,0 +1,32 @@
+# Colección: Animales
+# Tipo: item
+Perro; Perro de pelo corto sentado; 🐶; dog portrait
+Gato; Gato atigrado tumbado; 🐱; tabby cat
+Conejo; Conejo de orejas largas; 🐰; rabbit
+Hámster; Hámster en su rueda; 🐹; hamster
+Caballo; Caballo castaño en un prado; 🐴; horse meadow
+Vaca; Vaca pastando; 🐮; cow pasture
+Cerdo; Cerdito rosa; 🐷; pig
+Oveja; Oveja lanuda; 🐑; sheep
+Gallina; Gallina marrón; 🐔; hen chicken
+Pato; Pato en un estanque; 🦆; duck pond
+Rana; Rana verde sobre una hoja; 🐸; frog leaf
+Tortuga; Tortuga terrestre; 🐢; tortoise
+Pingüino; Pingüino emperador; 🐧; penguin
+Elefante; Elefante africano; 🐘; elephant
+Jirafa; Jirafa comiendo de un árbol; 🦒; giraffe
+León; León macho con melena; 🦁; lion
+Tigre; Tigre de Bengala; 🐯; tiger
+Oso pardo; Oso pardo en el bosque; 🐻; brown bear
+Panda; Panda comiendo bambú; 🐼; giant panda
+Zorro; Zorro rojo; 🦊; red fox
+Lobo; Lobo gris; 🐺; grey wolf
+Mono; Mono sentado en una rama; 🐵; monkey
+Canguro; Canguro con cría; 🦘; kangaroo
+Koala; Koala en un eucalipto; 🐨; koala
+Delfín; Delfín saltando; 🐬; dolphin
+Ballena; Ballena jorobada; 🐳; humpback whale
+Búho; Búho en una rama; 🦉; owl
+Flamenco; Flamenco rosa; 🦩; flamingo
+Mariposa; Mariposa de alas coloridas; 🦋; butterfly
+Abeja; Abeja sobre una flor; 🐝; honey bee flower

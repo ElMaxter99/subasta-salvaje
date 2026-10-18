@@ -15,6 +15,10 @@ test('elemento sin pujas: se da por perdido, la TV muestra «¡Nadie lo quiere!�
   await tv.goto(`/game/${code}/screen`);
   await expect(tv.getByText('Sin pujas E2E').first()).toBeVisible({ timeout: 60_000 });
   await tv.waitForTimeout(2500);
+  // La TV evita el salvapantallas (Wake Lock o vídeo mínimo); si el navegador exige un gesto, aparece el botón para activarlo
+  const keepOn = tv.getByTestId('keep-awake-on');
+  if (!(await keepOn.isVisible().catch(() => false))) await tv.getByTestId('keep-awake-enable').click({ timeout: 15_000 }).catch(() => undefined);
+  await expect(keepOn).toBeVisible({ timeout: 20_000 });
 
   const s0 = await state();
   const first = s0.items[0];

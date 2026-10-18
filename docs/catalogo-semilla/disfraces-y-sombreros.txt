@@ -1,0 +1,32 @@
+# Colección: Disfraces y sombreros
+# Tipo: item
+Sombrero de copa; Chistera negra elegante; 🎩; top hat
+Sombrero de paja; Sombrero de playa de paja; 👒; straw hat
+Gorra; Gorra de béisbol; 🧢; baseball cap
+Gorro de lana; Gorro de punto con borla; 🧶; knit beanie
+Casco de obra; Casco amarillo de seguridad; ⛑️; hard hat
+Casco vikingo; Casco con cuernos; 🪖; viking helmet
+Sombrero mexicano; Sombrero grande bordado; 👒; sombrero
+Sombrero de vaquero; Sombrero de cowboy; 🤠; cowboy hat
+Boina; Boina negra; 🎩; beret
+Corona; Corona de rey dorada; 👑; crown gold
+Tiara; Tiara de princesa; 👑; tiara
+Gafas de sol; Gafas oscuras; 🕶️; sunglasses
+Gafas de bucear; Gafas de buceo con tubo; 🤿; diving mask snorkel
+Máscara de carnaval; Antifaz veneciano con plumas; 🎭; venetian mask
+Peluca de colores; Peluca de payaso; 🤡; clown wig
+Nariz de payaso; Nariz roja de payaso; 🤡; clown nose
+Capa de superhéroe; Capa roja; 🦸; superhero cape
+Varita mágica; Varita con estrella; 🪄; magic wand
+Sombrero de mago; Sombrero azul con estrellas; 🧙; wizard hat
+Sombrero de bruja; Sombrero negro puntiagudo; 🧙; witch hat
+Parche de pirata; Parche negro; 🏴‍☠️; pirate eye patch
+Sombrero de pirata; Tricornio negro; 🏴‍☠️; pirate hat
+Bufanda; Bufanda de lana a rayas; 🧣; scarf
+Corbata; Corbata de seda; 👔; necktie
+Pajarita; Pajarita roja; 🎀; bow tie
+Tutú; Falda de bailarina rosa; 🩰; tutu ballet
+Kimono; Kimono estampado; 👘; kimono
+Chaleco salvavidas; Chaleco naranja; 🦺; life jacket
+Botas de agua; Botas de goma amarillas; 🥾; rubber boots
+Zapatos de claqué; Zapatos de baile brillantes; 👞; tap shoes

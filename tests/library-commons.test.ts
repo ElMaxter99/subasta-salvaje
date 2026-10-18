@@ -61,3 +61,26 @@ describe('packs de productos y manifiesto', () => {
     expect(creditOf(rows[0]!)).toBe('Ana, B. · CC0 · https://commons.wikimedia.org/wiki/File:X.jpg');
   });
 });
+
+describe('packs de productos de docs/catalogo-semilla', () => {
+  it('todos tienen colección, productos con descripción, emoji y búsqueda en inglés, sin repetidos', async () => {
+    const { readdirSync, readFileSync } = await import('node:fs');
+    const files = readdirSync('docs/catalogo-semilla').filter((f) => f.endsWith('.txt'));
+    expect(files.length).toBeGreaterThanOrEqual(12);
+    const collections = new Set<string>();
+    for (const f of files) {
+      const pack = parsePack(readFileSync(`docs/catalogo-semilla/${f}`, 'utf8'), f);
+      expect(pack.collection, f).not.toBe(f);
+      expect(collections.has(pack.collection), `colección repetida ${pack.collection}`).toBe(false);
+      collections.add(pack.collection);
+      expect(pack.products.length, f).toBeGreaterThanOrEqual(15);
+      const names = pack.products.map((p) => p.name.toLowerCase());
+      expect(new Set(names).size, `${f}: nombres repetidos`).toBe(names.length);
+      for (const p of pack.products) {
+        expect(p.description, `${f}/${p.name}`).not.toBe('');
+        expect(p.emoji, `${f}/${p.name}`).not.toBe('');
+        expect(/^[\x20-\x7e]+$/.test(p.query), `${f}/${p.name}: la búsqueda va en inglés (ASCII)`).toBe(true);
+      }
+    }
+  });
+});

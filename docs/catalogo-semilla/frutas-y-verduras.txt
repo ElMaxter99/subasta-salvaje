@@ -1,0 +1,32 @@
+# Colección: Frutas y verduras
+# Tipo: item
+Manzana roja; Manzana brillante; 🍎; red apple
+Plátano; Racimo de plátanos; 🍌; bananas bunch
+Naranja; Naranja entera y partida; 🍊; orange fruit
+Limón; Limón amarillo; 🍋; lemon
+Uvas; Racimo de uvas moradas; 🍇; grapes bunch
+Fresa; Fresa roja madura; 🍓; strawberry
+Sandía; Rodaja de sandía; 🍉; watermelon slice
+Melocotón; Melocotón maduro; 🍑; peach
+Piña; Piña tropical; 🍍; pineapple
+Cerezas; Par de cerezas; 🍒; cherries
+Kiwi; Kiwi partido; 🥝; kiwi fruit
+Aguacate; Aguacate abierto; 🥑; avocado
+Coco; Coco partido; 🥥; coconut
+Mango; Mango maduro; 🥭; mango
+Tomate; Tomate rojo; 🍅; tomato
+Zanahoria; Manojo de zanahorias; 🥕; carrots
+Maíz; Mazorca de maíz; 🌽; corn cob
+Brócoli; Brócoli fresco; 🥦; broccoli
+Pimiento rojo; Pimiento rojo; 🫑; red bell pepper
+Berenjena; Berenjena morada; 🍆; eggplant
+Calabaza; Calabaza naranja; 🎃; pumpkin
+Patata; Patatas con tierra; 🥔; potatoes
+Cebolla; Cebolla morada; 🧅; onion
+Ajo; Cabeza de ajos; 🧄; garlic
+Champiñón; Champiñones frescos; 🍄; mushrooms
+Lechuga; Lechuga fresca; 🥬; lettuce
+Pepino; Pepino verde; 🥒; cucumber
+Guindilla; Guindilla roja picante; 🌶️; chili pepper
+Cacahuetes; Cacahuetes con cáscara; 🥜; peanuts
+Aceitunas; Aceitunas verdes; 🫒; olives

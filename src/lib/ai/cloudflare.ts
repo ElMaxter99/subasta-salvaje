@@ -1,3 +1,4 @@
+import { newSeed } from './seed';
 import type { CloudflareConfig } from '@/lib/config/env';
 import { redactSecrets } from '@/lib/security/redact';
 import { toReferencePng } from './reference';
@@ -83,9 +84,10 @@ export function createCloudflareProvider(cfg: CloudflareProviderOptions): ImageG
 
   async function generate(prompt: string): Promise<GeneratedImage> {
     const text = prompt.slice(0, MAX_PROMPT);
-    const bytes = await run(cfg.model, { json: { prompt: text, steps: cfg.steps } });
+    const seed = newSeed();
+    const bytes = await run(cfg.model, { json: { prompt: text, steps: cfg.steps, seed } });
     // La mime real se detecta por bytes en jobs-service (flux-1-schnell devuelve JPEG).
-    return { bytes, mime: 'image/jpeg', prompt: text, model: cfg.model };
+    return { bytes, mime: 'image/jpeg', prompt: text, model: cfg.model, notes: `semilla ${seed}` };
   }
 
   return {

@@ -1,0 +1,32 @@
+# Colección: Instrumentos musicales
+# Tipo: item
+Guitarra española; Guitarra clásica de madera; 🎸; classical guitar
+Guitarra eléctrica; Guitarra eléctrica roja; 🎸; electric guitar
+Violín; Violín de madera con arco; 🎻; violin bow
+Violonchelo; Violonchelo clásico; 🎻; cello
+Piano de cola; Piano negro de cola; 🎹; grand piano
+Teclado; Teclado eléctrico; 🎹; electronic keyboard synthesizer
+Trompeta; Trompeta dorada; 🎺; trumpet
+Trombón; Trombón de varas; 🎺; trombone
+Saxofón; Saxofón dorado; 🎷; saxophone
+Flauta travesera; Flauta plateada; 🪈; flute
+Clarinete; Clarinete negro; 🎶; clarinet
+Batería; Batería completa con platillos; 🥁; drum kit
+Tambor; Tambor de piel; 🥁; snare drum
+Pandereta; Pandereta con sonajas; 🪘; tambourine
+Maracas; Par de maracas de colores; 🪇; maracas
+Xilófono; Xilófono de colores; 🎶; xylophone
+Arpa; Arpa de concierto; 🎶; harp
+Acordeón; Acordeón de botones; 🪗; accordion
+Armónica; Armónica metálica; 🎶; harmonica
+Ukelele; Ukelele pequeño; 🎸; ukulele
+Banjo; Banjo con cuerdas; 🪕; banjo
+Gaita; Gaita con fuelle; 🎶; bagpipes
+Micrófono; Micrófono de mano; 🎤; microphone stage
+Auriculares; Auriculares grandes; 🎧; headphones
+Gramófono; Gramófono de bocina; 📻; gramophone
+Tocadiscos; Tocadiscos con vinilo; 🎶; turntable vinyl
+Metrónomo; Metrónomo de madera; 🎶; metronome
+Diapasón; Diapasón metálico; 🎶; tuning fork
+Castañuelas; Par de castañuelas; 🎶; castanets
+Triángulo; Triángulo de orquesta; 🎶; triangle percussion instrument

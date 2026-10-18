@@ -1,0 +1,32 @@
+# Colección: Deportes
+# Tipo: item
+Balón de fútbol; Balón blanco y negro; ⚽; soccer ball
+Balón de baloncesto; Balón naranja de baloncesto; 🏀; basketball
+Pelota de tenis; Pelota verde fluorescente; 🎾; tennis ball
+Raqueta de tenis; Raqueta con cuerdas; 🎾; tennis racket
+Pelota de golf; Pelota blanca con hoyuelos; ⛳; golf ball tee
+Palo de golf; Palo de golf de hierro; 🏌️; golf club
+Bate de béisbol; Bate de madera; ⚾; baseball bat
+Guante de béisbol; Guante de cuero con pelota; 🧤; baseball glove
+Balón de rugby; Balón ovalado de rugby; 🏉; rugby ball
+Balón de voleibol; Balón de voleibol de colores; 🏐; volleyball
+Raqueta de pádel; Pala de pádel; 🏓; padel racket
+Raqueta de ping-pong; Pala roja con pelota; 🏓; table tennis paddle
+Casco de ciclista; Casco de bicicleta; 🚴; bicycle helmet
+Zapatillas de correr; Zapatillas deportivas; 👟; running shoes
+Guantes de boxeo; Par de guantes rojos; 🥊; boxing gloves
+Esquís; Par de esquís en la nieve; ⛷️; skis snow
+Snowboard; Tabla de snowboard; 🏂; snowboard
+Patines; Patines en línea; ⛸️; roller skates
+Monopatín; Skate de colores; 🛹; skateboard
+Medalla de oro; Medalla dorada con cinta; 🥇; gold medal
+Trofeo; Copa dorada de campeón; 🏆; trophy cup
+Silbato; Silbato de árbitro; 🔔; referee whistle
+Portería; Portería de fútbol con red; 🥅; soccer goal net
+Diana y dardos; Diana de dardos; 🎯; dartboard darts
+Pesas; Mancuernas de gimnasio; 🏋️; dumbbells
+Arco y flechas; Arco de tiro olímpico; 🏹; archery bow arrow
+Bicicleta de carreras; Bicicleta de ruta; 🚲; road bicycle
+Tabla de surf; Tabla de surf colorida; 🏄; surfboard
+Cuerda de saltar; Comba de gimnasia; 🪢; jump rope
+Canoa; Canoa en el río; 🛶; canoe river

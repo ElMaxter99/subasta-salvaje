@@ -1,3 +1,4 @@
+import { newSeed } from './seed';
 import type { AiHordeConfig } from '@/lib/config/env';
 import { redactSecrets } from '@/lib/security/redact';
 import { fetchImageBytes } from '@/lib/security/safe-fetch';
@@ -62,11 +63,12 @@ export function createAiHordeProvider(cfg: AiHordeProviderOptions): ImageGenerat
 
   async function generate(prompt: string): Promise<GeneratedImage> {
     const text = prompt.slice(0, MAX_PROMPT);
+    const seed = newSeed();
     const submitted = (await call('/generate/async', {
       method: 'POST',
       body: JSON.stringify({
         prompt: `${text} ### ${NEGATIVE}`,
-        params: { width: cfg.width, height: cfg.height, steps: cfg.steps, cfg_scale: 7, sampler_name: 'k_euler_a', n: 1 },
+        params: { width: cfg.width, height: cfg.height, steps: cfg.steps, cfg_scale: 7, sampler_name: 'k_euler_a', n: 1, seed: String(seed) },
         nsfw: false,
         censor_nsfw: true,
         r2: false, // imagen en base64 dentro de la respuesta (así no se descarga nada de un servidor externo)
@@ -108,7 +110,7 @@ export function createAiHordeProvider(cfg: AiHordeProviderOptions): ImageGenerat
       bytes = new Uint8Array(Buffer.from(gen.img, 'base64'));
     }
     // La Horda entrega WebP: la mime real se detecta por bytes en jobs-service.
-    return { bytes, mime: 'image/webp', prompt: text, model: gen.model ?? (cfg.models[0] || 'ai-horde') };
+    return { bytes, mime: 'image/webp', prompt: text, model: gen.model ?? (cfg.models[0] || 'ai-horde'), notes: `semilla ${seed}` };
   }
 
   async function cancel(id: string): Promise<void> {

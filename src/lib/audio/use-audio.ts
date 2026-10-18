@@ -39,6 +39,15 @@ export function useGameAudio(snap: PublicSnapshot, role: Extract<AudioRole, 'tv'
     // eslint-disable-next-line react-hooks/exhaustive-deps -- solo cuando cambia la presencia
   }, [presenceKey]);
 
+  // «¡Nadie lo quiere!»: suena una vez por cada elemento perdido nuevo (lo que ya estaba al abrir la pantalla no suena)
+  const unsoldId = snap.last_unsold ? snap.last_unsold.event_id : null;
+  const prevUnsold = useRef<{ id: number | null } | null>(null);
+  useEffect(() => {
+    const before = prevUnsold.current;
+    prevUnsold.current = { id: unsoldId };
+    if (before && unsoldId !== null && unsoldId !== before.id) play('unsold');
+  }, [unsoldId]);
+
   const awardId = last_award ? String(last_award.purchase_id) : null;
   useEffect(() => {
     const cur = { id: auction?.id ?? null, bids: auction ? (auction.bids_count ?? auction.bids.length) : 0, status: auction?.status ?? null, award: awardId, game: game.status, tick: countdown };

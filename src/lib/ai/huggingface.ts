@@ -1,3 +1,4 @@
+import { newSeed } from './seed';
 import type { HuggingFaceConfig } from '@/lib/config/env';
 import { redactSecrets } from '@/lib/security/redact';
 import { buildInitialScenePrompt, buildItemImagePrompt } from './prompts';
@@ -24,12 +25,13 @@ export function createHuggingFaceProvider(cfg: HuggingFaceProviderOptions): Imag
 
   async function generate(prompt: string): Promise<GeneratedImage> {
     const text = prompt.slice(0, MAX_PROMPT);
+    const seed = newSeed();
     let res: Response;
     try {
       res = await doFetch(`${base}/${cfg.model}`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${cfg.token}`, 'Content-Type': 'application/json', Accept: 'image/*' },
-        body: JSON.stringify({ inputs: text }),
+        body: JSON.stringify({ inputs: text, parameters: { seed } }),
         signal: AbortSignal.timeout(cfg.timeoutMs ?? 90_000),
       });
     } catch (e) {
@@ -37,7 +39,7 @@ export function createHuggingFaceProvider(cfg: HuggingFaceProviderOptions): Imag
     }
     const contentType = res.headers.get('content-type') ?? '';
     if (res.ok && contentType.startsWith('image/')) {
-      return { bytes: new Uint8Array(await res.arrayBuffer()), mime: contentType.split(';')[0]!, prompt: text, model: cfg.model };
+      return { bytes: new Uint8Array(await res.arrayBuffer()), mime: contentType.split(';')[0]!, prompt: text, model: cfg.model, notes: `semilla ${seed}` };
     }
     const body = redactSecrets((await res.text().catch(() => '')).slice(0, 300));
     if (res.ok) throw new ProviderError('Hugging Face no devolvió una imagen', true, true, 'server');

@@ -19,7 +19,7 @@ npm run dev            # sin credenciales arranca en MODO DEMO (PGlite + disco l
 npm run lint && npm run typecheck && npm test      # comprobación rápida (≈25 s)
 npm run build && npm run scan:secrets              # antes de dar nada por terminado
 PG_TEST_URL=postgres://postgres:postgres@localhost:5432/postgres npx vitest run tests/postgres-real.test.ts   # Postgres 16 real
-PW_CHROMIUM_PATH=/opt/pw-browsers/chromium-1194/chrome-linux/chrome npx playwright test                       # e2e (la 1.ª ejecución en frío puede ser inestable: repite)
+PW_CHROMIUM_PATH=/opt/pw-browsers/chromium-1194/chrome-linux/chrome npx playwright test                       # e2e (la 1.ª ejecución en frío puede ser inestable: repite; si la página de la TV o `/new-game` se recarga sola en bucle o las pruebas expiran sin motivo, borra `.next-e2e` (caché de Turbopack obsoleta); si cambias una migración ya aplicada en el e2e, borra también `.demo-data-e2e`; no edites archivos ni lances otras pruebas mientras corre)
 npm run worker         # procesa la cola de imágenes en local   ·   npm run assets:build   # regenera subasta-salvaje-assets/
 ```
 En el contenedor remoto el Postgres de pruebas puede estar parado: `pg_ctlcluster 16 main start` (contraseña de `postgres`: `postgres`).

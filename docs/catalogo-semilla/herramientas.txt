@@ -1,0 +1,32 @@
+# Colección: Herramientas
+# Tipo: item
+Martillo; Martillo de carpintero; 🔨; claw hammer
+Destornillador; Destornillador de punta plana; 🪛; screwdriver
+Llave inglesa; Llave ajustable; 🔧; adjustable wrench
+Alicates; Alicates de punta; 🔧; pliers
+Sierra; Serrucho de carpintero; 🪚; hand saw
+Taladro; Taladro eléctrico; 🪛; power drill
+Cinta métrica; Metro enrollable amarillo; 📏; tape measure
+Nivel; Nivel de burbuja; 📏; spirit level
+Cepillo de carpintero; Cepillo de madera; 🪵; wood plane tool
+Hacha; Hacha de leñador; 🪓; axe
+Pala; Pala de jardín; ⛏️; shovel
+Pico; Pico de minero; ⛏️; pickaxe
+Rastrillo; Rastrillo de jardín; 🌿; garden rake
+Tijeras de podar; Tijeras de jardinería; ✂️; pruning shears
+Regadera; Regadera de metal; 🚿; watering can
+Carretilla; Carretilla de obra; 🛒; wheelbarrow
+Escalera de mano; Escalera de aluminio; 🪜; ladder
+Cubo; Cubo de metal; 🪣; metal bucket
+Brocha; Brocha de pintor; 🖌️; paint brush
+Rodillo de pintura; Rodillo con pintura; 🖌️; paint roller
+Candado; Candado de latón; 🔒; padlock
+Llave antigua; Llave de hierro antigua; 🗝️; antique key
+Linterna; Linterna de mano; 🔦; flashlight
+Soldador; Soldador de estaño; 🔥; soldering iron
+Yunque; Yunque de herrero; ⚒️; anvil
+Tornillos y tuercas; Surtido de tornillos; 🔩; screws nuts bolts
+Clavos; Puñado de clavos; 📌; nails
+Cuerda; Rollo de cuerda; 🪢; rope coil
+Caja de herramientas; Caja metálica roja; 🧰; toolbox
+Lupa; Lupa de mango de madera; 🔍; magnifying glass

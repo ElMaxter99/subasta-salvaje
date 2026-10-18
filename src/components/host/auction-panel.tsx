@@ -6,6 +6,7 @@ import { AutoAwardCard } from './auto-award-card';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { newIdempotencyKey } from '@/lib/client/api';
+import { play } from '@/lib/audio/engine';
 import { formatOhros } from '@/lib/domain/money';
 import type { Auction, WildEvent } from '@/lib/domain/types';
 import { BidPad } from './bid-pad';
@@ -294,7 +295,7 @@ function NextItem({ ctx }: { ctx: HostCtx }) {
             size="lg"
             disabled={!playing || busy !== null || available.length === 0}
             loading={busy === 'announce-random'}
-            onClick={() => run('announce-random', { type: 'auction.announce_random', ...(wild === 'auto' ? {} : { wild_event: wild }) }, 'Elemento al azar anunciado en la TV')}
+            onClick={async () => { const r = await run('announce-random', { type: 'auction.announce_random', ...(wild === 'auto' ? {} : { wild_event: wild }) }, 'Elemento al azar anunciado en la TV'); if (r) play('draw'); }}
             data-testid="announce-random"
           >
             🎲 Anunciar uno al azar

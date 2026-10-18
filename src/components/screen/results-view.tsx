@@ -173,6 +173,7 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
   const rule = game.ranking_rule;
   const ranking = computeRanking(players, rule);
   const hl = computeHighlights({ ...snapshot, players });
+  const lost = snapshot.items.filter((i) => i.status === 'lost'); // subastas que terminaron sin ninguna puja
   const ordered = ranking ? ranking.map((r) => ({ player: r.player, rank: r.rank })) : players.map((player) => ({ player, rank: null as number | null }));
 
   const n = players.length;
@@ -186,14 +187,17 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
   const tiles = (
     <>
       <StatTile tv={tv} icon={<Package className="size-6" aria-hidden />} label="Elementos subastados" value={String(stats.purchases_count)} />
-      <StatTile tv={tv} icon={<Coins className="size-6" aria-hidden />} label="Dinero gastado" value=<Ohros cents={stats.total_spent_cents} /> />
+      <StatTile tv={tv} icon={<Coins className="size-6" aria-hidden />} label="Dinero gastado" value={<Ohros cents={stats.total_spent_cents} />} />
       <StatTile tv={tv} icon={<Gavel className="size-6" aria-hidden />} label="Pujas totales" value={String(stats.bids_count)} />
+      {lost.length > 0 ? (
+        <StatTile tv={tv} icon={<Ban className="size-6" aria-hidden />} label={`Sin pujas (nadie los quiso)${lost.length <= 3 ? ` · ${lost.map((i) => i.name).join(', ')}` : ''}`} value={String(lost.length)} />
+      ) : null}
       <StatTile tv={tv} icon={<Ban className="size-6" aria-hidden />} label="Subastas canceladas" value={String(stats.cancelled_auctions)} />
       {hl.mostExpensive ? (
-        <StatTile tv={tv} icon={<TrendingUp className="size-6" aria-hidden />} label={`Más caro · ${hl.mostExpensive.itemName} (${hl.mostExpensive.playerName})`} value=<Ohros cents={hl.mostExpensive.priceCents} /> />
+        <StatTile tv={tv} icon={<TrendingUp className="size-6" aria-hidden />} label={`Más caro · ${hl.mostExpensive.itemName} (${hl.mostExpensive.playerName})`} value={<Ohros cents={hl.mostExpensive.priceCents} />} />
       ) : null}
       {hl.biggestSpender ? (
-        <StatTile tv={tv} icon={<Coins className="size-6" aria-hidden />} label={`Quien más gastó · ${hl.biggestSpender.playerName}`} value=<Ohros cents={hl.biggestSpender.spentCents} /> />
+        <StatTile tv={tv} icon={<Coins className="size-6" aria-hidden />} label={`Quien más gastó · ${hl.biggestSpender.playerName}`} value={<Ohros cents={hl.biggestSpender.spentCents} />} />
       ) : null}
       {hl.mostItems ? (
         <StatTile tv={tv} icon={<Trophy className="size-6" aria-hidden />} label={`Más elementos · ${hl.mostItems.playerName}`} value={`${hl.mostItems.count}`} />

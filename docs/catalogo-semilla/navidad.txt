@@ -1,0 +1,30 @@
+# Colección: Navidad
+# Tipo: item
+Árbol de Navidad; Abeto decorado con luces y bolas de colores; 🎄; christmas tree decorated
+Bola de Navidad; Esfera de cristal brillante para el árbol; 🔴; christmas ornament bauble
+Estrella de Navidad; Estrella dorada de la cima del árbol; ⭐; christmas star tree topper
+Calcetín de Navidad; Calcetín rojo colgado de la chimenea; 🧦; christmas stocking
+Regalo envuelto; Caja con papel de colores y lazo; 🎁; wrapped present gift box
+Papá Noel; Muñeco de Papá Noel con saco; 🎅; santa claus figurine
+Reno; Reno de cuernos grandes en la nieve; 🦌; reindeer
+Muñeco de nieve; Muñeco de nieve con zanahoria y bufanda; ⛄; snowman
+Trineo; Trineo de madera sobre la nieve; 🛷; sled snow
+Corona de Navidad; Corona de acebo para la puerta; 🎄; christmas wreath holly
+Acebo; Ramita de acebo con bayas rojas; 🌿; holly berries
+Bastón de caramelo; Bastón de caramelo a rayas rojas y blancas; 🍭; candy cane
+Galleta de jengibre; Hombrecillo de jengibre con glaseado; 🍪; gingerbread man
+Turrón; Tableta de turrón de almendras; 🍬; turron nougat
+Mazapán; Figuritas de mazapán; 🍬; marzipan figures
+Roscón de Reyes; Roscón con fruta escarchada; 🍩; kings cake roscon
+Belén; Nacimiento con figuras de barro; 🕍; nativity scene crib
+Vela de Adviento; Corona con cuatro velas; 🕯️; advent wreath candles
+Guirnalda de luces; Luces de colores en cadena; 💡; christmas lights string
+Chimenea; Chimenea con fuego encendido; 🔥; fireplace burning
+Copo de nieve; Cristal de nieve ampliado; ❄️; snowflake macro
+Gorro de Papá Noel; Gorro rojo con borla blanca; 🎅; santa hat
+Campana; Campana dorada con lazo; 🔔; christmas bell
+Calendario de Adviento; Calendario con puertecitas; 📅; advent calendar
+Pino nevado; Pino cubierto de nieve; 🌲; snowy pine tree
+Taza de chocolate; Taza humeante con nata; ☕; hot chocolate cup marshmallows
+Pavo asado; Pavo dorado en la bandeja; 🍗; roast turkey
+Cascanueces; Soldadito cascanueces de madera; 🪖; nutcracker
