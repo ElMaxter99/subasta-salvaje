@@ -95,7 +95,7 @@ La colección con alfa real (`public/assets/mascot-vector/`) es vectorial. Para 
 - [ ] Decide la política del repositorio de fotos (licencias/retirada) antes de subir cientos de imágenes de terceros.
 
 ## 5i. Edición de imágenes con IA (Pollinations)
-- [ ] Aplica las migraciones `…5200`/`…5300` (modelo de cada versión en el historial) y `…5400`/`…5500` (jugadores activos y `joined`) y `…5600`–`…7700` (regenerar la versión actual, regenerar forzando un proveedor, nota «por qué este proveedor» reiniciar la partida generar con IA la imagen de un producto del catálogo general, y elementos perdidos/anuncio al azar/rondas ≤ catálogo).
+- [ ] Aplica las migraciones `…5200`/`…5300` (modelo de cada versión en el historial) y `…5400`/`…5500` (jugadores activos y `joined`) y `…5600`–`…9001` (regenerar la versión actual, regenerar forzando un proveedor, nota «por qué este proveedor» reiniciar la partida generar con IA la imagen de un producto del catálogo general, y elementos perdidos/anuncio al azar/rondas ≤ catálogo).
 - [ ] Vuelve a probar dos compras seguidas en una partida con IA: el historial (Detalles) muestra ahora IA, modelo y tipo, y el prompt pide que la compra anterior siga visible y la nueva vaya a otra zona. **No verificado contra Pollinations real**: si la 2.ª compra sigue tapando la 1.ª, copia las dos imágenes y los prompts; la alternativa fiable es la composición (collage), que conserva la imagen anterior píxel a píxel.
 - [ ] Con la guardia de zona (`region-guard.ts`) lo anterior se conserva fuera de la zona del objeto nuevo; **sin probar con el modelo real**. Haz dos o tres compras seguidas y revisa en el historial (Detalles → «guardia de zona» en el prompt) que se conservan y que los objetos nuevos no salen recortados; si recorta, dímelo y ajusto el tamaño de las zonas.
 - [ ] Si Pollinations rechaza el tamaño con la proporción de la casa (p. ej. `1024x576`), fija `POLLINATIONS_IMAGE_SIZE=1024x768` y avisa.
@@ -115,6 +115,14 @@ La colección con alfa real (`public/assets/mascot-vector/`) es vectorial. Para 
 - [ ] **Revisar qué modelo sirve hoy `hf-inference`.** Hugging Face devolvió `410 … deprecated and no longer supported by provider hf-inference` para el modelo por defecto. Ya no tumba la generación (se salta al siguiente modelo/proveedor, DECISIONES #100), pero los dos modelos por defecto (`black-forest-labs/FLUX.1-schnell`, `stabilityai/stable-diffusion-xl-base-1.0`) **no están verificados**.
 - [ ] Elegir uno vigente en https://huggingface.co/models?inference_provider=hf-inference&pipeline_tag=text-to-image, ponerlo en `HF_IMAGE_MODEL` en Vercel (varios separados por comas) y probar «Reintentar» la imagen base; mirar en el historial «Por qué este proveedor» que responde `huggingface`.
 - [ ] Comprobar que el crédito gratuito de Hugging Face (token con permiso de Inference Providers) sigue cubriendo ese modelo; si no, quitar `huggingface` de `IMAGE_PROVIDERS`.
+
+## 5n. Lo añadido en la unión de ramas (probar tú, 18-10-2026)
+- [ ] Aplicar en Supabase las migraciones `…8000`–`…8401` y `…9000`/`…9001` (reacciones, repetición, reglas extra, administración, comparador, exportar, arreglos de la unión) y `notify pgrst, 'reload schema';`. Las `_security_` no se ejecutan en PGlite: **sin probar contra Supabase real**.
+- [ ] Probar con móviles reales: reacciones (animación y sonido en la TV), ⚡ Relámpago y ✉️ Sobre cerrado, presupuesto individual y equipos.
+- [ ] Probar el **comparador de modelos** (`/admin/ia/comparar`) con Cloudflare/Pollinations reales y vigilar los 60 s de Vercel con dos elementos.
+- [ ] **GitHub Actions** (`docs/CI.md`): el workflow nunca se ha ejecutado; revisar la primera ejecución (acciones, `npm ci`, Playwright en frío, falsos positivos de `scan:secrets`).
+- [ ] Estadísticas: las partidas anteriores a `games.template_slug` no cuentan en «plantillas más jugadas».
+- [ ] Pendiente sin hacer: eventos «robo» y «subasta inversa» (dinero), **traducción al inglés / i18n** (propuesta: diccionarios `es`/`en` por ámbito, `lang` dinámico, `Intl`, correos por idioma; requiere decidir librería y revisión humana), auditoría con lector de pantalla/axe, semilla fija elegida por el usuario en el comparador, sorteo automático de eventos que incluya relámpago/sobre cerrado (`wild_chance_pct` solo elige entre «a ciegas» y «doble o mitad»).
 
 ## 6. Cron externo (opcional pero recomendado en producción)
 - [ ] El cron de `vercel.json` es diario (límite del plan *Hobby*). Para que los trabajos de imagen y el borrado se procesen con más frecuencia, programa en GitHub Actions o cron-job.org una llamada cada minuto a `/api/jobs/process` con la cabecera `Authorization: Bearer <CRON_SECRET>`.
