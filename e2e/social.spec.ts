@@ -30,9 +30,10 @@ test('social: reacción del móvil flota en la TV, imagen del podio y repetició
   await expect(bar).toBeVisible({ timeout: 60_000 });
   await bar.getByRole('button').first().click();
   await expect(tv.getByTestId('reaction-float').first()).toBeVisible({ timeout: 30_000 });
-  // Segunda reacción inmediata: el límite SQL la rechaza con 429
-  const fast = await phoneCtx.request.post(`/api/play/${code}/react`, { data: { emoji: '🔥' } });
-  expect(fast.status()).toBe(429);
+  // Dos reacciones simultáneas: el límite SQL rechaza la segunda con 429
+  await expect(tv.getByTestId('reaction-float').first()).toBeHidden({ timeout: 15_000 }); // evita depender de la reacción anterior
+  const pair = await Promise.all([1, 2].map(() => phoneCtx.request.post(`/api/play/${code}/react`, { data: { emoji: '🔥' } })));
+  expect(pair.map((r) => r.status()).sort()).toEqual([200, 429]);
 
   // Subasta rápida para tener una ronda en la repetición
   const item = (await state()).items[0];
