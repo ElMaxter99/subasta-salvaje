@@ -19,7 +19,7 @@
 
 ## Regenerar créditos
 `node scripts/legal/build-credits.mjs` lee `package.json` y `node_modules/<pkg>/package.json` y escribe `src/lib/legal/credits.generated.json` (dependencias directas, de ejecución y de desarrollo). Requiere `npm install` previo. `tests/legal.test.ts` falla si falta alguna dependencia directa o alguna no tiene versión/licencia.
-Los créditos que no son npm (Baloo 2, Nunito, recursos gráficos) están a mano en `src/lib/legal/site.ts`.
+Los créditos que no son npm (Baloo 2, Nunito, recursos gráficos) están a mano en `src/lib/legal/site.ts`. Las TTF estáticas de Baloo 2 y Nunito para las imágenes del podio/OG (`src/assets/fonts/`, derivadas de google/fonts, SIL OFL 1.1; licencias `OFL-*.txt` al lado) están descritas en `docs/FUENTE-PODIO.md`.
 
 ## Qué NO está resuelto (decisiones del propietario)
 1. **Titular**: nombre, contacto, domicilio y NIF (variables de entorno).

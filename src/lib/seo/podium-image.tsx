@@ -8,6 +8,7 @@ import { joinedPlayers } from '@/lib/domain/players';
 import { computeAwards, computeRanking, rankingRuleLabel } from '@/lib/domain/ranking';
 import type { Player, PublicSnapshot } from '@/lib/domain/types';
 import type { ImageStorage } from '@/lib/storage/types';
+import { BODY_FAMILY, loadBrandFonts, TITLE_FAMILY } from './fonts';
 import { SITE_NAME } from './site';
 
 /**
@@ -16,7 +17,7 @@ import { SITE_NAME } from './site';
  *  · `square` 1080×1080,
  *  · `story` 1080×1350 (vertical, para el móvil).
  * Solo datos públicos de la instantánea (nombres, puntuación, casas finales, premios y estadísticas). Sin red en ejecución: todo sale de
- * `public/assets` y de Storage; la tipografía es la que trae `next/og` (satori no lee woff2, así que no se puede usar Baloo 2).
+ * `public/assets` y de Storage; la tipografía es Baloo 2 (títulos y números, 700/800) y Nunito (texto) en TTF estáticos empaquetados (`fonts.ts`, docs/FUENTE-PODIO.md); si no se pueden leer, se usa la de `next/og` con la negrita simulada por contorno.
  */
 export const PODIUM_FORMATS = ['landscape', 'square', 'story'] as const;
 export type PodiumFormat = (typeof PODIUM_FORMATS)[number];
@@ -153,7 +154,9 @@ export function podiumDate(snapshot: PublicSnapshot): string {
   return new Intl.DateTimeFormat('es-ES', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Madrid' }).format(d);
 }
 
-const bold = (color: string, px = 1.4) => ({ color, WebkitTextStroke: `${px}px ${color}` }) as const;
+/** true si las TTF de la marca se han cargado en el dibujo en curso; si no, la negrita se simula con contorno sobre la fuente por defecto. */
+let realBold = true;
+const bold = (color: string, px = 1.4): Record<string, string | number> => (realBold ? { color, fontFamily: TITLE_FAMILY, fontWeight: 800 } : { color, WebkitTextStroke: `${px}px ${color}` });
 const ell = { display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } as const;
 
 /** Texto de una línea con puntos suspensivos y alineación real (satori ignora `textAlign` junto a `textOverflow`). */
@@ -223,7 +226,7 @@ function PodiumColumn({ e, place, colW, thumbH, scale }: { e: Entry; place: numb
         <Medal rank={rank} size={Math.round(54 * scale)} />
       </div>
       <Line w={colW} style={{ marginTop: Math.round(6 * scale), fontSize: Math.round(32 * scale), ...bold(e.color, 1) }}>{e.name}</Line>
-      <Line w={colW} style={{ fontSize: Math.round(25 * scale), color: SOFT }}>{e.score}</Line>
+      <Line w={colW} style={{ fontSize: Math.round(25 * scale), color: SOFT, fontWeight: 700 }}>{e.score}</Line>
       <div
         style={{
           display: 'flex',
@@ -297,7 +300,7 @@ function Stats({ stats, w, h, gap }: { stats: Stat[]; w: number; h: number; gap:
     <div style={{ display: 'flex', gap, width: w }}>
       {stats.map((s) => (
         <div key={s.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: cw, height: h, borderRadius: 16, background: CARD, border: '2px solid #263259' }}>
-          <Line w={cw - 16} style={{ fontSize: Math.round(h * 0.42), color: SOFT }}>{s.value}</Line>
+          <Line w={cw - 16} style={{ fontSize: Math.round(h * 0.42), color: SOFT, fontWeight: 700 }}>{s.value}</Line>
           <Line w={cw - 16} style={{ fontSize: Math.round(h * 0.23), color: MUTED }}>{s.label}</Line>
         </div>
       ))}
@@ -449,7 +452,7 @@ function Layout({ m }: { m: Model }) {
   );
 
   return (
-    <div style={{ position: 'relative', width: W, height: H, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', padding: `${pad - 8}px ${pad}px ${pad - 14}px`, background: `radial-gradient(circle at 50% -5%, #34417f 0%, ${NIGHT_2} 48%, ${NIGHT} 100%)`, color: '#ffffff', fontFamily: 'sans-serif' }}>
+    <div style={{ position: 'relative', width: W, height: H, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', padding: `${pad - 8}px ${pad}px ${pad - 14}px`, background: `radial-gradient(circle at 50% -5%, #34417f 0%, ${NIGHT_2} 48%, ${NIGHT} 100%)`, color: '#ffffff', lineHeight: 1.2, fontFamily: realBold ? BODY_FAMILY : 'sans-serif' }}>
       <Confetti w={W} h={H} n={land ? 18 : 26} />
       {header}
       <div style={{ display: 'flex', flex: 1, alignItems: 'center', justifyContent: 'center', width: inner }}>{main}</div>
@@ -556,6 +559,8 @@ async function draw(snapshot: PublicSnapshot, storage: Pick<ImageStorage, 'get'>
     mascot,
     extra: rows.length - shownCount,
   };
-  const res = new ImageResponse(<Layout m={model} />, PODIUM_SIZES[format]);
+  const fonts = await loadBrandFonts();
+  realBold = fonts !== null;
+  const res = new ImageResponse(<Layout m={model} />, { ...PODIUM_SIZES[format], ...(fonts ? { fonts } : {}) });
   return new Uint8Array(await res.arrayBuffer());
 }
