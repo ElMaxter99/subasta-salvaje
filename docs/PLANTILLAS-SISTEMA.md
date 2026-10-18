@@ -61,3 +61,7 @@ Tabla `system_templates` (migraciones `…4200`/`…4300`, RLS cerrada); funcion
 - No se probó contra un CDN real desde este entorno (sin red): la descarga y el informe se prueban con transporte simulado.
 - Los créditos son informativos: anotarlos **no** sustituye a tener derecho a usar la imagen (ver «Derechos de las fotos»).
 - Pendiente de decisión: filtros por idioma/etiquetas en la galería.
+
+## Crear una plantilla desde una colección de la biblioteca
+En `/admin/plantillas`, «Crear desde una colección de la biblioteca» llama a `from_collection`: `ss_admin_collection_template` arma el contenido (título = colección, slug libre, catálogo de hasta 100 productos con foto por enlace, portada = foto de un producto, casa inicial opcional de la biblioteca) y se guarda como **borrador**; después se abre en el editor. No se copia ni se sube ninguna imagen.
+Las partidas creadas desde una plantilla publicada anotan `games.template_slug`, que alimenta `/admin/estadisticas`.

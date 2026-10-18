@@ -29,6 +29,8 @@ export interface LibraryImage {
   height: number | null;
   bytes: number | null;
   created_at: string;
+  /** Moderación: el superadmin ya la ha mirado. */
+  reviewed: boolean;
 }
 
 export interface LibraryItem {
@@ -157,14 +159,24 @@ export async function commitLibraryImages(
 
 /* ---------- Imágenes ---------- */
 
-export interface ImageQuery { q?: string; collection?: string | null; limit?: number; offset?: number }
+export interface ImageQuery { q?: string; collection?: string | null; limit?: number; offset?: number; noCredit?: boolean; unreviewed?: boolean }
 
-export async function listLibraryImages(ctx: Ctx, query: ImageQuery = {}): Promise<{ total: number; images: LibraryImage[]; collections: CollectionCount[] }> {
-  return ctx.db.rpc('ss_admin_library_image_list', { q: query.q ?? '', collection: query.collection ?? null, limit: query.limit ?? 60, offset: query.offset ?? 0 });
+export async function listLibraryImages(ctx: Ctx, query: ImageQuery = {}): Promise<{ total: number; images: LibraryImage[]; collections: CollectionCount[]; counts: { no_credit: number; unreviewed: number } }> {
+  return ctx.db.rpc('ss_admin_library_image_list', {
+    q: query.q ?? '', collection: query.collection ?? null, limit: query.limit ?? 60, offset: query.offset ?? 0,
+    no_credit: Boolean(query.noCredit), unreviewed: Boolean(query.unreviewed),
+  });
+}
+
+export interface DuplicateGroup { collection: string; title: string; images: LibraryImage[] }
+
+/** Imágenes con el mismo título dentro de una misma colección (no compara el contenido). */
+export async function listLibraryDuplicates(ctx: Ctx): Promise<DuplicateGroup[]> {
+  return ctx.db.rpc('ss_admin_library_duplicates', {});
 }
 
 const idsSchema = z.array(z.string().uuid()).min(1).max(500);
-const imagePatchSchema = z.object({ title: z.string().trim().max(120), collection: z.string().trim().max(60), tags: z.array(z.string().trim().max(30)).max(20), credit: z.string().trim().max(200) }).partial();
+const imagePatchSchema = z.object({ title: z.string().trim().max(120), collection: z.string().trim().max(60), tags: z.array(z.string().trim().max(30)).max(20), credit: z.string().trim().max(200), reviewed: z.boolean() }).partial();
 
 export async function updateLibraryImages(ctx: Ctx, actor: string, raw: { ids: unknown; patch: unknown }): Promise<{ updated: number }> {
   const ids = idsSchema.safeParse(raw.ids);
@@ -219,6 +231,22 @@ export async function updateLibraryItem(ctx: Ctx, actor: string, id: unknown, ra
   const patch = itemPatchSchema.safeParse(rawPatch);
   if (!idOk.success || !patch.success || Object.keys(patch.data).length === 0) throw new DomainError('invalid_input');
   return ctx.db.rpc('ss_admin_library_item_update', { actor, id: idOk.data, patch: patch.data });
+}
+
+const bulkChangeSchema = z.union([
+  z.object({ collection: z.string().trim().max(60) }).strict(),
+  z.object({ emoji: z.string().trim().max(8).nullable() }).strict(),
+  z.object({ image_id: z.null() }).strict(),
+  z.object({ delete: z.literal(true) }).strict(),
+]);
+export type ItemBulkChange = z.infer<typeof bulkChangeSchema>;
+
+/** Edición en bloque (hasta 200 productos) en una sola transacción SQL con una sola entrada de auditoría. */
+export async function updateLibraryItems(ctx: Ctx, actor: string, raw: { ids: unknown; change: unknown }): Promise<{ changed: number; skipped: number }> {
+  const ids = z.array(z.string().uuid()).min(1).max(200).safeParse(raw.ids);
+  const change = bulkChangeSchema.safeParse(raw.change);
+  if (!ids.success || !change.success) throw new DomainError('invalid_input');
+  return ctx.db.rpc('ss_admin_library_item_update_many', { actor, ids: ids.data, change: change.data });
 }
 
 export async function deleteLibraryItems(ctx: Ctx, actor: string, rawIds: unknown): Promise<{ deleted: number }> {

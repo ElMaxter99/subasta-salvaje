@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Section } from './widgets';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
-import { libraryApi, type CollectionCount, type LibraryImage } from '@/lib/client/library-api';
+import { libraryApi, type CollectionCount, type DuplicateGroup, type LibraryImage } from '@/lib/client/library-api';
 import { LibraryUpload } from './library-upload';
 import { LibraryImageDialog } from './library-image-dialog';
 import { CreateProductsDialog } from './library-create-products-dialog';
@@ -27,21 +27,32 @@ export function LibraryPanel({ uploadsEnabled }: { uploadsEnabled: boolean }) {
   const [version, setVersion] = useState(0);
   const [viewing, setViewing] = useState<LibraryImage | null>(null);
   const [creating, setCreating] = useState<LibraryImage[]>([]);
+  const [noCredit, setNoCredit] = useState(false);
+  const [unreviewed, setUnreviewed] = useState(false);
+  const [counts, setCounts] = useState({ no_credit: 0, unreviewed: 0 });
+  const [dups, setDups] = useState<DuplicateGroup[]>([]);
+  const [dupDelete, setDupDelete] = useState<LibraryImage | null>(null);
 
   const refresh = useCallback(() => setVersion((v) => v + 1), []);
 
   useEffect(() => {
     let alive = true;
     const t = setTimeout(() => {
-      libraryApi.images({ q, collection: collection || null, limit: PAGE, offset: 0 })
-        .then((r) => { if (alive) { setImages(r.images); setTotal(r.total); setCollections(r.collections); } })
+      libraryApi.images({ q, collection: collection || null, limit: PAGE, offset: 0, noCredit, unreviewed })
+        .then((r) => { if (alive) { setImages(r.images); setTotal(r.total); setCollections(r.collections); setCounts(r.counts); } })
         .catch((e) => alive && setMsg({ ok: false, text: e instanceof Error ? e.message : 'Error' }));
     }, q ? 250 : 0);
     return () => { alive = false; clearTimeout(t); };
-  }, [q, collection, version]);
+  }, [q, collection, noCredit, unreviewed, version]);
+
+  useEffect(() => {
+    let alive = true;
+    libraryApi.duplicates().then((r) => alive && setDups(r.groups)).catch(() => undefined);
+    return () => { alive = false; };
+  }, [version]);
 
   async function more() {
-    const r = await libraryApi.images({ q, collection: collection || null, limit: PAGE, offset: images.length });
+    const r = await libraryApi.images({ q, collection: collection || null, limit: PAGE, offset: images.length, noCredit, unreviewed });
     setImages((cur) => [...cur, ...r.images.filter((i) => !cur.some((c) => c.id === i.id))]);
   }
 
@@ -84,6 +95,11 @@ export function LibraryPanel({ uploadsEnabled }: { uploadsEnabled: boolean }) {
               </div>
             </div>
 
+            <div className="mb-3 flex flex-wrap items-center gap-2" role="group" aria-label="Filtros de moderación">
+              <Button size="sm" variant={noCredit ? 'primary' : 'secondary'} aria-pressed={noCredit} onClick={() => setNoCredit(!noCredit)} data-testid="filter-no-credit">Sin crédito ({counts.no_credit})</Button>
+              <Button size="sm" variant={unreviewed ? 'primary' : 'secondary'} aria-pressed={unreviewed} onClick={() => setUnreviewed(!unreviewed)} data-testid="filter-unreviewed">Sin revisar ({counts.unreviewed})</Button>
+            </div>
+
             {selected.size > 0 ? (
               <div className="sticky top-2 z-10 mb-3 flex flex-wrap items-end gap-2 rounded-2xl border border-gold/40 bg-night-900/95 p-3 backdrop-blur" data-testid="library-bulk">
                 <span className="font-bold">{selected.size} seleccionadas</span>
@@ -92,6 +108,7 @@ export function LibraryPanel({ uploadsEnabled }: { uploadsEnabled: boolean }) {
                   <datalist id="library-collections-bulk">{collections.map((c) => <option key={c.name} value={c.name} />)}</datalist>
                 </label>
                 <Button size="sm" variant="secondary" disabled={busy} onClick={() => void act(async () => { const r = await libraryApi.updateImages(ids, { collection: bulkCollection }); setSelected(new Set()); return `${r.updated} imágenes movidas a «${bulkCollection || 'sin colección'}»`; })}>Mover</Button>
+                <Button size="sm" variant="secondary" disabled={busy} data-testid="library-mark-reviewed" onClick={() => void act(async () => { const r = await libraryApi.updateImages(ids, { reviewed: true }); setSelected(new Set()); return `${r.updated} imágenes marcadas como revisadas`; })}>Marcar como revisadas</Button>
                 <Button size="sm" variant="primary" disabled={busy} onClick={() => setCreating(images.filter((i) => selected.has(i.id)))} data-testid="library-to-items">Crear productos…</Button>
                 <Button size="sm" variant="danger" disabled={busy} onClick={() => setConfirmDelete(true)}>Borrar</Button>
               </div>
@@ -110,6 +127,7 @@ export function LibraryPanel({ uploadsEnabled }: { uploadsEnabled: boolean }) {
                       <span className="min-w-0">
                         <span className="block truncate font-bold">{i.title || '(sin título)'}</span>
                         <span className="block truncate text-white/60">{i.collection || 'sin colección'}</span>
+                        {!i.credit.trim() || !i.reviewed ? <span className="block truncate text-gold-soft">{[!i.credit.trim() ? 'sin crédito' : '', !i.reviewed ? 'sin revisar' : ''].filter(Boolean).join(' · ')}</span> : null}
                       </span>
                     </label>
                   </li>
@@ -118,7 +136,43 @@ export function LibraryPanel({ uploadsEnabled }: { uploadsEnabled: boolean }) {
             )}
             {images.length < total ? <div className="mt-3 text-center"><Button variant="secondary" onClick={() => void more()}>Cargar más ({images.length}/{total})</Button></div> : null}
           </Section>
+
+          <Section title={`Posibles duplicados (${dups.length})`} hint="Imágenes con el mismo título dentro de la misma colección. Solo se compara el título, no el contenido: revisa antes de borrar. Se quita el registro (el archivo sigue en GitHub) y los productos que lo usaban se quedan sin foto.">
+            {dups.length === 0 ? <p className="text-sm text-white/70">No hay títulos repetidos dentro de una misma colección.</p> : (
+              <ul className="space-y-3" data-testid="library-duplicates">
+                {dups.map((g) => (
+                  <li key={`${g.collection}|${g.title}`} className="rounded-2xl border border-white/10 bg-night-900 p-3" data-testid="library-duplicate-group">
+                    <p className="mb-2 text-sm font-bold">«{g.title}» <span className="font-normal text-white/60">· {g.collection || 'sin colección'} · {g.images.length} imágenes</span></p>
+                    <ul className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                      {g.images.map((i, n) => (
+                        <li key={i.id} className="overflow-hidden rounded-xl border border-white/10">
+                          {/* eslint-disable-next-line @next/next/no-img-element -- alojada en el CDN del propietario */}
+                          <img src={i.url} alt={i.title} loading="lazy" referrerPolicy="no-referrer" className="aspect-square w-full object-cover" />
+                          <div className="flex items-center justify-between gap-1 p-2 text-xs">
+                            <span className="text-white/60">{n === 0 ? 'La más antigua' : 'Posible repetida'}</span>
+                            <Button size="sm" variant="danger" disabled={busy} aria-label={`Borrar el registro duplicado ${i.title} ${n + 1}`} onClick={() => setDupDelete(i)}>Borrar</Button>
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </Section>
       </>
+
+      <ConfirmDialog
+        open={!!dupDelete}
+        title="Borrar registro duplicado"
+        confirmLabel="Borrar"
+        variant="danger"
+        loading={busy}
+        onCancel={() => setDupDelete(null)}
+        onConfirm={async () => { const d = dupDelete; if (d) await act(async () => { const r = await libraryApi.deleteImages([d.id]); return `${r.deleted} registro quitado de la biblioteca`; }); setDupDelete(null); }}
+      >
+        <p>Se quitará el registro de <b>{dupDelete?.title}</b>. <b>El archivo permanece en el repositorio de fotos</b> y los productos que usaban esta imagen se quedan sin foto.</p>
+      </ConfirmDialog>
 
       <LibraryImageDialog
         image={viewing}

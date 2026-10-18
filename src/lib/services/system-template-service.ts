@@ -90,6 +90,29 @@ export async function saveSystemTemplate(ctx: Ctx, actor: string, raw: unknown):
   });
 }
 
+const fromCollectionSchema = z.object({
+  collection: z.string().trim().min(1, 'Elige una colección').max(60),
+  /** Imagen de la biblioteca (objeto o escena) que será la casa inicial. */
+  house_image_id: z.string().uuid().nullish(),
+  /** Producto cuya foto será la portada (por defecto, el primero con foto). */
+  cover_item_id: z.string().uuid().nullish(),
+});
+
+/**
+ * Crea un BORRADOR de plantilla del sistema desde una colección del catálogo general: título = colección, slug libre, catálogo = sus
+ * productos (con la foto por enlace, sin copiar nada), portada = foto de un producto y casa inicial = imagen de la biblioteca.
+ * El contenido lo arma SQL (`ss_admin_collection_template`); aquí se valida con las mismas reglas que cualquier plantilla del sistema.
+ */
+export async function createTemplateFromCollection(ctx: Ctx, actor: string, raw: unknown): Promise<{ template: SystemTemplateSummary; truncated: boolean; total: number }> {
+  const input = fromCollectionSchema.safeParse(raw);
+  if (!input.success) throw new DomainError('invalid_input', input.error.issues[0]?.message ?? 'Datos no válidos');
+  const built = await ctx.db.rpc<{ slug: string; title: string; truncated: boolean; total: number; data: unknown }>('ss_admin_collection_template', {
+    collection: input.data.collection, house_image_id: input.data.house_image_id ?? null, cover_item_id: input.data.cover_item_id ?? null,
+  });
+  const template = await saveSystemTemplate(ctx, actor, { slug: built.slug, title: built.title, description: '', data: built.data });
+  return { template, truncated: built.truncated, total: built.total };
+}
+
 export interface ImageCheck {
   label: string;
   url: string;

@@ -97,6 +97,7 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
   // Sin jugadores de partida: se pueden crear luego en el panel o, en modo móviles, darse de alta ellos mismos.
   const [players, setPlayers] = useState<string[]>(init?.players ?? []);
   const [initialImageUrl, setInitialImageUrl] = useState<string | null>(init?.initialImageUrl ?? null);
+  const [systemSlug, setSystemSlug] = useState<string | null>(null); // partida del sistema de la que sale (solo estadísticas)
   const [maxPlayersText, setMaxPlayersText] = useState(String(MAX_PLAYERS));
   const maxPlayers = maxPlayersText.trim() === '' ? MAX_PLAYERS : Number(maxPlayersText);
   // Catálogo propio cargado desde una plantilla (null = el de la temática)
@@ -275,6 +276,7 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
         max_rounds: Math.min(roundsValue, defaultRounds), // nunca más rondas que elementos en el catálogo (el catálogo pudo cambiar después)
         max_players: maxPlayers,
         integer_bids: integerBids,
+        ...(systemSlug ? { template_slug: systemSlug } : {}),
         players: names.map((n, i) => ({ name: n, color: PLAYER_COLORS[i % PLAYER_COLORS.length] })),
         ...(items ? { items: items.map((i) => ({ name: i.name, description: i.description, emoji: i.emoji })) } : {}),
       });
@@ -452,7 +454,7 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
         <div key={step} className={`${dir === 1 ? 'ss-step-in-right' : 'ss-step-in-left'} space-y-4`} data-testid={`wizard-step-${step + 1}`}>
           {step === 0 ? (
             <>
-              {systemEditor ? null : <TemplateImport onTemplate={(v) => applyTemplate(v)} onCatalog={setItems} />}
+              {systemEditor ? null : <TemplateImport onTemplate={(v, slug) => { applyTemplate(v); setSystemSlug(slug ?? null); }} onCatalog={setItems} />}
               <fieldset className={card}>
                 <legend className="px-2 font-display text-xl 2xl:text-3xl">Quién puja</legend>
                 <Choice name="play_mode" value="host" checked={playMode === 'host'} onChange={() => setPlayMode('host')} title="Pujas del anfitrión" desc="Los jugadores pujan en voz alta y tú registras cada puja desde tu panel. No necesitan móvil ni cuenta." />
