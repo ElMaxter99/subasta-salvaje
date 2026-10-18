@@ -123,7 +123,7 @@ function ActiveAuction({ snap, auction, players, compact }: { snap: PublicSnapsh
         </div>
       </div>
 
-      <aside className={`flex shrink-0 flex-col ${compact ? 'w-[22rem]' : 'w-[25rem]'}`} aria-label="Últimas pujas" aria-live="polite">
+      <aside className={`flex shrink-0 flex-col pt-[3.6rem] ${compact ? 'w-[22rem]' : 'w-[25rem]'}`} aria-label="Últimas pujas" aria-live="polite">
         <h3 className="mb-2 text-[1.2rem] font-bold uppercase tracking-[0.25em] text-white/60">Últimas pujas</h3>
         <ol className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
           {recent.map((b, i) => {
