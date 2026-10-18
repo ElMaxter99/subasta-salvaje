@@ -69,3 +69,7 @@ Encadena cada resultado como base del siguiente (como en la partida), con el mis
 ## Qué NO está verificado
 - **El texto del prompt no se ha probado contra el modelo real** desde este entorno (sin claves ni red): se ha redactado según el comportamiento observado en tus historiales (el modelo pierde objetos y a veces deja halos) y se cubre con tests de *contenido* del prompt y de la guardia con imágenes sintéticas. Usa `ai:lab` con tus fotos (casa, batido, mascota…) para comparar variantes y dime qué falla.
 - Un modelo mayor (de pago) cumpliría mejor las instrucciones; no se activa por regla del proyecto (solo proveedores gratuitos).
+
+## Comparador de modelos (superadmin)
+
+`/admin/ia/comparar` (enlazado desde `/admin/ia`) ejecuta la **misma edición que una compra real** con hasta 4 proveedores a la vez: imagen base (archivo o biblioteca), uno o dos elementos con nombre (el segundo se añade encima del resultado del primero, con `previousItems` como en la partida) y tema opcional. Usa `buildEditPrompt`/`buildBlendPrompt` dentro de cada adaptador, los tamaños de `normalize.ts` y la guardia de zona (`IMAGE_EDIT_GUARD`) mediante `src/lib/ai/edit-pipeline.ts`, que comparten `jobs-service` y `compare-service`. Cada resultado muestra el **prompt exacto enviado** (desplegable «Prompt enviado»), proveedor, modelo, notas (con la semilla), tiempo y, si falla, el motivo. Nada se guarda: la imagen viaja como data URL. «Repetir con otra semilla» relanza solo ese proveedor (cada llamada elige una semilla nueva).

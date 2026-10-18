@@ -1,10 +1,8 @@
-import { applyEditGuard } from '@/lib/ai/region-guard';
-import { imageEditGuard } from '@/lib/config/env';
+import type { ImageKind } from '@/lib/images/normalize'; // la normalización vive en edit-pipeline (finalizeProviderImage)
+import { editWithGuard, finalizeProviderImage } from '@/lib/ai/edit-pipeline';
 import { fetchImageBytes } from '@/lib/security/safe-fetch';
 import { isExternalRef, isHostedImage, mimeFromExtension } from '@/lib/storage/hosted';
 import { randomUUID } from 'node:crypto';
-import { validateProviderOutput } from '@/lib/ai/image-validation';
-import { normalizeImage } from '@/lib/images/normalize';
 import { ProviderError, type GeneratedImage, type ImageGenerationProvider } from '@/lib/ai/types';
 import { effectiveQuota, getSettings } from './settings';
 import { redactSecrets } from '@/lib/security/redact';
@@ -153,7 +151,8 @@ async function generate(ctx: Ctx, provider: ImageGenerationProvider, job: Claime
       itemImage = undefined; // la foto ya no existe: se edita sólo con el texto, sin fallar
     }
   }
-  const edited = await provider.editScene({
+  // Misma tubería que el comparador de modelos del superadmin (edit-pipeline): edición + guardia de zona.
+  return editWithGuard(provider, {
     base: { bytes: base.bytes, mime: job.base_mime_type ?? base.mime },
     ...(itemImage ? { itemImage } : {}),
     theme: job.theme,
@@ -162,13 +161,6 @@ async function generate(ctx: Ctx, provider: ImageGenerationProvider, job: Claime
     itemEmoji,
     previousItems,
   });
-  // Red de seguridad: con compras anteriores, si el modelo «pierde» un objeto añadido antes se restaura (modo por defecto `cores`; ver
-  // IMAGE_EDIT_GUARD). La composición (collage) ya lo conserva por construcción.
-  if (previousItems.length > 0 && !edited.model.endsWith('+compose') && (job.base_mime_type ?? base.mime) !== 'image/svg+xml') {
-    const g = await applyEditGuard(imageEditGuard(), base.bytes, edited.bytes, previousItems.length);
-    if (g.applied) return { ...edited, bytes: g.bytes, mime: 'image/png', prompt: `${edited.prompt} [guardia de zona: ${g.note}]` };
-  }
-  return edited;
 }
 
 async function jobContext(ctx: Ctx, job: ClaimedJob): Promise<{ itemEmoji: string | null; previousItems: string[]; itemImagePath: string | null }> {
@@ -206,18 +198,10 @@ async function runJob(ctx: Ctx, provider: ImageGenerationProvider, job: ClaimedJ
       throw new ProviderError('El proveedor configurado sólo genera imágenes nuevas y no puede editar la casa existente. Se conserva la imagen anterior.', false);
     }
     reserved = await reserveQuota(ctx, provider, job);
-    let image = await generate(ctx, provider, job);
-    let mime = validateProviderOutput(image, provider.id === 'demo');
-    if (mime !== 'image/svg+xml') {
-      // Formato interno único: la salida de cualquier proveedor se reduce y se pasa a WebP antes de guardarla.
-      try {
-        const n = await normalizeImage(image.bytes, job.kind === 'item' ? 'item' : 'scene');
-        image = { ...image, bytes: n.bytes, mime: n.mime };
-        mime = n.mime;
-      } catch (e) {
-        throw new ProviderError(`Imagen devuelta no válida: ${(e as Error).message}`, true);
-      }
-    }
+    const kind: ImageKind = job.kind === 'item' ? 'item' : 'scene';
+    const fin = await finalizeProviderImage(await generate(ctx, provider, job), kind, provider.id === 'demo');
+    const image = fin.image;
+    const mime = fin.mime;
     const folder = job.kind === 'item' ? `items/${job.item_id}` : job.kind === 'base' ? 'shared' : `players/${job.player_id}`;
     const storagePath = `games/${job.game_id}/${folder}/${randomUUID()}.${extensionForMime(mime)}`;
     await ctx.storage.put(storagePath, image.bytes, mime);
