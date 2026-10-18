@@ -8,6 +8,9 @@ import { libraryApi, type CollectionCount, type DuplicateGroup, type LibraryImag
 import { LibraryUpload } from './library-upload';
 import { LibraryImageDialog } from './library-image-dialog';
 import { CreateProductsDialog } from './library-create-products-dialog';
+import { LibraryCoverage, LibrarySimilar } from './library-coverage';
+import { RoleBadges } from './library-role-fields';
+import { LIBRARY_CATEGORIES, LIBRARY_ROLES, type LibraryRole } from '@/lib/library/taxonomy';
 
 const input = 'w-full rounded-xl border border-white/15 bg-night-900 px-3 py-2';
 const PAGE = 60;
@@ -29,7 +32,13 @@ export function LibraryPanel({ uploadsEnabled }: { uploadsEnabled: boolean }) {
   const [creating, setCreating] = useState<LibraryImage[]>([]);
   const [noCredit, setNoCredit] = useState(false);
   const [unreviewed, setUnreviewed] = useState(false);
-  const [counts, setCounts] = useState({ no_credit: 0, unreviewed: 0 });
+  const [counts, setCounts] = useState({ no_credit: 0, unreviewed: 0, start: 0, product: 0, none: 0 });
+  const [categories, setCategories] = useState<CollectionCount[]>([]);
+  const [category, setCategory] = useState('');
+  const [role, setRole] = useState<'' | LibraryRole | 'none'>('');
+  const [bulkRole, setBulkRole] = useState<LibraryRole>('start');
+  const [bulkTag, setBulkTag] = useState('');
+  const [bulkCategory, setBulkCategory] = useState('');
   const [dups, setDups] = useState<DuplicateGroup[]>([]);
   const [dupDelete, setDupDelete] = useState<LibraryImage | null>(null);
 
@@ -38,12 +47,12 @@ export function LibraryPanel({ uploadsEnabled }: { uploadsEnabled: boolean }) {
   useEffect(() => {
     let alive = true;
     const t = setTimeout(() => {
-      libraryApi.images({ q, collection: collection || null, limit: PAGE, offset: 0, noCredit, unreviewed })
-        .then((r) => { if (alive) { setImages(r.images); setTotal(r.total); setCollections(r.collections); setCounts(r.counts); } })
+      libraryApi.images({ q, collection: collection || null, category: category || null, role: role || null, limit: PAGE, offset: 0, noCredit, unreviewed })
+        .then((r) => { if (alive) { setImages(r.images); setTotal(r.total); setCollections(r.collections); setCategories(r.categories); setCounts(r.counts); } })
         .catch((e) => alive && setMsg({ ok: false, text: e instanceof Error ? e.message : 'Error' }));
     }, q ? 250 : 0);
     return () => { alive = false; clearTimeout(t); };
-  }, [q, collection, noCredit, unreviewed, version]);
+  }, [q, collection, category, role, noCredit, unreviewed, version]);
 
   useEffect(() => {
     let alive = true;
@@ -52,7 +61,7 @@ export function LibraryPanel({ uploadsEnabled }: { uploadsEnabled: boolean }) {
   }, [version]);
 
   async function more() {
-    const r = await libraryApi.images({ q, collection: collection || null, limit: PAGE, offset: images.length, noCredit, unreviewed });
+    const r = await libraryApi.images({ q, collection: collection || null, category: category || null, role: role || null, limit: PAGE, offset: images.length, noCredit, unreviewed });
     setImages((cur) => [...cur, ...r.images.filter((i) => !cur.some((c) => c.id === i.id))]);
   }
 
@@ -70,18 +79,31 @@ export function LibraryPanel({ uploadsEnabled }: { uploadsEnabled: boolean }) {
       {msg ? <p role="status" className={`rounded-2xl px-4 py-2 text-sm font-semibold ${msg.ok ? 'bg-teal/15 text-teal' : 'bg-rose/20 text-rose'}`}>{msg.text}</p> : null}
 
       <>
+          <Section title="Cobertura y calidad" hint="Cuántas imágenes publicadas hay por rol y categoría frente al objetivo, y qué falta por revisar. Solo las revisadas aparecen en «Elegir de la biblioteca» de las partidas.">
+            <LibraryCoverage version={version} onFilter={(f) => { setCategory(f.category); setRole(f.role); setCollection(''); setQ(''); }} />
+          </Section>
+
           <Section title="Subida masiva" hint={<>Imágenes generales (paisajes, objetos divertidos…) que se reutilizan en cualquier partida o plantilla: se guardan <b>una sola vez</b> en tu repositorio público de fotos y aquí solo queda el enlace.</>}>
             <LibraryUpload enabled={uploadsEnabled} collections={collections.map((c) => c.name).filter(Boolean)} onDone={refresh} />
           </Section>
 
           <Section title="Imágenes" hint="Pulsa una imagen para inspeccionarla y crear o asociar un producto del catálogo. Marca varias para moverlas de colección, borrarlas o crear productos.">
-            <div className="mb-3 grid gap-2 md:grid-cols-3">
-              <input aria-label="Buscar imágenes" placeholder="Buscar por título, etiqueta o colección…" value={q} onChange={(e) => setQ(e.target.value)} className={input} />
+            <div className="mb-3 grid gap-2 md:grid-cols-4">
+              <input aria-label="Buscar imágenes" placeholder="Buscar por título, etiqueta, categoría o colección…" value={q} onChange={(e) => setQ(e.target.value)} className={input} />
+              <select aria-label="Filtrar por rol" value={role} onChange={(e) => setRole(e.target.value as typeof role)} className={input}>
+                <option value="">Todos los roles</option>
+                {LIBRARY_ROLES.map((r) => <option key={r.id} value={r.id}>{r.label} · {counts[r.id]}</option>)}
+                <option value="none">Sin rol · {counts.none}</option>
+              </select>
+              <select aria-label="Filtrar por categoría" value={category} onChange={(e) => setCategory(e.target.value)} className={input}>
+                <option value="">Todas las categorías</option>
+                {categories.map((c) => <option key={c.name} value={c.name}>{c.name} · {c.count}</option>)}
+              </select>
               <select aria-label="Filtrar por colección" value={collection} onChange={(e) => setCollection(e.target.value)} className={input}>
                 <option value="">Todas las colecciones</option>
                 {collections.map((c) => <option key={c.name} value={c.name}>{c.name || '(sin colección)'} · {c.count}</option>)}
               </select>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2 md:col-span-4">
                 <Button variant="ghost" onClick={() => setSelected(new Set(images.map((i) => i.id)))} disabled={images.length === 0}>Seleccionar todo lo visible</Button>
                 <Button variant="ghost" onClick={() => setSelected(new Set())} disabled={selected.size === 0}>Quitar selección</Button>
                 {collection ? (
@@ -108,6 +130,23 @@ export function LibraryPanel({ uploadsEnabled }: { uploadsEnabled: boolean }) {
                   <datalist id="library-collections-bulk">{collections.map((c) => <option key={c.name} value={c.name} />)}</datalist>
                 </label>
                 <Button size="sm" variant="secondary" disabled={busy} onClick={() => void act(async () => { const r = await libraryApi.updateImages(ids, { collection: bulkCollection }); setSelected(new Set()); return `${r.updated} imágenes movidas a «${bulkCollection || 'sin colección'}»`; })}>Mover</Button>
+                <label className="text-xs font-semibold">Rol
+                  <select aria-label="Rol para la selección" value={bulkRole} onChange={(e) => setBulkRole(e.target.value as LibraryRole)} className={`${input} mt-1 w-44`}>
+                    {LIBRARY_ROLES.map((r) => <option key={r.id} value={r.id}>{r.label}</option>)}
+                  </select>
+                </label>
+                <Button size="sm" variant="secondary" disabled={busy} data-testid="library-role-add" onClick={() => void act(async () => { const r = await libraryApi.updateImages(ids, { roles_add: [bulkRole] }); return `Rol añadido a ${r.updated} imágenes`; })}>Añadir rol</Button>
+                <Button size="sm" variant="secondary" disabled={busy} data-testid="library-role-remove" onClick={() => void act(async () => { const r = await libraryApi.updateImages(ids, { roles_remove: [bulkRole] }); return `Rol quitado de ${r.updated} imágenes`; })}>Quitar rol</Button>
+                <label className="text-xs font-semibold">Categoría
+                  <input list="library-categories-bulk" aria-label="Categoría para la selección" value={bulkCategory} onChange={(e) => setBulkCategory(e.target.value)} className={`${input} mt-1 w-44`} />
+                  <datalist id="library-categories-bulk">{[...new Set([...LIBRARY_CATEGORIES.map((c) => c.name), ...categories.map((c) => c.name)])].map((n) => <option key={n} value={n} />)}</datalist>
+                </label>
+                <Button size="sm" variant="secondary" disabled={busy || !bulkCategory.trim()} data-testid="library-category-set" onClick={() => void act(async () => { const r = await libraryApi.updateImages(ids, { category: bulkCategory }); return `${r.updated} imágenes en la categoría «${bulkCategory}»`; })}>Fijar categoría</Button>
+                <label className="text-xs font-semibold">Etiqueta
+                  <input aria-label="Etiqueta para la selección" value={bulkTag} onChange={(e) => setBulkTag(e.target.value)} placeholder="terror" className={`${input} mt-1 w-36`} />
+                </label>
+                <Button size="sm" variant="secondary" disabled={busy || !bulkTag.trim()} data-testid="library-tag-add" onClick={() => void act(async () => { const r = await libraryApi.updateImages(ids, { tags_add: [bulkTag] }); return `Etiqueta «${bulkTag}» añadida a ${r.updated} imágenes`; })}>Añadir etiqueta</Button>
+                <Button size="sm" variant="secondary" disabled={busy || !bulkTag.trim()} onClick={() => void act(async () => { const r = await libraryApi.updateImages(ids, { tags_remove: [bulkTag] }); return `Etiqueta «${bulkTag}» quitada de ${r.updated} imágenes`; })}>Quitar etiqueta</Button>
                 <Button size="sm" variant="secondary" disabled={busy} data-testid="library-mark-reviewed" onClick={() => void act(async () => { const r = await libraryApi.updateImages(ids, { reviewed: true }); setSelected(new Set()); return `${r.updated} imágenes marcadas como revisadas`; })}>Marcar como revisadas</Button>
                 <Button size="sm" variant="primary" disabled={busy} onClick={() => setCreating(images.filter((i) => selected.has(i.id)))} data-testid="library-to-items">Crear productos…</Button>
                 <Button size="sm" variant="danger" disabled={busy} onClick={() => setConfirmDelete(true)}>Borrar</Button>
@@ -126,7 +165,8 @@ export function LibraryPanel({ uploadsEnabled }: { uploadsEnabled: boolean }) {
                       <input type="checkbox" checked={selected.has(i.id)} onChange={() => toggle(i.id)} aria-label={`Seleccionar ${i.title}`} className="mt-0.5 size-4 accent-[#fbbf24]" />
                       <span className="min-w-0">
                         <span className="block truncate font-bold">{i.title || '(sin título)'}</span>
-                        <span className="block truncate text-white/60">{i.collection || 'sin colección'}</span>
+                        <span className="block truncate text-white/60">{i.category || i.collection || 'sin categoría'}</span>
+                        <span className="flex flex-wrap gap-1"><RoleBadges roles={i.roles} /></span>
                         {!i.credit.trim() || !i.reviewed ? <span className="block truncate text-gold-soft">{[!i.credit.trim() ? 'sin crédito' : '', !i.reviewed ? 'sin revisar' : ''].filter(Boolean).join(' · ')}</span> : null}
                       </span>
                     </label>
@@ -136,6 +176,8 @@ export function LibraryPanel({ uploadsEnabled }: { uploadsEnabled: boolean }) {
             )}
             {images.length < total ? <div className="mt-3 text-center"><Button variant="secondary" onClick={() => void more()}>Cargar más ({images.length}/{total})</Button></div> : null}
           </Section>
+
+          <LibrarySimilar version={version} busy={busy} onChanged={refresh} onDelete={setDupDelete} />
 
           <Section title={`Posibles duplicados (${dups.length})`} hint="Imágenes con el mismo título dentro de la misma colección. Solo se compara el título, no el contenido: revisa antes de borrar. Se quita el registro (el archivo sigue en GitHub) y los productos que lo usaban se quedan sin foto.">
             {dups.length === 0 ? <p className="text-sm text-white/70">No hay títulos repetidos dentro de una misma colección.</p> : (

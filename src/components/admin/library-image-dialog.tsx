@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { libraryApi, type LibraryImage, type LibraryItem } from '@/lib/client/library-api';
+import { LIBRARY_CATEGORIES, type LibraryRole } from '@/lib/library/taxonomy';
+import { RoleChecks } from './library-role-fields';
 
 const field = 'w-full rounded-xl border border-white/15 bg-night-900 px-3 py-2 text-base';
 
@@ -24,6 +26,9 @@ export function LibraryImageDialog({ image, collections, onClose, onChanged, onC
   const [title, setTitle] = useState('');
   const [collection, setCollection] = useState('');
   const [tags, setTags] = useState('');
+  const [roles, setRoles] = useState<LibraryRole[]>([]);
+  const [category, setCategory] = useState('');
+  const [reviewed, setReviewed] = useState(false);
   const [credit, setCredit] = useState('');
   const [natural, setNatural] = useState<{ w: number; h: number } | null>(null);
   const [q, setQ] = useState('');
@@ -40,6 +45,9 @@ export function LibraryImageDialog({ image, collections, onClose, onChanged, onC
       setTitle(image.title);
       setCollection(image.collection);
       setTags(image.tags.join(', '));
+      setRoles(image.roles);
+      setCategory(image.category);
+      setReviewed(image.reviewed);
       setCredit(image.credit);
       setNatural(null);
       setQ('');
@@ -106,7 +114,7 @@ export function LibraryImageDialog({ image, collections, onClose, onChanged, onC
                   onSubmit={(e) => {
                     e.preventDefault();
                     void guard(async () => {
-                      await libraryApi.updateImages([image.id], { title, collection, tags: tags.split(',').map((t) => t.trim()).filter(Boolean), credit });
+                      await libraryApi.updateImages([image.id], { title, collection, category, roles, reviewed, tags: tags.split(',').map((t) => t.trim()).filter(Boolean), credit });
                       return `«${title || 'Imagen'}» actualizada`;
                     });
                   }}
@@ -118,11 +126,20 @@ export function LibraryImageDialog({ image, collections, onClose, onChanged, onC
                     <input list="library-image-collections" aria-label="Colección de la imagen" maxLength={60} value={collection} onChange={(e) => setCollection(e.target.value)} className={`${field} mt-1`} />
                     <datalist id="library-image-collections">{collections.map((c) => <option key={c} value={c} />)}</datalist>
                   </label>
+                  <RoleChecks value={roles} onChange={setRoles} />
+                  <label className="block text-sm font-semibold">Categoría / temática
+                    <input list="library-image-categories" aria-label="Categoría de la imagen" maxLength={60} value={category} onChange={(e) => setCategory(e.target.value)} placeholder="Halloween, Paisajes…" className={`${field} mt-1`} />
+                    <datalist id="library-image-categories">{LIBRARY_CATEGORIES.map((c) => <option key={c.name} value={c.name} />)}</datalist>
+                  </label>
                   <label className="block text-sm font-semibold">Etiquetas (separadas por comas)
                     <input aria-label="Etiquetas de la imagen" value={tags} onChange={(e) => setTags(e.target.value)} className={`${field} mt-1`} />
                   </label>
                   <label className="block text-sm font-semibold">Crédito / origen
                     <input aria-label="Crédito de la imagen" maxLength={120} value={credit} onChange={(e) => setCredit(e.target.value)} className={`${field} mt-1`} />
+                  </label>
+                  <label className="flex min-h-9 cursor-pointer items-center gap-2 text-sm font-semibold" title="Solo las revisadas se ofrecen a los anfitriones en «Elegir de la biblioteca»">
+                    <input type="checkbox" className="size-4 accent-[#fbbf24]" checked={reviewed} onChange={(e) => setReviewed(e.target.checked)} aria-label="Revisada y publicada en el selector" />
+                    Revisada: se ofrece a los anfitriones
                   </label>
                   <div className="flex flex-wrap gap-2">
                     <Button type="submit" variant="secondary" loading={busy}>Guardar cambios</Button>

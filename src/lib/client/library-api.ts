@@ -1,14 +1,21 @@
 import { ApiError } from './api';
 import { adminPost } from './admin-api';
 import { shrinkForUpload } from './image-shrink';
-import type { CollectionCount, DuplicateGroup, ItemBulkChange, LibraryImage, LibraryItem, LibraryItemInput } from '@/lib/services/library-service';
+import type { CollectionCount, DuplicateGroup, ImageListResult, ItemBulkChange, LibraryImage, LibraryItem, LibraryItemInput, NearImage } from '@/lib/services/library-service';
+import type { CoverageReport } from '@/lib/library/coverage';
+import type { LibraryRole } from '@/lib/library/taxonomy';
 
-export type { CollectionCount, DuplicateGroup, ItemBulkChange, LibraryImage, LibraryItem, LibraryItemInput };
+export type { CollectionCount, CoverageReport, DuplicateGroup, ItemBulkChange, LibraryImage, LibraryItem, LibraryItemInput, NearImage };
 
-export interface UploadMeta { collection: string; tags: string; credit: string; kind: 'item' | 'scene'; /** Si se indica, sustituye al título sacado del nombre del archivo. */ title?: string }
+export interface UploadMeta {
+  collection: string; tags: string; credit: string; kind: 'item' | 'scene';
+  /** Si se indica, sustituye al título sacado del nombre del archivo. */ title?: string;
+  /** Roles de la imagen; sin indicar, el servidor los deduce del tipo. Lista vacía = sin rol. */ roles?: LibraryRole[];
+  /** Categoría/temática; sin indicar, la colección. */ category?: string;
+}
 
 export type StagedImage = import('@/lib/services/library-service').StagedImage;
-export type StageResult = { existed: true; image: LibraryImage } | { existed: false; staged: StagedImage };
+export type StageResult = { existed: true; image: LibraryImage } | { existed: false; staged: StagedImage; near: NearImage[] };
 
 /** Fase 1: prepara UNA imagen (el servidor la normaliza y la deja lista en GitHub, sin crear commit). */
 export async function stageLibraryImageRequest(file: File, meta: UploadMeta): Promise<StageResult> {
@@ -18,6 +25,8 @@ export async function stageLibraryImageRequest(file: File, meta: UploadMeta): Pr
   form.set('credit', meta.credit);
   form.set('kind', meta.kind);
   form.set('title', meta.title ?? '');
+  form.set('category', meta.category ?? '');
+  if (meta.roles) form.set('roles', meta.roles.join(','));
   // El título sale del nombre original (la reducción en el navegador puede cambiar la extensión).
   const small = await shrinkForUpload(file);
   form.set('file', new File([small], file.name.replace(/\.[^.]+$/, '') + small.name.slice(small.name.lastIndexOf('.')), { type: small.type }));
@@ -34,14 +43,18 @@ export interface GeneratedItemImage { item: LibraryItem; image: LibraryImage; pr
 /** Genera con IA la imagen de un producto del catálogo general (consume cuota diaria) y la deja asociada. */
 export const generateItemImageRequest = (item: Pick<LibraryItem, 'id' | 'name' | 'description' | 'emoji' | 'collection'>) => adminPost<GeneratedItemImage>('library/generate', item);
 
-export interface ImageList { total: number; images: LibraryImage[]; collections: CollectionCount[]; uploadsEnabled: boolean; counts: { no_credit: number; unreviewed: number } }
+export type ImageList = ImageListResult & { uploadsEnabled: boolean };
+export type ImagePatch = Partial<{ title: string; collection: string; category: string; tags: string[]; credit: string; reviewed: boolean; roles: LibraryRole[]; tags_add: string[]; tags_remove: string[]; roles_add: LibraryRole[]; roles_remove: LibraryRole[] }>;
 export interface ItemList { total: number; items: LibraryItem[]; collections: CollectionCount[] }
 
 const post = <T>(body: unknown) => adminPost<T>('library', body);
 
 export const libraryApi = {
-  images: (q: { q?: string; collection?: string | null; limit?: number; offset?: number; noCredit?: boolean; unreviewed?: boolean }) => post<ImageList>({ op: 'images.list', ...q }),
-  updateImages: (ids: string[], patch: Partial<{ title: string; collection: string; tags: string[]; credit: string; reviewed: boolean }>) => post<{ updated: number }>({ op: 'images.update', ids, patch }),
+  images: (q: { q?: string; collection?: string | null; category?: string | null; role?: LibraryRole | 'none' | null; limit?: number; offset?: number; noCredit?: boolean; unreviewed?: boolean }) => post<ImageList>({ op: 'images.list', ...q }),
+  updateImages: (ids: string[], patch: ImagePatch) => post<{ updated: number }>({ op: 'images.update', ids, patch }),
+  similar: () => post<{ pairs: { distance: number; a: LibraryImage; b: LibraryImage }[] }>({ op: 'images.similar' }),
+  backfillHashes: () => post<{ done: number; failed: number; remaining: number }>({ op: 'images.backfill_hashes' }),
+  coverage: () => post<CoverageReport>({ op: 'coverage' }),
   duplicates: () => post<{ groups: DuplicateGroup[] }>({ op: 'images.duplicates' }),
   deleteImages: (ids: string[]) => post<{ deleted: number }>({ op: 'images.delete', ids }),
   items: (q: { q?: string; collection?: string | null; limit?: number; offset?: number }) => post<ItemList>({ op: 'items.list', ...q }),

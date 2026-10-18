@@ -5,9 +5,11 @@ import { FolderUp, ImagePlus, Square, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ApiError } from '@/lib/client/api';
 import { creditOf, parseManifestCsv, type ManifestRow } from '@/lib/library/commons';
+import { defaultRolesForKind, hammingHex, LIBRARY_CATEGORIES, NEAR_DUPLICATE_DISTANCE, type LibraryRole } from '@/lib/library/taxonomy';
+import { RoleChecks } from './library-role-fields';
 import { commitLibraryRequest, stageLibraryImageRequest, type StagedImage, type UploadMeta } from '@/lib/client/library-api';
 
-interface Row { id: number; file: File; url: string; /** Datos propios de esta foto (vienen del manifest.csv de una carpeta preparada con npm run library:fetch). */ over?: Partial<UploadMeta>; state: 'wait' | 'sending' | 'ready' | 'ok' | 'dup' | 'error'; message?: string; staged?: StagedImage }
+interface Row { id: number; file: File; url: string; /** Datos propios de esta foto (vienen del manifest.csv de una carpeta preparada con npm run library:fetch). */ over?: Partial<UploadMeta>; state: 'wait' | 'sending' | 'ready' | 'ok' | 'dup' | 'error'; message?: string; staged?: StagedImage; /** Aviso: se parece a otra imagen (ya registrada o del mismo lote). */ similar?: string }
 
 const input = 'w-full rounded-xl border border-white/15 bg-night-900 px-3 py-2';
 const IMAGE = /\.(jpe?g|png|webp)$/i;
@@ -22,7 +24,7 @@ const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
  * no se registra nada y se reintenta con la misma lista.
  */
 export function LibraryUpload({ enabled, collections, onDone }: { enabled: boolean; collections: string[]; onDone: () => void }) {
-  const [meta, setMeta] = useState<UploadMeta>({ collection: '', tags: '', credit: '', kind: 'item' });
+  const [meta, setMeta] = useState<UploadMeta>({ collection: '', tags: '', credit: '', kind: 'item', roles: ['product'], category: '' });
   const [rows, setRows] = useState<Row[]>([]);
   const [running, setRunning] = useState(false);
   const [publishing, setPublishing] = useState(false);
@@ -50,7 +52,12 @@ export function LibraryUpload({ enabled, collections, onDone }: { enabled: boole
           const r = await stageLibraryImageRequest(row.file, { ...meta, ...row.over });
           if (r.existed) patch(row.id, { state: 'dup', message: 'Ya estaba en la biblioteca' });
           else if (rowsRef.current.some((o) => o.id !== row.id && o.staged?.hash === r.staged.hash)) patch(row.id, { state: 'dup', message: 'Repetida en este lote (mismo contenido)' });
-          else patch(row.id, { state: 'ready', staged: r.staged, message: `${r.staged.width}×${r.staged.height} · ${Math.round(r.staged.bytes / 1024)} KB · preparada` });
+          else {
+            // Imágenes MUY PARECIDAS (huella perceptual): ya registradas (las da el servidor) o de este mismo lote. Solo se avisa: decide el superadmin.
+            const inLot = r.staged.phash ? rowsRef.current.find((o) => o.id !== row.id && o.staged?.phash && hammingHex(o.staged.phash, r.staged.phash!) <= NEAR_DUPLICATE_DISTANCE) : undefined;
+            const similar = r.near[0] ? `se parece a «${r.near[0].title || 'otra imagen'}» de la biblioteca` : inLot ? `se parece a ${inLot.file.name} de este lote` : undefined;
+            patch(row.id, { state: 'ready', staged: r.staged, similar, message: `${r.staged.width}×${r.staged.height} · ${Math.round(r.staged.bytes / 1024)} KB · preparada${similar ? ` · ⚠ ${similar}` : ''}` });
+          }
           break;
         } catch (e) {
           const limited = e instanceof ApiError && (e.status === 429 || e.code === 'rate_limited');
@@ -103,7 +110,10 @@ export function LibraryUpload({ enabled, collections, onDone }: { enabled: boole
       const rel = (file as File & { webkitRelativePath?: string }).webkitRelativePath ?? '';
       const parts = rel.split('/');
       const m = byPath.get(parts.slice(-2).join('/')) ?? byName.get(file.name);
-      const over: Partial<UploadMeta> | undefined = m ? { collection: m.coleccion, title: m.titulo, credit: creditOf(m), kind: m.tipo, tags: meta.tags } : undefined;
+      // Columnas nuevas del manifiesto (opcionales): roles, categoría y etiquetas; sin ellas, rol según el tipo y categoría = colección.
+      const over: Partial<UploadMeta> | undefined = m
+        ? { collection: m.coleccion, title: m.titulo, credit: creditOf(m), kind: m.tipo, tags: [meta.tags, ...(m.etiquetas ?? [])].filter(Boolean).join(', '), roles: m.roles ?? defaultRolesForKind(m.tipo), category: m.categoria ?? '' }
+        : undefined;
       return { id: ++seq.current, file, url: URL.createObjectURL(file), state: 'wait', over };
     });
     update((all) => [...all, ...batch]);
@@ -129,7 +139,7 @@ export function LibraryUpload({ enabled, collections, onDone }: { enabled: boole
 
   return (
     <div className="space-y-3" data-testid="library-upload">
-      <div className="grid gap-3 md:grid-cols-4">
+      <div className="grid gap-3 md:grid-cols-4" data-testid="library-upload-meta">
         <label className="text-sm font-semibold">Colección
           <input list="library-collections" aria-label="Colección de la subida" maxLength={60} value={meta.collection} onChange={(e) => setMeta({ ...meta, collection: e.target.value })} placeholder="Halloween, Chocolates, Paisajes…" className={`${input} mt-1`} />
           <datalist id="library-collections">{collections.map((c) => <option key={c} value={c} />)}</datalist>
@@ -141,10 +151,17 @@ export function LibraryUpload({ enabled, collections, onDone }: { enabled: boole
           <input aria-label="Crédito de la subida" maxLength={200} value={meta.credit} onChange={(e) => setMeta({ ...meta, credit: e.target.value })} placeholder="Autoría o fuente" className={`${input} mt-1`} />
         </label>
         <label className="text-sm font-semibold">Tipo de imagen
-          <select aria-label="Tipo de imagen" value={meta.kind} onChange={(e) => setMeta({ ...meta, kind: e.target.value as UploadMeta['kind'] })} className={`${input} mt-1`}>
+          <select aria-label="Tipo de imagen" value={meta.kind} onChange={(e) => { const kind = e.target.value as UploadMeta['kind']; setMeta({ ...meta, kind, roles: defaultRolesForKind(kind) }); }} className={`${input} mt-1`}>
             <option value="item">Objeto o producto (768 px, ligera)</option>
             <option value="scene">Escena o paisaje (1536×1024)</option>
           </select>
+        </label>
+        <div className="md:col-span-2">
+          <RoleChecks value={meta.roles ?? []} onChange={(roles: LibraryRole[]) => setMeta({ ...meta, roles })} label="Para qué sirven (rol; se puede cambiar luego)" />
+        </div>
+        <label className="text-sm font-semibold md:col-span-2">Categoría / temática (opcional; por defecto, la colección)
+          <input list="library-categories-upload" aria-label="Categoría de la subida" maxLength={60} value={meta.category ?? ''} onChange={(e) => setMeta({ ...meta, category: e.target.value })} placeholder="Halloween, Paisajes…" className={`${input} mt-1`} />
+          <datalist id="library-categories-upload">{LIBRARY_CATEGORIES.map((c) => <option key={c.name} value={c.name} />)}</datalist>
         </label>
       </div>
 
@@ -203,6 +220,7 @@ export function LibraryUpload({ enabled, collections, onDone }: { enabled: boole
                   <span className={`absolute left-1 top-1 grid size-6 place-items-center rounded-full bg-night-950/85 text-xs font-bold ${tone}`} aria-hidden>{r.state === 'ok' ? '✔' : r.state === 'dup' ? '＝' : r.state === 'ready' ? '◔' : r.state === 'error' ? '✖' : r.state === 'sending' ? '…' : ''}</span>
                   <span className="block truncate px-1.5 pt-1 text-[11px] font-semibold">{r.file.name}</span>
                   <span className={`block truncate px-1.5 pb-1 text-[10px] ${r.state === 'error' ? 'text-rose' : 'text-white/60'}`}>{r.state === 'wait' ? 'pendiente' : r.state === 'sending' ? (r.message ?? 'preparando…') : r.message}</span>
+                  {r.similar ? <span className="block px-1.5 pb-1 text-[10px] font-bold text-gold-soft" data-testid="library-similar-warning">⚠ Parecida: revísala antes de publicar</span> : null}
                 </li>
               );
             })}

@@ -4,13 +4,16 @@ import { requireSuperadmin } from '@/lib/auth/host';
 import { DomainError } from '@/lib/domain/errors';
 import { getContext } from '@/lib/services/context';
 import {
-  addLibraryItems, deleteLibraryImages, deleteLibraryItems, libraryUploadsEnabled, listLibraryDuplicates, listLibraryImages, listLibraryItems, updateLibraryImages, updateLibraryItem, updateLibraryItems,
+  addLibraryItems, backfillLibraryPhashes, deleteLibraryImages, libraryCoverage, listSimilarImages, deleteLibraryItems, libraryUploadsEnabled, listLibraryDuplicates, listLibraryImages, listLibraryItems, updateLibraryImages, updateLibraryItem, updateLibraryItems,
 } from '@/lib/services/library-service';
 
 const query = z.object({ q: z.string().max(80).optional(), collection: z.string().max(60).nullish(), limit: z.number().int().min(1).max(500).optional(), offset: z.number().int().min(0).optional() });
 
 const opSchema = z.discriminatedUnion('op', [
-  z.object({ op: z.literal('images.list'), noCredit: z.boolean().optional(), unreviewed: z.boolean().optional() }).extend(query.shape),
+  z.object({ op: z.literal('images.list'), noCredit: z.boolean().optional(), unreviewed: z.boolean().optional(), category: z.string().max(60).nullish(), role: z.enum(['start', 'product', 'none']).nullish() }).extend(query.shape),
+  z.object({ op: z.literal('images.similar') }),
+  z.object({ op: z.literal('images.backfill_hashes') }),
+  z.object({ op: z.literal('coverage') }),
   z.object({ op: z.literal('images.duplicates') }),
   z.object({ op: z.literal('images.update'), ids: z.unknown(), patch: z.unknown() }),
   z.object({ op: z.literal('images.delete'), ids: z.unknown() }),
@@ -33,6 +36,9 @@ export const POST = handle(async (req: Request) => {
   const b = body.data;
   switch (b.op) {
     case 'images.list': return json({ ...(await listLibraryImages(ctx, b)), uploadsEnabled: libraryUploadsEnabled() });
+    case 'images.similar': return json({ pairs: await listSimilarImages(ctx) });
+    case 'images.backfill_hashes': return json(await backfillLibraryPhashes(ctx));
+    case 'coverage': return json(await libraryCoverage(ctx));
     case 'images.duplicates': return json({ groups: await listLibraryDuplicates(ctx) });
     case 'images.update': return json(await updateLibraryImages(ctx, actor, b));
     case 'images.delete': return json(await deleteLibraryImages(ctx, actor, b.ids));

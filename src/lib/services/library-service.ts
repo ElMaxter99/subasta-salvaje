@@ -5,6 +5,10 @@ import { githubAssetsConfig } from '@/lib/config/env';
 import { DomainError } from '@/lib/domain/errors';
 import { slugify } from '@/lib/domain/template-assets';
 import { normalizeImage, NormalizeError } from '@/lib/images/normalize';
+import { perceptualHash } from '@/lib/library/phash';
+import { buildCoverage, type CoverageRaw, type CoverageReport } from '@/lib/library/coverage';
+import { defaultRolesForKind, isLibraryRole, NEAR_DUPLICATE_DISTANCE, parseRoles, type LibraryRole } from '@/lib/library/taxonomy';
+import { fetchImageBytes } from '@/lib/security/safe-fetch';
 import { AssetUploadError, createGithubAssets, type GithubBatchAssets } from '@/lib/storage/github-assets';
 import type { AppContext } from './context';
 import { effectiveQuota, getSettings } from './settings';
@@ -29,9 +33,18 @@ export interface LibraryImage {
   height: number | null;
   bytes: number | null;
   created_at: string;
-  /** Moderación: el superadmin ya la ha mirado. */
+  /** Moderación: el superadmin ya la ha mirado. Solo las revisadas se ofrecen a los anfitriones en el selector. */
   reviewed: boolean;
+  /** Para qué sirve (puede ser más de una cosa; vacío = sin rol, no se ofrece a los anfitriones). */
+  roles: LibraryRole[];
+  /** Temática (Halloween, Paisajes…); distinta de `collection`, que es la carpeta física en el repositorio de fotos. */
+  category: string;
+  /** ¿Tiene huella perceptual (detección de imágenes parecidas)? Las anteriores a la versión de etiquetas no. */
+  has_phash?: boolean;
 }
+
+/** Imagen tal y como la ve un anfitrión en el selector: sin ruta interna, huella ni datos de gestión. */
+export interface LibraryPickImage { id: string; url: string; title: string; collection: string; category: string; tags: string[]; roles: LibraryRole[]; credit: string; width: number | null; height: number | null }
 
 export interface LibraryItem {
   id: string;
@@ -47,6 +60,8 @@ export interface LibraryItem {
 }
 
 export interface CollectionCount { name: string; count: number }
+/** Imagen ya registrada que se parece a otra (distancia de Hamming de la huella perceptual, 0–64). */
+export type NearImage = LibraryImage & { distance: number };
 
 const defaultAssets = (): GithubBatchAssets | null => {
   const c = githubAssetsConfig();
@@ -72,6 +87,10 @@ export const uploadMetaSchema = z.object({
   credit: textShort(200),
   title: textShort(120),
   kind: z.enum(['item', 'scene']).default('item'),
+  /** Sin indicar: sale del tipo (escena → start, objeto → product). Una lista vacía significa «sin rol». */
+  roles: z.array(z.string()).max(10).optional().transform((r) => (r === undefined ? undefined : parseRoles(r))),
+  /** Sin indicar: la colección. */
+  category: textShort(60),
 });
 
 /** Imagen ya normalizada y preparada en GitHub (blob), pendiente de entrar en el commit del lote. */
@@ -86,6 +105,9 @@ export const stagedSchema = z.object({
   width: z.number().int().positive().max(10_000),
   height: z.number().int().positive().max(10_000),
   bytes: z.number().int().positive().max(5_000_000),
+  roles: z.array(z.string()).max(10).optional().transform((r) => (r === undefined ? undefined : parseRoles(r))),
+  category: z.string().trim().max(60).optional(),
+  phash: z.string().regex(/^[0-9a-f]{16}$/).optional(),
 });
 export type StagedImage = z.infer<typeof stagedSchema>;
 
@@ -97,7 +119,7 @@ export async function stageLibraryImage(
   ctx: Ctx,
   input: { name: string; bytes: Uint8Array } & Partial<z.input<typeof uploadMetaSchema>>,
   assets: GithubBatchAssets | null = defaultAssets(),
-): Promise<{ existed: true; image: LibraryImage } | { existed: false; staged: StagedImage }> {
+): Promise<{ existed: true; image: LibraryImage } | { existed: false; staged: StagedImage; near: NearImage[] }> {
   if (!assets) throw new DomainError('invalid_input', 'La subida de imágenes no está configurada (GITHUB_ASSETS_REPO y GITHUB_ASSETS_TOKEN).');
   const meta = uploadMetaSchema.parse(input);
   let n;
@@ -110,6 +132,9 @@ export async function stageLibraryImage(
   const hash = createHash('sha256').update(n.bytes).digest('hex').slice(0, 16);
   const already = await ctx.db.rpc<LibraryImage | null>('ss_admin_library_image_by_hash', { hash });
   if (already) return { existed: true, image: already };
+  // Huella perceptual: avisa de imágenes MUY PARECIDAS ya registradas (no bloquea: el superadmin decide).
+  const phash = await perceptualHash(n.bytes).catch(() => undefined);
+  const near = phash ? await ctx.db.rpc<NearImage[]>('ss_admin_library_image_near', { phash, max_distance: NEAR_DUPLICATE_DISTANCE }) : [];
   const title = meta.title || titleFromFilename(input.name);
   const folder = slugify(meta.collection) || 'general';
   const label = slugify(title).slice(0, 40) || 'imagen';
@@ -120,7 +145,12 @@ export async function stageLibraryImage(
     if (e instanceof AssetUploadError) throw new DomainError('invalid_input', e.message, e.kind === 'rate' ? 429 : 502);
     throw e;
   }
-  return { existed: false, staged: { path: `biblioteca/${folder}/${label}-${hash}.webp`, blobSha, hash, title, collection: meta.collection, tags: meta.tags, credit: meta.credit, width: n.width, height: n.height, bytes: n.bytes.length } };
+  const roles = meta.roles ?? defaultRolesForKind(meta.kind);
+  const staged: StagedImage = {
+    path: `biblioteca/${folder}/${label}-${hash}.webp`, blobSha, hash, title, collection: meta.collection, tags: meta.tags, credit: meta.credit,
+    width: n.width, height: n.height, bytes: n.bytes.length, roles, category: meta.category || meta.collection, ...(phash ? { phash } : {}),
+  };
+  return { existed: false, staged, near };
 }
 
 /**
@@ -150,6 +180,7 @@ export async function commitLibraryImages(
     const r = await ctx.db.rpc<{ existed: boolean; image: LibraryImage }>('ss_admin_library_image_add', {
       actor, hash: s.hash, path: s.path, url: commit.files[i]!.url, sha: commit.sha, title: s.title, collection: s.collection, tags: s.tags, credit: s.credit,
       width: s.width, height: s.height, bytes: s.bytes,
+      ...(s.roles ? { roles: s.roles } : {}), ...(s.category !== undefined ? { category: s.category } : {}), ...(s.phash ? { phash: s.phash } : {}),
     });
     if (r.existed) existed++;
     images.push(r.image);
@@ -159,13 +190,50 @@ export async function commitLibraryImages(
 
 /* ---------- Imágenes ---------- */
 
-export interface ImageQuery { q?: string; collection?: string | null; limit?: number; offset?: number; noCredit?: boolean; unreviewed?: boolean }
+/** `role`: 'start' | 'product' | 'none' (sin rol). `category`: coincidencia exacta sin distinguir mayúsculas. */
+export interface ImageQuery { q?: string; collection?: string | null; category?: string | null; role?: LibraryRole | 'none' | null; limit?: number; offset?: number; noCredit?: boolean; unreviewed?: boolean }
+export interface ImageListResult {
+  total: number; images: LibraryImage[]; collections: CollectionCount[]; categories: CollectionCount[];
+  counts: { no_credit: number; unreviewed: number; start: number; product: number; none: number };
+}
 
-export async function listLibraryImages(ctx: Ctx, query: ImageQuery = {}): Promise<{ total: number; images: LibraryImage[]; collections: CollectionCount[]; counts: { no_credit: number; unreviewed: number } }> {
+export async function listLibraryImages(ctx: Ctx, query: ImageQuery = {}): Promise<ImageListResult> {
   return ctx.db.rpc('ss_admin_library_image_list', {
-    q: query.q ?? '', collection: query.collection ?? null, limit: query.limit ?? 60, offset: query.offset ?? 0,
-    no_credit: Boolean(query.noCredit), unreviewed: Boolean(query.unreviewed),
+    q: query.q ?? '', collection: query.collection ?? null, category: query.category ?? null, role: query.role ?? null,
+    limit: query.limit ?? 60, offset: query.offset ?? 0, no_credit: Boolean(query.noCredit), unreviewed: Boolean(query.unreviewed),
   });
+}
+
+/** Pares de imágenes registradas que se parecen por su CONTENIDO (huella perceptual), de menor a mayor distancia. */
+export async function listSimilarImages(ctx: Ctx, maxDistance: number = NEAR_DUPLICATE_DISTANCE): Promise<{ distance: number; a: LibraryImage; b: LibraryImage }[]> {
+  return ctx.db.rpc('ss_admin_library_similar', { max_distance: maxDistance, limit: 100 });
+}
+
+/** Cobertura: cuántas imágenes (todas y publicadas) hay por rol y categoría frente al objetivo de LIBRARY_CATEGORIES. */
+export async function libraryCoverage(ctx: Ctx): Promise<CoverageReport> {
+  return buildCoverage(await ctx.db.rpc<CoverageRaw>('ss_admin_library_coverage', {}));
+}
+
+/**
+ * Calcula la huella de las imágenes anteriores que no la tienen (descarga cada una desde su enlace con las defensas SSRF habituales).
+ * Procesa un lote pequeño por llamada; repetir hasta que `remaining` sea 0. Un fallo en una imagen no detiene las demás.
+ */
+export async function backfillLibraryPhashes(
+  ctx: Ctx,
+  limit = 20,
+  download: (url: string) => Promise<Uint8Array> = (u) => fetchImageBytes(u),
+): Promise<{ done: number; failed: number; remaining: number }> {
+  const todo = await ctx.db.rpc<{ remaining: number; images: { id: string; url: string }[] }>('ss_admin_library_phash_missing', { limit: Math.min(Math.max(limit, 1), 50) });
+  let done = 0, failed = 0;
+  for (const img of todo.images) {
+    try {
+      await ctx.db.rpc('ss_admin_library_phash_set', { id: img.id, phash: await perceptualHash(await download(img.url)) });
+      done++;
+    } catch {
+      failed++;
+    }
+  }
+  return { done, failed, remaining: Math.max(todo.remaining - done, 0) };
 }
 
 export interface DuplicateGroup { collection: string; title: string; images: LibraryImage[] }
@@ -176,7 +244,13 @@ export async function listLibraryDuplicates(ctx: Ctx): Promise<DuplicateGroup[]>
 }
 
 const idsSchema = z.array(z.string().uuid()).min(1).max(500);
-const imagePatchSchema = z.object({ title: z.string().trim().max(120), collection: z.string().trim().max(60), tags: z.array(z.string().trim().max(30)).max(20), credit: z.string().trim().max(200), reviewed: z.boolean() }).partial();
+const rolesSchema = z.array(z.string().refine(isLibraryRole, 'Rol no válido')).max(10);
+const tagList = z.array(z.string().trim().max(30)).max(20);
+/** Parche de imágenes (individual o en bloque). `roles`/`tags` REEMPLAZAN; `*_add`/`*_remove` ajustan sin pisar lo demás. */
+const imagePatchSchema = z.object({
+  title: z.string().trim().max(120), collection: z.string().trim().max(60), category: z.string().trim().max(60), credit: z.string().trim().max(200), reviewed: z.boolean(),
+  tags: tagList, tags_add: tagList, tags_remove: tagList, roles: rolesSchema, roles_add: rolesSchema, roles_remove: rolesSchema,
+}).partial();
 
 export async function updateLibraryImages(ctx: Ctx, actor: string, raw: { ids: unknown; patch: unknown }): Promise<{ updated: number }> {
   const ids = idsSchema.safeParse(raw.ids);

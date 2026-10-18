@@ -13,6 +13,7 @@ import { Logo } from '@/components/ui/logo';
 import { createGameRequest, importPhotosRequest, saveTemplateRequest } from '@/lib/client/api';
 import { CatalogEditor, validateCatalog } from './catalog-editor';
 import { LibraryPicker } from './library-picker';
+import { HostLibraryPicker } from '@/components/host/library-image-picker';
 import { LibraryImagePicker } from '@/components/admin/library-image-picker';
 import { TEMPLATE_LIMITS } from '@/lib/domain/template';
 import { TemplateImport, type LoadedCatalog, type LoadedTemplate } from './template-import';
@@ -97,6 +98,8 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
   // Sin jugadores de partida: se pueden crear luego en el panel o, en modo móviles, darse de alta ellos mismos.
   const [players, setPlayers] = useState<string[]>(init?.players ?? []);
   const [initialImageUrl, setInitialImageUrl] = useState<string | null>(init?.initialImageUrl ?? null);
+  const [housePicker, setHousePicker] = useState(false);
+  const [houseTitle, setHouseTitle] = useState('');
   const [systemSlug, setSystemSlug] = useState<string | null>(null); // partida del sistema de la que sale (solo estadísticas)
   const [maxPlayersText, setMaxPlayersText] = useState(String(MAX_PLAYERS));
   const maxPlayers = maxPlayersText.trim() === '' ? MAX_PLAYERS : Number(maxPlayersText);
@@ -478,6 +481,24 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
                   desc={aiAvailable ? `La IA (${providerLabel(aiProvider)}) genera la casa inicial y la va editando con cada compra. Tiene límites de generaciones por partida y por día.` : 'No disponible: este despliegue no tiene un proveedor de IA configurado (IMAGE_PROVIDER). Usa el modo pegatinas.'}
                 />
               </fieldset>
+              {systemEditor ? null : (
+                <fieldset className={card} data-testid="wizard-house">
+                  <legend className="px-2 font-display text-xl 2xl:text-3xl">Casa inicial (opcional)</legend>
+                  <p className="text-sm text-white/70 2xl:text-lg">Puedes elegir ya una foto de la biblioteca como casa inicial de todos los jugadores. Si no, la pondrás luego desde el panel (subiéndola, de la galería o generándola).</p>
+                  {initialImageUrl ? (
+                    <div className="flex items-center gap-3 rounded-2xl bg-night-900 p-2" data-testid="wizard-house-chosen">
+                      {/* eslint-disable-next-line @next/next/no-img-element -- alojada en el CDN del propietario o vista local */}
+                      <img src={initialImageUrl} alt="" referrerPolicy="no-referrer" className="aspect-[3/2] w-28 rounded-xl object-cover" />
+                      <span className="min-w-0 flex-1 truncate text-sm font-bold">{houseTitle || 'Casa inicial elegida'}</span>
+                      <Button type="button" variant="ghost" size="sm" onClick={() => { setInitialImageUrl(null); setHouseTitle(''); }} aria-label="Quitar la casa inicial elegida"><X className="size-4" aria-hidden /></Button>
+                    </div>
+                  ) : null}
+                  <div>
+                    <Button type="button" variant="secondary" onClick={() => setHousePicker(true)} data-testid="wizard-house-from-library">Elegir de la biblioteca</Button>
+                  </div>
+                  <HostLibraryPicker open={housePicker} role="start" title="Elegir la casa inicial de la biblioteca" onClose={() => setHousePicker(false)} onPick={(img) => { setInitialImageUrl(img.url); setHouseTitle(img.title); setHousePicker(false); }} />
+                </fieldset>
+              )}
             </>
           ) : null}
 
@@ -602,7 +623,10 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
                 <p className="font-bold">{playMode === 'host' ? 'Pujas del anfitrión' : 'Cada jugador desde su móvil'}</p>
               ))}
               {summaryRow('Las casas', 1, (
-                <p className="font-bold">{imageMode === 'stickers' ? '🎨 Pegatinas con emojis (sin IA)' : '✨ Con inteligencia artificial'}</p>
+                <>
+                  <p className="font-bold">{imageMode === 'stickers' ? '🎨 Pegatinas con emojis (sin IA)' : '✨ Con inteligencia artificial'}</p>
+                  {!systemEditor && initialImageUrl ? <p className="text-white/70">Casa inicial: {houseTitle || 'elegida'}</p> : null}
+                </>
               ))}
               {summaryRow('Partida', 2, (
                 <>

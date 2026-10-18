@@ -1,19 +1,21 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { ImagePlus, Images, Sparkles, Upload, X } from 'lucide-react';
+import { ImagePlus, Images, Library, Sparkles, Upload, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useToast } from '@/components/ui/toast';
 import { uploadInitialImage } from '@/lib/client/api';
+import { applyLibraryImageRequest, type LibraryPickImage } from '@/lib/client/library-pick-api';
 import { INITIAL_CATALOG } from '@/lib/domain/initial-catalog';
 import { Card } from './bits';
+import { HostLibraryPicker } from './library-image-picker';
 import type { HostCtx } from './host-context';
 
 const MAX_BYTES = 25 * 1024 * 1024; // el original puede ser grande: se reduce en el navegador antes de subirlo
 const TYPES = ['image/png', 'image/jpeg', 'image/webp'];
 
-type Pending = { kind: 'file'; file: File } | { kind: 'catalog'; id: string } | { kind: 'generate' } | null;
+type Pending = { kind: 'file'; file: File } | { kind: 'catalog'; id: string } | { kind: 'library'; image: LibraryPickImage } | { kind: 'generate' } | null;
 
 /**
  * Imagen de partida común: subir una propia, elegir de la galería o GENERARLA (IA o pegatinas según el modo),
@@ -24,6 +26,7 @@ export function InitialImageCard({ ctx }: { ctx: HostCtx }) {
   const toast = useToast();
   const fileRef = useRef<HTMLInputElement>(null);
   const [pending, setPending] = useState<Pending>(null);
+  const [picking, setPicking] = useState(false);
   const [forCurrent, setForCurrent] = useState(true);
   const [forNew, setForNew] = useState(true);
   const n = snapshot.players.length;
@@ -49,6 +52,8 @@ export function InitialImageCard({ ctx }: { ctx: HostCtx }) {
       ? `la imagen «${pending.file.name}»`
       : pending?.kind === 'catalog'
         ? `«${INITIAL_CATALOG.find((e) => e.id === pending.id)?.label ?? ''}»`
+        : pending?.kind === 'library'
+          ? `la foto «${pending.image.title || 'de la biblioteca'}» de la biblioteca (no es IA)`
         : aiMode
           ? 'UNA imagen generada con IA, la misma para todos'
           : 'UNA escena vacía generada (pegatinas), la misma para todos';
@@ -58,6 +63,7 @@ export function InitialImageCard({ ctx }: { ctx: HostCtx }) {
     const scope = { current: forCurrent, new: forNew };
     if (pending?.kind === 'file') await exec('initial-all-upload', () => uploadInitialImage(roomCode, 'all', pending.file, scope), 'Imagen de partida aplicada');
     else if (pending?.kind === 'catalog') await run('initial-all-catalog', { type: 'image.set_initial_all', catalog_id: pending.id, scope_current: scope.current, scope_new: scope.new }, 'Imagen de partida aplicada');
+    else if (pending?.kind === 'library') await exec('initial-all-library', () => applyLibraryImageRequest(roomCode, { target: 'initial', image_id: pending.image.id, scope_current: scope.current, scope_new: scope.new }), 'Imagen de partida aplicada');
     else if (pending?.kind === 'generate') await run('initial-all-generate', { type: 'image.generate_initial_all', scope_current: scope.current, scope_new: scope.new }, 'Generando la imagen base compartida…');
     setPending(null);
   }
@@ -102,6 +108,9 @@ export function InitialImageCard({ ctx }: { ctx: HostCtx }) {
 
       <input ref={fileRef} id="initial-all-file" type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" aria-label="Imagen inicial común" tabIndex={-1} onChange={(e) => onFile(e.target.files?.[0])} />
       <div className="grid gap-2 sm:grid-cols-2">
+        <Button size="lg" variant="secondary" disabled={disabled} loading={busy === 'initial-all-library'} onClick={() => setPicking(true)} data-testid="initial-from-library" className="sm:col-span-2">
+          <Library className="size-5" aria-hidden /> Elegir de la biblioteca (foto de inicio de partida)
+        </Button>
         <Button size="lg" variant="primary" disabled={disabled} loading={busy === 'initial-all-upload'} onClick={() => fileRef.current?.click()}>
           <Upload className="size-5" aria-hidden /> Subir una foto para todos
         </Button>
@@ -136,11 +145,13 @@ export function InitialImageCard({ ctx }: { ctx: HostCtx }) {
       </ul>
       <p className="mt-2 text-xs text-white/50">Las de la galería son ilustraciones incluidas en la app (no generadas por IA). Con IA real, para editarlas sube una imagen PNG/JPG.</p>
 
+      <HostLibraryPicker open={picking} role="start" title="Elegir la casa inicial de la biblioteca" onClose={() => setPicking(false)} onPick={(image) => { setPicking(false); setPending({ kind: 'library', image }); }} />
+
       <ConfirmDialog
         open={pending !== null}
         title="¿Aplicar esta imagen de partida?"
         confirmLabel="Sí, aplicar"
-        loading={busy === 'initial-all-upload' || busy === 'initial-all-catalog' || busy === 'initial-all-generate'}
+        loading={busy === 'initial-all-upload' || busy === 'initial-all-catalog' || busy === 'initial-all-generate' || busy === 'initial-all-library'}
         onCancel={() => setPending(null)}
         onConfirm={apply}
       >

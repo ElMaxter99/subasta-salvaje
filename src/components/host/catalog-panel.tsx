@@ -1,15 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowDown, ArrowUp, ImageOff, Pencil, Plus, Sparkles, Trash2, Upload } from 'lucide-react';
+import { ArrowDown, ArrowUp, ImageOff, Library, Pencil, Plus, Sparkles, Trash2, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import type { AuctionItem } from '@/lib/domain/types';
 import { useToast } from '@/components/ui/toast';
 import { uploadItemImage } from '@/lib/client/api';
+import { applyLibraryImageRequest } from '@/lib/client/library-pick-api';
 import { EmojiInput } from '@/components/ui/emoji-input';
 import { Card, Notice, Pill, Thumb, inputCls } from './bits';
 import type { HostCtx } from './host-context';
+import { HostLibraryPicker } from './library-image-picker';
 
 const STATUS = { available: ['Disponible', 'teal'], in_auction: ['En subasta', 'gold'], sold: ['Vendido', 'violet'], lost: ['Sin pujas · perdido', 'rose'] } as const;
 
@@ -77,6 +79,7 @@ export function CatalogPanel({ ctx }: { ctx: HostCtx }) {
   const canGenerate = snapshot.game.image_mode === 'stickers' || runtime.aiConfigured;
   const [editing, setEditing] = useState<string | null>(null);
   const [removing, setRemoving] = useState<AuctionItem | null>(null);
+  const [pickingFor, setPickingFor] = useState<AuctionItem | null>(null);
 
   function move(item: AuctionItem, dir: -1 | 1) {
     // Intercambia con el vecino disponible más cercano en esa dirección.
@@ -155,6 +158,9 @@ export function CatalogPanel({ ctx }: { ctx: HostCtx }) {
                   <Button size="md" variant="secondary" disabled={busy !== null} loading={busy === `upitem-${it.id}`} onClick={() => document.getElementById(`item-photo-${it.id}`)?.click()} aria-label={`Subir foto de ${it.name}`}>
                     <Upload className="size-4" aria-hidden /> {it.image_url ? 'Cambiar foto' : 'Subir foto'}
                   </Button>
+                  <Button size="md" variant="secondary" disabled={busy !== null} loading={busy === `libitem-${it.id}`} onClick={() => setPickingFor(it)} aria-label={`Elegir de la biblioteca la foto de ${it.name}`} data-testid={`item-from-library-${it.id}`}>
+                    <Library className="size-4" aria-hidden /> De la biblioteca
+                  </Button>
                   {it.image_url ? (
                     <Button size="md" variant="ghost" disabled={busy !== null} loading={busy === `clearitem-${it.id}`} onClick={() => run(`clearitem-${it.id}`, { type: 'item.clear_image', item_id: it.id }, 'Foto quitada')} aria-label={`Quitar foto de ${it.name}`}>
                       <ImageOff className="size-4" aria-hidden /> Quitar foto
@@ -198,6 +204,18 @@ export function CatalogPanel({ ctx }: { ctx: HostCtx }) {
           <ItemForm ctx={ctx} submitLabel="Añadir al catálogo" busyKey="item-add" onSubmit={async (v) => !!(await run('item-add', { type: 'item.add', ...v }, 'Elemento añadido'))} />
         </Card>
       ) : null}
+
+      <HostLibraryPicker
+        open={pickingFor !== null}
+        role="product"
+        title={`Foto de «${pickingFor?.name ?? ''}» de la biblioteca`}
+        onClose={() => setPickingFor(null)}
+        onPick={(image) => {
+          const it = pickingFor;
+          setPickingFor(null);
+          if (it) void exec(`libitem-${it.id}`, () => applyLibraryImageRequest(roomCode, { target: 'item', image_id: image.id, item_id: it.id }), `Foto de «${it.name}» aplicada desde la biblioteca`);
+        }}
+      />
 
       <ConfirmDialog
         open={!!removing}
