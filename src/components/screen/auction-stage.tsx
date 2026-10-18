@@ -51,6 +51,9 @@ function ActiveAuction({ snap, auction, players, compact }: { snap: PublicSnapsh
               {auction.wild_event === 'blind' ? '🙈 ¡Puja a ciegas! Nadie ve el importe' : '🎲 ¡Doble o mitad! Se sortea al adjudicar'}
             </p>
           ) : null}
+          {auction.random ? (
+            <p className="mt-2 inline-flex items-center gap-3 rounded-2xl bg-night-700 px-5 py-1.5 font-display text-[1.9rem] text-gold-soft" data-testid="random-badge">🎲 Elegido al azar</p>
+          ) : null}
           <p className={`mt-2 line-clamp-2 max-w-[56rem] font-medium text-white/75 ${compact ? 'text-[1.6rem]' : 'text-[2rem]'}`}>{auction.item.description}</p>
         </div>
 

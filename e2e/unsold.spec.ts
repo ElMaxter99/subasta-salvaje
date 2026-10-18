@@ -40,4 +40,5 @@ test('elemento sin pujas: se da por perdido, la TV muestra «¡Nadie lo quiere!�
   await page.getByTestId('announce-random').click();
   await expect.poll(async () => (await state()).auction?.status, { timeout: 30_000 }).toBe('open');
   expect((await state()).auction.item.id).not.toBe(first.id);
+  await expect(tv.getByTestId('random-badge')).toBeVisible({ timeout: 30_000 }); // la TV indica que se eligió al azar
 });

@@ -98,6 +98,9 @@ export function LibraryImageDialog({ image, collections, onClose, onChanged, onC
                   <Button variant="primary" onClick={() => onCreateProduct(image)} data-testid="library-create-product">Crear producto del catálogo</Button>
                   <Button variant="secondary" onClick={() => setMode('associate')} data-testid="library-associate">Asociar a un producto</Button>
                 </div>
+                {!image.credit.trim() ? (
+                  <p role="status" className="rounded-xl bg-gold/10 px-3 py-2 text-sm font-semibold text-gold-soft" data-testid="no-credit-warning">Esta imagen no tiene crédito ni origen. Anota abajo el autor o la fuente (ayuda a retirarla si un titular lo pide).</p>
+                ) : null}
                 <form
                   className="space-y-2"
                   onSubmit={(e) => {

@@ -277,6 +277,26 @@ describe('subasta automática', () => {
     expect(s.items.filter((i) => i.status === 'lost')).toHaveLength(2);
   });
 
+  it('las subastas sorteadas (botón al azar o subasta automática aleatoria) se marcan para que la TV suene y lo indique', async () => {
+    const host = newHost();
+    const room = await lobby(host);
+    await act(ctx, room, host, { type: 'game.start' });
+    const s0 = await getHostState(ctx, room, host);
+    const manual = await act(ctx, room, host, { type: 'auction.announce', item_id: s0.items[0]!.id });
+    expect(manual.snapshot.auction!.random).toBe(false);
+    await act(ctx, room, host, { type: 'auction.cancel', auction_id: manual.snapshot.auction!.id });
+    const drawn = await act(ctx, room, host, { type: 'auction.announce_random' });
+    expect(drawn.snapshot.auction!.random).toBe(true);
+    await act(ctx, room, host, { type: 'auction.cancel', auction_id: drawn.snapshot.auction!.id });
+    // Subasta automática en modo aleatorio
+    const gid = s0.game.id;
+    await act(ctx, room, host, { ...settings(3, 10), random: true });
+    await back(gid, "update games set auto_run_since = now() - interval '10 seconds' where id = $1");
+    await back(gid, "update auctions set closed_at = now() - interval '20 seconds' where game_id = $1");
+    await autoAwardTick(ctx, room);
+    expect((await getHostState(ctx, room, host)).auction!.random).toBe(true);
+  });
+
   it('cancelar a mano: sin pujas el elemento queda perdido; con pujas vuelve al catálogo', async () => {
     const host = newHost();
     const room = await lobby(host);

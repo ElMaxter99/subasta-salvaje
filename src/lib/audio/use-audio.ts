@@ -54,7 +54,7 @@ export function useGameAudio(snap: PublicSnapshot, role: Extract<AudioRole, 'tv'
     const p = prev.current;
     prev.current = cur;
     if (!p) return;
-    if (cur.id && cur.id !== p.id && cur.status === 'open') play('announce');
+    if (cur.id && cur.id !== p.id && cur.status === 'open') play(auction?.random ? 'draw' : 'announce');
     else if (cur.id === p.id && cur.bids > p.bids) play('bid', cur.bids);
     if (role === 'tv' && cur.tick !== null && cur.tick !== p.tick && cur.tick > 0 && cur.tick <= 10) play(cur.tick <= 3 ? 'tickUrgent' : 'tick');
     if (cur.status === 'closed' && p.status !== 'closed') play('closed');

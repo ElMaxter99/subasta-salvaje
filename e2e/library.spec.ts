@@ -93,10 +93,16 @@ test('biblioteca: subida masiva (con repetida y archivo no válido), productos d
     // Pulsar una imagen abre su ventana: se inspecciona y se crea UN producto del catálogo con ella
     await page.getByRole('button', { name: /^Ver Calabaza gigante/ }).click();
     await expect(page.getByTestId('library-image-dialog')).toBeVisible();
+    await expect(page.getByTestId('no-credit-warning')).toBeVisible(); // sin crédito: avisa para anotar el origen
     await page.getByTestId('library-create-product').click();
     await expect(page.getByLabel('Nombre del producto 1')).toHaveValue(/Calabaza gigante/, { timeout: 30_000 });
     await page.getByRole('button', { name: 'Crear productos', exact: true }).click();
     await expect(page.getByText(/1 producto creado/)).toBeVisible({ timeout: 30_000 });
+
+    // Un botón crea productos para TODA la colección filtrada (aquí ya tiene uno creado: se omite al repetirse)
+    await page.getByTestId('library-collection-to-items').click();
+    await expect(page.getByLabel('Nombre del producto 3')).toBeVisible({ timeout: 30_000 });
+    await page.getByRole('dialog', { name: /Crear 3 productos/ }).getByRole('button', { name: 'Cancelar' }).click();
 
     // Selección múltiple → crear productos (el nombre sale del título; el repetido se omite)
     await page.getByRole('button', { name: 'Seleccionar todo lo visible' }).click();

@@ -93,6 +93,8 @@ export interface Auction {
   wild_note?: { outcome: 'half' | 'double'; bid_cents: number; charged_cents: number } | null;
   /** Puja a ciegas en curso: importe, líder y pujas se ocultan en las vistas públicas. */
   hidden?: boolean;
+  /** Elemento elegido al azar (botón «Anunciar uno al azar» o subasta automática aleatoria). */
+  random?: boolean;
   bids_count?: number;
   item: Pick<AuctionItem, 'id' | 'name' | 'description' | 'emoji' | 'image_path' | 'image_url'>;
   bids: Bid[];

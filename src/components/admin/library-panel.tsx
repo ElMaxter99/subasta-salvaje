@@ -73,6 +73,14 @@ export function LibraryPanel({ uploadsEnabled }: { uploadsEnabled: boolean }) {
               <div className="flex gap-2">
                 <Button variant="ghost" onClick={() => setSelected(new Set(images.map((i) => i.id)))} disabled={images.length === 0}>Seleccionar todo lo visible</Button>
                 <Button variant="ghost" onClick={() => setSelected(new Set())} disabled={selected.size === 0}>Quitar selección</Button>
+                {collection ? (
+                  <Button variant="secondary" disabled={busy || images.length === 0} data-testid="library-collection-to-items" onClick={() => void act(async () => {
+                    const all = await libraryApi.images({ collection, limit: 500, offset: 0 });
+                    if (all.images.length === 0) throw new Error('Esa colección no tiene imágenes.');
+                    setCreating(all.images);
+                    return `${all.images.length} imágenes de «${collection}» listas para crear productos`;
+                  })}>Productos de toda la colección</Button>
+                ) : null}
               </div>
             </div>
 

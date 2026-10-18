@@ -29,6 +29,7 @@ Dos vistas, con pestañas arriba: **Imágenes** (`/admin/biblioteca`, solo fotos
 - **Pulsar una imagen abre una ventana** para inspeccionarla (grande, con medidas, peso y fecha; enlace para abrirla aparte) con estas opciones:
   **Crear producto del catálogo** (nombre, emoji y descripción editables), **Asociar a un producto** (buscador del catálogo; la imagen pasa a ser
   la foto de ese producto), editar título/colección/etiquetas/crédito y **Borrar**.
+- Si una imagen no tiene crédito, la ventana avisa para anotar el autor o la fuente. Con una colección filtrada, **«Productos de toda la colección»** abre el diálogo de creación con todas sus imágenes (hasta 500; los productos repetidos se omiten).
 - Borrar una imagen quita el registro; **el archivo sigue en el repositorio de fotos** (no se borra de GitHub) y los productos que la usaban quedan sin foto.
 
 ### Productos del catálogo
