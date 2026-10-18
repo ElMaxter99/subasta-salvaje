@@ -1,0 +1,112 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Vida universitaria",
+  "tematica": "Universidad",
+  "reglas": {
+    "presupuesto": 25,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Pila de apuntes",
+      "descripcion": "Subrayados en cuatro colores y sin entender nada.",
+      "emoji": "📚",
+      "foto": null
+    },
+    {
+      "titulo": "Café de madrugada",
+      "descripcion": "Mantiene despierto hasta la una y media.",
+      "emoji": "☕",
+      "foto": null
+    },
+    {
+      "titulo": "Birrete de graduación",
+      "descripcion": "Cuatro años de esfuerzo en un solo sombrero.",
+      "emoji": "🎓",
+      "foto": null
+    },
+    {
+      "titulo": "Calculadora científica",
+      "descripcion": "Sabe más matemáticas que su dueño.",
+      "emoji": "🧮",
+      "foto": null
+    },
+    {
+      "titulo": "Portátil con pegatinas",
+      "descripcion": "Batería de diez minutos y cien pestañas abiertas.",
+      "emoji": "💻",
+      "foto": null
+    },
+    {
+      "titulo": "Examen sorpresa",
+      "descripcion": "Aparece sin avisar el día más tonto.",
+      "emoji": "📝",
+      "foto": null
+    },
+    {
+      "titulo": "Aula magna",
+      "descripcion": "Un eco enorme y bancos muy duros.",
+      "emoji": "🏫",
+      "foto": null
+    },
+    {
+      "titulo": "Fideos instantáneos",
+      "descripcion": "La comida oficial de la semana de exámenes.",
+      "emoji": "🍜",
+      "foto": null
+    },
+    {
+      "titulo": "Mochila sin fondo",
+      "descripcion": "Allí dentro vive todo lo que alguna vez perdiste.",
+      "emoji": "🎒",
+      "foto": null
+    },
+    {
+      "titulo": "Biblioteca silenciosa",
+      "descripcion": "Allí se oyen hasta los pensamientos.",
+      "emoji": "📖",
+      "foto": null
+    },
+    {
+      "titulo": "Bicicleta del campus",
+      "descripcion": "La única forma de llegar a tiempo.",
+      "emoji": "🚲",
+      "foto": null
+    },
+    {
+      "titulo": "Cama de residencia",
+      "descripcion": "Pequeña, estrecha y cómoda de milagro.",
+      "emoji": "🛏️",
+      "foto": null
+    },
+    {
+      "titulo": "Pizza de la noche",
+      "descripcion": "Se pide para estudiar y acaba en fiesta.",
+      "emoji": "🍕",
+      "foto": null
+    },
+    {
+      "titulo": "Cerebro saturado",
+      "descripcion": "Funciona solo con descanso y chocolate.",
+      "emoji": "🧠",
+      "foto": null
+    },
+    {
+      "titulo": "Calendario de entregas",
+      "descripcion": "Cada día un plazo y un susto.",
+      "emoji": "📅",
+      "foto": null
+    },
+    {
+      "titulo": "Pupitre con grafitis",
+      "descripcion": "Guarda las frases de todas las generaciones.",
+      "emoji": "🪑",
+      "foto": null
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Salón recreativo retro",
+  "tematica": "Videojuegos",
+  "reglas": {
+    "presupuesto": 25,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Joystick de arcade",
+      "descripcion": "Doce años de partidas dejaron sus huellas.",
+      "emoji": "🕹️",
+      "foto": null
+    },
+    {
+      "titulo": "Marciano pixelado",
+      "descripcion": "Baja lentamente y siempre gana al final.",
+      "emoji": "👾",
+      "foto": null
+    },
+    {
+      "titulo": "Ficha de salón",
+      "descripcion": "Una moneda con poderes: una partida más.",
+      "emoji": "🪙",
+      "foto": null
+    },
+    {
+      "titulo": "Mando de cable corto",
+      "descripcion": "Obliga a jugar con la nariz pegada a la tele.",
+      "emoji": "🎮",
+      "foto": null
+    },
+    {
+      "titulo": "Récord de la máquina",
+      "descripcion": "Tres letras y la gloria de todo el barrio.",
+      "emoji": "🏆",
+      "foto": null
+    },
+    {
+      "titulo": "Disquete de juego",
+      "descripcion": "Cargarlo llevaba diez minutos y un rezo.",
+      "emoji": "💾",
+      "foto": null
+    },
+    {
+      "titulo": "Cartucho soplado",
+      "descripcion": "Funciona siempre después de soplarle dos veces.",
+      "emoji": "📼",
+      "foto": null
+    },
+    {
+      "titulo": "Ladrillos que caen",
+      "descripcion": "Encajan o no, pero siempre aceleran.",
+      "emoji": "🧱",
+      "foto": null
+    },
+    {
+      "titulo": "Frutas de la suerte",
+      "descripcion": "Las tres iguales y suenan campanas.",
+      "emoji": "🍒",
+      "foto": null
+    },
+    {
+      "titulo": "Fantasma de laberinto",
+      "descripcion": "Persigue al comecocos por pasillos de neón.",
+      "emoji": "👻",
+      "foto": null
+    },
+    {
+      "titulo": "Música de ocho bits",
+      "descripcion": "Pitidos que se te quedan en la cabeza toda la semana.",
+      "emoji": "🔊",
+      "foto": null
+    },
+    {
+      "titulo": "Monitor de tubo",
+      "descripcion": "Pesa más que el resto de la casa.",
+      "emoji": "🖥️",
+      "foto": null
+    },
+    {
+      "titulo": "Pilas de repuesto",
+      "descripcion": "Siempre se acaban en la fase final.",
+      "emoji": "🔋",
+      "foto": null
+    },
+    {
+      "titulo": "Nave de la última fase",
+      "descripcion": "Un solo disparo y toda la galaxia a salvo.",
+      "emoji": "🚀",
+      "foto": null
+    },
+    {
+      "titulo": "Código secreto",
+      "descripcion": "Arriba, arriba, abajo, abajo y una sorpresa.",
+      "emoji": "🎯",
+      "foto": null
+    },
+    {
+      "titulo": "Medalla del campeón",
+      "descripcion": "Nadie la ha ganado limpiamente.",
+      "emoji": "🥇",
+      "foto": null
+    }
+  ]
+}

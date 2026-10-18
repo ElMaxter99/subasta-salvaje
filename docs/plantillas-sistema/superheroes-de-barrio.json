@@ -1,0 +1,118 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Superhéroes de barrio",
+  "tematica": "Superhéroes",
+  "reglas": {
+    "presupuesto": 25,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Capa de tela de cortina",
+      "descripcion": "Ondea con orgullo, aunque huela a suavizante.",
+      "emoji": "🦸",
+      "foto": null
+    },
+    {
+      "titulo": "Antifaz misterioso",
+      "descripcion": "Nadie reconoce al vecino del tercero.",
+      "emoji": "🎭",
+      "foto": null
+    },
+    {
+      "titulo": "Puñetazo de cómic",
+      "descripcion": "Con letras enormes y mucho humo.",
+      "emoji": "💥",
+      "foto": null
+    },
+    {
+      "titulo": "Guarida secreta",
+      "descripcion": "Detrás de la estantería del salón.",
+      "emoji": "🦹",
+      "foto": null
+    },
+    {
+      "titulo": "Rayo portátil",
+      "descripcion": "Carga el móvil y también a los villanos.",
+      "emoji": "⚡",
+      "foto": null
+    },
+    {
+      "titulo": "Escudo de tapa de olla",
+      "descripcion": "Resiste salpicaduras y también golpes.",
+      "emoji": "🛡️",
+      "foto": null
+    },
+    {
+      "titulo": "Cohete de cartón",
+      "descripcion": "Vuela hasta el final del pasillo.",
+      "emoji": "🚀",
+      "foto": null
+    },
+    {
+      "titulo": "Lupa de detective",
+      "descripcion": "Descubre quién se comió la última galleta.",
+      "emoji": "🔍",
+      "foto": null
+    },
+    {
+      "titulo": "Telaraña elástica",
+      "descripcion": "Pega tanto que no se puede quitar.",
+      "emoji": "🕸️",
+      "foto": null
+    },
+    {
+      "titulo": "Poción de energía",
+      "descripcion": "Sabe a naranja y da poderes por una hora.",
+      "emoji": "🧪",
+      "foto": null
+    },
+    {
+      "titulo": "Ciudad nocturna",
+      "descripcion": "Tejados perfectos para vigilar.",
+      "emoji": "🏙️",
+      "foto": null
+    },
+    {
+      "titulo": "Radio de emergencias",
+      "descripcion": "Avisa de un gato atrapado en un árbol.",
+      "emoji": "📡",
+      "foto": null
+    },
+    {
+      "titulo": "Señal en el cielo",
+      "descripcion": "Un foco, una silueta y la ciudad a salvo.",
+      "emoji": "🦇",
+      "foto": null
+    },
+    {
+      "titulo": "Guantes de acero",
+      "descripcion": "Abren frascos imposibles.",
+      "emoji": "🧤",
+      "foto": null
+    },
+    {
+      "titulo": "Paracaídas de bolsa",
+      "descripcion": "Aterriza siempre de pie, con suerte.",
+      "emoji": "🪂",
+      "foto": null
+    },
+    {
+      "titulo": "Superfuerza de lunes",
+      "descripcion": "Se activa solo con café doble.",
+      "emoji": "💪",
+      "foto": null
+    },
+    {
+      "titulo": "Rayo arcoíris",
+      "descripcion": "Pinta de colores el día más gris.",
+      "emoji": "🌈",
+      "foto": null
+    }
+  ]
+}

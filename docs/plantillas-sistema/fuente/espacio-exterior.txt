@@ -1,0 +1,24 @@
+# nombre: Misión al espacio
+# descripcion: Cohetes, planetas y estrellas para una excursión por el cosmos.
+# tono: educativo
+# tematica: Espacio
+# presupuesto: 25
+# rondas: 10
+# clasificacion: elementos
+---
+🚀 | Cohete de despegue | Cuenta atrás y mucho humo. | rocket launch
+🌕 | Luna de queso | Una gran roca llena de cráteres. | moon craters
+🪐 | Planeta con anillos | Sus anillos son hielo y polvo, no de oro. | ringed planet saturn
+☄️ | Cometa viajero | Pasa cada setenta y cinco años. | comet
+🛰️ | Satélite artificial | Da vueltas sin parar a la Tierra. | satellite
+👨‍🚀 | Traje de astronauta | Pesa, abriga y no deja rascarse la nariz. | astronaut suit
+🔭 | Telescopio gigante | Observa galaxias a millones de años luz. | big telescope
+🌞 | Sol brillante | Una estrella que calienta todo el sistema. | sun star
+🌍 | Planeta azul | El único donde vivimos hasta ahora. | earth planet
+🛸 | Plato volante | Sale en todas las leyendas y en ningún radar. | flying saucer
+🌌 | Galaxia espiral | Cientos de miles de millones de estrellas. | spiral galaxy
+🧑‍🚀 | Paseo espacial | Flotas atado a la nave y con vistas únicas. | spacewalk
+🔴 | Marte rojizo | Polvo, rocas y mucha curiosidad. | mars red planet
+⭐ | Constelación | Puntos que dibujan osos y escorpiones. | constellation stars
+🚦 | Cuenta atrás | Diez, nueve, ocho... y despegue. | countdown
+🛞 | Rover explorador | Rueda por la superficie y envía fotografías. | space rover

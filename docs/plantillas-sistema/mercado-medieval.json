@@ -1,0 +1,112 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Mercado medieval",
+  "tematica": "Edad Media",
+  "reglas": {
+    "presupuesto": 25,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Escudo de armas",
+      "descripcion": "Cada familia presumía de un símbolo.",
+      "emoji": "🛡️",
+      "foto": null
+    },
+    {
+      "titulo": "Daga de mercader",
+      "descripcion": "Sirve para cortar queso y regatear.",
+      "emoji": "🗡️",
+      "foto": null
+    },
+    {
+      "titulo": "Hogaza de pan",
+      "descripcion": "Dura, oscura y muy sabrosa.",
+      "emoji": "🍞",
+      "foto": null
+    },
+    {
+      "titulo": "Rueda de queso",
+      "descripcion": "Curada durante meses en una cueva.",
+      "emoji": "🧀",
+      "foto": null
+    },
+    {
+      "titulo": "Caballo de torneo",
+      "descripcion": "Con armadura y plumas de colores.",
+      "emoji": "🏇",
+      "foto": null
+    },
+    {
+      "titulo": "Pregón del heraldo",
+      "descripcion": "Anuncia las noticias a gritos.",
+      "emoji": "📜",
+      "foto": null
+    },
+    {
+      "titulo": "Torre de vigilancia",
+      "descripcion": "Desde arriba se ve todo el valle.",
+      "emoji": "🏰",
+      "foto": null
+    },
+    {
+      "titulo": "Jarra de sidra",
+      "descripcion": "Espumosa y servida en barro.",
+      "emoji": "🍺",
+      "foto": null
+    },
+    {
+      "titulo": "Bolsa de monedas",
+      "descripcion": "Tintinean con cada paso.",
+      "emoji": "🪙",
+      "foto": null
+    },
+    {
+      "titulo": "Candil de aceite",
+      "descripcion": "Ilumina la taberna con luz temblorosa.",
+      "emoji": "🕯️",
+      "foto": null
+    },
+    {
+      "titulo": "Telar de tapices",
+      "descripcion": "Cuenta historias de caballeros y dragones.",
+      "emoji": "🧵",
+      "foto": null
+    },
+    {
+      "titulo": "Yunque del herrero",
+      "descripcion": "Chispas y golpes desde el amanecer.",
+      "emoji": "⚒️",
+      "foto": null
+    },
+    {
+      "titulo": "Arco de cazador",
+      "descripcion": "Silba en el aire y acierta en el centro.",
+      "emoji": "🏹",
+      "foto": null
+    },
+    {
+      "titulo": "Estandarte del dragón",
+      "descripcion": "Ondea sobre las murallas.",
+      "emoji": "🐉",
+      "foto": null
+    },
+    {
+      "titulo": "Trompeta de juglar",
+      "descripcion": "Abre la fiesta con un sonido de gala.",
+      "emoji": "🎺",
+      "foto": null
+    },
+    {
+      "titulo": "Pierna de cordero asada",
+      "descripcion": "El plato fuerte del banquete.",
+      "emoji": "🍖",
+      "foto": null
+    }
+  ]
+}

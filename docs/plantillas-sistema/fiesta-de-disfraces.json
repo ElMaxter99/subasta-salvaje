@@ -1,0 +1,118 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Fiesta de disfraces",
+  "tematica": "Fiesta",
+  "reglas": {
+    "presupuesto": 30,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Parche de pirata",
+      "descripcion": "Una gran aventura con un solo ojo.",
+      "emoji": "🏴‍☠️",
+      "foto": null
+    },
+    {
+      "titulo": "Colmillos de vampiro",
+      "descripcion": "Se caen al primer bocado de canapé.",
+      "emoji": "🧛",
+      "foto": null
+    },
+    {
+      "titulo": "Gafas con nariz",
+      "descripcion": "El clásico inmortal de las fiestas.",
+      "emoji": "🥸",
+      "foto": null
+    },
+    {
+      "titulo": "Disfraz de unicornio",
+      "descripcion": "Cremallera trasera y cuerno de peluche.",
+      "emoji": "🦄",
+      "foto": null
+    },
+    {
+      "titulo": "Sombrero de mago",
+      "descripcion": "Pico torcido y estrellas doradas.",
+      "emoji": "🧙",
+      "foto": null
+    },
+    {
+      "titulo": "Traje de robot",
+      "descripcion": "Hecho con cajas, papel de aluminio y paciencia.",
+      "emoji": "🤖",
+      "foto": null
+    },
+    {
+      "titulo": "Corona de rey",
+      "descripcion": "Gobierna el baile con puño de hierro.",
+      "emoji": "👑",
+      "foto": null
+    },
+    {
+      "titulo": "Traje inflable de dinosaurio",
+      "descripcion": "Nadie puede sentarse ni pasar por las puertas.",
+      "emoji": "🦖",
+      "foto": null
+    },
+    {
+      "titulo": "Chistera de ilusionista",
+      "descripcion": "Del interior sale de todo menos un conejo.",
+      "emoji": "🎩",
+      "foto": null
+    },
+    {
+      "titulo": "Varita de hada",
+      "descripcion": "Brilla y concede deseos pequeños.",
+      "emoji": "🪄",
+      "foto": null
+    },
+    {
+      "titulo": "Sábana fantasma",
+      "descripcion": "Dos agujeros y mucho misterio.",
+      "emoji": "👻",
+      "foto": null
+    },
+    {
+      "titulo": "Peluca de los setenta",
+      "descripcion": "Rizos, patillas y pantalones de campana.",
+      "emoji": "🕺",
+      "foto": null
+    },
+    {
+      "titulo": "Vestido de lentejuelas",
+      "descripcion": "Brilla más que la bola de discoteca.",
+      "emoji": "💃",
+      "foto": null
+    },
+    {
+      "titulo": "Sombrero de vaquero",
+      "descripcion": "Desenfunda un chiste mejor que un revólver.",
+      "emoji": "🤠",
+      "foto": null
+    },
+    {
+      "titulo": "Capucha de ninja",
+      "descripcion": "Aparece, desaparece y se come los canapés.",
+      "emoji": "🥷",
+      "foto": null
+    },
+    {
+      "titulo": "Antifaz de baile",
+      "descripcion": "Cubre la cara y regala misterio.",
+      "emoji": "🎭",
+      "foto": null
+    },
+    {
+      "titulo": "Abanico de plumas",
+      "descripcion": "Abanica, señala y sentencia.",
+      "emoji": "🪭",
+      "foto": null
+    }
+  ]
+}

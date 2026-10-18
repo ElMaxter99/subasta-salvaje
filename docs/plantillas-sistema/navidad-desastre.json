@@ -1,0 +1,118 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Navidad desastre",
+  "tematica": "Navidad",
+  "reglas": {
+    "presupuesto": 25,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Árbol torcido",
+      "descripcion": "Se inclina cada año un poco más.",
+      "emoji": "🎄",
+      "foto": null
+    },
+    {
+      "titulo": "Guirnalda enredada",
+      "descripcion": "Tres horas para descubrir que no funciona.",
+      "emoji": "💡",
+      "foto": null
+    },
+    {
+      "titulo": "Gorro de Papá Noel",
+      "descripcion": "Tiene bolita, pelo blanco y mucha autoridad.",
+      "emoji": "🎅",
+      "foto": null
+    },
+    {
+      "titulo": "Reno de la cabalgata",
+      "descripcion": "Nariz roja y cuernos de purpurina.",
+      "emoji": "🦌",
+      "foto": null
+    },
+    {
+      "titulo": "Regalo sin etiqueta",
+      "descripcion": "Nadie sabe de quién es ni para quién.",
+      "emoji": "🎁",
+      "foto": null
+    },
+    {
+      "titulo": "Galletas de jengibre",
+      "descripcion": "Se rompen siempre las piernas.",
+      "emoji": "🍪",
+      "foto": null
+    },
+    {
+      "titulo": "Muñeco de nieve",
+      "descripcion": "Zanahoria, bufanda y mirada digna.",
+      "emoji": "☃️",
+      "foto": null
+    },
+    {
+      "titulo": "Calcetín de la chimenea",
+      "descripcion": "Se llena de caramelos y un poco de carbón.",
+      "emoji": "🧦",
+      "foto": null
+    },
+    {
+      "titulo": "Cascabeles",
+      "descripcion": "Suenan por toda la casa sin parar.",
+      "emoji": "🔔",
+      "foto": null
+    },
+    {
+      "titulo": "Vela de Adviento",
+      "descripcion": "Cada domingo se enciende una más.",
+      "emoji": "🕯️",
+      "foto": null
+    },
+    {
+      "titulo": "Turrón y mazapán",
+      "descripcion": "Dulces que duran hasta marzo.",
+      "emoji": "🍷",
+      "foto": null
+    },
+    {
+      "titulo": "Discurso de Nochebuena",
+      "descripcion": "Todos comentan lo mismo cada año.",
+      "emoji": "📺",
+      "foto": null
+    },
+    {
+      "titulo": "Villancico desafinado",
+      "descripcion": "Lo canta el abuelo con toda su alma.",
+      "emoji": "🎶",
+      "foto": null
+    },
+    {
+      "titulo": "Estrella de la cima",
+      "descripcion": "Brilla, aunque sea de papel.",
+      "emoji": "⭐",
+      "foto": null
+    },
+    {
+      "titulo": "Trineo ligero",
+      "descripcion": "Se usa en la colina más pequeña.",
+      "emoji": "🛷",
+      "foto": null
+    },
+    {
+      "titulo": "Bufanda tejida a mano",
+      "descripcion": "La abuela la hizo con diez metros de más.",
+      "emoji": "🧣",
+      "foto": null
+    },
+    {
+      "titulo": "Brindis de medianoche",
+      "descripcion": "Doce uvas y mucho atragantamiento.",
+      "emoji": "🥂",
+      "foto": null
+    }
+  ]
+}

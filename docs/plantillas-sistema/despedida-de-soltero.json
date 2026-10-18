@@ -1,0 +1,112 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Despedida por todo lo alto",
+  "tematica": "Despedida",
+  "reglas": {
+    "presupuesto": 30,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Corona de homenajeado",
+      "descripcion": "Brilla mucho y se coloca torcida.",
+      "emoji": "👑",
+      "foto": null
+    },
+    {
+      "titulo": "Copas de champán",
+      "descripcion": "Chocan hasta que alguna se rompe.",
+      "emoji": "🥂",
+      "foto": null
+    },
+    {
+      "titulo": "Banda de invitado de honor",
+      "descripcion": "Se lleva todo el día.",
+      "emoji": "🎀",
+      "foto": null
+    },
+    {
+      "titulo": "Autobús de fiesta",
+      "descripcion": "Música a todo volumen y paradas imprevistas.",
+      "emoji": "🚌",
+      "foto": null
+    },
+    {
+      "titulo": "Cabina de fotos",
+      "descripcion": "Máscaras, bigotes y gafas enormes.",
+      "emoji": "📸",
+      "foto": null
+    },
+    {
+      "titulo": "Karaoke privado",
+      "descripcion": "Todos cantan mejor de lo que creen.",
+      "emoji": "🎤",
+      "foto": null
+    },
+    {
+      "titulo": "Botella de espumoso",
+      "descripcion": "Sale disparada hacia el techo.",
+      "emoji": "🍾",
+      "foto": null
+    },
+    {
+      "titulo": "Globos plateados",
+      "descripcion": "Letras gigantes que flotan por la sala.",
+      "emoji": "🎈",
+      "foto": null
+    },
+    {
+      "titulo": "Carta de los amigos",
+      "descripcion": "Escrita entre risas y alguna lágrima.",
+      "emoji": "💌",
+      "foto": null
+    },
+    {
+      "titulo": "Juego de retos",
+      "descripcion": "Cada tarjeta, una prueba más divertida.",
+      "emoji": "🎲",
+      "foto": null
+    },
+    {
+      "titulo": "Baile coreografiado",
+      "descripcion": "Ensayado cinco minutos y ejecutado sin vergüenza.",
+      "emoji": "🕺",
+      "foto": null
+    },
+    {
+      "titulo": "Tarta decorada",
+      "descripcion": "Con una figura que se parece vagamente al novio.",
+      "emoji": "🧁",
+      "foto": null
+    },
+    {
+      "titulo": "Regalo conjunto",
+      "descripcion": "Se reparte el coste y el mérito.",
+      "emoji": "🎁",
+      "foto": null
+    },
+    {
+      "titulo": "Ruta nocturna",
+      "descripcion": "Calles, risas y un taxi final.",
+      "emoji": "🌃",
+      "foto": null
+    },
+    {
+      "titulo": "Pista de baile iluminada",
+      "descripcion": "Se estrena a medianoche.",
+      "emoji": "🪩",
+      "foto": null
+    },
+    {
+      "titulo": "Anillo de broma",
+      "descripcion": "Gigante y de plástico para el momento exacto.",
+      "emoji": "💍",
+      "foto": null
+    }
+  ]
+}

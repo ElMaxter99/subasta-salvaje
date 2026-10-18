@@ -1,0 +1,112 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Misión al espacio",
+  "tematica": "Espacio",
+  "reglas": {
+    "presupuesto": 25,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Cohete de despegue",
+      "descripcion": "Cuenta atrás y mucho humo.",
+      "emoji": "🚀",
+      "foto": null
+    },
+    {
+      "titulo": "Luna de queso",
+      "descripcion": "Una gran roca llena de cráteres.",
+      "emoji": "🌕",
+      "foto": null
+    },
+    {
+      "titulo": "Planeta con anillos",
+      "descripcion": "Sus anillos son hielo y polvo, no de oro.",
+      "emoji": "🪐",
+      "foto": null
+    },
+    {
+      "titulo": "Cometa viajero",
+      "descripcion": "Pasa cada setenta y cinco años.",
+      "emoji": "☄️",
+      "foto": null
+    },
+    {
+      "titulo": "Satélite artificial",
+      "descripcion": "Da vueltas sin parar a la Tierra.",
+      "emoji": "🛰️",
+      "foto": null
+    },
+    {
+      "titulo": "Traje de astronauta",
+      "descripcion": "Pesa, abriga y no deja rascarse la nariz.",
+      "emoji": "👨‍🚀",
+      "foto": null
+    },
+    {
+      "titulo": "Telescopio gigante",
+      "descripcion": "Observa galaxias a millones de años luz.",
+      "emoji": "🔭",
+      "foto": null
+    },
+    {
+      "titulo": "Sol brillante",
+      "descripcion": "Una estrella que calienta todo el sistema.",
+      "emoji": "🌞",
+      "foto": null
+    },
+    {
+      "titulo": "Planeta azul",
+      "descripcion": "El único donde vivimos hasta ahora.",
+      "emoji": "🌍",
+      "foto": null
+    },
+    {
+      "titulo": "Plato volante",
+      "descripcion": "Sale en todas las leyendas y en ningún radar.",
+      "emoji": "🛸",
+      "foto": null
+    },
+    {
+      "titulo": "Galaxia espiral",
+      "descripcion": "Cientos de miles de millones de estrellas.",
+      "emoji": "🌌",
+      "foto": null
+    },
+    {
+      "titulo": "Paseo espacial",
+      "descripcion": "Flotas atado a la nave y con vistas únicas.",
+      "emoji": "🧑‍🚀",
+      "foto": null
+    },
+    {
+      "titulo": "Marte rojizo",
+      "descripcion": "Polvo, rocas y mucha curiosidad.",
+      "emoji": "🔴",
+      "foto": null
+    },
+    {
+      "titulo": "Constelación",
+      "descripcion": "Puntos que dibujan osos y escorpiones.",
+      "emoji": "⭐",
+      "foto": null
+    },
+    {
+      "titulo": "Cuenta atrás",
+      "descripcion": "Diez, nueve, ocho... y despegue.",
+      "emoji": "🚦",
+      "foto": null
+    },
+    {
+      "titulo": "Rover explorador",
+      "descripcion": "Rueda por la superficie y envía fotografías.",
+      "emoji": "🛞",
+      "foto": null
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Cumpleaños épico",
+  "tematica": "Cumpleaños",
+  "reglas": {
+    "presupuesto": 20,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Tarta de tres pisos",
+      "descripcion": "Con tanta nata que cuesta decidir por dónde empezar.",
+      "emoji": "🎂",
+      "foto": null
+    },
+    {
+      "titulo": "Globos gigantes",
+      "descripcion": "Flotan por toda la casa hasta que alguien los pincha.",
+      "emoji": "🎈",
+      "foto": null
+    },
+    {
+      "titulo": "Cañón de confeti",
+      "descripcion": "Aparece en el aire y se queda semanas por el suelo.",
+      "emoji": "🎉",
+      "foto": null
+    },
+    {
+      "titulo": "Montaña de regalos",
+      "descripcion": "Todos envueltos y sin una sola etiqueta.",
+      "emoji": "🎁",
+      "foto": null
+    },
+    {
+      "titulo": "Lista de canciones",
+      "descripcion": "Ni un solo tema que no sepas cantar.",
+      "emoji": "🎵",
+      "foto": null
+    },
+    {
+      "titulo": "Velas que no se apagan",
+      "descripcion": "Soplas y soplas, y siguen ahí.",
+      "emoji": "🕯️",
+      "foto": null
+    },
+    {
+      "titulo": "Sombrero de fiesta",
+      "descripcion": "Pico alto, goma que aprieta y mucho estilo.",
+      "emoji": "🎩",
+      "foto": null
+    },
+    {
+      "titulo": "Castillo hinchable",
+      "descripcion": "Diversión botando hasta que se agota el aire.",
+      "emoji": "🎪",
+      "foto": null
+    },
+    {
+      "titulo": "Bolsa de chuches",
+      "descripcion": "Un tesoro que desaparece en diez minutos.",
+      "emoji": "🍬",
+      "foto": null
+    },
+    {
+      "titulo": "Cámara instantánea",
+      "descripcion": "Fotos que salen movidas pero llenas de risas.",
+      "emoji": "📷",
+      "foto": null
+    },
+    {
+      "titulo": "Corona de cumpleañero",
+      "descripcion": "Por un día, el rey o la reina de la casa.",
+      "emoji": "🥳",
+      "foto": null
+    },
+    {
+      "titulo": "Pizza familiar",
+      "descripcion": "Una porción para cada invitado y un extra por si acaso.",
+      "emoji": "🍕",
+      "foto": null
+    },
+    {
+      "titulo": "Bandeja de magdalenas",
+      "descripcion": "Con virutas de colores y mucho azúcar.",
+      "emoji": "🧁",
+      "foto": null
+    },
+    {
+      "titulo": "Piñata de colores",
+      "descripcion": "Una cuerda, un palo y toda la ilusión.",
+      "emoji": "🎭",
+      "foto": null
+    },
+    {
+      "titulo": "Pared de fotos",
+      "descripcion": "Recuerdos de los mejores años colgados con pinzas.",
+      "emoji": "🪅",
+      "foto": null
+    },
+    {
+      "titulo": "Canción de felicitación",
+      "descripcion": "Se canta desafinando y con todo el corazón.",
+      "emoji": "🎶",
+      "foto": null
+    }
+  ]
+}

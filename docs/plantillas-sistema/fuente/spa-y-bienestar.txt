@@ -1,0 +1,24 @@
+# nombre: Spa y bienestar
+# descripcion: Un día de relax con aromas, masajes y mucha calma.
+# tono: adultos
+# tematica: Relax
+# presupuesto: 25
+# rondas: 10
+# clasificacion: elementos
+---
+🧖 | Sauna de cedro | Calor suave y charlas en voz baja. | sauna
+🛁 | Bañera de espuma | Burbujas hasta las orejas. | bubble bath
+🕯️ | Velas aromáticas | Huelen a lavanda y a vacaciones. | scented candles
+💆 | Masaje de espalda | Quita nudos de toda una semana. | back massage
+🧴 | Crema de rosas | Suave, perfumada y carísima. | rose cream
+🫖 | Infusión de manzanilla | Calma y abriga las tardes de frío. | chamomile tea
+🧘 | Clase de respiración | Inspira, espira y suelta el estrés. | breathing class
+🌿 | Mascarilla de pepino | Fresca y poco favorecedora. | cucumber mask
+🧼 | Pastilla de jabón artesano | Con aroma a miel y avena. | handmade soap
+🪨 | Piedras calientes | Relajan hasta el último músculo. | hot stones
+💧 | Cascada de ducha | Cae como lluvia tropical. | rain shower
+🦢 | Albornoz mullido | Abriga como un abrazo. | bathrobe
+🎶 | Música de olas | Un mar suave en el altavoz. | ocean music
+🛌 | Camilla de masaje | Mejor que cualquier cama. | massage table
+🍋 | Agua con limón | Se bebe en vasos de cristal. | lemon water
+🌸 | Flores en el agua | Flotan en el cuenco y perfuman la sala. | flower bowl

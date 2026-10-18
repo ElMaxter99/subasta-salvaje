@@ -1,0 +1,112 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Verano eterno",
+  "tematica": "Verano",
+  "reglas": {
+    "presupuesto": 20,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Parcela de arena",
+      "descripcion": "Un sitio perfecto, justo donde llega el mar.",
+      "emoji": "🏖️",
+      "foto": null
+    },
+    {
+      "titulo": "Sombrilla gigante",
+      "descripcion": "Se la lleva el viento en el mejor momento.",
+      "emoji": "⛱️",
+      "foto": null
+    },
+    {
+      "titulo": "Helado de tres bolas",
+      "descripcion": "Se derrite antes de llegar al último lametón.",
+      "emoji": "🍦",
+      "foto": null
+    },
+    {
+      "titulo": "Chancla de playa",
+      "descripcion": "La otra se perdió en la arena.",
+      "emoji": "🩴",
+      "foto": null
+    },
+    {
+      "titulo": "Gafas de sol grandes",
+      "descripcion": "Esconden la siesta y las ojeras.",
+      "emoji": "🕶️",
+      "foto": null
+    },
+    {
+      "titulo": "Tabla de surf",
+      "descripcion": "Equilibrio, olas y mucha sal.",
+      "emoji": "🏄",
+      "foto": null
+    },
+    {
+      "titulo": "Sandía fresquita",
+      "descripcion": "Rodajas enormes y pepitas a distancia.",
+      "emoji": "🍉",
+      "foto": null
+    },
+    {
+      "titulo": "Crema solar",
+      "descripcion": "Nunca basta para la espalda.",
+      "emoji": "🧴",
+      "foto": null
+    },
+    {
+      "titulo": "Flotador de flamenco",
+      "descripcion": "El rey de la piscina.",
+      "emoji": "🛟",
+      "foto": null
+    },
+    {
+      "titulo": "Concha de mar",
+      "descripcion": "Si la acercas al oído, suena el océano.",
+      "emoji": "🐚",
+      "foto": null
+    },
+    {
+      "titulo": "Castillo de arena",
+      "descripcion": "Con torres, foso y una ola traicionera.",
+      "emoji": "🏰",
+      "foto": null
+    },
+    {
+      "titulo": "Palmera solitaria",
+      "descripcion": "Da sombra a un solo bañista.",
+      "emoji": "🌴",
+      "foto": null
+    },
+    {
+      "titulo": "Atardecer naranja",
+      "descripcion": "Dura apenas cinco minutos y todos lo graban.",
+      "emoji": "🌅",
+      "foto": null
+    },
+    {
+      "titulo": "Granizado de limón",
+      "descripcion": "Cierra los ojos y pica en la cabeza.",
+      "emoji": "🥤",
+      "foto": null
+    },
+    {
+      "titulo": "Lancha motora",
+      "descripcion": "Salpica a todos los que pasan.",
+      "emoji": "🚤",
+      "foto": null
+    },
+    {
+      "titulo": "Isla con hamaca",
+      "descripcion": "Dos palmeras y ninguna prisa.",
+      "emoji": "🏝️",
+      "foto": null
+    }
+  ]
+}

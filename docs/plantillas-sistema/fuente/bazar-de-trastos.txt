@@ -1,0 +1,24 @@
+# nombre: Bazar de trastos
+# descripcion: Cosas inútiles, raras y adorables de un mercadillo de segunda mano.
+# tono: humor
+# tematica: Mercadillo
+# presupuesto: 20
+# rondas: 10
+# clasificacion: elementos
+---
+🪆 | Muñeca rusa sin una pieza | Faltan las dos más pequeñas. | nesting doll
+📻 | Radio que solo coge una emisora | Siempre suena la misma canción. | old radio
+🛋️ | Butaca de flores | Con muelles que cantan al sentarse. | floral armchair
+🕰️ | Reloj de cuco parado | Siempre da la hora de ayer. | cuckoo clock
+🧸 | Peluche con un ojo | Mira con simpatía a quien lo compra. | teddy bear one eye
+🎻 | Violín sin cuerdas | Perfecto para decorar la pared. | violin no strings
+🖼️ | Cuadro de un paisaje desconocido | Nadie sabe qué lugar es. | landscape painting
+🧳 | Maleta de cuero | Huele a viajes lejanos. | leather suitcase
+📺 | Televisor con antena | Solo se ve en blanco y negro. | old tv antenna
+🪞 | Espejo con marco dorado | Refleja una época mejor. | gilded mirror
+🍽️ | Vajilla de lunares | Faltan platos y sobran tazas. | polka dot dishes
+🔔 | Campana de bronce | Suena demasiado fuerte para cualquier habitación. | bronze bell
+📷 | Cámara de fuelle | Todavía conserva un carrete dentro. | bellows camera
+🧯 | Lámpara de lava | Burbujea con una hipnosis muy setentera. | lava lamp
+🗝️ | Llave que no abre nada | Pero tiene un aspecto importantísimo. | old key
+🪑 | Taburete cojo | Se balancea con elegancia. | wobbly stool

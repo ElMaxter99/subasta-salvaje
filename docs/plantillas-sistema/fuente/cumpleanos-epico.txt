@@ -1,0 +1,24 @@
+# nombre: Cumpleaños épico
+# descripcion: Todo lo necesario para la mejor fiesta de cumpleaños de la historia.
+# tono: familiar
+# tematica: Cumpleaños
+# presupuesto: 20
+# rondas: 10
+# clasificacion: elementos
+---
+🎂 | Tarta de tres pisos | Con tanta nata que cuesta decidir por dónde empezar. | tiered birthday cake
+🎈 | Globos gigantes | Flotan por toda la casa hasta que alguien los pincha. | balloons party
+🎉 | Cañón de confeti | Aparece en el aire y se queda semanas por el suelo. | confetti party popper
+🎁 | Montaña de regalos | Todos envueltos y sin una sola etiqueta. | pile of presents
+🎵 | Lista de canciones | Ni un solo tema que no sepas cantar. | music playlist headphones
+🕯️ | Velas que no se apagan | Soplas y soplas, y siguen ahí. | trick candles
+🎩 | Sombrero de fiesta | Pico alto, goma que aprieta y mucho estilo. | party hat cone
+🎪 | Castillo hinchable | Diversión botando hasta que se agota el aire. | bouncy castle
+🍬 | Bolsa de chuches | Un tesoro que desaparece en diez minutos. | candy bag sweets
+📷 | Cámara instantánea | Fotos que salen movidas pero llenas de risas. | instant camera
+🥳 | Corona de cumpleañero | Por un día, el rey o la reina de la casa. | birthday crown
+🍕 | Pizza familiar | Una porción para cada invitado y un extra por si acaso. | pizza party
+🧁 | Bandeja de magdalenas | Con virutas de colores y mucho azúcar. | cupcakes tray
+🎭 | Piñata de colores | Una cuerda, un palo y toda la ilusión. | pinata party
+🪅 | Pared de fotos | Recuerdos de los mejores años colgados con pinzas. | photo wall garland
+🎶 | Canción de felicitación | Se canta desafinando y con todo el corazón. | singing happy birthday

@@ -1,0 +1,25 @@
+# nombre: Navidad desastre
+# descripcion: El caos entrañable de unas fiestas navideñas con toda la familia.
+# tono: familiar
+# tematica: Navidad
+# presupuesto: 25
+# rondas: 10
+# clasificacion: elementos
+---
+🎄 | Árbol torcido | Se inclina cada año un poco más. | crooked christmas tree
+💡 | Guirnalda enredada | Tres horas para descubrir que no funciona. | tangled christmas lights
+🎅 | Gorro de Papá Noel | Tiene bolita, pelo blanco y mucha autoridad. | santa hat
+🦌 | Reno de la cabalgata | Nariz roja y cuernos de purpurina. | reindeer
+🎁 | Regalo sin etiqueta | Nadie sabe de quién es ni para quién. | unlabeled gift
+🍪 | Galletas de jengibre | Se rompen siempre las piernas. | gingerbread cookies
+☃️ | Muñeco de nieve | Zanahoria, bufanda y mirada digna. | snowman
+🧦 | Calcetín de la chimenea | Se llena de caramelos y un poco de carbón. | christmas stocking
+🔔 | Cascabeles | Suenan por toda la casa sin parar. | jingle bells
+🕯️ | Vela de Adviento | Cada domingo se enciende una más. | advent candle
+🍷 | Turrón y mazapán | Dulces que duran hasta marzo. | nougat marzipan
+📺 | Discurso de Nochebuena | Todos comentan lo mismo cada año. | tv christmas speech
+🎶 | Villancico desafinado | Lo canta el abuelo con toda su alma. | christmas carol
+⭐ | Estrella de la cima | Brilla, aunque sea de papel. | tree topper star
+🛷 | Trineo ligero | Se usa en la colina más pequeña. | sled
+🧣 | Bufanda tejida a mano | La abuela la hizo con diez metros de más. | knitted scarf
+🥂 | Brindis de medianoche | Doce uvas y mucho atragantamiento. | midnight toast grapes

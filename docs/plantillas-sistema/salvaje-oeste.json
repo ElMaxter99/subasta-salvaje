@@ -1,0 +1,112 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Salvaje Oeste",
+  "tematica": "Oeste",
+  "reglas": {
+    "presupuesto": 25,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Sombrero del sheriff",
+      "descripcion": "Da autoridad hasta al más bajito.",
+      "emoji": "🤠",
+      "foto": null
+    },
+    {
+      "titulo": "Caballo veloz",
+      "descripcion": "Galopa por el desierto con la crin al viento.",
+      "emoji": "🐎",
+      "foto": null
+    },
+    {
+      "titulo": "Cactus en maceta",
+      "descripcion": "Pincha, florece y no necesita agua.",
+      "emoji": "🌵",
+      "foto": null
+    },
+    {
+      "titulo": "Placa de estrella",
+      "descripcion": "Indica quién manda en el pueblo.",
+      "emoji": "⭐",
+      "foto": null
+    },
+    {
+      "titulo": "Botas con espuelas",
+      "descripcion": "Suenan a cada paso por la taberna.",
+      "emoji": "🥾",
+      "foto": null
+    },
+    {
+      "titulo": "Barra de la taberna",
+      "descripcion": "Una puerta batiente y mucho polvo.",
+      "emoji": "🍻",
+      "foto": null
+    },
+    {
+      "titulo": "Pianola desafinada",
+      "descripcion": "Suena siempre la misma melodía.",
+      "emoji": "🎻",
+      "foto": null
+    },
+    {
+      "titulo": "Tren del oeste",
+      "descripcion": "Cruza el cañón soltando humo.",
+      "emoji": "🚂",
+      "foto": null
+    },
+    {
+      "titulo": "Pepita de oro",
+      "descripcion": "Brilla más que cualquier sueño.",
+      "emoji": "🪙",
+      "foto": null
+    },
+    {
+      "titulo": "Pico de minero",
+      "descripcion": "Cava y cava hasta encontrar piedra.",
+      "emoji": "⛏️",
+      "foto": null
+    },
+    {
+      "titulo": "Cañón colorado",
+      "descripcion": "Rocas rojas y silencio.",
+      "emoji": "🏜️",
+      "foto": null
+    },
+    {
+      "titulo": "Toro mecánico",
+      "descripcion": "Dura tres segundos antes de desmontar.",
+      "emoji": "🐂",
+      "foto": null
+    },
+    {
+      "titulo": "Hoguera del campamento",
+      "descripcion": "Judías en lata y canciones de guitarra.",
+      "emoji": "🔥",
+      "foto": null
+    },
+    {
+      "titulo": "Pañuelo del forajido",
+      "descripcion": "Se sube sobre la nariz para el polvo.",
+      "emoji": "🧣",
+      "foto": null
+    },
+    {
+      "titulo": "Diligencia",
+      "descripcion": "Cruza el desierto con equipaje y pasajeros.",
+      "emoji": "🐴",
+      "foto": null
+    },
+    {
+      "titulo": "Cartel de se busca",
+      "descripcion": "Con una cara muy poco fiable.",
+      "emoji": "📜",
+      "foto": null
+    }
+  ]
+}

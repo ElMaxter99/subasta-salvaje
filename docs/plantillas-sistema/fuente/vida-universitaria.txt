@@ -1,0 +1,24 @@
+# nombre: Vida universitaria
+# descripcion: Apuntes, cafés y noches de estudio de la época universitaria.
+# tono: humor
+# tematica: Universidad
+# presupuesto: 25
+# rondas: 10
+# clasificacion: elementos
+---
+📚 | Pila de apuntes | Subrayados en cuatro colores y sin entender nada. | notes pile books
+☕ | Café de madrugada | Mantiene despierto hasta la una y media. | late night coffee
+🎓 | Birrete de graduación | Cuatro años de esfuerzo en un solo sombrero. | graduation cap
+🧮 | Calculadora científica | Sabe más matemáticas que su dueño. | scientific calculator
+💻 | Portátil con pegatinas | Batería de diez minutos y cien pestañas abiertas. | laptop stickers
+📝 | Examen sorpresa | Aparece sin avisar el día más tonto. | exam paper
+🏫 | Aula magna | Un eco enorme y bancos muy duros. | lecture hall
+🍜 | Fideos instantáneos | La comida oficial de la semana de exámenes. | instant noodles
+🎒 | Mochila sin fondo | Allí dentro vive todo lo que alguna vez perdiste. | backpack
+📖 | Biblioteca silenciosa | Allí se oyen hasta los pensamientos. | library quiet
+🚲 | Bicicleta del campus | La única forma de llegar a tiempo. | campus bicycle
+🛏️ | Cama de residencia | Pequeña, estrecha y cómoda de milagro. | dorm bed
+🍕 | Pizza de la noche | Se pide para estudiar y acaba en fiesta. | late night pizza
+🧠 | Cerebro saturado | Funciona solo con descanso y chocolate. | brain tired
+📅 | Calendario de entregas | Cada día un plazo y un susto. | deadline calendar
+🪑 | Pupitre con grafitis | Guarda las frases de todas las generaciones. | school desk

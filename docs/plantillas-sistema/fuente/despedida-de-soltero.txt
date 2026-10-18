@@ -1,0 +1,24 @@
+# nombre: Despedida por todo lo alto
+# descripcion: Una despedida divertida y sana, con objetos para el recuerdo.
+# tono: adultos
+# tematica: Despedida
+# presupuesto: 30
+# rondas: 10
+# clasificacion: elementos
+---
+👑 | Corona de homenajeado | Brilla mucho y se coloca torcida. | celebration crown
+🥂 | Copas de champán | Chocan hasta que alguna se rompe. | champagne flutes
+🎀 | Banda de invitado de honor | Se lleva todo el día. | sash ribbon
+🚌 | Autobús de fiesta | Música a todo volumen y paradas imprevistas. | party bus
+📸 | Cabina de fotos | Máscaras, bigotes y gafas enormes. | photo booth
+🎤 | Karaoke privado | Todos cantan mejor de lo que creen. | karaoke
+🍾 | Botella de espumoso | Sale disparada hacia el techo. | sparkling bottle
+🎈 | Globos plateados | Letras gigantes que flotan por la sala. | silver balloons
+💌 | Carta de los amigos | Escrita entre risas y alguna lágrima. | letter friends
+🎲 | Juego de retos | Cada tarjeta, una prueba más divertida. | challenge cards
+🕺 | Baile coreografiado | Ensayado cinco minutos y ejecutado sin vergüenza. | group dance
+🧁 | Tarta decorada | Con una figura que se parece vagamente al novio. | decorated cake
+🎁 | Regalo conjunto | Se reparte el coste y el mérito. | group gift
+🌃 | Ruta nocturna | Calles, risas y un taxi final. | night city walk
+🪩 | Pista de baile iluminada | Se estrena a medianoche. | dance floor
+💍 | Anillo de broma | Gigante y de plástico para el momento exacto. | joke ring

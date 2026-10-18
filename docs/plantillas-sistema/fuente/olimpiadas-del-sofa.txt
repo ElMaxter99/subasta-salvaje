@@ -1,0 +1,24 @@
+# nombre: Olimpiadas del sofá
+# descripcion: Las pruebas deportivas más exigentes... para hacer desde casa.
+# tono: humor
+# tematica: Deportes
+# presupuesto: 20
+# rondas: 10
+# clasificacion: elementos
+---
+🏅 | Medalla de participación | La más fácil de conseguir y la más querida. | participation medal
+🏃 | Maratón hasta la nevera | Ida, vuelta y diploma de picoteo. | running marathon
+⚽ | Balón de fútbol | Rueda hasta debajo del sofá. | soccer ball
+🏀 | Canasta de papelera | Triple desde el sillón y aplausos sin fin. | basketball hoop
+🎾 | Raqueta de tenis | Cuerdas tensas y revés dudoso. | tennis racket
+🏊 | Piscina olímpica | Carriles perfectos y una chancla flotando. | swimming pool lanes
+🚴 | Bicicleta estática | Recorre mil kilómetros sin salir del salón. | exercise bike
+🥇 | Podio de cartón | Tres cajas de distinta altura. | podium
+🏋️ | Pesas de cinco kilos | Se levantan una vez y se exhiben para siempre. | dumbbells
+🥊 | Guantes de boxeo | Golpean al aire con muchísima convicción. | boxing gloves
+🧘 | Esterilla de yoga | Aguanta posturas imposibles y siestas. | yoga mat
+⛳ | Hoyo en uno | Ocurrió una vez y se cuenta cada año. | golf hole
+🛹 | Monopatín curioso | Una caída y mil historias de rodillas. | skateboard
+🏓 | Mesa de ping pong | Partidas eternas de oficina. | ping pong table
+🏁 | Meta de la carrera | Una cinta y mucha dignidad. | finish line
+🧢 | Gorra de entrenador | Da órdenes sin mover un dedo. | coach cap

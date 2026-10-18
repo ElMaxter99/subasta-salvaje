@@ -1,0 +1,24 @@
+# nombre: Cena de empresa legendaria
+# descripcion: Subasta de los objetos más memorables de una cena de equipo.
+# tono: humor
+# tematica: Cena de empresa
+# presupuesto: 30
+# rondas: 10
+# clasificacion: elementos
+---
+🍾 | Botella de cava sin abrir | Se guarda para el brindis que nadie recuerda. | sparkling wine bottle
+🎤 | Micrófono del karaoke | Quien lo toma ya no lo suelta hasta la madrugada. | karaoke microphone
+🧾 | Cuenta dividida a partes iguales | Pagas lo mismo aunque solo pidieras agua. | restaurant bill receipt
+🍰 | Tarta sorpresa | Llega con una vela y mucha expectación. | birthday cake candle
+🪑 | Silla junto al jefe | El asiento más codiciado o más temido de la mesa. | dining chair
+🥂 | Brindis improvisado | Un discurso breve que se alarga siempre. | toast glasses cheers
+📸 | Foto de grupo | Cuarenta intentos hasta que todos salen con los ojos abiertos. | group photo camera
+🍷 | Vino de la casa | Misterioso, barato y sorprendentemente valiente. | red wine glass
+🎁 | Amigo invisible | Un regalo envuelto con más cariño que acierto. | gift box wrapped
+🕺 | Pista de baile | Aquí se descubren talentos ocultos del departamento. | dance floor disco
+🧂 | Salero compartido | Viaja de mano en mano durante toda la cena. | salt shaker
+📋 | Menú del día | Tres platos y un café con leche fría. | restaurant menu
+🍢 | Entrante para compartir | Cuatro croquetas para diez personas. | appetizer croquettes
+🚕 | Taxi de vuelta | El mejor invento de la noche. | taxi cab night
+🥱 | Bostezo disimulado | Un clásico de la sobremesa eterna. | yawning person
+🪩 | Bola de discoteca | Convierte cualquier comedor en una sala de fiesta. | disco ball

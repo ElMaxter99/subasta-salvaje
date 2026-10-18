@@ -2,9 +2,11 @@
 
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { BUNDLE_MAX_BYTES } from '@/lib/domain/system-template-pack';
+import type { ImportResult } from '@/lib/services/system-template-import';
 import { adminPost } from '@/lib/client/admin-api';
 import type { ImageCheck, SystemTemplateSummary } from '@/lib/services/system-template-service';
 import { Section, Table, fmtDate } from './widgets';
@@ -17,6 +19,21 @@ export function SystemTemplatesPanel({ templates, cdnHosts }: { templates: Syste
   const [checks, setChecks] = useState<{ title: string; list: ImageCheck[] } | null>(null);
   const [del, setDel] = useState<SystemTemplateSummary | null>(null);
   const [fromCollection, setFromCollection] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  /** Sube un .json con varias plantillas (formato «lote»): se leen en el navegador y el servidor las valida y guarda como borradores. */
+  async function importMany(file: File) {
+    if (file.size > BUNDLE_MAX_BYTES) { setMsg({ ok: false, text: 'El archivo es demasiado grande (máximo 2 MB).' }); return; }
+    let lote: unknown;
+    try { lote = JSON.parse((await file.text()).replace(/^\uFEFF/, '')); } catch { setMsg({ ok: false, text: 'El archivo no es un JSON válido.' }); return; }
+    const r = await run<{ results: ImportResult[] }>('import-many', { op: 'import_many', lote }, (x) => {
+      const n = (a: string) => x.results.filter((i) => i.action === a).length;
+      const bad = x.results.filter((i) => i.action === 'error');
+      return `Importadas como borrador: ${n('created')} nuevas, ${n('updated')} actualizadas, ${n('unchanged')} sin cambios${bad.length ? `; ${bad.length} con error (${bad.slice(0, 3).map((b) => `${b.slug}: ${b.error}`).join('; ')})` : ''}.`;
+    });
+    if (fileRef.current) fileRef.current.value = '';
+    return r;
+  }
 
   async function run<T>(key: string, body: unknown, ok: string | ((r: T) => string)): Promise<T | null> {
     setBusy(key);
@@ -48,6 +65,8 @@ export function SystemTemplatesPanel({ templates, cdnHosts }: { templates: Syste
         }
         action={
           <div className="flex flex-wrap gap-2">
+            <input ref={fileRef} type="file" accept="application/json,.json" className="sr-only" data-testid="template-import-many-input" aria-label="Importar varias plantillas desde un archivo JSON" onChange={(e) => { const f = e.target.files?.[0]; if (f) void importMany(f); }} />
+            <Button variant="secondary" loading={busy === 'import-many'} disabled={busy !== null} onClick={() => fileRef.current?.click()} data-testid="template-import-many">Importar varias (.json)</Button>
             <Button variant="secondary" onClick={() => setFromCollection(true)} data-testid="template-from-collection">Crear desde una colección de la biblioteca</Button>
             <Link href="/admin/plantillas/editor" className="inline-flex min-h-11 items-center rounded-xl bg-gold px-4 py-2 text-sm font-bold text-night-950 hover:bg-gold-soft">Nueva plantilla</Link>
           </div>

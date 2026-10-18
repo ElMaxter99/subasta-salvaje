@@ -1,0 +1,24 @@
+# nombre: Mansión encantada
+# descripcion: Una casa llena de fantasmas simpáticos y objetos que se mueven solos.
+# tono: humor negro suave
+# tematica: Casa encantada
+# presupuesto: 25
+# rondas: 10
+# clasificacion: elementos
+---
+👻 | Fantasma tímido | Aparece, se asusta él solo y desaparece. | shy ghost
+🕯️ | Candelabro flotante | Ilumina el pasillo sin que nadie lo sostenga. | floating candelabra
+🪞 | Espejo que murmura | Siempre tiene una opinión sobre tu peinado. | whispering mirror
+🦇 | Murciélago de ático | Cuelga cabeza abajo y no paga alquiler. | attic bat
+🕸️ | Telaraña centenaria | Nadie se atreve a quitarla. | cobweb
+🪦 | Lápida decorativa | Con un epitafio de lo más gracioso. | tombstone
+🧙 | Bruja del tejado | Viaja en una escoba de bajo consumo. | witch roof
+🚪 | Puerta que cruje | Se abre sola con un chirrido dramático. | creaky door
+🎃 | Calabaza tallada | Sonríe de forma inquietante. | carved pumpkin
+📖 | Libro de hechizos | Escrito con una caligrafía imposible. | spellbook
+🪑 | Mecedora vacía | Se balancea sin que nadie la toque. | rocking chair
+🧪 | Poción burbujeante | Huele a menta y a calcetín. | bubbling potion
+🕰️ | Reloj de péndulo | Da trece campanadas a medianoche. | pendulum clock
+🐈‍⬛ | Gato negro | Observa todo desde la ventana. | black cat window
+🖼️ | Retrato con ojos que siguen | Ven cada movimiento del salón. | creepy portrait
+🍷 | Sótano de vinos añejos | Botellas con más de cien años de misterio. | wine cellar

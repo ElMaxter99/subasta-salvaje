@@ -1,0 +1,24 @@
+# nombre: Mercado medieval
+# descripcion: Pregones, especias y artesanías de una plaza de hace siglos.
+# tono: educativo
+# tematica: Edad Media
+# presupuesto: 25
+# rondas: 10
+# clasificacion: elementos
+---
+🛡️ | Escudo de armas | Cada familia presumía de un símbolo. | coat of arms shield
+🗡️ | Daga de mercader | Sirve para cortar queso y regatear. | merchant dagger
+🍞 | Hogaza de pan | Dura, oscura y muy sabrosa. | bread loaf rustic
+🧀 | Rueda de queso | Curada durante meses en una cueva. | cheese wheel
+🏇 | Caballo de torneo | Con armadura y plumas de colores. | jousting horse
+📜 | Pregón del heraldo | Anuncia las noticias a gritos. | herald scroll
+🏰 | Torre de vigilancia | Desde arriba se ve todo el valle. | watchtower
+🍺 | Jarra de sidra | Espumosa y servida en barro. | tankard cider
+🪙 | Bolsa de monedas | Tintinean con cada paso. | coin pouch
+🕯️ | Candil de aceite | Ilumina la taberna con luz temblorosa. | oil lamp
+🧵 | Telar de tapices | Cuenta historias de caballeros y dragones. | tapestry loom
+⚒️ | Yunque del herrero | Chispas y golpes desde el amanecer. | blacksmith anvil
+🏹 | Arco de cazador | Silba en el aire y acierta en el centro. | longbow
+🐉 | Estandarte del dragón | Ondea sobre las murallas. | dragon banner
+🎺 | Trompeta de juglar | Abre la fiesta con un sonido de gala. | medieval trumpet
+🍖 | Pierna de cordero asada | El plato fuerte del banquete. | roast lamb

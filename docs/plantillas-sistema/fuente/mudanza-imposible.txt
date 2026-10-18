@@ -1,0 +1,24 @@
+# nombre: Mudanza imposible
+# descripcion: Cajas, sofás y todo lo que no cabe por la puerta.
+# tono: humor
+# tematica: Hogar
+# presupuesto: 25
+# rondas: 10
+# clasificacion: elementos
+---
+📦 | Caja marcada «varios» | Dentro hay de todo, menos lo que buscas. | moving box
+🛋️ | Sofá que no gira | Atascado en la escalera desde el martes. | stuck sofa stairs
+🚚 | Camión de mudanzas | Hace doce viajes por una distancia de tres calles. | moving truck
+🪜 | Escalera plegable | Sirve para todo menos para llegar arriba. | folding ladder
+🧰 | Caja de herramientas | Tiene tornillos de más después de montarlo todo. | toolbox
+🪞 | Espejo envuelto | Siete años de mala suerte con solo mirarlo. | wrapped mirror
+📏 | Metro de carpintero | Mide y siempre falta un centímetro. | tape measure
+🛏️ | Cama desmontada | Quedan piezas sueltas por todo el piso. | disassembled bed
+🧹 | Escoba olvidada | La última cosa que se guarda. | broom
+🍕 | Pizza de la primera noche | Se cena en el suelo entre cajas. | pizza on floor
+🔑 | Llaves nuevas | Una abre la puerta, las demás ya veremos. | new keys
+🪴 | Planta mareada | Ha viajado en el asiento delantero. | plant in car
+📺 | Televisor sin soporte | Se apoya en dos cajas de zapatos. | tv on boxes
+🧦 | Calcetín sin pareja | Aparece en la última caja. | lone sock
+🏷️ | Rollo de etiquetas | Siempre se acaba antes de la última caja. | label roll
+🗝️ | Llave de repuesto | Escondida bajo la maceta de siempre. | spare key

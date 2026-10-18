@@ -1,0 +1,118 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Jardín botánico",
+  "tematica": "Plantas",
+  "reglas": {
+    "presupuesto": 20,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Brote tierno",
+      "descripcion": "Rompe la tierra con mucha determinación.",
+      "emoji": "🌱",
+      "foto": null
+    },
+    {
+      "titulo": "Girasol gigante",
+      "descripcion": "Sigue al sol durante todo el día.",
+      "emoji": "🌻",
+      "foto": null
+    },
+    {
+      "titulo": "Cactus del desierto",
+      "descripcion": "Almacena agua para meses de sequía.",
+      "emoji": "🌵",
+      "foto": null
+    },
+    {
+      "titulo": "Rosal espinoso",
+      "descripcion": "Pincha un poco y huele bien.",
+      "emoji": "🌹",
+      "foto": null
+    },
+    {
+      "titulo": "Hoja de helecho",
+      "descripcion": "Un tapiz verde que ya existía con los dinosaurios.",
+      "emoji": "🍃",
+      "foto": null
+    },
+    {
+      "titulo": "Palmera datilera",
+      "descripcion": "Da dátiles dulces y sombra.",
+      "emoji": "🌴",
+      "foto": null
+    },
+    {
+      "titulo": "Albahaca fresca",
+      "descripcion": "Perfuma una cocina entera.",
+      "emoji": "🌿",
+      "foto": null
+    },
+    {
+      "titulo": "Maceta de terracota",
+      "descripcion": "Tiene un agujero por el que escapa el agua.",
+      "emoji": "🪴",
+      "foto": null
+    },
+    {
+      "titulo": "Seta de bosque",
+      "descripcion": "Ni planta ni animal: un hongo con sombrero.",
+      "emoji": "🍄",
+      "foto": null
+    },
+    {
+      "titulo": "Tulipán de primavera",
+      "descripcion": "Florece una vez al año.",
+      "emoji": "🌷",
+      "foto": null
+    },
+    {
+      "titulo": "Roble centenario",
+      "descripcion": "Guarda cientos de anillos en su tronco.",
+      "emoji": "🌳",
+      "foto": null
+    },
+    {
+      "titulo": "Lavanda violeta",
+      "descripcion": "Su olor atrae abejas y calma el sueño.",
+      "emoji": "🪻",
+      "foto": null
+    },
+    {
+      "titulo": "Abeja polinizadora",
+      "descripcion": "Sin ella, casi nada florecería.",
+      "emoji": "🐝",
+      "foto": null
+    },
+    {
+      "titulo": "Espiga de trigo",
+      "descripcion": "Alimento de pan en medio mundo.",
+      "emoji": "🌾",
+      "foto": null
+    },
+    {
+      "titulo": "Regadera de latón",
+      "descripcion": "Reparte lluvia en pequeñas dosis.",
+      "emoji": "💧",
+      "foto": null
+    },
+    {
+      "titulo": "Jardinero con sombrero",
+      "descripcion": "Habla con las plantas y ellas lo escuchan.",
+      "emoji": "🧑‍🌾",
+      "foto": null
+    },
+    {
+      "titulo": "Hibisco tropical",
+      "descripcion": "Una flor grande, roja y efímera.",
+      "emoji": "🌺",
+      "foto": null
+    }
+  ]
+}

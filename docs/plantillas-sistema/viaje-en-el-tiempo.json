@@ -1,0 +1,124 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Viaje en el tiempo",
+  "tematica": "Historia",
+  "reglas": {
+    "presupuesto": 25,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Hoguera de la cueva",
+      "descripcion": "El primer invento que reunió a la familia.",
+      "emoji": "🔥",
+      "foto": null
+    },
+    {
+      "titulo": "Ánfora griega",
+      "descripcion": "Guardaba aceite, vino y secretos de la antigüedad.",
+      "emoji": "🏺",
+      "foto": null
+    },
+    {
+      "titulo": "Columnata del foro",
+      "descripcion": "Allí se debatía todo, hasta lo que no importaba.",
+      "emoji": "🏛️",
+      "foto": null
+    },
+    {
+      "titulo": "Espada de caballero",
+      "descripcion": "Brilla mucho en las películas y pesa más de lo que parece.",
+      "emoji": "⚔️",
+      "foto": null
+    },
+    {
+      "titulo": "Pergamino con sello",
+      "descripcion": "Una declaración importante, escrita con pluma.",
+      "emoji": "📜",
+      "foto": null
+    },
+    {
+      "titulo": "Castillo con foso",
+      "descripcion": "Murallas altas y un puente levadizo.",
+      "emoji": "🏰",
+      "foto": null
+    },
+    {
+      "titulo": "Ancla de carabela",
+      "descripcion": "Sujetó barcos que cruzaron océanos desconocidos.",
+      "emoji": "⚓",
+      "foto": null
+    },
+    {
+      "titulo": "Brújula de explorador",
+      "descripcion": "Siempre apunta al norte, aunque estés perdido.",
+      "emoji": "🧭",
+      "foto": null
+    },
+    {
+      "titulo": "Imprenta de tipos móviles",
+      "descripcion": "Hizo posible que los libros llegaran a todas partes.",
+      "emoji": "🖨️",
+      "foto": null
+    },
+    {
+      "titulo": "Sombrero de copa",
+      "descripcion": "Elegancia de otro siglo.",
+      "emoji": "🎩",
+      "foto": null
+    },
+    {
+      "titulo": "Locomotora de vapor",
+      "descripcion": "Resopla, silba y mueve el mundo entero.",
+      "emoji": "🚂",
+      "foto": null
+    },
+    {
+      "titulo": "Bombilla de filamento",
+      "descripcion": "La noche dejó de ser tan oscura.",
+      "emoji": "💡",
+      "foto": null
+    },
+    {
+      "titulo": "Teléfono de disco",
+      "descripcion": "Para marcar un número hay que tener paciencia.",
+      "emoji": "☎️",
+      "foto": null
+    },
+    {
+      "titulo": "Radio de válvulas",
+      "descripcion": "Las voces viajaban por el aire.",
+      "emoji": "📻",
+      "foto": null
+    },
+    {
+      "titulo": "Biplano de madera",
+      "descripcion": "Voló unos metros e inauguró un siglo.",
+      "emoji": "✈️",
+      "foto": null
+    },
+    {
+      "titulo": "Estatua de piedra",
+      "descripcion": "Sigue en pie después de mil años.",
+      "emoji": "🗿",
+      "foto": null
+    },
+    {
+      "titulo": "Muralla antigua",
+      "descripcion": "Protegía una ciudad entera.",
+      "emoji": "🧱",
+      "foto": null
+    },
+    {
+      "titulo": "Choza prehistórica",
+      "descripcion": "Tejado de paja y suelo de barro.",
+      "emoji": "🛖",
+      "foto": null
+    }
+  ]
+}

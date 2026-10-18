@@ -1,0 +1,25 @@
+# nombre: Oficina caótica
+# descripcion: Los objetos que mueven (y paralizan) cualquier lugar de trabajo.
+# tono: humor
+# tematica: Oficina
+# presupuesto: 25
+# rondas: 10
+# clasificacion: elementos
+---
+☕ | Cafetera comunitaria | Cuando falta, para toda la plantilla. | office coffee machine
+🖨️ | Impresora rebelde | Se atasca justo cuando hay prisa. | office printer jam
+🪴 | Planta de escritorio | Sobrevive sin agua a base de ignorancia. | desk plant
+📎 | Clip infinito | Uno solo sirve para abrir, sujetar y rascarse. | paperclip
+🗂️ | Archivador misterioso | Nadie sabe lo que contiene. | filing cabinet
+📞 | Teléfono de la centralita | Suena justo al salir por la puerta. | office telephone
+💺 | Silla giratoria | Da vueltas hasta marearse con elegancia. | swivel chair
+🧁 | Bandeja de pasteles | Desaparece antes de las once. | office pastry box
+📅 | Calendario de reuniones | Hay tantas que no queda tiempo para trabajar. | calendar meetings
+🖱️ | Ratón inalámbrico | Siempre falta una pila. | wireless mouse
+📊 | Presentación de diapositivas | Cincuenta páginas y una sola idea. | presentation slides
+🔌 | Alargador mágico | Alimenta a media planta. | extension cord
+🥡 | Táper del microondas | Llena el pasillo de olor a lentejas. | lunch box microwave
+📌 | Tablón de anuncios | Lleno de notas que nadie lee. | bulletin board pins
+🗑️ | Papelera de reciclaje | Rebosa de papeles y buenos propósitos. | recycling bin
+⏰ | Alarma del lunes | La más odiada del mundo. | alarm clock
+🪟 | Despacho con vistas | Dan a la pared de enfrente. | office window view

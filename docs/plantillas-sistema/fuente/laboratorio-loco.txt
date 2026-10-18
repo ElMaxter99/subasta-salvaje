@@ -1,0 +1,25 @@
+# nombre: Laboratorio loco
+# descripcion: Instrumentos y experimentos de un científico despistado.
+# tono: educativo
+# tematica: Ciencia
+# presupuesto: 25
+# rondas: 10
+# clasificacion: elementos
+---
+🔬 | Microscopio de precisión | Hace gigantes a las cosas más pequeñas. | microscope
+🧪 | Tubo de ensayo burbujeante | Cambia de color cuando nadie mira. | test tube bubbling
+⚗️ | Matraz de destilación | Gotea muy despacio y con mucha solemnidad. | distillation flask
+🧬 | Modelo de ADN | Una escalera retorcida con las instrucciones de la vida. | dna model helix
+🔭 | Telescopio de jardín | Ve planetas y también a los vecinos. | telescope
+🌡️ | Termómetro de laboratorio | Mide desde el hielo hasta el vapor. | lab thermometer
+🧲 | Imán gigante | Atrae todo lo que no deberías perder. | big magnet
+⚛️ | Átomo de juguete | Pequeñísimo en la realidad, enorme en el escritorio. | atom model
+🥽 | Gafas de protección | Obligatorias aunque solo mires. | safety goggles
+🥼 | Bata blanca | Con manchas de experimentos que salieron raro. | lab coat
+📏 | Regla milimetrada | Todo se mide al milímetro. | ruler
+🔋 | Pila de patata | Da energía para encender una bombilla pequeña. | potato battery
+🌋 | Volcán de bicarbonato | Una erupción espuma y vinagre garantizada. | baking soda volcano
+🦠 | Cultivo curioso | Mejor no abrir la placa hasta el lunes. | petri dish
+🌍 | Globo terráqueo | Gira sin fin sobre su eje. | globe earth
+🪐 | Maqueta del sistema solar | Los planetas cuelgan de hilos de pescar. | solar system model
+📊 | Gráfica de resultados | Sube, baja y confirma la hipótesis. | science chart graph

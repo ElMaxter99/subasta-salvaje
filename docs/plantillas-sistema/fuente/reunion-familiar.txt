@@ -1,0 +1,24 @@
+# nombre: Reunión familiar
+# descripcion: Primos, abuelos y sobremesas eternas en la comida de domingo.
+# tono: familiar
+# tematica: Familia
+# presupuesto: 20
+# rondas: 10
+# clasificacion: elementos
+---
+🍲 | Cocido de la abuela | Tarda toda la mañana y no sobra ni una cucharada. | grandma stew
+👵 | Sillón de la abuela | Intocable, sagrado y con ganchillo. | armchair crochet
+📸 | Álbum de fotos | Con peinados que ya nadie recuerda. | photo album
+🎲 | Parchís de la sobremesa | Una ficha comida y todos gritan a la vez. | board game ludo
+🍰 | Tarta de manzana | Receta secreta que nadie ha logrado copiar. | apple pie
+🧶 | Jersey con renos | Un regalo tejido con mucho cariño. | knitted sweater
+📞 | Videollamada con los tíos | La imagen se congela con una sonrisa. | video call family
+🧓 | Historias del abuelo | Siempre empiezan igual y acaban diferente. | grandfather stories
+🏡 | Casa del pueblo | Con patio, gallinas y siestas largas. | village house
+🎂 | Cumpleaños de los primos | Cuatro velas, cuarenta voces. | cousins birthday
+🍷 | Sobremesa interminable | Café, anécdotas y nadie se levanta. | long table talk
+🧺 | Cesta de picnic | Tortilla, bocadillos y un mantel a cuadros. | picnic basket
+🚗 | Coche con todos dentro | Siete personas para cinco plazas. | crowded car
+🎶 | Cantar en la cocina | La radio de fondo y las voces fuera de tono. | singing kitchen
+🪞 | Retrato familiar | Todos serios, menos uno que sonríe. | family portrait
+👶 | Cuna de la familia | Pasó por tres generaciones. | baby crib

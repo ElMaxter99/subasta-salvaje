@@ -1,0 +1,118 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Cocina del mundo",
+  "tematica": "Gastronomía",
+  "reglas": {
+    "presupuesto": 25,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Bandeja de sushi",
+      "descripcion": "Pequeñas obras de arte que desaparecen en un bocado.",
+      "emoji": "🍣",
+      "foto": null
+    },
+    {
+      "titulo": "Tacos al pastor",
+      "descripcion": "Con piña, cilantro y mucha salsa.",
+      "emoji": "🌮",
+      "foto": null
+    },
+    {
+      "titulo": "Cuenco de fideos",
+      "descripcion": "Humeante y con la cuchara bien plantada.",
+      "emoji": "🍜",
+      "foto": null
+    },
+    {
+      "titulo": "Paella para quince",
+      "descripcion": "Grande, dorada y con socarrat para repartir.",
+      "emoji": "🥘",
+      "foto": null
+    },
+    {
+      "titulo": "Pizza al horno de leña",
+      "descripcion": "Masa fina y borde chamuscado.",
+      "emoji": "🍕",
+      "foto": null
+    },
+    {
+      "titulo": "Empanadillas al vapor",
+      "descripcion": "Llegan en cestita de bambú.",
+      "emoji": "🥟",
+      "foto": null
+    },
+    {
+      "titulo": "Curry de especias",
+      "descripcion": "Aroma intenso y picante moderado.",
+      "emoji": "🍛",
+      "foto": null
+    },
+    {
+      "titulo": "Falafel crujiente",
+      "descripcion": "Bolitas doradas con salsa de yogur.",
+      "emoji": "🧆",
+      "foto": null
+    },
+    {
+      "titulo": "Cruasán de mantequilla",
+      "descripcion": "Hojaldre fino, desayuno elegante.",
+      "emoji": "🥐",
+      "foto": null
+    },
+    {
+      "titulo": "Burrito gigante",
+      "descripcion": "Relleno de todo lo que había en la nevera.",
+      "emoji": "🌯",
+      "foto": null
+    },
+    {
+      "titulo": "Brocheta a la parrilla",
+      "descripcion": "Carne tierna, verduras y humo.",
+      "emoji": "🍢",
+      "foto": null
+    },
+    {
+      "titulo": "Ensalada griega",
+      "descripcion": "Tomate, pepino, aceitunas y queso feta.",
+      "emoji": "🥗",
+      "foto": null
+    },
+    {
+      "titulo": "Cazuela de guiso",
+      "descripcion": "Cuece a fuego lento desde la mañana.",
+      "emoji": "🍲",
+      "foto": null
+    },
+    {
+      "titulo": "Flan casero",
+      "descripcion": "Tiembla con solo mirarlo.",
+      "emoji": "🍮",
+      "foto": null
+    },
+    {
+      "titulo": "Té de menta",
+      "descripcion": "Se sirve desde muy alto y con paciencia.",
+      "emoji": "🫖",
+      "foto": null
+    },
+    {
+      "titulo": "Gofre belga",
+      "descripcion": "Cubierto de nata, fruta y sirope.",
+      "emoji": "🧇",
+      "foto": null
+    },
+    {
+      "titulo": "Guindilla traicionera",
+      "descripcion": "Parece pequeña, pero no perdona.",
+      "emoji": "🌶️",
+      "foto": null
+    }
+  ]
+}

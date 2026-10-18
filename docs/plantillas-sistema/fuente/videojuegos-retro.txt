@@ -1,0 +1,24 @@
+# nombre: Salón recreativo retro
+# descripcion: Tesoros de una sala de máquinas de los años ochenta y noventa.
+# tono: familiar
+# tematica: Videojuegos
+# presupuesto: 25
+# rondas: 10
+# clasificacion: elementos
+---
+🕹️ | Joystick de arcade | Doce años de partidas dejaron sus huellas. | arcade joystick
+👾 | Marciano pixelado | Baja lentamente y siempre gana al final. | pixel alien invader
+🪙 | Ficha de salón | Una moneda con poderes: una partida más. | arcade token coin
+🎮 | Mando de cable corto | Obliga a jugar con la nariz pegada a la tele. | retro game controller
+🏆 | Récord de la máquina | Tres letras y la gloria de todo el barrio. | high score trophy
+💾 | Disquete de juego | Cargarlo llevaba diez minutos y un rezo. | floppy disk
+📼 | Cartucho soplado | Funciona siempre después de soplarle dos veces. | game cartridge
+🧱 | Ladrillos que caen | Encajan o no, pero siempre aceleran. | falling blocks puzzle
+🍒 | Frutas de la suerte | Las tres iguales y suenan campanas. | slot machine cherries
+👻 | Fantasma de laberinto | Persigue al comecocos por pasillos de neón. | maze ghost
+🔊 | Música de ocho bits | Pitidos que se te quedan en la cabeza toda la semana. | chiptune speaker
+🖥️ | Monitor de tubo | Pesa más que el resto de la casa. | crt monitor
+🔋 | Pilas de repuesto | Siempre se acaban en la fase final. | batteries
+🚀 | Nave de la última fase | Un solo disparo y toda la galaxia a salvo. | pixel spaceship
+🎯 | Código secreto | Arriba, arriba, abajo, abajo y una sorpresa. | secret code buttons
+🥇 | Medalla del campeón | Nadie la ha ganado limpiamente. | gold medal

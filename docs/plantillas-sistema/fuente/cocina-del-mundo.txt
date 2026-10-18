@@ -1,0 +1,25 @@
+# nombre: Cocina del mundo
+# descripcion: Un viaje gastronómico por cinco continentes sin salir de la mesa.
+# tono: familiar
+# tematica: Gastronomía
+# presupuesto: 25
+# rondas: 10
+# clasificacion: elementos
+---
+🍣 | Bandeja de sushi | Pequeñas obras de arte que desaparecen en un bocado. | sushi platter
+🌮 | Tacos al pastor | Con piña, cilantro y mucha salsa. | tacos
+🍜 | Cuenco de fideos | Humeante y con la cuchara bien plantada. | noodle bowl
+🥘 | Paella para quince | Grande, dorada y con socarrat para repartir. | paella pan
+🍕 | Pizza al horno de leña | Masa fina y borde chamuscado. | wood fired pizza
+🥟 | Empanadillas al vapor | Llegan en cestita de bambú. | dumplings steamer
+🍛 | Curry de especias | Aroma intenso y picante moderado. | curry bowl
+🧆 | Falafel crujiente | Bolitas doradas con salsa de yogur. | falafel
+🥐 | Cruasán de mantequilla | Hojaldre fino, desayuno elegante. | butter croissant
+🌯 | Burrito gigante | Relleno de todo lo que había en la nevera. | burrito
+🍢 | Brocheta a la parrilla | Carne tierna, verduras y humo. | grilled skewers
+🥗 | Ensalada griega | Tomate, pepino, aceitunas y queso feta. | greek salad
+🍲 | Cazuela de guiso | Cuece a fuego lento desde la mañana. | stew pot
+🍮 | Flan casero | Tiembla con solo mirarlo. | caramel flan
+🫖 | Té de menta | Se sirve desde muy alto y con paciencia. | mint tea pot
+🧇 | Gofre belga | Cubierto de nata, fruta y sirope. | belgian waffle
+🌶️ | Guindilla traicionera | Parece pequeña, pero no perdona. | chili pepper

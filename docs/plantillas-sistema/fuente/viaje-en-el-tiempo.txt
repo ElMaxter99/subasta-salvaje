@@ -1,0 +1,26 @@
+# nombre: Viaje en el tiempo
+# descripcion: Objetos de distintas épocas de la historia, de la cueva al siglo XX.
+# tono: educativo
+# tematica: Historia
+# presupuesto: 25
+# rondas: 10
+# clasificacion: elementos
+---
+🔥 | Hoguera de la cueva | El primer invento que reunió a la familia. | campfire cave
+🏺 | Ánfora griega | Guardaba aceite, vino y secretos de la antigüedad. | greek amphora
+🏛️ | Columnata del foro | Allí se debatía todo, hasta lo que no importaba. | roman forum columns
+⚔️ | Espada de caballero | Brilla mucho en las películas y pesa más de lo que parece. | medieval sword
+📜 | Pergamino con sello | Una declaración importante, escrita con pluma. | scroll wax seal
+🏰 | Castillo con foso | Murallas altas y un puente levadizo. | castle moat
+⚓ | Ancla de carabela | Sujetó barcos que cruzaron océanos desconocidos. | ship anchor
+🧭 | Brújula de explorador | Siempre apunta al norte, aunque estés perdido. | explorer compass
+🖨️ | Imprenta de tipos móviles | Hizo posible que los libros llegaran a todas partes. | printing press
+🎩 | Sombrero de copa | Elegancia de otro siglo. | top hat
+🚂 | Locomotora de vapor | Resopla, silba y mueve el mundo entero. | steam locomotive
+💡 | Bombilla de filamento | La noche dejó de ser tan oscura. | incandescent light bulb
+☎️ | Teléfono de disco | Para marcar un número hay que tener paciencia. | rotary telephone
+📻 | Radio de válvulas | Las voces viajaban por el aire. | vintage radio
+✈️ | Biplano de madera | Voló unos metros e inauguró un siglo. | biplane
+🗿 | Estatua de piedra | Sigue en pie después de mil años. | stone statue
+🧱 | Muralla antigua | Protegía una ciudad entera. | ancient wall
+🛖 | Choza prehistórica | Tejado de paja y suelo de barro. | prehistoric hut

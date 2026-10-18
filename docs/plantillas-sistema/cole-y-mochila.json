@@ -1,0 +1,112 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Vuelta al cole",
+  "tematica": "Colegio",
+  "reglas": {
+    "presupuesto": 20,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Mochila con ruedas",
+      "descripcion": "Ruidosa, enorme y llena de bocadillos.",
+      "emoji": "🎒",
+      "foto": null
+    },
+    {
+      "titulo": "Lápiz mordisqueado",
+      "descripcion": "Tiene marcas de dientes y mucha historia.",
+      "emoji": "✏️",
+      "foto": null
+    },
+    {
+      "titulo": "Regla de plástico",
+      "descripcion": "Dibuja líneas casi derechas.",
+      "emoji": "📏",
+      "foto": null
+    },
+    {
+      "titulo": "Libro de texto",
+      "descripcion": "Pesa más que el niño.",
+      "emoji": "📚",
+      "foto": null
+    },
+    {
+      "titulo": "Caja de ceras",
+      "descripcion": "Faltan los colores bonitos.",
+      "emoji": "🖍️",
+      "foto": null
+    },
+    {
+      "titulo": "Manzana para la profe",
+      "descripcion": "Un detalle que nunca falla.",
+      "emoji": "🍎",
+      "foto": null
+    },
+    {
+      "titulo": "Timbre del recreo",
+      "descripcion": "El sonido más esperado del día.",
+      "emoji": "🔔",
+      "foto": null
+    },
+    {
+      "titulo": "Ábaco de colores",
+      "descripcion": "Cuentas que enseñan a contar.",
+      "emoji": "🧮",
+      "foto": null
+    },
+    {
+      "titulo": "Cuaderno de cuadros",
+      "descripcion": "Con la primera hoja perfecta y las demás no.",
+      "emoji": "📓",
+      "foto": null
+    },
+    {
+      "titulo": "Brick de zumo",
+      "descripcion": "Siempre se aprieta de más.",
+      "emoji": "🧃",
+      "foto": null
+    },
+    {
+      "titulo": "Balón del patio",
+      "descripcion": "Rebota hasta el tejado y no vuelve.",
+      "emoji": "⚽",
+      "foto": null
+    },
+    {
+      "titulo": "Bolígrafo de cuatro colores",
+      "descripcion": "Uno funciona y tres no.",
+      "emoji": "🖊️",
+      "foto": null
+    },
+    {
+      "titulo": "Pizarra con tizas",
+      "descripcion": "Polvo blanco por todos lados.",
+      "emoji": "🧑‍🏫",
+      "foto": null
+    },
+    {
+      "titulo": "Bocadillo envuelto",
+      "descripcion": "Aplastado en el fondo de la mochila.",
+      "emoji": "🥪",
+      "foto": null
+    },
+    {
+      "titulo": "Autobús escolar",
+      "descripcion": "Cantos, risas y mucho ruido.",
+      "emoji": "🚌",
+      "foto": null
+    },
+    {
+      "titulo": "Pinceles y acuarelas",
+      "descripcion": "Colores que acaban en la camiseta.",
+      "emoji": "🎨",
+      "foto": null
+    }
+  ]
+}

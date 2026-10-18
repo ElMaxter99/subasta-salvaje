@@ -4,6 +4,8 @@ import { requireSuperadmin } from '@/lib/auth/host';
 import { assetCdnHosts } from '@/lib/config/env';
 import { DomainError } from '@/lib/domain/errors';
 import { getContext } from '@/lib/services/context';
+import { parseBundle } from '@/lib/domain/system-template-pack';
+import { importSystemTemplates } from '@/lib/services/system-template-import';
 import { checkTemplateImages, createTemplateFromCollection, deleteSystemTemplate, getSystemTemplate, listSystemTemplates, saveSystemTemplate, setSystemTemplateStatus, validateSystemTemplateData } from '@/lib/services/system-template-service';
 
 export const maxDuration = 60;
@@ -20,6 +22,7 @@ const opSchema = z.discriminatedUnion('op', [
   z.object({ op: z.literal('delete'), id: z.string().uuid() }),
   z.object({ op: z.literal('get'), id: z.string().uuid() }),
   z.object({ op: z.literal('check'), id: z.string().uuid() }),
+  z.object({ op: z.literal('import_many') }).passthrough(),
   z.object({ op: z.literal('from_collection'), collection: z.string(), house_image_id: z.string().uuid().nullish(), cover_item_id: z.string().uuid().nullish() }),
 ]);
 
@@ -46,6 +49,12 @@ export const POST = handle(async (req: Request) => {
       return json({ ok: true });
     case 'get':
       return json(await getSystemTemplate(ctx, body.data.id, { admin: true }));
+    case 'import_many': {
+      // Varias plantillas a la vez (lote .json): siempre en BORRADOR; publicar es una acción manual aparte.
+      const r = parseBundle(JSON.stringify((raw as { lote?: unknown }).lote ?? null));
+      if (!r.ok) throw new DomainError('invalid_input', r.error);
+      return json({ results: await importSystemTemplates(ctx, actor, r.bundle.plantillas, { publish: false }) });
+    }
     case 'from_collection': {
       const { op: _o, ...rest } = body.data;
       void _o;

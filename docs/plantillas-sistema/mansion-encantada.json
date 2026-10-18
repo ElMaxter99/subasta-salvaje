@@ -1,0 +1,112 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Mansión encantada",
+  "tematica": "Casa encantada",
+  "reglas": {
+    "presupuesto": 25,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Fantasma tímido",
+      "descripcion": "Aparece, se asusta él solo y desaparece.",
+      "emoji": "👻",
+      "foto": null
+    },
+    {
+      "titulo": "Candelabro flotante",
+      "descripcion": "Ilumina el pasillo sin que nadie lo sostenga.",
+      "emoji": "🕯️",
+      "foto": null
+    },
+    {
+      "titulo": "Espejo que murmura",
+      "descripcion": "Siempre tiene una opinión sobre tu peinado.",
+      "emoji": "🪞",
+      "foto": null
+    },
+    {
+      "titulo": "Murciélago de ático",
+      "descripcion": "Cuelga cabeza abajo y no paga alquiler.",
+      "emoji": "🦇",
+      "foto": null
+    },
+    {
+      "titulo": "Telaraña centenaria",
+      "descripcion": "Nadie se atreve a quitarla.",
+      "emoji": "🕸️",
+      "foto": null
+    },
+    {
+      "titulo": "Lápida decorativa",
+      "descripcion": "Con un epitafio de lo más gracioso.",
+      "emoji": "🪦",
+      "foto": null
+    },
+    {
+      "titulo": "Bruja del tejado",
+      "descripcion": "Viaja en una escoba de bajo consumo.",
+      "emoji": "🧙",
+      "foto": null
+    },
+    {
+      "titulo": "Puerta que cruje",
+      "descripcion": "Se abre sola con un chirrido dramático.",
+      "emoji": "🚪",
+      "foto": null
+    },
+    {
+      "titulo": "Calabaza tallada",
+      "descripcion": "Sonríe de forma inquietante.",
+      "emoji": "🎃",
+      "foto": null
+    },
+    {
+      "titulo": "Libro de hechizos",
+      "descripcion": "Escrito con una caligrafía imposible.",
+      "emoji": "📖",
+      "foto": null
+    },
+    {
+      "titulo": "Mecedora vacía",
+      "descripcion": "Se balancea sin que nadie la toque.",
+      "emoji": "🪑",
+      "foto": null
+    },
+    {
+      "titulo": "Poción burbujeante",
+      "descripcion": "Huele a menta y a calcetín.",
+      "emoji": "🧪",
+      "foto": null
+    },
+    {
+      "titulo": "Reloj de péndulo",
+      "descripcion": "Da trece campanadas a medianoche.",
+      "emoji": "🕰️",
+      "foto": null
+    },
+    {
+      "titulo": "Gato negro",
+      "descripcion": "Observa todo desde la ventana.",
+      "emoji": "🐈‍⬛",
+      "foto": null
+    },
+    {
+      "titulo": "Retrato con ojos que siguen",
+      "descripcion": "Ven cada movimiento del salón.",
+      "emoji": "🖼️",
+      "foto": null
+    },
+    {
+      "titulo": "Sótano de vinos añejos",
+      "descripcion": "Botellas con más de cien años de misterio.",
+      "emoji": "🍷",
+      "foto": null
+    }
+  ]
+}

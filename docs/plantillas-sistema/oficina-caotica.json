@@ -1,0 +1,118 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Oficina caótica",
+  "tematica": "Oficina",
+  "reglas": {
+    "presupuesto": 25,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Cafetera comunitaria",
+      "descripcion": "Cuando falta, para toda la plantilla.",
+      "emoji": "☕",
+      "foto": null
+    },
+    {
+      "titulo": "Impresora rebelde",
+      "descripcion": "Se atasca justo cuando hay prisa.",
+      "emoji": "🖨️",
+      "foto": null
+    },
+    {
+      "titulo": "Planta de escritorio",
+      "descripcion": "Sobrevive sin agua a base de ignorancia.",
+      "emoji": "🪴",
+      "foto": null
+    },
+    {
+      "titulo": "Clip infinito",
+      "descripcion": "Uno solo sirve para abrir, sujetar y rascarse.",
+      "emoji": "📎",
+      "foto": null
+    },
+    {
+      "titulo": "Archivador misterioso",
+      "descripcion": "Nadie sabe lo que contiene.",
+      "emoji": "🗂️",
+      "foto": null
+    },
+    {
+      "titulo": "Teléfono de la centralita",
+      "descripcion": "Suena justo al salir por la puerta.",
+      "emoji": "📞",
+      "foto": null
+    },
+    {
+      "titulo": "Silla giratoria",
+      "descripcion": "Da vueltas hasta marearse con elegancia.",
+      "emoji": "💺",
+      "foto": null
+    },
+    {
+      "titulo": "Bandeja de pasteles",
+      "descripcion": "Desaparece antes de las once.",
+      "emoji": "🧁",
+      "foto": null
+    },
+    {
+      "titulo": "Calendario de reuniones",
+      "descripcion": "Hay tantas que no queda tiempo para trabajar.",
+      "emoji": "📅",
+      "foto": null
+    },
+    {
+      "titulo": "Ratón inalámbrico",
+      "descripcion": "Siempre falta una pila.",
+      "emoji": "🖱️",
+      "foto": null
+    },
+    {
+      "titulo": "Presentación de diapositivas",
+      "descripcion": "Cincuenta páginas y una sola idea.",
+      "emoji": "📊",
+      "foto": null
+    },
+    {
+      "titulo": "Alargador mágico",
+      "descripcion": "Alimenta a media planta.",
+      "emoji": "🔌",
+      "foto": null
+    },
+    {
+      "titulo": "Táper del microondas",
+      "descripcion": "Llena el pasillo de olor a lentejas.",
+      "emoji": "🥡",
+      "foto": null
+    },
+    {
+      "titulo": "Tablón de anuncios",
+      "descripcion": "Lleno de notas que nadie lee.",
+      "emoji": "📌",
+      "foto": null
+    },
+    {
+      "titulo": "Papelera de reciclaje",
+      "descripcion": "Rebosa de papeles y buenos propósitos.",
+      "emoji": "🗑️",
+      "foto": null
+    },
+    {
+      "titulo": "Alarma del lunes",
+      "descripcion": "La más odiada del mundo.",
+      "emoji": "⏰",
+      "foto": null
+    },
+    {
+      "titulo": "Despacho con vistas",
+      "descripcion": "Dan a la pared de enfrente.",
+      "emoji": "🪟",
+      "foto": null
+    }
+  ]
+}

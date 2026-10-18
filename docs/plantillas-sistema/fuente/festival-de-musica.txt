@@ -1,0 +1,24 @@
+# nombre: Festival de música
+# descripcion: Escenarios, instrumentos y recuerdos de un fin de semana de conciertos.
+# tono: familiar
+# tematica: Música
+# presupuesto: 25
+# rondas: 10
+# clasificacion: elementos
+---
+🎸 | Guitarra eléctrica | Tres acordes y un solo interminable. | electric guitar
+🥁 | Batería completa | Cada golpe hace temblar la tienda de campaña. | drum kit
+🎹 | Teclado de escenario | Teclas blancas, negras y muchos efectos. | keyboard synthesizer
+🎤 | Micrófono de cantante | Aguanta gritos, bises y lluvias de confeti. | stage microphone
+🎧 | Auriculares de DJ | Un oído abierto y otro cerrado, como manda la tradición. | dj headphones
+🎺 | Trompeta brillante | Anuncia que ha empezado el mejor momento. | trumpet
+🎻 | Violín de cámara | Se afina durante media hora. | violin
+🪕 | Banjo festivo | Hace bailar a cualquiera aunque no quiera. | banjo
+🎷 | Saxofón dorado | Un solo suave en la noche. | saxophone
+🔊 | Altavoz gigante | Hace vibrar el pecho a tres calles. | big speaker
+🎟️ | Pulsera del festival | No se quita hasta el próximo verano. | festival wristband
+⛺ | Tienda del festival | Montada entre mil más iguales. | festival tent
+🙌 | Manos en alto | Cuando suena la canción que todos esperaban. | hands up crowd
+💡 | Focos de colores | Barren el escenario al ritmo del bajo. | stage lights
+📀 | Disco de vinilo | Se escucha con un crujido muy querido. | vinyl record
+🪘 | Tambor de percusión | Marca el ritmo del público entero. | hand drum

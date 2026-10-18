@@ -1,0 +1,24 @@
+# nombre: Apocalipsis zombi (muy light)
+# descripcion: Qué objetos necesitas para sobrevivir a un apocalipsis con mucho humor.
+# tono: humor negro suave
+# tematica: Supervivencia
+# presupuesto: 30
+# rondas: 10
+# clasificacion: elementos
+---
+🧟 | Zombi despistado | Camina sin rumbo y se queda mirando el escaparate. | confused zombie
+🏏 | Bate de béisbol | Resuelve cualquier problema de forma educada. | baseball bat
+🥫 | Lata de conservas | Fecha de caducidad ilegible, valor inestimable. | canned food
+🔦 | Linterna con pilas | Se apaga justo en la escena más tensa. | flashlight
+🧻 | Rollo de papel higiénico | Moneda oficial del fin del mundo. | toilet paper roll
+🚪 | Puerta atrancada | Aguanta un rato con una silla. | barricaded door
+🔊 | Radio de emergencia | Solo se escucha una canción. | emergency radio
+🎒 | Mochila de supervivencia | Lleva todo menos lo que de verdad necesitas. | survival backpack
+🏪 | Supermercado abandonado | Estantes vacíos y una oferta olvidada. | empty supermarket
+🛒 | Carrito de la compra | Vehículo oficial de la fuga. | shopping cart
+🗺️ | Mapa del refugio | Con una cruz y muchos garabatos. | shelter map
+🧯 | Extintor | Útil para todo, incluso para presumir. | fire extinguisher
+🚲 | Bicicleta silenciosa | No hace ruido y nunca se queda sin gasolina. | bicycle
+🪓 | Hacha de leña | Corta madera para la hoguera. | firewood axe
+📻 | Walkie-talkie | «¿Me recibes?» Y nadie responde. | walkie talkie
+🍫 | Chocolate escondido | El mejor botín del apocalipsis. | hidden chocolate

@@ -1,0 +1,24 @@
+# nombre: Vuelta al cole
+# descripcion: Mochilas, estuches y recreos para volver a clase.
+# tono: familiar
+# tematica: Colegio
+# presupuesto: 20
+# rondas: 10
+# clasificacion: elementos
+---
+🎒 | Mochila con ruedas | Ruidosa, enorme y llena de bocadillos. | school backpack
+✏️ | Lápiz mordisqueado | Tiene marcas de dientes y mucha historia. | chewed pencil
+📏 | Regla de plástico | Dibuja líneas casi derechas. | school ruler
+📚 | Libro de texto | Pesa más que el niño. | textbook
+🖍️ | Caja de ceras | Faltan los colores bonitos. | crayon box
+🍎 | Manzana para la profe | Un detalle que nunca falla. | teacher apple
+🔔 | Timbre del recreo | El sonido más esperado del día. | school bell
+🧮 | Ábaco de colores | Cuentas que enseñan a contar. | abacus
+📓 | Cuaderno de cuadros | Con la primera hoja perfecta y las demás no. | notebook
+🧃 | Brick de zumo | Siempre se aprieta de más. | juice box
+⚽ | Balón del patio | Rebota hasta el tejado y no vuelve. | playground ball
+🖊️ | Bolígrafo de cuatro colores | Uno funciona y tres no. | four color pen
+🧑‍🏫 | Pizarra con tizas | Polvo blanco por todos lados. | blackboard chalk
+🥪 | Bocadillo envuelto | Aplastado en el fondo de la mochila. | sandwich foil
+🚌 | Autobús escolar | Cantos, risas y mucho ruido. | school bus
+🎨 | Pinceles y acuarelas | Colores que acaban en la camiseta. | watercolors brushes

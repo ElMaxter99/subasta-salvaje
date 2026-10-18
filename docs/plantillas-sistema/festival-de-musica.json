@@ -1,0 +1,112 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Festival de música",
+  "tematica": "Música",
+  "reglas": {
+    "presupuesto": 25,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Guitarra eléctrica",
+      "descripcion": "Tres acordes y un solo interminable.",
+      "emoji": "🎸",
+      "foto": null
+    },
+    {
+      "titulo": "Batería completa",
+      "descripcion": "Cada golpe hace temblar la tienda de campaña.",
+      "emoji": "🥁",
+      "foto": null
+    },
+    {
+      "titulo": "Teclado de escenario",
+      "descripcion": "Teclas blancas, negras y muchos efectos.",
+      "emoji": "🎹",
+      "foto": null
+    },
+    {
+      "titulo": "Micrófono de cantante",
+      "descripcion": "Aguanta gritos, bises y lluvias de confeti.",
+      "emoji": "🎤",
+      "foto": null
+    },
+    {
+      "titulo": "Auriculares de DJ",
+      "descripcion": "Un oído abierto y otro cerrado, como manda la tradición.",
+      "emoji": "🎧",
+      "foto": null
+    },
+    {
+      "titulo": "Trompeta brillante",
+      "descripcion": "Anuncia que ha empezado el mejor momento.",
+      "emoji": "🎺",
+      "foto": null
+    },
+    {
+      "titulo": "Violín de cámara",
+      "descripcion": "Se afina durante media hora.",
+      "emoji": "🎻",
+      "foto": null
+    },
+    {
+      "titulo": "Banjo festivo",
+      "descripcion": "Hace bailar a cualquiera aunque no quiera.",
+      "emoji": "🪕",
+      "foto": null
+    },
+    {
+      "titulo": "Saxofón dorado",
+      "descripcion": "Un solo suave en la noche.",
+      "emoji": "🎷",
+      "foto": null
+    },
+    {
+      "titulo": "Altavoz gigante",
+      "descripcion": "Hace vibrar el pecho a tres calles.",
+      "emoji": "🔊",
+      "foto": null
+    },
+    {
+      "titulo": "Pulsera del festival",
+      "descripcion": "No se quita hasta el próximo verano.",
+      "emoji": "🎟️",
+      "foto": null
+    },
+    {
+      "titulo": "Tienda del festival",
+      "descripcion": "Montada entre mil más iguales.",
+      "emoji": "⛺",
+      "foto": null
+    },
+    {
+      "titulo": "Manos en alto",
+      "descripcion": "Cuando suena la canción que todos esperaban.",
+      "emoji": "🙌",
+      "foto": null
+    },
+    {
+      "titulo": "Focos de colores",
+      "descripcion": "Barren el escenario al ritmo del bajo.",
+      "emoji": "💡",
+      "foto": null
+    },
+    {
+      "titulo": "Disco de vinilo",
+      "descripcion": "Se escucha con un crujido muy querido.",
+      "emoji": "📀",
+      "foto": null
+    },
+    {
+      "titulo": "Tambor de percusión",
+      "descripcion": "Marca el ritmo del público entero.",
+      "emoji": "🪘",
+      "foto": null
+    }
+  ]
+}
