@@ -20,5 +20,5 @@ Decisión del propietario: el enlace de invitación **muestra el código de sala
 
 ## Pendiente / límites
 - Define **`NEXT_PUBLIC_SITE_URL`** en Vercel (tu dominio) para que las URL de `og:image` sean absolutas y correctas.
-- Las imágenes usan la fuente por defecto de satori (sin Baloo 2: satori no lee woff2).
+- Las imágenes usan Baloo 2 y Nunito en TTF estáticas (`src/assets/fonts/`, ver `docs/FUENTE-PODIO.md`); si no cargan, la fuente por defecto de satori.
 - **No verificado con rastreadores reales** (WhatsApp, Telegram, X, Facebook, Discord): necesitan un dominio público y suelen cachear la miniatura; para refrescarla usa sus depuradores (Facebook Sharing Debugger, etc.).

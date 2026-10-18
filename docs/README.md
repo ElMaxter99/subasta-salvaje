@@ -31,6 +31,9 @@ una regla, una migración o una decisión, actualiza el documento correspondient
 - [`ESPECTADOR-Y-PODIO.md`](ESPECTADOR-Y-PODIO.md): modo espectador `/watch` e imagen del podio en tres formatos.
 - [`BIBLIOTECA-ETIQUETAS.md`](BIBLIOTECA-ETIQUETAS.md): roles, categorías y etiquetas de la biblioteca, selector en la partida, cobertura y parecidas.
 - [`PLANTILLAS-SISTEMA-CATALOGO.md`](PLANTILLAS-SISTEMA-CATALOGO.md): catálogo de 36 partidas del sistema, validador e importador.
+- [`CASAR-FOTOS-PLANTILLAS.md`](CASAR-FOTOS-PLANTILLAS.md): motor de casamiento foto↔elemento de plantilla, script y botón del admin.
+- [`FUENTES-OPENVERSE-MUSEOS.md`](FUENTES-OPENVERSE-MUSEOS.md): descarga de imágenes CC0/PDM de Openverse y museos, licencias y límites.
+- [`FUENTE-PODIO.md`](FUENTE-PODIO.md): fuentes TTF (Baloo 2, Nunito) de la imagen del podio y las OG, origen, licencia y regeneración.
 - [`OBSERVABILIDAD.md`](OBSERVABILIDAD.md): errores y métricas propios, panel, alertas, privacidad y límites.
 - [`CI.md`](CI.md): integración continua en GitHub Actions (qué ejecuta y qué no se ha podido verificar).
 - [`SEGURIDAD-PLAY.md`](SEGURIDAD-PLAY.md): revisión de seguridad de las rutas `/api/play/*` (hallazgos, arreglos y lo no resuelto).

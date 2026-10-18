@@ -83,8 +83,7 @@ contenedores de ancho fijo. En `landscape` hay sitio para 3 premios; en `square`
   una `Response` PNG (antes `ImageResponse`; los tests existentes siguen valiendo). API: `PODIUM_FORMATS`, `PODIUM_SIZES`, `parsePodiumFormat`,
   `podiumRows`, `plainText`, `podiumDate`.
 - **Sin red en ejecución:** logo, mascota e iconos se leen de `public/assets` y se convierten a PNG con `sharp` (cacheados en memoria); las casas, de
-  Storage. **Tipografía:** la que trae `next/og` (Geist Regular). No se puede usar Baloo 2 (satori no lee woff2 y no hay `.ttf` en el repo); el
-  «negrita» es solo una ilusión de contorno que satori puede no aplicar. Sin descargar nada.
+  Storage. **Tipografía:** Baloo 2 (títulos, nombres y cifras, peso 800) y Nunito (cuerpo), en TTF estáticas empaquetadas en `src/assets/fonts/` con negrita real (ver `docs/FUENTE-PODIO.md`); si no cargan, se vuelve a Geist con la negrita simulada por contorno.
 - **Caché:** en proceso (hasta 24 PNG, clave = id de partida + formato + `version` de la instantánea, así que una imagen nueva invalida sola) y HTTP
   `max-age=30, s-maxage=120, stale-while-revalidate=300`; si alguna casa aún se está generando (`generating`), no se cachea en proceso y el CDN solo
   10 s.
