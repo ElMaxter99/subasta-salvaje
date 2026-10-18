@@ -82,3 +82,9 @@ nueva (`image_versions.parent_version_id`); el anfitrión puede restaurar versio
 - Solo en modo móviles y subasta abierta (no en «sobre cerrado», donde ya solo hay una puja). El jugador pulsa «Ceder la puja (no sigo)»: queda registrado en `auction_yields`, no puede volver a pujar por ese elemento desde el móvil (`already_yielded`; el anfitrión sí puede registrar pujas a mano) y el líder no puede cederla (`yield_leader`). Repetir la petición es inocuo.
 - «Quedan por ceder» = jugadores conectados, distintos del líder, con saldo para superar la puja y la mínima, que no han cedido (`ss_yield_pending`). Cuando no queda ninguno: con **adjudicación automática** se adjudica al instante por `ss_award_core` (cobro único, `auto_reason = 'all_yielded'`); sin ella, el panel del anfitrión avisa («Ya puedes cerrar y adjudicar»). Si nadie había pujado y la **subasta automática** está activa, el elemento pasa a *perdido* sin esperar al reloj de «sin pujas».
 - La instantánea añade `auction.yielded` y `auction.all_yielded`; la TV muestra «Han cedido: …». Nunca toca saldos por sí misma.
+
+## Estadísticas y premios por jugador (migración 9400)
+- Con la partida terminada, la instantánea incluye `player_stats` (`ss_player_stats`, solo lectura): pujas vigentes, puja más alta, subastas en las que pujó, elementos ganados, gasto y cesiones. Los «premios» (`computeAwards`) se calculan en el cliente solo para presentarlos: exigen un mínimo, comparten empates y no afectan a la clasificación ni a los saldos.
+
+## Atajos del panel del anfitrión
+- `A`/`R`/`C`/`D`/`X` (ver README). Son solo acceso rápido a las mismas acciones del panel: adjudicar y cancelar abren su diálogo de confirmación, así que el cobro sigue siendo una acción explícita y única.

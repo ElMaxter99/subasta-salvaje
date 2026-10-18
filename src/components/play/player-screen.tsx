@@ -3,7 +3,7 @@
 import { SoundToggle } from '@/components/ui/sound-toggle';
 import { usePlayerSounds } from '@/lib/audio/use-audio';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useSyncExternalStore } from 'react';
 import { Crown, LogOut, Pause, Trophy } from 'lucide-react';
 import { BidPad } from './bid-pad';
 import { ReactionBar } from './reaction-bar';
@@ -21,6 +21,20 @@ import { OutbidAlert } from './outbid-alert';
 import { YieldButton } from './yield-button';
 import { AutoRunClock } from '@/components/screen/auto-run-clock';
 import { formatAmount, formatOhros } from '@/lib/domain/money';
+
+/**
+ * ¿Caben las barras fijas (cabecera y pad de pujas)? Con el texto muy grande o en horizontal ocuparían casi toda la pantalla y
+ * taparían el contenido (WCAG 1.4.4/1.4.10), así que entonces dejan de ser sticky. En CSS no se puede: `rem` en una media query
+ * no sigue el tamaño de letra del usuario, por eso se mide aquí (alto de ventana ≥ 32 rem reales).
+ */
+function subscribeViewport(cb: () => void) {
+  window.addEventListener('resize', cb);
+  return () => window.removeEventListener('resize', cb);
+}
+const fixedBarsFit = () => window.innerHeight >= 32 * (parseFloat(getComputedStyle(document.documentElement).fontSize) || 16);
+function useFixedBars() {
+  return useSyncExternalStore(subscribeViewport, fixedBarsFit, () => true);
+}
 
 /** Paso 2: móvil identificado como un jugador. */
 export function PlayerScreen({
@@ -48,6 +62,7 @@ export function PlayerScreen({
   const countdown = useAutoAwardCountdown(snapshot);
   usePlayerSounds(snapshot, me);
   const [confirmLeave, setConfirmLeave] = useState(false);
+  const fixedBars = useFixedBars();
   const nameOf = (id: string | null) => players.find((p) => p.id === id)?.name ?? 'Alguien';
 
   const open = auction?.status === 'open' && game.status === 'active';
@@ -67,7 +82,7 @@ export function PlayerScreen({
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col">
-      <header className="z-30 border-b border-white/10 bg-night-900/95 px-4 pb-3 pt-3 backdrop-blur [@media(min-height:32rem)]:sticky [@media(min-height:32rem)]:top-0">
+      <header className={`z-30 border-b border-white/10 bg-night-900/95 px-4 pb-3 pt-3 backdrop-blur ${fixedBars ? 'sticky top-0' : ''}`}>
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h1 className="flex min-w-0 items-center gap-2 text-lg font-bold">
             <span aria-hidden className="size-5 shrink-0 rounded-full border-2 border-white/40" style={{ background: me.color }} />
@@ -76,7 +91,7 @@ export function PlayerScreen({
           <button
             type="button"
             onClick={() => setConfirmLeave(true)}
-            className="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-xl border border-white/20 px-3 text-sm font-bold text-white/85 hover:bg-white/10"
+            className="inline-flex min-h-11 max-w-full items-center gap-1.5 rounded-xl border border-white/20 px-3 py-1 text-left text-sm font-bold text-white/85 hover:bg-white/10"
           >
             <LogOut className="size-4" aria-hidden /> No soy yo / Salir
           </button>
@@ -131,7 +146,7 @@ export function PlayerScreen({
 
         {open ? (
           <section aria-label="Subasta en curso" className="space-y-4">
-            <div className="flex items-center gap-4 rounded-3xl border border-white/10 bg-night-800 p-4">
+            <div className="flex flex-wrap items-center gap-4 rounded-3xl border border-white/10 bg-night-800 p-4">
               {auction.item.image_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={auction.item.image_url} alt="" className="size-20 shrink-0 rounded-2xl object-cover" />
@@ -140,8 +155,8 @@ export function PlayerScreen({
                   {auction.item.emoji ?? '🎁'}
                 </span>
               )}
-              <div className="min-w-0">
-                <h2 className="font-display text-2xl leading-tight">{auction.item.name}</h2>
+              <div className="min-w-0 flex-1 basis-40">
+                <h2 className="break-words font-display text-2xl leading-tight">{auction.item.name}</h2>
                 {auction.item.description ? <p className="mt-1 line-clamp-3 text-sm text-white/70">{auction.item.description}</p> : null}
               </div>
             </div>
@@ -155,7 +170,7 @@ export function PlayerScreen({
               <p className="font-display text-6xl leading-tight text-gold" data-testid="current-bid">
                 {blind ? '¿¿ ??' : hasBids ? <Ohros cents={auction.current_bid_cents} /> : '—'}
               </p>
-              <p className="mt-1 flex items-center justify-center gap-2 text-lg font-bold" data-testid="leader">
+              <p className="mt-1 flex flex-wrap items-center justify-center gap-x-2 text-lg font-bold" data-testid="leader">
                 {sealed && blind ? (
                   <>{sealedDone ? '¡Tu sobre está enviado!' : 'Una sola puja: ¡piénsala bien!'} · {auction.bids_count ?? 0} {auction.bids_count === 1 ? 'sobre' : 'sobres'}</>
                 ) : blind ? (
@@ -259,7 +274,7 @@ export function PlayerScreen({
       </main>
 
       {open ? (
-        <div className="z-20 space-y-2 [@media(min-height:32rem)]:sticky [@media(min-height:32rem)]:bottom-0 border-t border-white/10 bg-night-900/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+        <div className={`z-20 space-y-2 border-t border-white/10 bg-night-900/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur ${fixedBars ? 'sticky bottom-0' : ''}`}>
           {!sealed && !leading ? <YieldButton roomCode={roomCode} auctionId={auction.id} yielded={yielded} onSnapshot={onSnapshot} onNotPlayer={onNotPlayer} /> : null}
           <BidPad
             roomCode={roomCode}

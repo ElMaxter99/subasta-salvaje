@@ -38,11 +38,11 @@ Tres vistas de estado: `ss_get_state` con `view` = `public` (TV, móviles, resul
 |---|---|
 | Partida | `ss_create_game`, `ss_update_game`, `ss_game_status` (start/pause/resume/finish), `ss_set_play_mode`, `ss_set_image_mode`, `ss_set_join_policy`, `ss_set_auto_award`, `ss_set_wild`, `ss_delete_game`, `ss_wipe_game`, `ss_expired_games`, `ss_purge_expired_game`, `ss_game_activity` |
 | Jugadores/catálogo | `ss_player_op` (add/update/remove/reorder), `ss_adjust_votes`, `ss_item_op`, `ss_release_player` |
-| Móviles | `ss_identify_player`, `ss_claim_player`, `ss_join_new_player`, `ss_player_bid`, `ss_gallery_vote` |
+| Móviles | `ss_identify_player`, `ss_claim_player`, `ss_join_new_player`, `ss_player_bid`, `ss_yield_bid`, `ss_send_reaction`, `ss_gallery_vote` |
 | Subasta | `ss_announce` (con evento), `ss_place_bid`/`ss_bid_internal`, `ss_undo_bid`, `ss_auction_state` (close/reopen/cancel/clear), `ss_award` → `ss_award_core` (único), `ss_auto_award`, `ss_undo_award`, `ss_wild_tax` |
 | Galería | `ss_gallery_vote`, `ss_gallery_set` (cerrar) |
 | Imágenes | `ss_request_image`, `ss_retry_image_job`, `ss_restore_version`, `ss_add_uploaded_version`, `ss_set_initial_all`, `ss_apply_initial_image`, `ss_apply_default_image`, `ss_claim_image_job`, `ss_complete_image_job`, `ss_fail_image_job`, `ss_pending_job_count`, `ss_reserve_image_quota`, `ss_image_usage` |
-| Lectura | `ss_get_state` (envoltorio) sobre `ss_get_state_base`, `ss_list_games` |
+| Lectura | `ss_get_state` (pila de envoltorios) sobre `ss_get_state_base`, `ss_list_games`, `ss_get_replay`, `ss_player_stats`, `ss_export_game` |
 
 ## Migraciones (orden, en `supabase/migrations/`)
 Cada cambio funcional = una migración portable + otra `_security_` (permisos). Las `_security_` solo se aplican en Supabase.
@@ -50,13 +50,15 @@ Cada cambio funcional = una migración portable + otra `_security_` (permisos). 
 `0800/0900` política de altas y cuota de imágenes → `1000/1100` adjudicación automática → `1200/1300` modo de imágenes →
 `1400/1500` borrado de partidas → `1600/1700` imagen inicial para actuales/nuevos → `1800/1900` eventos sorpresa, deshacer
 adjudicación y galería (`ss_get_state` pasa a envoltorio sobre `ss_get_state_base`; tabla `gallery_votes`) → `2000/2100` imagen base compartida (job `base`) → `2200/2300` superadmin (`app_settings`, `host_profiles`, `host_invites`, `admin_audit`; funciones `ss_settings_*`, `ss_host_access`, `ss_host_ai_allowed`, `ss_admin_*`; `image_usage` sin FK a `games`) → `2400/2500` fotos de elementos (`ss_set_item_image`) → `2600/2700` rondas máximas, pujas enteras, imagen inicial obligatoria y subasta automática (`ss_set_game_rules`, `ss_set_auto_run`, `ss_auto_run_tick`, `ss_finish_game_internal`; `ss_get_state` vuelve a envolverse sobre `ss_get_state_prev`).
+Posteriores (resumen; el detalle de cada regla está en `REGLAS-DE-JUEGO.md` y el porqué en `DECISIONES.md`): `2800–6000` (varias: sonido, galería automática, plantillas de anfitrión, proveedores de IA, jugadores activos y `joined`, máximo de jugadores, rondas, pujas enteras, imágenes y cuotas de IA, plantillas del sistema, biblioteca de medios) → `6200` reinicio de partida → `6400/7200` cuota de imágenes del administrador y su liberación → `6600` elementos «perdidos» (sin pujas) → `6800/7400` subasta automática con elemento al azar → `7000` anuladas cuentan como ronda (`ss_rounds_done`) → `7600` fin de partida si todos sin saldo (`finish_reason`) → `8000` reacciones y `8010` repetición (`ss_get_replay`) → `8100` reglas extra (relámpago, sobre cerrado, presupuesto individual, equipos) → `8200` administración (plantilla desde colección, edición en bloque, estadísticas) → `8300` imagen de biblioteca → `8400` exportar partida (`ss_export_game`) → `9000` arreglo de unión (`ss_announce` con «todos sin saldo») → `9100` ceder la puja (`auction_yields`, `ss_yield_bid`) → `9200` endurecimiento de `/api/play/*` → `9400` estadísticas por jugador (`ss_player_stats`). Cada una con su `_security_` en el número siguiente (salvo `9200`, que no lleva «security» en el nombre para que PGlite la aplique).
+`ss_get_state` es hoy una pila de ~17 envoltorios (`…_pre_<x>`), cada uno añade claves a la instantánea; medido en `RENDIMIENTO.md` (≈3–5 ms por lectura), no se consolida a propósito.
 PGlite lleva un registro `ss_migrations` y aplica solo las pendientes (`LEGACY_MARKERS` cubre bases locales antiguas).
 **Nunca edites una migración ya publicada** (el propietario las aplica con `npx supabase db push`); crea una nueva.
 Tras migrar en Supabase: `notify pgrst, 'reload schema';`.
 
 ## Tablas
 `games`, `players`, `auction_items`, `auctions`, `bids`, `purchases`, `image_versions`, `image_jobs`, `game_events`,
-`idempotency_keys`, `image_usage` (cuota diaria/partida; sobrevive al borrado de partidas), `gallery_votes`, `app_settings`, `host_profiles`, `host_invites`, `admin_audit`, `ss_migrations` (solo PGlite). RLS activada con
+`idempotency_keys`, `image_usage` (cuota diaria/partida; sobrevive al borrado de partidas), `gallery_votes`, `game_reactions`, `auction_yields`, `app_settings`, `host_profiles`, `host_invites`, `admin_audit`, `ss_migrations` (solo PGlite). RLS activada con
 política *deny-all* para `anon`/`authenticated`: toda lectura/escritura pasa por el servidor con `service_role`.
 
 ## Rutas

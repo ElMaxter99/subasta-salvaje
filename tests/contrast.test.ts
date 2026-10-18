@@ -47,7 +47,10 @@ describe('contraste de los tokens (vista del jugador)', () => {
       expect(ratio(token('violet-soft'), b)).toBeGreaterThanOrEqual(4.5);
     }
   });
-  it('bordes de campo (white/20 sobre night-950) y foco dorado: UI ≥ 3:1 con el fondo', () => {
+  it('borde de los campos de texto (white/45 sobre night-950) y foco dorado: UI ≥ 3:1 con el fondo (WCAG 1.4.11)', () => {
+    expect(ratio(over(WHITE, 0.45, token('night-950')), token('night-950'))).toBeGreaterThanOrEqual(3);
+    // el borde anterior (white/20) daba solo 1,75:1
+    expect(ratio(over(WHITE, 0.2, token('night-950')), token('night-950'))).toBeLessThan(3);
     expect(ratio(token('gold'), token('night-950'))).toBeGreaterThanOrEqual(3);
     expect(ratio(token('gold'), token('night-700'))).toBeGreaterThanOrEqual(3);
   });

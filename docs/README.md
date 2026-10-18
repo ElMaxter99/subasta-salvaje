@@ -28,6 +28,8 @@ una regla, una migración o una decisión, actualiza el documento correspondient
 - [`BIBLIOTECA.md`](BIBLIOTECA.md): biblioteca de medios del superadmin (subida masiva de imágenes a GitHub y catálogo general de productos reutilizable).
 - [`PLAN-RELLENAR-BIBLIOTECA.md`](PLAN-RELLENAR-BIBLIOTECA.md): plan para llenar la biblioteca con cientos de fotos (fuentes CC0/dominio público, licencias, proceso) y productos de catálogo completos.
 - [`CI.md`](CI.md): integración continua en GitHub Actions (qué ejecuta y qué no se ha podido verificar).
+- [`SEGURIDAD-PLAY.md`](SEGURIDAD-PLAY.md): revisión de seguridad de las rutas `/api/play/*` (hallazgos, arreglos y lo no resuelto).
+- [`RENDIMIENTO.md`](RENDIMIENTO.md): prueba de carga con 10–20 móviles (`npm run loadtest`), números por motor y limitaciones.
 - [`PROMPTS-IA.md`](PROMPTS-IA.md): cómo se redactan los prompts de mezcla de imágenes con IA (base cualquiera, natural y divertido), la guardia de zona y el laboratorio `npm run ai:lab`.
 - [`PLANTILLAS-SISTEMA.md`](PLANTILLAS-SISTEMA.md): partidas del sistema creadas por el superadmin, fotos en un CDN externo y lista blanca de servidores.
 - [`IMAGEN-INTERNA.md`](IMAGEN-INTERNA.md): formato y tamaño internos de todas las imágenes, y cómo preparar fotos para un CDN.
