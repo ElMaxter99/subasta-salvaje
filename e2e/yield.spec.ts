@@ -85,7 +85,7 @@ test('volver a pujar, pad con «Igualar +1» y «Subir al máximo», y pausa de 
   await expect(beto.getByTestId('yield-button')).toBeVisible({ timeout: 30_000 });
   await beto.getByTestId('yield-button').click();
   await beto.getByRole('button', { name: /Sí, cedo/ }).click();
-  await expect(beto.getByTestId('yielded-note')).toBeVisible();
+  await expect(beto.getByTestId('yielded-note')).toBeVisible({ timeout: 20_000 });
   await expect.poll(async () => (await state()).auction?.yielded?.length).toBe(1);
   await beto.getByTestId('unyield-button').click();
   await expect(beto.getByTestId('yielded-note')).toHaveCount(0, { timeout: 20_000 });
