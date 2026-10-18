@@ -62,7 +62,7 @@ export function SystemTemplateFromCollection({ open, onClose }: { open: boolean;
     }
   }
 
-  const ready = collection !== '' && house !== null && !busy;
+  const ready = collection !== '' && !busy; // la casa inicial es opcional: se puede poner luego en el editor
   return (
     <>
       <ConfirmDialog
@@ -71,7 +71,7 @@ export function SystemTemplateFromCollection({ open, onClose }: { open: boolean;
         confirmLabel="Crear borrador"
         loading={busy}
         onCancel={onClose}
-        onConfirm={() => { if (ready) void create(); else setError(collection ? 'Elige la casa inicial de la biblioteca.' : 'Elige una colección.'); }}
+        onConfirm={() => { if (ready) void create(); else setError('Elige una colección.'); }}
       >
         <div className="space-y-3 text-sm" data-testid="from-collection-form">
           <p>Se crea un <b>borrador</b> con los productos de la colección (hasta 100). Las fotos se usan <b>por enlace, sin copiarlas</b>; después lo ajustas en el editor.</p>
@@ -92,7 +92,7 @@ export function SystemTemplateFromCollection({ open, onClose }: { open: boolean;
               {house ? (
                 // eslint-disable-next-line @next/next/no-img-element -- alojada en el CDN del propietario
                 <img src={house.url} alt={house.title} referrerPolicy="no-referrer" className="h-16 w-24 rounded-xl object-cover" data-testid="from-collection-house" />
-              ) : <span className="text-white/60">Sin elegir</span>}
+              ) : <span className="text-white/60">Sin elegir (se puede poner luego en el editor)</span>}
               <Button type="button" size="md" variant="secondary" onClick={() => setPicking(true)}><Images className="size-4" aria-hidden /> {house ? 'Cambiar' : 'De la biblioteca'}</Button>
             </div>
           </div>

@@ -89,3 +89,7 @@ Misma que las fotos de plantillas: `GITHUB_ASSETS_REPO`, `GITHUB_ASSETS_TOKEN` (
 
 ## Regla de producto: nunca se escribe una URL
 En la interfaz **no hay campos para pegar o escribir `https://…`**: las imágenes se **suben** o se **eligen de la biblioteca**. Lo vigila `tests/no-url-inputs.test.ts`. (Los archivos JSON/ZIP/CSV importados pueden contener enlaces: se validan, pero no se teclean.)
+
+## Moderación y edición en bloque (administración extra)
+- Cada imagen tiene `reviewed` (revisada por el superadmin). En `/admin/biblioteca` hay filtros «Sin crédito» y «Sin revisar», acción en bloque «Marcar como revisadas» y la lista «Posibles duplicados» (mismo título normalizado dentro de la misma colección; se borra el registro sobrante, no se compara el contenido).
+- `/admin/catalogo`: selección de productos y barra para mover de colección, fijar/quitar emoji, quitar la foto o eliminar (`items.update_many`, máx. 200, función `ss_admin_library_item_update_many`, una auditoría). La generación con IA no forma parte del bloque.
