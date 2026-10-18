@@ -63,7 +63,7 @@ const GIT_PATTERNS = [
   ['JWT (p. ej. service_role)', 'eyJ[A-Za-z0-9_-]{20,}[.][A-Za-z0-9_-]{20,}[.][A-Za-z0-9_-]{20,}'],
 ];
 // Commits con claves FALSAS de prueba (valores «xxxx» en tests/ai-chain.test.ts, ya corregidos en el árbol). No se reescribe el historial público.
-const FAKE_KEY_COMMITS = ['8263359', '70cd16a', '35470a2']; // 70cd16a las parte; 35470a2 trae una clave FALSA de prueba (sk-abc…) en tests/observability.test.ts, ya partida en el árbol
+const FAKE_KEY_COMMITS = ['8263359', '70cd16a', '35470a2', 'c313cd5']; // 70cd16a las parte; 35470a2 trae una clave FALSA de prueba (sk-abc…) en tests/observability.test.ts, ya partida en el árbol; c313cd5 es el commit que la parte (su diff la muestra al quitarla)
 for (const [name, ere] of GIT_PATTERNS) {
   const out = execFileSync('git', ['log', '--all', '-G', ere, '--oneline', '--', '.', ':!package-lock.json'])
     .toString()
