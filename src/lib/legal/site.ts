@@ -94,8 +94,8 @@ export interface ExtraCredit {
 
 /** Créditos que no son paquetes npm. Verificados en el repositorio (ver docs/MARCA.md, docs/MASCOTA.md y docs/ASSETS.md). */
 export const EXTRA_CREDITS: ExtraCredit[] = [
-  { name: 'Baloo 2 (tipografía de títulos)', license: 'SIL Open Font License 1.1', url: 'https://openfontlicense.org/', note: 'Subconjunto latino alojado en public/assets/fonts/baloo2.woff2. Los autores originales figuran en la distribución de la fuente.' },
-  { name: 'Nunito (tipografía de texto)', license: 'SIL Open Font License 1.1', url: 'https://openfontlicense.org/', note: 'Fuente variable alojada en public/assets/fonts/nunito-var.woff2. Los autores originales figuran en la distribución de la fuente.' },
+  { name: 'Baloo 2 (tipografía de títulos)', license: 'SIL Open Font License 1.1', url: 'https://openfontlicense.org/', note: 'Subconjunto latino alojado en public/assets/fonts/baloo2.woff2 (web) y, en TTF estáticos Bold y ExtraBold con su licencia OFL, en src/assets/fonts/ (imágenes del podio y Open Graph). Los autores originales figuran en la distribución de la fuente.' },
+  { name: 'Nunito (tipografía de texto)', license: 'SIL Open Font License 1.1', url: 'https://openfontlicense.org/', note: 'Fuente variable alojada en public/assets/fonts/nunito-var.woff2 (web) y, en TTF estáticos Regular y Bold con su licencia OFL, en src/assets/fonts/ (imágenes del podio y Open Graph). Los autores originales figuran en la distribución de la fuente.' },
   { name: 'Iconos Lucide', license: 'ISC', url: 'https://lucide.dev/license', note: 'Se usan a través del paquete npm lucide-react (ya listado arriba).' },
 ];
 

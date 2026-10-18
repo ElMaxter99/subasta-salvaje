@@ -3,6 +3,9 @@ import type { NextConfig } from 'next';
 /** Archivos de sharp para Linux glibc x64 (el entorno de Vercel). */
 const SHARP_FILES = ['./node_modules/sharp/**/*', './node_modules/@img/sharp-linux-x64/**/*', './node_modules/@img/sharp-libvips-linux-x64/**/*', './node_modules/semver/**/*', './node_modules/detect-libc/**/*', './node_modules/@img/colour/**/*'];
 
+/** Tipografías TTF de la marca que leen en ejecución el podio y las imágenes Open Graph (src/lib/seo/fonts.ts; docs/FUENTE-PODIO.md). */
+const FONT_FILES = ['./src/assets/fonts/*.ttf'];
+
 const config: NextConfig = {
   reactStrictMode: true,
   distDir: process.env.NEXT_DIST_DIR || '.next',
@@ -29,6 +32,8 @@ const config: NextConfig = {
     ],
   },
   outputFileTracingIncludes: {
+    '/api/public/games/*/podium': FONT_FILES,
+    '/game/*/*/opengraph-image': FONT_FILES,
     '/api/jobs/process': SHARP_FILES,
     '/api/games/*/actions': SHARP_FILES,
     '/api/games/*/jobs': SHARP_FILES,
