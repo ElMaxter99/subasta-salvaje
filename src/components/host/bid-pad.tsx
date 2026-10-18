@@ -19,7 +19,9 @@ export function BidPad({ ctx, auction }: { ctx: HostCtx; auction: Auction }) {
   const [selected, setSelected] = useState<string | null>(null);
   const [manual, setManual] = useState('');
 
-  const hasBids = auction.current_bid_cents > 0;
+  // Sobre cerrado: cada jugador puja una sola vez y puede pujar menos que la mejor puja actual.
+  const sealed = auction.wild_event === 'sealed';
+  const hasBids = !sealed && auction.current_bid_cents > 0;
   // Sin pujas la base es 0: «+1 Ohro» = puja de 1 Ohro (la puja mínima actúa como suelo).
   const base = hasBids ? auction.current_bid_cents : 0;
   const whole = game.integer_bids !== false;
@@ -40,7 +42,7 @@ export function BidPad({ ctx, auction }: { ctx: HostCtx; auction: Auction }) {
     <div className="space-y-4">
       <div role="radiogroup" aria-label="¿Quién puja?" className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {players.map((p) => {
-          const cantPay = p.balance_cents < minNext;
+          const cantPay = p.balance_cents < minNext || (sealed && auction.bids.some((b) => b.player_id === p.id));
           const on = p.id === selected;
           return (
             <button

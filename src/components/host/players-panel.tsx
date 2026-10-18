@@ -83,7 +83,7 @@ export function PlayersPanel({ ctx }: { ctx: HostCtx }) {
               Guardar
             </Button>
           </form>
-          <p className="mt-2 text-sm text-white/60">Cada jugador recibe <Ohros cents={game.initial_budget_cents} />. Cambiarlo reinicia el saldo de todos (solo antes de empezar).</p>
+          <p className="mt-2 text-sm text-white/60">Cada jugador recibe <Ohros cents={game.initial_budget_cents} />. Cambiarlo reinicia el saldo de todos, <b>también los presupuestos individuales</b> (solo antes de empezar). Para dar un saldo distinto a un jugador, usa «Editar» en su tarjeta.</p>
         </Card>
       ) : null}
 
@@ -174,6 +174,10 @@ function PlayerRow({ ctx, player: p, index, total, onMove, onRemove, onRelease }
   const [editing, setEditing] = useState(false);
   const [name, setName] = useState(p.name);
   const [color, setColor] = useState(p.color);
+  const [team, setTeam] = useState(p.team ?? '');
+  const [budget, setBudget] = useState('');
+  const budgetCents = parseOhrosToCents(budget);
+  const customBudget = lobby && p.initial_balance_cents != null && p.initial_balance_cents !== snapshot.game.initial_budget_cents;
   const initialJob = p.generating.find((g) => g.kind === 'initial');
 
   async function onFile(file: File | undefined) {
@@ -196,6 +200,8 @@ function PlayerRow({ ctx, player: p, index, total, onMove, onRemove, onRelease }
           <p className="text-lg font-bold text-gold"><Ohros cents={p.balance_cents} /></p>
           <div className="mt-1 flex flex-wrap gap-1.5">
             {snapshot.game.play_mode === 'mobile' ? p.claimed ? <Pill tone="teal">📱 Conectado</Pill> : <Pill>Libre</Pill> : null}
+            {p.team ? <Pill tone="violet">Equipo {p.team}</Pill> : null}
+            {customBudget ? <Pill tone="gold">Presupuesto propio</Pill> : null}
             <Pill>{p.purchases.length} {p.purchases.length === 1 ? 'elemento' : 'elementos'}</Pill>
             {p.generating.length > 0 ? <Pill tone="violet">Imagen en preparación</Pill> : p.current_image ? <Pill tone="teal">Imagen lista{p.current_image.provider === 'demo' ? ' (muestra)' : p.current_image.provider === 'catalog' ? ' (galería)' : ''}</Pill> : <Pill tone="rose">Sin imagen</Pill>}
           </div>
@@ -227,6 +233,34 @@ function PlayerRow({ ctx, player: p, index, total, onMove, onRemove, onRelease }
           </label>
           <input id={`name-${p.id}`} className={inputCls} value={name} maxLength={40} onChange={(e) => setName(e.target.value)} />
           <ColorPicker value={color} onChange={setColor} label={`Color de ${p.name}`} />
+          {lobby ? (
+            <div className="space-y-3 border-t border-white/10 pt-3">
+              <div>
+                <label htmlFor={`team-${p.id}`} className="text-sm font-semibold text-white/80">
+                  Equipo (opcional, máx. 20 caracteres)
+                </label>
+                <div className="mt-1 flex gap-2">
+                  <input id={`team-${p.id}`} className={inputCls} value={team} maxLength={20} placeholder="Sin equipo" onChange={(e) => setTeam(e.target.value)} />
+                  <Button type="button" variant="secondary" disabled={busy !== null || team.trim() === (p.team ?? '')} loading={busy === `team-${p.id}`} onClick={() => void run(`team-${p.id}`, { type: 'player.set_team', player_id: p.id, team: team.trim() }, team.trim() ? `${p.name} en el equipo ${team.trim()}` : `${p.name} sin equipo`)}>
+                    Guardar equipo
+                  </Button>
+                </div>
+                <p className="mt-1 text-xs text-white/60">Solo agrupa en los resultados: no comparten saldo.</p>
+              </div>
+              <div>
+                <label htmlFor={`budget-${p.id}`} className="text-sm font-semibold text-white/80">
+                  Presupuesto de {p.name} (Ohros)
+                </label>
+                <div className="mt-1 flex gap-2">
+                  <input id={`budget-${p.id}`} className={inputCls} inputMode="decimal" value={budget} placeholder={`Ahora: ${formatOhros(p.balance_cents)}`} onChange={(e) => setBudget(e.target.value)} />
+                  <Button type="button" variant="secondary" disabled={busy !== null || budgetCents === null} loading={busy === `budget-${p.id}`} onClick={() => void run(`budget-${p.id}`, { type: 'player.set_budget', player_id: p.id, budget_cents: budgetCents ?? 0 }, `Presupuesto de ${p.name} fijado`).then((r) => r && setBudget(''))}>
+                    Guardar presupuesto
+                  </Button>
+                </div>
+                <p className="mt-1 text-xs text-white/60">Distinto del general; «Reiniciar partida» lo restaura. Cambiar el presupuesto general lo pisa.</p>
+              </div>
+            </div>
+          ) : null}
           <div className="flex gap-2">
             <Button type="submit" variant="success" disabled={!name.trim() || busy !== null} loading={busy === `player-edit-${p.id}`}>
               Guardar

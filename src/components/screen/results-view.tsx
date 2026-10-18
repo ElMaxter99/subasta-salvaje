@@ -9,7 +9,7 @@ import { useLiveGame } from '@/lib/client/use-live-game';
 import { ConnectionBadge, DemoBanner } from '@/components/ui/status';
 import { formatOhros } from '@/lib/domain/money';
 import { joinedPlayers } from '@/lib/domain/players';
-import { computeHighlights, computePodium, computeRanking, rankingRuleLabel } from '@/lib/domain/ranking';
+import { computeHighlights, computePodium, computeRanking, computeTeams, rankingRuleLabel, type TeamEntry } from '@/lib/domain/ranking';
 import { Podium } from './podium';
 import { themeLabel } from '@/lib/domain/themes';
 import { Confetti } from './award-overlay';
@@ -22,6 +22,56 @@ function scoreLabel(rule: RankingRule, p: Player): string {
   if (rule === 'balance') return formatOhros(p.balance_cents);
   if (rule === 'items') return `${p.purchases.length} ${p.purchases.length === 1 ? 'elemento' : 'elementos'}`;
   return `${p.votes} ${p.votes === 1 ? 'voto' : 'votos'}`;
+}
+
+/** Equipos ligeros: suma de saldos, elementos y (según la regla) puntuación. Solo se dibuja si algún jugador tiene equipo. */
+function TeamsTable({ teams, rule, tv }: { teams: TeamEntry[]; rule: RankingRule; tv: boolean }) {
+  if (tv) {
+    return (
+      <ul className="relative z-10 flex shrink-0 flex-wrap items-center justify-center gap-[0.6rem]" aria-label="Equipos" data-testid="teams-table">
+        {teams.map((t) => (
+          <li key={t.team} className={`rounded-xl px-[1rem] py-[0.3rem] text-[1.3rem] font-semibold ${t.rank === 1 ? 'bg-gold text-night-950' : 'bg-night-800/90 text-white'}`}>
+            {t.rank ? `${t.rank}.º ` : ''}Equipo {t.team} · <Ohros cents={t.balance_cents} /> · {t.items} {t.items === 1 ? 'elemento' : 'elementos'}
+            {rule === 'votes' ? ` · ${t.votes} ${t.votes === 1 ? 'voto' : 'votos'}` : ''}
+          </li>
+        ))}
+      </ul>
+    );
+  }
+  return (
+    <section aria-labelledby="equipos" className="relative z-10 rounded-3xl border border-violet/40 bg-night-800/80 p-4 sm:p-6" data-testid="teams-table">
+      <h2 id="equipos" className="font-display text-2xl text-violet-soft">Equipos</h2>
+      <p className="mb-4 text-sm text-white/65">
+        Suma de los jugadores de cada equipo{rule === 'none' ? '' : <> · puntuación según la regla: {rankingRuleLabel(rule)}</>}. Los saldos no se comparten durante la partida.
+      </p>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[28rem] text-left">
+          <thead className="text-xs uppercase tracking-wide text-white/60">
+            <tr>
+              <th className="px-2 py-1">{rule === 'none' ? '' : 'Puesto'}</th>
+              <th className="px-2 py-1">Equipo</th>
+              <th className="px-2 py-1">Jugadores</th>
+              <th className="px-2 py-1 text-right">Saldo</th>
+              <th className="px-2 py-1 text-right">Elementos</th>
+              {rule === 'votes' ? <th className="px-2 py-1 text-right">Votos</th> : null}
+            </tr>
+          </thead>
+          <tbody>
+            {teams.map((t) => (
+              <tr key={t.team} className={t.rank === 1 ? 'bg-gold/15' : ''}>
+                <td className="px-2 py-2 font-display text-lg">{t.rank ?? ''}</td>
+                <td className="px-2 py-2 font-display text-lg">{t.team}</td>
+                <td className="px-2 py-2 text-sm text-white/80">{t.players.map((p) => p.name).join(', ')}</td>
+                <td className="px-2 py-2 text-right font-bold tabular-nums"><Ohros cents={t.balance_cents} /></td>
+                <td className="px-2 py-2 text-right font-bold tabular-nums">{t.items}</td>
+                {rule === 'votes' ? <td className="px-2 py-2 text-right font-bold tabular-nums">{t.votes}</td> : null}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
 }
 
 /** Final «antes / después»: miniatura de la casa inicial + deslizador para comparar. */
@@ -172,6 +222,7 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
   const players = joinedPlayers(snapshot.players); // quien nunca entró (modo móviles) no sale en el resultado
   const rule = game.ranking_rule;
   const ranking = computeRanking(players, rule);
+  const teams = computeTeams(players, rule);
   const hl = computeHighlights({ ...snapshot, players });
   const lost = snapshot.items.filter((i) => i.status === 'lost'); // subastas que terminaron sin ninguna puja
   const ordered = ranking ? ranking.map((r) => ({ player: r.player, rank: r.rank })) : players.map((player) => ({ player, rank: null as number | null }));
@@ -242,6 +293,7 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
             ))}
           </ul>
         ) : null}
+        {teams ? <TeamsTable teams={teams} rule={rule} tv /> : null}
         <div className="relative z-10 grid shrink-0 grid-cols-4 gap-[0.6rem]">{tiles}</div>
       </div>
     );
@@ -252,6 +304,7 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
       <div className="relative flex h-full flex-col gap-[0.8rem] px-[2rem] py-[1rem]">
         <Confetti count={36} />
         <div className="relative z-10">{hero}</div>
+        {teams ? <TeamsTable teams={teams} rule={rule} tv /> : null}
         <div className="relative z-10 grid shrink-0 grid-cols-7 gap-[0.6rem]">{tiles}</div>
         <div className="relative z-10 mx-auto flex min-h-0 w-full flex-1 flex-col gap-[0.9rem]">
           {Array.from({ length: rows }, (_, r) => ordered.slice(r * cols, (r + 1) * cols)).map((row, r) => (
@@ -292,6 +345,8 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
           </ol>
         </section>
       ) : null}
+
+      {teams ? <TeamsTable teams={teams} rule={rule} tv={false} /> : null}
 
       {pod ? (
         <div className="relative z-10" data-testid="podium-view">

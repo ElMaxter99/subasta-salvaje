@@ -35,6 +35,9 @@ function ActiveAuction({ snap, auction, players, compact }: { snap: PublicSnapsh
   const leader = players.find((p) => p.id === leaderId);
   const recent = auction.bids.slice(0, 5);
   const blind = Boolean(auction.hidden);
+  const sealed = auction.wild_event === 'sealed';
+  const flash = auction.wild_event === 'flash';
+  const sealedBidders = (auction.sealed_bidders ?? []).map((id) => players.find((p) => p.id === id)).filter((p): p is Player => !!p);
   const nameOf = (id: string) => players.find((p) => p.id === id);
 
   return (
@@ -49,7 +52,13 @@ function ActiveAuction({ snap, auction, players, compact }: { snap: PublicSnapsh
           </h2>
           {auction.wild_event ? (
             <p className="mt-2 inline-flex items-center gap-3 rounded-2xl bg-violet px-5 py-1.5 font-display text-[1.9rem] text-white" data-testid="wild-badge">
-              {auction.wild_event === 'blind' ? '🙈 ¡Puja a ciegas! Nadie ve el importe' : '🎲 ¡Doble o mitad! Se sortea al adjudicar'}
+              {auction.wild_event === 'blind'
+                ? '🙈 ¡Puja a ciegas! Nadie ve el importe'
+                : sealed
+                  ? '✉️ ¡Sobre cerrado! Una sola puja por jugador'
+                  : flash
+                    ? `⚡ ¡Subasta relámpago! Se adjudica ${auction.flash_seconds ?? 8} s después de la última puja`
+                    : '🎲 ¡Doble o mitad! Se sortea al adjudicar'}
             </p>
           ) : null}
           {auction.random ? (
@@ -60,7 +69,7 @@ function ActiveAuction({ snap, auction, players, compact }: { snap: PublicSnapsh
 
         <div aria-live="polite">
           <p className="text-[1.3rem] font-bold uppercase tracking-[0.25em] text-gold-soft">
-            {awarded ? 'Precio final' : closed ? 'Puja cerrada' : blind ? 'Puja a ciegas' : 'Puja actual'}
+            {awarded ? 'Precio final' : closed ? 'Puja cerrada' : sealed && blind ? 'Sobre cerrado' : blind ? 'Puja a ciegas' : 'Puja actual'}
           </p>
           <p
             key={price}
@@ -83,7 +92,7 @@ function ActiveAuction({ snap, auction, players, compact }: { snap: PublicSnapsh
               className={`mt-2 inline-flex items-center gap-3 rounded-2xl px-5 py-2 font-display text-[2rem] tabular-nums ${countdown <= 5 ? 'bg-rose text-night-950' : 'bg-night-700 text-gold-soft'}`}
               data-testid="auto-award-countdown"
             >
-              <Hourglass className="size-8" aria-hidden /> {countdown > 0 ? `¡A la una… adjudicado en ${countdown} s!` : '¡Adjudicando…!'}
+              <Hourglass className="size-8" aria-hidden /> {countdown > 0 ? `${flash ? '⚡ ' : ''}¡A la una… adjudicado en ${countdown} s!` : '¡Adjudicando…!'}
             </p>
           ) : null}
           {awarded ? (
@@ -94,7 +103,11 @@ function ActiveAuction({ snap, auction, players, compact }: { snap: PublicSnapsh
         </div>
 
         <div className="min-h-[3.5rem]">
-          {blind ? (
+          {sealed && blind ? (
+            <p className="text-[1.9rem] font-bold text-violet-soft" data-testid="sealed-bidders">
+              ✉️ {sealedBidders.length === 0 ? 'Nadie ha pujado todavía' : `Ya han pujado: ${sealedBidders.map((p) => p.name).join(', ')}`} · ¡se abre el sobre al adjudicar!
+            </p>
+          ) : blind ? (
             <p className="text-[1.9rem] font-bold text-violet-soft">{auction.bids_count ?? 0} {auction.bids_count === 1 ? 'puja hecha' : 'pujas hechas'} · ¡el líder se revelará al adjudicar!</p>
           ) : leader ? (
             <p className="flex items-center gap-3 text-[1.9rem] font-bold">
@@ -126,7 +139,7 @@ function ActiveAuction({ snap, auction, players, compact }: { snap: PublicSnapsh
               </li>
             );
           })}
-          {recent.length === 0 ? <li className="rounded-xl border border-dashed border-white/15 px-4 py-3 text-[1.3rem] text-white/50">{blind ? 'Pujas ocultas 🙈' : 'Aún no hay pujas.'}</li> : null}
+          {recent.length === 0 ? <li className="rounded-xl border border-dashed border-white/15 px-4 py-3 text-[1.3rem] text-white/50">{blind ? (sealed ? 'Sobres cerrados ✉️' : 'Pujas ocultas 🙈') : 'Aún no hay pujas.'}</li> : null}
         </ol>
       </aside>
     </div>

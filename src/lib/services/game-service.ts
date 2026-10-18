@@ -127,6 +127,10 @@ function toRpc(action: GameAction): { fn: string; params: Record<string, unknown
     case 'player.remove':
     case 'player.reorder':
       return { fn: 'ss_player_op', params: { op: type.split('.')[1], ...rest } };
+    case 'player.set_budget':
+      return { fn: 'ss_player_set_budget', params: rest };
+    case 'player.set_team':
+      return { fn: 'ss_player_set_team', params: rest };
     case 'votes.adjust':
       return { fn: 'ss_adjust_votes', params: rest };
     case 'item.add':

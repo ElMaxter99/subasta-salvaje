@@ -6,6 +6,7 @@ import { AutoAwardCard } from './auto-award-card';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { newIdempotencyKey } from '@/lib/client/api';
+import { useAutoAwardCountdown } from '@/lib/client/auto-award';
 import { formatOhros } from '@/lib/domain/money';
 import type { Auction, WildEvent } from '@/lib/domain/types';
 import { BidPad } from './bid-pad';
@@ -101,6 +102,9 @@ function LiveAuction({ ctx, auction, onAward, onUndo, onCancel }: { ctx: HostCtx
   const open = auction.status === 'open';
   const hasBids = !!leader;
   const playing = snapshot.game.status === 'active';
+  const countdown = useAutoAwardCountdown(snapshot);
+  const sealedIds = new Set(auction.sealed_bidders ?? auction.bids.map((b) => b.player_id));
+  const sealedPending = snapshot.players.filter((p) => p.joined !== false && !sealedIds.has(p.id));
 
   return (
     <>
@@ -135,6 +139,17 @@ function LiveAuction({ ctx, auction, onAward, onUndo, onCancel }: { ctx: HostCtx
             </p>
           </div>
         </div>
+        {auction.wild_event === 'sealed' ? (
+          <p className="mt-3 rounded-xl bg-violet/15 px-3 py-2 text-sm font-semibold text-violet-soft" data-testid="host-sealed-status">
+            ✉️ Han pujado {sealedIds.size} de {snapshot.players.filter((p) => p.joined !== false).length}
+            {sealedPending.length > 0 ? ` · faltan: ${sealedPending.map((p) => p.name).join(', ')}` : ' · ¡todos! Ya puedes cerrar y adjudicar.'}
+          </p>
+        ) : null}
+        {auction.wild_event === 'flash' && open && countdown !== null ? (
+          <p role="status" className="mt-3 rounded-xl bg-night-900 px-3 py-2 text-center text-lg font-bold tabular-nums text-gold" data-testid="host-flash-countdown">
+            ⚡ {countdown > 0 ? `Se adjudicará en ${countdown} s` : 'Adjudicando…'}
+          </p>
+        ) : null}
       </Card>
 
       {open && playing ? (
@@ -304,7 +319,7 @@ function NextItem({ ctx }: { ctx: HostCtx }) {
         <fieldset className="mb-3">
           <legend className="text-xs font-bold uppercase tracking-wide text-white/60">Evento de la próxima subasta</legend>
           <div className="mt-1 flex flex-wrap gap-2">
-            {([['auto', snapshot.game.wild_chance_pct ? `Automático (${snapshot.game.wild_chance_pct} %)` : 'Normal'], ['none', 'Normal'], ['blind', WILD_LABEL.blind], ['double', WILD_LABEL.double]] as const)
+            {([['auto', snapshot.game.wild_chance_pct ? `Automático (${snapshot.game.wild_chance_pct} %)` : 'Normal'], ['none', 'Normal'], ['blind', WILD_LABEL.blind], ['double', WILD_LABEL.double], ['flash', WILD_LABEL.flash], ['sealed', WILD_LABEL.sealed]] as const)
               .filter(([v]) => !(v === 'none' && !snapshot.game.wild_chance_pct))
               .map(([v, label]) => (
                 <label key={v} className={`cursor-pointer rounded-xl px-3 py-1.5 text-sm font-bold ${wild === v ? 'bg-gold text-night-950' : 'bg-night-900 text-white/80'}`}>
@@ -313,7 +328,7 @@ function NextItem({ ctx }: { ctx: HostCtx }) {
                 </label>
               ))}
           </div>
-          {wild === 'blind' || wild === 'double' ? <p className="mt-1 text-xs text-white/60">{WILD_HELP[wild]}</p> : null}
+          {wild === 'blind' || wild === 'double' || wild === 'flash' || wild === 'sealed' ? <p className="mt-1 text-xs text-white/60">{WILD_HELP[wild]}</p> : null}
         </fieldset>
         {available.length === 0 ? (
           <p className="text-white/70">No quedan elementos disponibles. Añade más en «Catálogo» o finaliza la partida desde «Ajustes».</p>
@@ -340,10 +355,12 @@ function NextItem({ ctx }: { ctx: HostCtx }) {
   );
 }
 
-const WILD_LABEL: Record<WildEvent, string> = { blind: '🙈 A ciegas', double: '🎲 Doble o mitad' };
+const WILD_LABEL: Record<WildEvent, string> = { blind: '🙈 A ciegas', double: '🎲 Doble o mitad', flash: '⚡ Relámpago', sealed: '✉️ Sobre cerrado' };
 export const WILD_HELP: Record<WildEvent, string> = {
   blind: 'Nadie ve el importe ni quién lidera hasta que se adjudica (tú sí lo ves).',
   double: 'Al adjudicar se sortea: el ganador paga la mitad o el doble de su puja (el doble, hasta donde llegue su saldo).',
+  flash: 'Se adjudica sola 8 segundos después de la última puja, aunque la adjudicación automática esté apagada. Sin pujas, la cancelas tú como siempre.',
+  sealed: 'Puja oculta y UNA sola puja por jugador: nadie ve importes ni líder (tú sí). Cuando todos hayan pujado, cierra y adjudica: gana la más alta; si empatan, la primera.',
 };
 
 function WildPill({ event }: { event?: WildEvent | null }) {

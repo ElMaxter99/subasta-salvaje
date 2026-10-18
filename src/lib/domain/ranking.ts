@@ -25,6 +25,52 @@ export function computeRanking(players: Player[], rule: RankingRule): RankingEnt
   });
 }
 
+export interface TeamEntry {
+  /** Etiqueta tal como la escribió el anfitrión (la del primer jugador del equipo). */
+  team: string;
+  players: Player[];
+  balance_cents: number;
+  items: number;
+  votes: number;
+  /** Puntuación según la regla de clasificación activa (null con `none`). */
+  score: number | null;
+  /** Puesto (empates comparten); null con `none`. */
+  rank: number | null;
+}
+
+/**
+ * Equipos ligeros: agrupa por etiqueta (sin distinguir mayúsculas) y SUMA saldos, elementos y votos de sus jugadores.
+ * Los jugadores sin etiqueta no forman equipo. Devuelve null si ningún jugador tiene equipo (nada cambia en la interfaz).
+ * La puntuación sigue la regla activa (`balance`, `items`, `votes`); con `none` se ordena por nombre y no hay puestos.
+ */
+export function computeTeams(players: Player[], rule: RankingRule): TeamEntry[] | null {
+  const groups = new Map<string, TeamEntry>();
+  for (const p of players) {
+    const label = (p.team ?? '').trim();
+    if (!label) continue;
+    const key = label.toLowerCase();
+    const g = groups.get(key) ?? { team: label, players: [], balance_cents: 0, items: 0, votes: 0, score: null, rank: null };
+    g.players.push(p);
+    g.balance_cents += p.balance_cents;
+    g.items += p.purchases.length;
+    g.votes += p.votes;
+    groups.set(key, g);
+  }
+  if (groups.size === 0) return null;
+  const list = [...groups.values()];
+  if (rule === 'none') return list.sort((a, b) => a.team.localeCompare(b.team, 'es'));
+  for (const g of list) g.score = rule === 'balance' ? g.balance_cents : rule === 'items' ? g.items : g.votes;
+  list.sort((a, b) => (b.score ?? 0) - (a.score ?? 0) || a.team.localeCompare(b.team, 'es'));
+  let rank = 0;
+  let prev: number | null = null;
+  list.forEach((g, i) => {
+    if (prev === null || g.score !== prev) rank = i + 1;
+    prev = g.score;
+    g.rank = rank;
+  });
+  return list;
+}
+
 export function rankingRuleLabel(rule: RankingRule): string {
   switch (rule) {
     case 'balance':

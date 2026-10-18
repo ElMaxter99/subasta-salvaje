@@ -55,6 +55,10 @@ export interface Player {
   initial_image: ImageRef | null;
   purchases: PlayerPurchase[];
   generating: PlayerGenerating[];
+  /** Etiqueta de equipo (≤ 20 caracteres) o null. Solo agrupa en los resultados; no comparte saldo. */
+  team?: string | null;
+  /** Saldo inicial de este jugador (individual si el anfitrión lo fijó; si no, el general). */
+  initial_balance_cents?: number | null;
 }
 
 export interface AuctionItem {
@@ -96,6 +100,10 @@ export interface Auction {
   /** Elemento elegido al azar (botón «Anunciar uno al azar» o subasta automática aleatoria). */
   random?: boolean;
   bids_count?: number;
+  /** Relámpago: segundos entre la última puja y la adjudicación automática. */
+  flash_seconds?: number;
+  /** Sobre cerrado: jugadores que ya han pujado (sin importes). */
+  sealed_bidders?: string[];
   item: Pick<AuctionItem, 'id' | 'name' | 'description' | 'emoji' | 'image_path' | 'image_url'>;
   bids: Bid[];
 }
@@ -234,7 +242,7 @@ export interface PublicSnapshot {
   wild_tax?: { id: number; created_at: string; payload: WildTaxPayload } | null;
 }
 
-export type WildEvent = 'blind' | 'double';
+export type WildEvent = 'blind' | 'double' | 'flash' | 'sealed';
 
 export interface WildTaxPayload {
   rate_pct: number;
