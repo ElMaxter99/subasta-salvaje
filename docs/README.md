@@ -27,6 +27,11 @@ una regla, una migración o una decisión, actualiza el documento correspondient
 - [`OPEN-GRAPH.md`](OPEN-GRAPH.md): miniaturas al compartir enlaces (invitación con código, TV, resultados).
 - [`BIBLIOTECA.md`](BIBLIOTECA.md): biblioteca de medios del superadmin (subida masiva de imágenes a GitHub y catálogo general de productos reutilizable).
 - [`PLAN-RELLENAR-BIBLIOTECA.md`](PLAN-RELLENAR-BIBLIOTECA.md): plan para llenar la biblioteca con cientos de fotos (fuentes CC0/dominio público, licencias, proceso) y productos de catálogo completos.
+- [`FASE1-JUEGO.md`](FASE1-JUEGO.md): retractarse de ceder, pad de pujas, pausa de gracia, sonidos y premios nuevos.
+- [`ESPECTADOR-Y-PODIO.md`](ESPECTADOR-Y-PODIO.md): modo espectador `/watch` e imagen del podio en tres formatos.
+- [`BIBLIOTECA-ETIQUETAS.md`](BIBLIOTECA-ETIQUETAS.md): roles, categorías y etiquetas de la biblioteca, selector en la partida, cobertura y parecidas.
+- [`PLANTILLAS-SISTEMA-CATALOGO.md`](PLANTILLAS-SISTEMA-CATALOGO.md): catálogo de 36 partidas del sistema, validador e importador.
+- [`OBSERVABILIDAD.md`](OBSERVABILIDAD.md): errores y métricas propios, panel, alertas, privacidad y límites.
 - [`CI.md`](CI.md): integración continua en GitHub Actions (qué ejecuta y qué no se ha podido verificar).
 - [`SEGURIDAD-PLAY.md`](SEGURIDAD-PLAY.md): revisión de seguridad de las rutas `/api/play/*` (hallazgos, arreglos y lo no resuelto).
 - [`ACCESIBILIDAD-MOVIL.md`](ACCESIBILIDAD-MOVIL.md): auditoría de accesibilidad de la vista del jugador (tamaño táctil, contraste, lector de pantalla, zoom) y lo no verificado.

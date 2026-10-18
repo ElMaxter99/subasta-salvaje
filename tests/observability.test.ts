@@ -5,6 +5,8 @@ import { latencyBucket, normalizeRoute, roomFromPath, routeFamily, sanitizeText,
 import { csvCell, exportErrorsCsv, observabilityErrors, observabilityOp, observabilityOverview, runObservabilityMaintenance, toCsv } from '@/lib/services/observability-service';
 import { makeCtx, newHost, startedGame, type TestCtx } from './helpers';
 
+const FAKE_KEY = ['sk', 'abcdefghijklmnopqrstuv'].join('-'); // FALSA, partida para el escáner de secretos
+
 let ctx: TestCtx;
 beforeAll(async () => {
   ctx = await makeCtx();
@@ -54,8 +56,8 @@ describe('saneado', () => {
 describe('errores: captura y agrupación por huella', () => {
   it('agrupa el mismo error aunque cambien los números, cuenta repeticiones y no guarda secretos', async () => {
     const base = { source: 'server' as const, route: '/api/play/ABCD/bid', code: 'internal', stack: 'Error: x\n at f (a.ts:1)' };
-    const a = await recordError({ ...base, message: 'Error: fallo con puja 123 de ana@x.es sk-abcdefghijklmnopqrstuv' }, ctx.db);
-    const b = await recordError({ ...base, message: 'Error: fallo con puja 987 de ana@x.es sk-abcdefghijklmnopqrstuv' }, ctx.db);
+    const a = await recordError({ ...base, message: `Error: fallo con puja 123 de ana@x.es ${FAKE_KEY}` }, ctx.db);
+    const b = await recordError({ ...base, message: `Error: fallo con puja 987 de ana@x.es ${FAKE_KEY}` }, ctx.db);
     const c = await recordError({ ...base, source: 'client', message: 'otra cosa' }, ctx.db);
     expect(a?.is_new).toBe(true);
     expect(b?.is_new).toBe(false);

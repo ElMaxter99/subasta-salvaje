@@ -117,7 +117,7 @@ La colección con alfa real (`public/assets/mascot-vector/`) es vectorial. Para 
 - [ ] Comprobar que el crédito gratuito de Hugging Face (token con permiso de Inference Providers) sigue cubriendo ese modelo; si no, quitar `huggingface` de `IMAGE_PROVIDERS`.
 
 ## 5n. Lo añadido en la unión de ramas (probar tú, 18-10-2026)
-- [ ] Aplicar en Supabase las migraciones `…8000`–`…8401`, `…9000`/`…9001` y `…9100`/`…9101` (ceder la puja), `…9200`/`…9201` (endurecimiento de /api/play) y `…9400`/`…9401` (estadísticas por jugador) (reacciones, repetición, reglas extra, administración, comparador, exportar, arreglos de la unión) y `notify pgrst, 'reload schema';`. Las `_security_` no se ejecutan en PGlite: **sin probar contra Supabase real**.
+- [ ] Aplicar en Supabase las migraciones `…8000`–`…8401`, `…9000`/`…9001` y `…9100`/`…9101` (ceder la puja), `…9200`/`…9201` (endurecimiento de /api/play) `…9400`/`…9401` (estadísticas por jugador), `…9500`–`…9505` (Fase 1), `…9600`/`…9601` (biblioteca con roles), `…9800`/`…9801` (espectador) y `…9900`/`…9901` (observabilidad) (reacciones, repetición, reglas extra, administración, comparador, exportar, arreglos de la unión) y `notify pgrst, 'reload schema';`. Las `_security_` no se ejecutan en PGlite: **sin probar contra Supabase real**.
 - [ ] Probar con móviles reales: reacciones (animación y sonido en la TV), ⚡ Relámpago y ✉️ Sobre cerrado, presupuesto individual y equipos.
 - [ ] Probar el **comparador de modelos** (`/admin/ia/comparar`) con Cloudflare/Pollinations reales y vigilar los 60 s de Vercel con dos elementos.
 - [ ] **GitHub Actions** (`docs/CI.md`): el workflow nunca se ha ejecutado; revisar la primera ejecución (acciones, `npm ci`, Playwright en frío, falsos positivos de `scan:secrets`).
@@ -139,3 +139,13 @@ La colección con alfa real (`public/assets/mascot-vector/`) es vectorial. Para 
 - [ ] Ideas del plan de superadmin no incluidas por ahora: alertas (descartadas: solo dashboard), conversión de imágenes a WebP y retención por versiones, detección de archivos huérfanos en el bucket, cuotas de IA por usuario (hoy: global + permiso por usuario), exportación CSV de la auditoría.
 - [ ] **Mascota:** para una colección completa de poses independientes con transparencia real hacen falta renders por pose (≥ 1024 px, fondo transparente o liso): primero mascota principal, celebrando, sorprendida y triste (`docs/MASCOTA.md`). Los recortes actuales de la lámina son de ≈150 px (bustos/poses).
 - [ ] **Mezcla de la foto del elemento con la casa** (Cloudflare `input_image_1`, OpenAI `image[]`): implementado según la documentación, **sin probar contra las APIs reales**. Prueba con un elemento con foto (p. ej. un conejo rosa con lazo azul) y comprueba que el objeto conserva su aspecto.
+
+## 5o. Tras la integración de la Fase 1, biblioteca, plantillas, espectador y observabilidad
+- [ ] **Tras desplegar la biblioteca, marcar como «revisadas» las imágenes existentes** (filtro «Sin revisar» → «Marcar como revisadas»): hasta entonces el selector «Elegir de la biblioteca» sale vacío.
+- [ ] Ejecutar el piloto de relleno de la biblioteca (3 categorías × ~40 imágenes, ver `docs/PLAN-RELLENAR-BIBLIOTECA.md`) y probar GitHub/jsDelivr y Wikimedia reales (no probado).
+- [ ] Importar las 36 plantillas (`npm run templates:import -- --apply`, entran en borrador), revisar textos y tonos y publicarlas desde `/admin/plantillas`; después, casar fotos de la biblioteca por título/etiquetas.
+- [ ] Probar en Supabase real: migraciones `…9500`–`…9901`, `ss_obs_*`, huella `phash` (`bit_count`), `ss_unyield_bid`, `ss_auction_grace`, `ss_set_spectator`; y Resend/`onRequestError` en Vercel para la observabilidad.
+- [ ] Escuchar y afinar los sonidos nuevos (ceder, gracia); probar la gracia y retractarse con móviles reales.
+- [ ] Verificar cómo se ven los PNG del podio (vertical y cuadrado) en WhatsApp/Instagram; valorar una fuente TTF propia (la de `next/og` no tiene negrita real).
+- [ ] Decidir si hace falta un control de acceso real para ocultar partidas del espectador y revisar el tope de 240/min por IP y sala con muchos espectadores tras la misma IP.
+- [ ] Corregir `e2e/a11y.spec.ts` si sigue fallando (cabecera `sticky` en lugar de `static` a 360 px con texto al 200 %): comprobar tras la integración.
