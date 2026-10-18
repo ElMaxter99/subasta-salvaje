@@ -254,7 +254,14 @@ export async function generateLibraryItemImage(
   const q = effectiveQuota(settings);
   const quota = await ctx.db.rpc<{ ok: boolean; used?: number; limit?: number }>('ss_reserve_admin_image_quota', { provider: ctx.provider.id, day_limit: q.perDay });
   if (!quota.ok) throw new DomainError('invalid_input', `Cuota diaria de generaciones alcanzada (${quota.used}/${quota.limit}); se renueva a las 00:00 UTC.`, 429);
-  const gen = await ctx.provider.generateItemImage({ theme: input.data.collection || 'objeto', itemName: input.data.name, itemDescription: input.data.description, itemEmoji: input.data.emoji ?? null });
+  let gen;
+  try {
+    gen = await ctx.provider.generateItemImage({ theme: input.data.collection || 'objeto', itemName: input.data.name, itemDescription: input.data.description, itemEmoji: input.data.emoji ?? null });
+  } catch (e) {
+    // La generación falló: no se gasta cuota (como en las partidas).
+    await ctx.db.rpc('ss_release_admin_image_quota', { provider: ctx.provider.id }).catch(() => undefined);
+    throw e;
+  }
   const credit = `Generada con IA (${gen.provider ?? ctx.provider.id}${gen.model ? ` · ${gen.model}` : ''})`.slice(0, 200);
   const staged = await stageLibraryImage(ctx, { name: `${input.data.name}.png`, bytes: gen.bytes, collection: input.data.collection, tags: ['ia'], credit, title: input.data.name, kind: 'item' }, assets);
   const image = staged.existed ? staged.image : (await commitLibraryImages(ctx, actor, [staged.staged], assets)).images[0]!;

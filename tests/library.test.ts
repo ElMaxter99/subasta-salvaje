@@ -207,6 +207,13 @@ describe('biblioteca: imagen de un producto generada con IA', () => {
     expect(await ctx.db.rpc<Record<string, number>>('ss_provider_usage', {})).toMatchObject({ pollinations: 1 });
   });
 
+  it('si la IA falla, no se gasta cuota del día', async () => {
+    const item = (await listLibraryItems(ctx, { q: 'Seta mágica' })).items[0]!;
+    const before = (await ctx.db.rpc<Record<string, number>>('ss_provider_usage', {})).pollinations ?? 0;
+    await expect(generateLibraryItemImage({ db: ctx.db, provider: provider(true) }, 'a', { id: item.id, name: item.name, collection: item.collection }, assets)).rejects.toThrow(/proveedor caído/);
+    expect((await ctx.db.rpc<Record<string, number>>('ss_provider_usage', {})).pollinations ?? 0).toBe(before);
+  });
+
   it('sin proveedor real no inventa nada, y si el tope diario se alcanza se niega', async () => {
     const item = (await listLibraryItems(ctx, { q: 'Seta mágica' })).items[0]!;
     const input = { id: item.id, name: item.name, collection: item.collection };

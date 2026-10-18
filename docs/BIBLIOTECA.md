@@ -33,7 +33,7 @@ Dos vistas, con pestañas arriba: **Imágenes** (`/admin/biblioteca`, solo fotos
 
 ### Productos del catálogo
 Misma presentación que el catálogo del anfitrión. Arriba del todo: el título con el total y los botones **«Añadir producto»** (abre una ventana con el formulario) y **«Añadir varios (texto)»**. Debajo: buscador (nombre, descripción, colección), filtro por colección y tamaño de página (12/24/48), la lista con foto **paginada** (Anterior / Siguiente, «Página x de y»). En cada producto:
-- **Generar imagen** con IA (cadena de proveedores gratuitos y ajustes del superadmin; cuenta en el tope diario global; migración `…6400`/`…6500`).
+- **Generar imagen** con IA (cadena de proveedores gratuitos y ajustes del superadmin; cuenta en el tope diario global y se devuelve si la generación falla; migraciones `…6400`/`…6500` y `…7200`/`…7300`).
   La imagen generada es la única que se guarda: se publica en la biblioteca (un commit, colección del producto, etiqueta `ia`, crédito con proveedor y
   modelo) y se asocia al producto. Si la IA no está configurada o está apagada, el botón está desactivado: nunca se simula.
 - **Subir foto / Cambiar foto** (se reduce y publica en la biblioteca), **De la biblioteca** (modal con las imágenes) y **Quitar foto**.
