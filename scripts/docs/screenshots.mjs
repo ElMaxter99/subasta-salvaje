@@ -242,6 +242,13 @@ async function main() {
       }
       await waitJobs();
 
+      // Entre subastas: las casas en primer plano
+      if (wanted('entre')) {
+        await tv.reload();
+        await tv.waitForTimeout(3000);
+        await shot(tv, 'tv-entre-subastas', { width: 1600, ms: 1500 });
+      }
+
       // Subasta abierta con pujas
       const s2 = await state();
       const item = s2.items.find((i) => i.status === 'available');
@@ -254,6 +261,15 @@ async function main() {
       await tv.reload();
       await tv.waitForTimeout(3000);
       await shot(tv, 'tv-subasta-en-curso', { width: 1600, ms: 1500 });
+
+      if (wanted('espectador')) {
+        const sc = await mk({ width: 390, height: 844 }, { isMobile: true, deviceScaleFactor: 2, hasTouch: true });
+        const sp = await sc.newPage();
+        await sp.goto(`/game/${code}/watch`);
+        await sp.waitForTimeout(2500);
+        await shot(sp, 'espectador-movil', { width: 780, ms: 1500 });
+        await sc.close();
+      }
 
       if (wanted('anfitrion')) {
         const hp = await hostCtx.newPage();
@@ -303,6 +319,16 @@ async function main() {
       await p.goto('/admin');
       await p.getByRole('heading', { name: /Peso: base de datos y almacenamiento/ }).waitFor({ timeout: 60_000 });
       await shot(p, 'superadmin-resumen', { width: 1440, ms: 1500 });
+      if (wanted('observabilidad')) {
+        await p.goto('/admin/observabilidad');
+        await p.getByText('Errores agrupados').first().waitFor({ timeout: 60_000 });
+        await shot(p, 'admin-observabilidad', { width: 1440, ms: 1500 });
+      }
+      if (wanted('biblioteca')) {
+        await p.goto('/admin/biblioteca');
+        await p.getByText('Cobertura y calidad').first().waitFor({ timeout: 60_000 });
+        await shot(p, 'admin-biblioteca', { width: 1440, ms: 1500 });
+      }
       await ctx.close();
     }
   } finally {

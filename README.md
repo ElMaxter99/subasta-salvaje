@@ -97,6 +97,14 @@ Todas las capturas son **reales**, generadas con la app en **modo demo (pegatina
 <td width="25%" align="center"><img src="docs/img/superadmin-resumen.webp" alt="Panel de superadmin con el peso de la base de datos y la cuota de IA"><br><sub>Superadmin</sub></td>
 </tr>
 <tr>
+<td width="50%" align="center"><img src="docs/img/tv-entre-subastas.webp" alt="TV entre subastas con las casas de los jugadores en primer plano y el último adjudicado"><br><sub>TV entre subastas: las casas en primer plano</sub></td>
+<td width="25%" align="center"><img src="docs/img/espectador-movil.webp" alt="Modo espectador en el móvil: subasta en curso, solo lectura"><br><sub>Modo espectador (solo lectura)</sub></td>
+<td width="25%" align="center"><img src="docs/img/admin-observabilidad.webp" alt="Panel de observabilidad del superadmin con errores agrupados y métricas de uso"><br><sub>Observabilidad (superadmin)</sub></td>
+</tr>
+<tr>
+<td colspan="3" align="center"><img src="docs/img/admin-biblioteca.webp" alt="Biblioteca de medios del superadmin con roles, categorías y panel de cobertura" width="520"><br><sub>Biblioteca de medios: roles, categorías y cobertura</sub></td>
+</tr>
+<tr>
 <td colspan="3" align="center"><img src="docs/img/resultados-podio.webp" alt="Página de resultados con el podio, estadísticas y casas antes y después" width="520"><br><sub>Resultados con podio, estadísticas y casas «antes / después»</sub></td>
 </tr>
 </table>
