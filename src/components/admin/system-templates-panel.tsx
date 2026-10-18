@@ -10,6 +10,7 @@ import type { ImportResult } from '@/lib/services/system-template-import';
 import { adminPost } from '@/lib/client/admin-api';
 import type { ImageCheck, SystemTemplateSummary } from '@/lib/services/system-template-service';
 import { Section, Table, fmtDate } from './widgets';
+import { SystemTemplateMatch } from './system-template-match';
 import { SystemTemplateFromCollection } from './system-template-from-collection';
 
 export function SystemTemplatesPanel({ templates, cdnHosts }: { templates: SystemTemplateSummary[]; cdnHosts: string[] }) {
@@ -19,6 +20,7 @@ export function SystemTemplatesPanel({ templates, cdnHosts }: { templates: Syste
   const [checks, setChecks] = useState<{ title: string; list: ImageCheck[] } | null>(null);
   const [del, setDel] = useState<SystemTemplateSummary | null>(null);
   const [fromCollection, setFromCollection] = useState(false);
+  const [match, setMatch] = useState<SystemTemplateSummary | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   /** Sube un .json con varias plantillas (formato «lote»): se leen en el navegador y el servidor las valida y guarda como borradores. */
@@ -88,6 +90,7 @@ export function SystemTemplatesPanel({ templates, cdnHosts }: { templates: Syste
                 <div className="flex flex-wrap gap-1">
                   <Button size="sm" variant="secondary" disabled={busy !== null} loading={busy === `get-${t.id}`} onClick={() => router.push(`/admin/plantillas/editor?id=${t.id}`)}>Editar</Button>
                   <Button size="sm" variant="secondary" disabled={busy !== null} loading={busy === `check-${t.id}`} onClick={async () => { const r = await run<{ checks: ImageCheck[] }>(`check-${t.id}`, { op: 'check', id: t.id }, (x) => `Imágenes comprobadas: ${x.checks.filter((c) => c.ok).length} de ${x.checks.length} correctas`); if (r) setChecks({ title: t.title, list: r.checks }); }}>Comprobar imágenes</Button>
+                  <Button size="sm" variant="secondary" disabled={busy !== null} onClick={() => setMatch(t)} data-testid="template-match">Sugerir fotos de la biblioteca</Button>
                   <Button size="sm" variant={t.status === 'published' ? 'ghost' : 'primary'} disabled={busy !== null} loading={busy === `st-${t.id}`} onClick={async () => { const r = await run<{ checks: ImageCheck[] }>(`st-${t.id}`, { op: 'status', id: t.id, status: t.status === 'published' ? 'draft' : 'published' }, t.status === 'published' ? 'Plantilla retirada (vuelve a ser borrador)' : 'Plantilla publicada'); if (r && r.checks.length) setChecks({ title: t.title, list: r.checks }); }}>
                     {t.status === 'published' ? 'Retirar' : 'Publicar'}
                   </Button>
@@ -98,6 +101,8 @@ export function SystemTemplatesPanel({ templates, cdnHosts }: { templates: Syste
           ))}
         </Table>
       </Section>
+
+      {match ? <SystemTemplateMatch key={match.id} id={match.id} title={match.title} draft={match.status === 'draft'} onClose={() => setMatch(null)} /> : null}
 
       {checks ? (
         <Section title={`Informe de imágenes · ${checks.title}`} hint="«Formato interno»: WebP dentro del tamaño y peso de su tipo. Una foto que no lo cumple se acepta y se reduce al copiarla, pero conviene prepararla con npm run assets:normalize." action={<Button size="sm" variant="ghost" onClick={() => setChecks(null)}>Cerrar</Button>}>
