@@ -1,0 +1,21 @@
+# nombre: Mi primer festival
+# descripcion: Entradas, pulseras y escenarios para quien vive su primer concierto con amigos.
+# tono: familiar
+# tematica: Música
+# base: festival-de-musica
+# edad: adolescentes
+# presupuesto: 20
+# rondas: 10
+---
+🎟️ | Entrada de abono | Se guarda como un tesoro en la cartera. | festival ticket
+📿 | Pulsera de colores | No te la quitas hasta que se rompe. | festival wristband
+🎤 | Micrófono del escenario pequeño | Allí empiezan los grupos del futuro. | stage microphone
+🥁 | Batería con baquetas rotas | Resiste el ritmo hasta el final. | drum kit
+🧢 | Gorra de la edición | Es la prueba de que estuviste allí. | festival cap
+🌧️ | Chubasquero improvisado | Hecho de bolsa de basura y buen humor. | rain poncho
+🔋 | Cargador portátil | Vale más que la entrada. | power bank
+🍔 | Hamburguesa de la carpa | Larga cola y mucha salsa. | festival burger
+🕺 | Zapatillas para saltar | Aguantan tres días de baile. | dancing sneakers
+🎸 | Guitarra eléctrica de la banda del barrio | Suena mejor de lo que parece. | electric guitar
+📷 | Cámara desechable | Sale la mitad de las fotos movidas. | disposable camera
+🏕️ | Tienda de campaña del grupo | Duermen seis donde caben tres. | festival tent

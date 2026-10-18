@@ -1,0 +1,136 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Egipto: la gran expedición",
+  "tematica": "Egipto",
+  "reglas": {
+    "presupuesto": 40,
+    "puja_minima": 1,
+    "rondas_maximas": 20,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Campamento del arqueólogo",
+      "descripcion": "Una tienda, un farol y mucho polvo.",
+      "emoji": "🏜️",
+      "foto": null
+    },
+    {
+      "titulo": "Brocha de excavación",
+      "descripcion": "Retira la arena grano a grano.",
+      "emoji": "🧹",
+      "foto": null
+    },
+    {
+      "titulo": "Estatua de un escriba",
+      "descripcion": "Está sentado y sostiene un papiro.",
+      "emoji": "🗿",
+      "foto": null
+    },
+    {
+      "titulo": "Vaso canopo",
+      "descripcion": "Guardaba los secretos de la momificación.",
+      "emoji": "⚱️",
+      "foto": null
+    },
+    {
+      "titulo": "Doble corona",
+      "descripcion": "Reunía el Alto y el Bajo Egipto.",
+      "emoji": "👑",
+      "foto": null
+    },
+    {
+      "titulo": "Pluma de Maat",
+      "descripcion": "Simboliza la verdad y la justicia.",
+      "emoji": "🪶",
+      "foto": null
+    },
+    {
+      "titulo": "Serpiente de oro",
+      "descripcion": "Brilla en la frente del faraón.",
+      "emoji": "🐍",
+      "foto": null
+    },
+    {
+      "titulo": "Ojo de Horus",
+      "descripcion": "Protege contra el mal.",
+      "emoji": "🧿",
+      "foto": null
+    },
+    {
+      "titulo": "Crecida del río",
+      "descripcion": "Dejaba un limo fértil en los campos.",
+      "emoji": "🌊",
+      "foto": null
+    },
+    {
+      "titulo": "Barca solar",
+      "descripcion": "Navegaba por el cielo con el dios sol.",
+      "emoji": "🛶",
+      "foto": null
+    },
+    {
+      "titulo": "Templo de Karnak",
+      "descripcion": "Un bosque de columnas gigantes.",
+      "emoji": "🏛️",
+      "foto": null
+    },
+    {
+      "titulo": "Piedra de Rosetta",
+      "descripcion": "Permitió leer los jeroglíficos.",
+      "emoji": "🪨",
+      "foto": null
+    },
+    {
+      "titulo": "Ladrillo de adobe",
+      "descripcion": "Secado al sol junto al río.",
+      "emoji": "🧱",
+      "foto": null
+    },
+    {
+      "titulo": "Pan de cebada",
+      "descripcion": "Se comía en cada hogar.",
+      "emoji": "🍞",
+      "foto": null
+    },
+    {
+      "titulo": "Tarro de miel",
+      "descripcion": "Dulce, sellado y muy valioso.",
+      "emoji": "🍯",
+      "foto": null
+    },
+    {
+      "titulo": "Collar de cuentas",
+      "descripcion": "De turquesa y cornalina.",
+      "emoji": "👗",
+      "foto": null
+    },
+    {
+      "titulo": "Cuerda de medir",
+      "descripcion": "Sirvió para trazar las pirámides.",
+      "emoji": "📏",
+      "foto": null
+    },
+    {
+      "titulo": "Arpa de dieciséis cuerdas",
+      "descripcion": "Se tocaba en los banquetes.",
+      "emoji": "🎶",
+      "foto": null
+    },
+    {
+      "titulo": "Estrella Sirio",
+      "descripcion": "Anunciaba la crecida del Nilo.",
+      "emoji": "🌟",
+      "foto": null
+    },
+    {
+      "titulo": "Cetro del faraón",
+      "descripcion": "Símbolo de poder y de protección.",
+      "emoji": "🔱",
+      "foto": null
+    }
+  ]
+}

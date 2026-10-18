@@ -1,0 +1,136 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Navidad: la gran subasta",
+  "tematica": "Navidad",
+  "reglas": {
+    "presupuesto": 40,
+    "puja_minima": 1,
+    "rondas_maximas": 20,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Abeto de salón",
+      "descripcion": "Hay que apretar la mesa para meterlo.",
+      "emoji": "🎄",
+      "foto": null
+    },
+    {
+      "titulo": "Cascabeles del trineo",
+      "descripcion": "Suenan desde la azotea.",
+      "emoji": "🔔",
+      "foto": null
+    },
+    {
+      "titulo": "Calcetín en la chimenea",
+      "descripcion": "Cuelga vacío hasta medianoche.",
+      "emoji": "🧦",
+      "foto": null
+    },
+    {
+      "titulo": "Corona de adviento",
+      "descripcion": "Cada domingo se enciende una vela.",
+      "emoji": "🕯️",
+      "foto": null
+    },
+    {
+      "titulo": "Belén con musgo",
+      "descripcion": "Figuritas de barro y un río de papel.",
+      "emoji": "⛪",
+      "foto": null
+    },
+    {
+      "titulo": "Gorro de elfo",
+      "descripcion": "Pica en la frente y lo llevan todos.",
+      "emoji": "🎅",
+      "foto": null
+    },
+    {
+      "titulo": "Estrella de papel dorado",
+      "descripcion": "Siempre se tuerce un poco.",
+      "emoji": "🌟",
+      "foto": null
+    },
+    {
+      "titulo": "Mantecados de canela",
+      "descripcion": "Cuesta mucho no comerse las figuritas.",
+      "emoji": "🍪",
+      "foto": null
+    },
+    {
+      "titulo": "Vaso de leche para el reno",
+      "descripcion": "Aparece vacío por la mañana.",
+      "emoji": "🥛",
+      "foto": null
+    },
+    {
+      "titulo": "Bufanda de lana tejida",
+      "descripcion": "Regalo de la abuela, a rayas.",
+      "emoji": "🧣",
+      "foto": null
+    },
+    {
+      "titulo": "Bastón de caramelo",
+      "descripcion": "Se pega a los dedos.",
+      "emoji": "🍬",
+      "foto": null
+    },
+    {
+      "titulo": "Villancico a coro",
+      "descripcion": "Se canta cada vez peor.",
+      "emoji": "🎶",
+      "foto": null
+    },
+    {
+      "titulo": "Brindis de Nochevieja",
+      "descripcion": "Doce uvas a toda prisa.",
+      "emoji": "🥂",
+      "foto": null
+    },
+    {
+      "titulo": "Racimo de uvas",
+      "descripcion": "Doce campanadas y doce granos.",
+      "emoji": "🍇",
+      "foto": null
+    },
+    {
+      "titulo": "Corona de los Reyes",
+      "descripcion": "Dorada y con joyas de cartón.",
+      "emoji": "👑",
+      "foto": null
+    },
+    {
+      "titulo": "Roscón de Reyes",
+      "descripcion": "Esconde una sorpresa y un haba.",
+      "emoji": "🎁",
+      "foto": null
+    },
+    {
+      "titulo": "Trineo de madera",
+      "descripcion": "Baja la cuesta más rápido de lo previsto.",
+      "emoji": "🛷",
+      "foto": null
+    },
+    {
+      "titulo": "Muñeco de nieve de jardín",
+      "descripcion": "Su nariz es una zanahoria.",
+      "emoji": "⛄",
+      "foto": null
+    },
+    {
+      "titulo": "Carta a los Reyes Magos",
+      "descripcion": "Lleva una lista larguísima.",
+      "emoji": "📮",
+      "foto": null
+    },
+    {
+      "titulo": "Chocolate caliente",
+      "descripcion": "Con nata y sin prisa.",
+      "emoji": "🍫",
+      "foto": null
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Mudanza en equipo",
+  "tematica": "Hogar",
+  "reglas": {
+    "presupuesto": 20,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Caja que pesa media tonelada",
+      "descripcion": "Pone «libros» pero suena a piedras.",
+      "emoji": "📦",
+      "foto": null
+    },
+    {
+      "titulo": "Sofá que no pasa por la puerta",
+      "descripcion": "Hay que girarlo tres veces.",
+      "emoji": "🛋️",
+      "foto": null
+    },
+    {
+      "titulo": "Rollo de cinta americana",
+      "descripcion": "Sirve para sujetar casi todo.",
+      "emoji": "🧻",
+      "foto": null
+    },
+    {
+      "titulo": "Carro de mudanza",
+      "descripcion": "Llega a la tercera planta con dificultad.",
+      "emoji": "🧰",
+      "foto": null
+    },
+    {
+      "titulo": "Cinta métrica",
+      "descripcion": "Dice que no cabe, pero cabe.",
+      "emoji": "📏",
+      "foto": null
+    },
+    {
+      "titulo": "Planta trepadora",
+      "descripcion": "Se queda atrapada en la cortina.",
+      "emoji": "🪴",
+      "foto": null
+    },
+    {
+      "titulo": "Somier desmontado",
+      "descripcion": "Faltan cuatro tornillos.",
+      "emoji": "🛏️",
+      "foto": null
+    },
+    {
+      "titulo": "Cena de cajas",
+      "descripcion": "Se come sentados en el suelo.",
+      "emoji": "🍕",
+      "foto": null
+    },
+    {
+      "titulo": "Llaves del piso nuevo",
+      "descripcion": "Brillan cuando abren la puerta.",
+      "emoji": "🔑",
+      "foto": null
+    },
+    {
+      "titulo": "Nevera de bebidas",
+      "descripcion": "Las bebidas llegan antes que el sofá.",
+      "emoji": "🥤",
+      "foto": null
+    },
+    {
+      "titulo": "Etiquetas de colores",
+      "descripcion": "Cada habitación tiene su color.",
+      "emoji": "🏷️",
+      "foto": null
+    },
+    {
+      "titulo": "Furgoneta alquilada",
+      "descripcion": "Huele a café y tiene el asiento corrido.",
+      "emoji": "🚐",
+      "foto": null
+    }
+  ]
+}

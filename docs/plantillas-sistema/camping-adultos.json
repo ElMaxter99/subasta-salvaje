@@ -1,0 +1,88 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Glamping de lujo",
+  "tematica": "Naturaleza",
+  "reglas": {
+    "presupuesto": 30,
+    "puja_minima": 1,
+    "rondas_maximas": 12,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Tienda con cama de matrimonio",
+      "descripcion": "Tiene alfombra y lámpara de pie.",
+      "emoji": "⛺",
+      "foto": null
+    },
+    {
+      "titulo": "Hoguera con vino caliente",
+      "descripcion": "Huele a canela y a leña.",
+      "emoji": "🔥",
+      "foto": null
+    },
+    {
+      "titulo": "Colchón hinchable doble",
+      "descripcion": "Se deshincha a las tres de la mañana.",
+      "emoji": "🛏️",
+      "foto": null
+    },
+    {
+      "titulo": "Cocina de campaña",
+      "descripcion": "Un hornillo de gas que pretende ser restaurante.",
+      "emoji": "🍳",
+      "foto": null
+    },
+    {
+      "titulo": "Mapa de estrellas",
+      "descripcion": "Sirve para presumir de constelaciones.",
+      "emoji": "🔭",
+      "foto": null
+    },
+    {
+      "titulo": "Nevera con hielo",
+      "descripcion": "Guarda queso, embutido y bebidas frías.",
+      "emoji": "🧊",
+      "foto": null
+    },
+    {
+      "titulo": "Concierto de búhos",
+      "descripcion": "Empieza al caer la noche.",
+      "emoji": "🦉",
+      "foto": null
+    },
+    {
+      "titulo": "Botas de senderismo",
+      "descripcion": "Ya domadas, cómodas como zapatillas.",
+      "emoji": "🥾",
+      "foto": null
+    },
+    {
+      "titulo": "Troncos de encina",
+      "descripcion": "Un metro cúbico que dura una noche.",
+      "emoji": "🪵",
+      "foto": null
+    },
+    {
+      "titulo": "Cesta de picnic de mimbre",
+      "descripcion": "Con mantel de cuadros y todo.",
+      "emoji": "🧺",
+      "foto": null
+    },
+    {
+      "titulo": "Mochila de ruta",
+      "descripcion": "Lleva agua, fruta y una navaja.",
+      "emoji": "🎒",
+      "foto": null
+    },
+    {
+      "titulo": "Cafetera de montaña",
+      "descripcion": "Hace un café con sabor a humo.",
+      "emoji": "☕",
+      "foto": null
+    }
+  ]
+}

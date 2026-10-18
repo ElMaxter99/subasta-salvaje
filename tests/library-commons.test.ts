@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { creditOf, licenseAllowed, manifestToCsv, parseManifestCsv, parsePack, searchCommons } from '@/lib/library/commons';
+import { creditOf, licenseAllowed, manifestToCsv, parseManifestCsv, parsePack, searchCommons, splitQueries } from '@/lib/library/commons';
 
 const page = (index: number, title: string, license: string, extra: Record<string, unknown> = {}, mime = 'image/jpeg', width = 1280) => ({
   title: `File:${title}.jpg`, index,
@@ -77,6 +77,25 @@ describe('packs de productos y manifiesto', () => {
   });
 });
 
+describe('packs nuevos: Mascotas disfrazadas, Juguetes y Plantas y flores', () => {
+  it('existen, usan una categoría con objetivo, rol producto y piden algo más del objetivo, con alternativa en español', async () => {
+    const { readFileSync } = await import('node:fs');
+    const { LIBRARY_CATEGORIES } = await import('@/lib/library/taxonomy');
+    for (const [file, cat] of [['mascotas-disfrazadas', 'Mascotas disfrazadas'], ['juguetes', 'Juguetes'], ['plantas-y-flores', 'Plantas y flores']] as const) {
+      const pack = parsePack(readFileSync(`docs/catalogo-semilla/${file}.txt`, 'utf8'), file);
+      const target = LIBRARY_CATEGORIES.find((c) => c.name === cat)!;
+      expect(pack).toMatchObject({ collection: cat, kind: 'item', category: cat, roles: ['product'] });
+      expect(pack.products.length, file).toBeGreaterThanOrEqual(target.product);
+      expect(pack.products.every((p) => splitQueries(p.query).length === 2), `${file}: todas con alternativa en español`).toBe(true);
+    }
+  });
+
+  it('splitQueries separa las alternativas y tolera una sola', () => {
+    expect(splitQueries('dog hat || perro con sombrero')).toEqual(['dog hat', 'perro con sombrero']);
+    expect(splitQueries('cat')).toEqual(['cat']);
+  });
+});
+
 describe('packs de productos de docs/catalogo-semilla', () => {
   it('todos tienen colección, productos con descripción, emoji y búsqueda en inglés, sin repetidos', async () => {
     const { readdirSync, readFileSync } = await import('node:fs');
@@ -94,7 +113,7 @@ describe('packs de productos de docs/catalogo-semilla', () => {
       for (const p of pack.products) {
         expect(p.description, `${f}/${p.name}`).not.toBe('');
         expect(p.emoji, `${f}/${p.name}`).not.toBe('');
-        expect(/^[\x20-\x7e]+$/.test(p.query), `${f}/${p.name}: la búsqueda va en inglés (ASCII)`).toBe(true);
+        expect(/^[\x20-\x7e]+$/.test(splitQueries(p.query)[0]!), `${f}/${p.name}: la primera búsqueda va en inglés (ASCII)`).toBe(true);
       }
     }
   });

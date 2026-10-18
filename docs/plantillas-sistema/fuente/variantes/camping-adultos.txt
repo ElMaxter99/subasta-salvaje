@@ -1,0 +1,21 @@
+# nombre: Glamping de lujo
+# descripcion: Acampar sin renunciar a la comodidad: tienda con cama, vino y estrellas.
+# tono: adultos
+# tematica: Naturaleza
+# base: camping-aventura
+# edad: adultos
+# presupuesto: 30
+# rondas: 12
+---
+⛺ | Tienda con cama de matrimonio | Tiene alfombra y lámpara de pie. | glamping tent
+🔥 | Hoguera con vino caliente | Huele a canela y a leña. | campfire mulled wine
+🛏️ | Colchón hinchable doble | Se deshincha a las tres de la mañana. | air mattress
+🍳 | Cocina de campaña | Un hornillo de gas que pretende ser restaurante. | camp stove
+🔭 | Mapa de estrellas | Sirve para presumir de constelaciones. | star chart
+🧊 | Nevera con hielo | Guarda queso, embutido y bebidas frías. | cooler box
+🦉 | Concierto de búhos | Empieza al caer la noche. | owl night forest
+🥾 | Botas de senderismo | Ya domadas, cómodas como zapatillas. | hiking boots
+🪵 | Troncos de encina | Un metro cúbico que dura una noche. | firewood stack
+🧺 | Cesta de picnic de mimbre | Con mantel de cuadros y todo. | wicker picnic basket
+🎒 | Mochila de ruta | Lleva agua, fruta y una navaja. | trekking backpack
+☕ | Cafetera de montaña | Hace un café con sabor a humo. | percolator coffee

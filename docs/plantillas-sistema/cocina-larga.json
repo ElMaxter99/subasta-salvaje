@@ -1,0 +1,136 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Maratón gastronómica",
+  "tematica": "Gastronomía",
+  "reglas": {
+    "presupuesto": 40,
+    "puja_minima": 1,
+    "rondas_maximas": 20,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Fideos de caldo largo",
+      "descripcion": "Se sirven humeantes con cebolleta.",
+      "emoji": "🍜",
+      "foto": null
+    },
+    {
+      "titulo": "Empanadilla de vapor",
+      "descripcion": "Una bolsita rellena que se come de un bocado.",
+      "emoji": "🥟",
+      "foto": null
+    },
+    {
+      "titulo": "Taco de cochinita",
+      "descripcion": "Con cebolla morada y mucho limón.",
+      "emoji": "🌮",
+      "foto": null
+    },
+    {
+      "titulo": "Tamal en hoja",
+      "descripcion": "Maíz suave envuelto y cocido al vapor.",
+      "emoji": "🫔",
+      "foto": null
+    },
+    {
+      "titulo": "Curry de lentejas",
+      "descripcion": "Especiado y reconfortante.",
+      "emoji": "🍛",
+      "foto": null
+    },
+    {
+      "titulo": "Pan de nube",
+      "descripcion": "Se hincha en el horno de barro.",
+      "emoji": "🫓",
+      "foto": null
+    },
+    {
+      "titulo": "Paella de domingo",
+      "descripcion": "Se come directamente de la paella.",
+      "emoji": "🥘",
+      "foto": null
+    },
+    {
+      "titulo": "Pasta con tomate fresco",
+      "descripcion": "Albahaca arrugada y queso rallado.",
+      "emoji": "🍝",
+      "foto": null
+    },
+    {
+      "titulo": "Cruasán de almendra",
+      "descripcion": "Hojaldrado y crujiente a primera hora.",
+      "emoji": "🥐",
+      "foto": null
+    },
+    {
+      "titulo": "Croqueta de pollo",
+      "descripcion": "Cremosa por dentro, crujiente por fuera.",
+      "emoji": "🧆",
+      "foto": null
+    },
+    {
+      "titulo": "Tabla de nigiris",
+      "descripcion": "Piezas pequeñas con mucho cuidado.",
+      "emoji": "🍣",
+      "foto": null
+    },
+    {
+      "titulo": "Kebab de pollo",
+      "descripcion": "Con salsa de yogur y pan caliente.",
+      "emoji": "🥙",
+      "foto": null
+    },
+    {
+      "titulo": "Cocido de olla",
+      "descripcion": "Tres vuelcos y una siesta.",
+      "emoji": "🍲",
+      "foto": null
+    },
+    {
+      "titulo": "Arroz con leche",
+      "descripcion": "Con canela por encima.",
+      "emoji": "🍚",
+      "foto": null
+    },
+    {
+      "titulo": "Mango maduro",
+      "descripcion": "Jugoso, dorado y pegajoso.",
+      "emoji": "🥭",
+      "foto": null
+    },
+    {
+      "titulo": "Cacahuetes tostados",
+      "descripcion": "Se pelan de dos en dos.",
+      "emoji": "🥜",
+      "foto": null
+    },
+    {
+      "titulo": "Tetera de menta",
+      "descripcion": "Se sirve desde muy alto.",
+      "emoji": "🍵",
+      "foto": null
+    },
+    {
+      "titulo": "Gofre con fruta",
+      "descripcion": "Cuadriculado y con nata.",
+      "emoji": "🧇",
+      "foto": null
+    },
+    {
+      "titulo": "Ristra de guindillas",
+      "descripcion": "Cuelga secándose en la cocina.",
+      "emoji": "🌶️",
+      "foto": null
+    },
+    {
+      "titulo": "Mercado de especias",
+      "descripcion": "Hay montañas de color y aroma.",
+      "emoji": "🫖",
+      "foto": null
+    }
+  ]
+}

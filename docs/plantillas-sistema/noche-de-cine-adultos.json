@@ -1,0 +1,88 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Cinéfilos de sofá",
+  "tematica": "Cine",
+  "reglas": {
+    "presupuesto": 30,
+    "puja_minima": 1,
+    "rondas_maximas": 12,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Copia en 35 milímetros",
+      "descripcion": "Tiene arañazos que cuentan su historia.",
+      "emoji": "🎞️",
+      "foto": null
+    },
+    {
+      "titulo": "Copa de vino tinto",
+      "descripcion": "Acompaña los diálogos más largos.",
+      "emoji": "🍷",
+      "foto": null
+    },
+    {
+      "titulo": "Proyector de sobremesa",
+      "descripcion": "Hace un zumbido al arrancar.",
+      "emoji": "📽️",
+      "foto": null
+    },
+    {
+      "titulo": "Claqueta de rodaje",
+      "descripcion": "Marca el principio de cada toma.",
+      "emoji": "🎬",
+      "foto": null
+    },
+    {
+      "titulo": "Tabla de curados",
+      "descripcion": "Más vistosa que la película.",
+      "emoji": "🧀",
+      "foto": null
+    },
+    {
+      "titulo": "Sofá de dos plazas",
+      "descripcion": "Reservado para quienes llegan primero.",
+      "emoji": "🛋️",
+      "foto": null
+    },
+    {
+      "titulo": "Guion anotado",
+      "descripcion": "Con comentarios a lápiz en el margen.",
+      "emoji": "📖",
+      "foto": null
+    },
+    {
+      "titulo": "Gafas de director",
+      "descripcion": "Redondas, oscuras y muy serias.",
+      "emoji": "🕶️",
+      "foto": null
+    },
+    {
+      "titulo": "Estatuilla de festival",
+      "descripcion": "Hecha de bronce y de mucho prestigio.",
+      "emoji": "🏅",
+      "foto": null
+    },
+    {
+      "titulo": "Banda sonora en vinilo",
+      "descripcion": "Suena mejor que en el cine.",
+      "emoji": "🎼",
+      "foto": null
+    },
+    {
+      "titulo": "Café de después",
+      "descripcion": "Para discutir el final hasta las tantas.",
+      "emoji": "☕",
+      "foto": null
+    },
+    {
+      "titulo": "Taquilla de preestreno",
+      "descripcion": "Guardada en un cajón desde hace veinte años.",
+      "emoji": "🎫",
+      "foto": null
+    }
+  ]
+}

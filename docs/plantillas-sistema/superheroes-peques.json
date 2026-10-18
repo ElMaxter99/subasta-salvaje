@@ -1,0 +1,88 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Superhéroes pequeñitos",
+  "tematica": "Superhéroes",
+  "reglas": {
+    "presupuesto": 14,
+    "puja_minima": 1,
+    "rondas_maximas": 8,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Capa voladora",
+      "descripcion": "Ondea al viento como una bandera.",
+      "emoji": "🦸",
+      "foto": null
+    },
+    {
+      "titulo": "Antifaz secreto",
+      "descripcion": "Nadie reconoce a quien lo lleva.",
+      "emoji": "🎭",
+      "foto": null
+    },
+    {
+      "titulo": "Súper fuerza de bocadillo",
+      "descripcion": "Se activa después de merendar.",
+      "emoji": "💪",
+      "foto": null
+    },
+    {
+      "titulo": "Rayo de energía",
+      "descripcion": "Ilumina toda la habitación.",
+      "emoji": "⚡",
+      "foto": null
+    },
+    {
+      "titulo": "Escudo de cartón",
+      "descripcion": "Para parar balones y abrazos.",
+      "emoji": "🛡️",
+      "foto": null
+    },
+    {
+      "titulo": "Perro ayudante",
+      "descripcion": "Acompaña al héroe a todas partes.",
+      "emoji": "🐶",
+      "foto": null
+    },
+    {
+      "titulo": "Ciudad de juguete",
+      "descripcion": "Hay que salvarla de los monstruos de peluche.",
+      "emoji": "🏙️",
+      "foto": null
+    },
+    {
+      "titulo": "Poción de colores",
+      "descripcion": "Da poderes durante cinco minutos.",
+      "emoji": "🧪",
+      "foto": null
+    },
+    {
+      "titulo": "Bici veloz",
+      "descripcion": "Corre más que un coche de juguete.",
+      "emoji": "🚲",
+      "foto": null
+    },
+    {
+      "titulo": "Megáfono del héroe",
+      "descripcion": "Sirve para avisar a los vecinos.",
+      "emoji": "📣",
+      "foto": null
+    },
+    {
+      "titulo": "Guantes mágicos",
+      "descripcion": "Brillan cuando hay que ayudar.",
+      "emoji": "🧤",
+      "foto": null
+    },
+    {
+      "titulo": "Medalla de valiente",
+      "descripcion": "Se da a quien ayuda sin que se lo pidan.",
+      "emoji": "🏅",
+      "foto": null
+    }
+  ]
+}

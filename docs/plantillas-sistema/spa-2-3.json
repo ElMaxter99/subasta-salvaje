@@ -1,0 +1,88 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Spa para dos o tres",
+  "tematica": "Relax",
+  "reglas": {
+    "presupuesto": 14,
+    "puja_minima": 1,
+    "rondas_maximas": 8,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Vela de lavanda",
+      "descripcion": "Perfuma la sala de relajación.",
+      "emoji": "🕯️",
+      "foto": null
+    },
+    {
+      "titulo": "Rodajas de pepino",
+      "descripcion": "Fresca y silenciosa.",
+      "emoji": "🧖",
+      "foto": null
+    },
+    {
+      "titulo": "Cantos rodados tibios",
+      "descripcion": "Deshacen las contracturas de la semana.",
+      "emoji": "🪨",
+      "foto": null
+    },
+    {
+      "titulo": "Bañera de hidromasaje",
+      "descripcion": "Burbujea con música suave.",
+      "emoji": "🛁",
+      "foto": null
+    },
+    {
+      "titulo": "Infusión de menta",
+      "descripcion": "Se sirve en taza grande.",
+      "emoji": "🌿",
+      "foto": null
+    },
+    {
+      "titulo": "Aceite de masaje",
+      "descripcion": "Huele a almendra y a descanso.",
+      "emoji": "🧴",
+      "foto": null
+    },
+    {
+      "titulo": "Murmullo de cascada",
+      "descripcion": "Se repite sin parar.",
+      "emoji": "🎶",
+      "foto": null
+    },
+    {
+      "titulo": "Jabón artesano",
+      "descripcion": "Se deshace despacio.",
+      "emoji": "🧼",
+      "foto": null
+    },
+    {
+      "titulo": "Zapatillas de felpa",
+      "descripcion": "Silenciosas y suaves.",
+      "emoji": "🩴",
+      "foto": null
+    },
+    {
+      "titulo": "Colchoneta de estiramientos",
+      "descripcion": "Aprieta el estrés en tres respiraciones.",
+      "emoji": "🧘",
+      "foto": null
+    },
+    {
+      "titulo": "Té verde en tetera",
+      "descripcion": "Sale con vapor y aroma.",
+      "emoji": "🍵",
+      "foto": null
+    },
+    {
+      "titulo": "Sillón de masaje",
+      "descripcion": "Vibra con ritmo suave.",
+      "emoji": "💆",
+      "foto": null
+    }
+  ]
+}

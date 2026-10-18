@@ -1,0 +1,88 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Disfraces en familia",
+  "tematica": "Fiesta",
+  "reglas": {
+    "presupuesto": 20,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Traje de dinosaurio hinchable",
+      "descripcion": "Cuesta caminar y sentarse.",
+      "emoji": "🦖",
+      "foto": null
+    },
+    {
+      "titulo": "Alas de hada",
+      "descripcion": "Brillan con la luz del sol.",
+      "emoji": "🧚",
+      "foto": null
+    },
+    {
+      "titulo": "Garfio de pirata",
+      "descripcion": "Se pone en el ojo que no ves.",
+      "emoji": "🏴‍☠️",
+      "foto": null
+    },
+    {
+      "titulo": "Nariz roja de payaso",
+      "descripcion": "Suena cuando se aprieta.",
+      "emoji": "🤡",
+      "foto": null
+    },
+    {
+      "titulo": "Disfraz de ninja",
+      "descripcion": "Silencioso salvo por el crujido de los pies.",
+      "emoji": "🥷",
+      "foto": null
+    },
+    {
+      "titulo": "Corona de princesa",
+      "descripcion": "Con joyas de plástico.",
+      "emoji": "👸",
+      "foto": null
+    },
+    {
+      "titulo": "Capa de vampiro",
+      "descripcion": "Tiene cuello alto y forro rojo.",
+      "emoji": "🧛",
+      "foto": null
+    },
+    {
+      "titulo": "Pijama de oso",
+      "descripcion": "Calentito y de pelo suave.",
+      "emoji": "🐻",
+      "foto": null
+    },
+    {
+      "titulo": "Chistera de mago",
+      "descripcion": "Guarda un pañuelo infinito.",
+      "emoji": "🎩",
+      "foto": null
+    },
+    {
+      "titulo": "Antifaz de héroe",
+      "descripcion": "Hace falta una buena voz de héroe.",
+      "emoji": "🦸",
+      "foto": null
+    },
+    {
+      "titulo": "Peluca arcoíris",
+      "descripcion": "Se ve desde la otra acera.",
+      "emoji": "🌈",
+      "foto": null
+    },
+    {
+      "titulo": "Maleta de maquillaje",
+      "descripcion": "Con pintura facial de todos los colores.",
+      "emoji": "🧸",
+      "foto": null
+    }
+  ]
+}

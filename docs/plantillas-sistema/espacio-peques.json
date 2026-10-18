@@ -1,0 +1,88 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Astronautas en miniatura",
+  "tematica": "Espacio",
+  "reglas": {
+    "presupuesto": 14,
+    "puja_minima": 1,
+    "rondas_maximas": 8,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Cohete de colores",
+      "descripcion": "Despega con cuenta atrás y mucho humo.",
+      "emoji": "🚀",
+      "foto": null
+    },
+    {
+      "titulo": "Luna sonriente",
+      "descripcion": "Cambia de forma cada noche.",
+      "emoji": "🌙",
+      "foto": null
+    },
+    {
+      "titulo": "Planeta de anillos",
+      "descripcion": "Lleva un aro gigante alrededor.",
+      "emoji": "🪐",
+      "foto": null
+    },
+    {
+      "titulo": "Cometa veloz",
+      "descripcion": "Deja una cola de luz al pasar.",
+      "emoji": "☄️",
+      "foto": null
+    },
+    {
+      "titulo": "Disfraz de astronauta",
+      "descripcion": "Para flotar sin miedo en el espacio.",
+      "emoji": "👨‍🚀",
+      "foto": null
+    },
+    {
+      "titulo": "Satélite viajero",
+      "descripcion": "Da vueltas a la Tierra sin parar.",
+      "emoji": "🛰️",
+      "foto": null
+    },
+    {
+      "titulo": "Marciano simpático",
+      "descripcion": "Dice hola con tres dedos.",
+      "emoji": "👽",
+      "foto": null
+    },
+    {
+      "titulo": "Telescopio de juguete",
+      "descripcion": "Sirve para contar estrellas.",
+      "emoji": "🔭",
+      "foto": null
+    },
+    {
+      "titulo": "Planeta Tierra",
+      "descripcion": "Nuestro hogar azul y verde.",
+      "emoji": "🌍",
+      "foto": null
+    },
+    {
+      "titulo": "Sol sonriente",
+      "descripcion": "Calienta a todos los planetas.",
+      "emoji": "☀️",
+      "foto": null
+    },
+    {
+      "titulo": "Estrella fugaz",
+      "descripcion": "Pide un deseo antes de que se apague.",
+      "emoji": "🌠",
+      "foto": null
+    },
+    {
+      "titulo": "Nave redonda",
+      "descripcion": "Aterriza en el patio del colegio.",
+      "emoji": "🛸",
+      "foto": null
+    }
+  ]
+}

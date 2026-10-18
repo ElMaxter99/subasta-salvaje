@@ -1,0 +1,88 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Noche de miedo en el instituto",
+  "tematica": "Casa encantada",
+  "reglas": {
+    "presupuesto": 20,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Fantasma del laboratorio",
+      "descripcion": "Aparece siempre justo antes del examen de química.",
+      "emoji": "👻",
+      "foto": null
+    },
+    {
+      "titulo": "Linterna del móvil",
+      "descripcion": "Alumbra poco y gasta toda la batería.",
+      "emoji": "🔦",
+      "foto": null
+    },
+    {
+      "titulo": "Grupo de clase fantasma",
+      "descripcion": "Tiene 200 mensajes y nadie escribe.",
+      "emoji": "📱",
+      "foto": null
+    },
+    {
+      "titulo": "Puerta del gimnasio",
+      "descripcion": "Se cierra sola cuando más prisa tienes.",
+      "emoji": "🚪",
+      "foto": null
+    },
+    {
+      "titulo": "Mochila misteriosa",
+      "descripcion": "Alguien dejó dentro un bocadillo del curso pasado.",
+      "emoji": "🎒",
+      "foto": null
+    },
+    {
+      "titulo": "Espejo de los vestuarios",
+      "descripcion": "Refleja cosas que preferirías no ver.",
+      "emoji": "🪞",
+      "foto": null
+    },
+    {
+      "titulo": "Telaraña de la biblioteca",
+      "descripcion": "Nadie ha pedido ese libro desde 1998.",
+      "emoji": "🕸️",
+      "foto": null
+    },
+    {
+      "titulo": "Delegado vampiro",
+      "descripcion": "Solo aparece cuando se pone el sol.",
+      "emoji": "🧛",
+      "foto": null
+    },
+    {
+      "titulo": "Calabaza de taquilla",
+      "descripcion": "Alguien la dejó ahí y huele raro.",
+      "emoji": "🎃",
+      "foto": null
+    },
+    {
+      "titulo": "Vela de la sesión de espiritismo",
+      "descripcion": "Se apagó justo cuando preguntaron por la nota.",
+      "emoji": "🕯️",
+      "foto": null
+    },
+    {
+      "titulo": "Cinta de vídeo del viaje de fin de curso",
+      "descripcion": "Dicen que sale un fantasma al fondo.",
+      "emoji": "📼",
+      "foto": null
+    },
+    {
+      "titulo": "Timbre a medianoche",
+      "descripcion": "Suena sin que nadie lo toque.",
+      "emoji": "🔔",
+      "foto": null
+    }
+  ]
+}

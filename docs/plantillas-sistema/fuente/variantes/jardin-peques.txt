@@ -1,0 +1,21 @@
+# nombre: Jardín de bichitos
+# descripcion: Flores, mariposas y bichitos del jardín para descubrir la naturaleza con 6–10 años.
+# tono: educativo
+# tematica: Plantas
+# base: jardin-botanico
+# edad: infantil
+# presupuesto: 14
+# rondas: 8
+---
+🐛 | Oruga hambrienta | Se come una hoja entera sin parar. | caterpillar
+🦋 | Mariposa de alas azules | Antes fue una oruga. | blue butterfly
+🐝 | Abeja trabajadora | Zumba entre las flores buscando néctar. | bee flower
+🐞 | Mariquita de siete puntos | Trae buena suerte si se posa en la mano. | ladybug
+🌻 | Girasol enorme | Siempre mira hacia el sol. | sunflower
+🌷 | Tulipán rojo | Se abre cuando llega la primavera. | red tulip
+🐌 | Caracol lento | Lleva su casa a cuestas. | snail
+🌱 | Plantita recién nacida | Acaba de salir de la semilla. | seedling sprout
+💧 | Regadera de lata | Da de beber a todas las plantas. | watering can
+🍓 | Fresa del huerto | Roja, dulce y escondida bajo las hojas. | garden strawberry
+🕷️ | Araña tejedora | Hace una tela que brilla con el rocío. | spider web dew
+🍄 | Seta con lunares | Es muy bonita, pero no se toca. | red mushroom

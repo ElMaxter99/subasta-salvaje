@@ -1,0 +1,29 @@
+# nombre: Gran expedición espacial
+# descripcion: Veinte rondas para una misión larga que recorre la Luna, Marte y más allá.
+# tono: educativo
+# tematica: Espacio
+# base: espacio-exterior
+# duracion: larga
+# presupuesto: 40
+# rondas: 20
+---
+🧑‍🚀 | Casco con visera dorada | Protege del sol sin atenuar la vista. | astronaut helmet
+🧰 | Caja de herramientas orbital | Los tornillos flotan si se abre mal. | space toolbox
+🌑 | Cráter lunar | Guarda polvo de miles de años. | moon crater
+🥾 | Huella en la Luna | Seguirá ahí durante millones de años. | moon footprint
+🚙 | Vehículo explorador | Rueda sobre rocas de otro mundo. | moon rover
+🔴 | Roca de Marte | Roja por el óxido de hierro. | mars rock
+🛠️ | Brazo robótico | Recoge muestras sin cansarse. | robotic arm
+🏠 | Módulo habitable | Una casa pequeña para vivir lejos. | space habitat
+🍽️ | Comida liofilizada | Se hidrata con unas gotas de agua. | freeze dried food
+🚽 | Aseo de gravedad cero | Requiere un manual de instrucciones. | space toilet
+🌌 | Nube de gas estelar | Allí nacen las estrellas nuevas. | nebula
+🪐 | Anillo de hielo | Millones de trozos que giran juntos. | saturn rings
+🧊 | Cometa congelado | Una bola de hielo sucio y polvo. | comet ice
+🛰️ | Estación espacial | Los astronautas la habitan por turnos. | space station
+📡 | Antena parabólica | Escucha mensajes de naves lejanas. | radio dish
+🧭 | Carta estelar | Guía el rumbo entre constelaciones. | star map
+🔦 | Linterna de casco | Ilumina la sombra de un cráter. | helmet light
+🌅 | Amanecer orbital | Se ve dieciséis veces al día. | orbital sunrise
+🧪 | Cultivo de lechugas | Crecen sin tierra ni gravedad. | space lettuce
+🏁 | Bandera de la misión | Flamea sin viento porque lleva un alambre. | mission flag

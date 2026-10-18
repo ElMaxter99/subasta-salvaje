@@ -1,0 +1,21 @@
+# nombre: Vida de instituto
+# descripcion: Taquillas, exámenes y recreos, tal como se viven en la secundaria.
+# tono: humor
+# tematica: Colegio
+# base: cole-y-mochila
+# edad: adolescentes
+# presupuesto: 20
+# rondas: 10
+---
+🔐 | Taquilla atascada | Se abre a la quinta patada. | school locker
+📝 | Chuleta microscópica | Más pequeña que un grano de arroz. | tiny note paper
+🥪 | Bocadillo del recreo | Aplastado en el fondo de la mochila. | sandwich backpack
+📵 | Móvil confiscado | Vuelve a su dueño al final del trimestre. | confiscated phone
+🧑‍🏫 | Profe de mates | Es capaz de explicar con tres colores de tiza. | math teacher
+📈 | Gráfica de notas | Sube mucho justo antes de la evaluación. | grades chart
+🏀 | Pista del patio | Allí se decide todo con un tres contra tres. | school basketball court
+🚌 | Excursión al museo | El mejor momento es la vuelta en autobús. | school trip bus
+📚 | Libro de texto subrayado | Todo en amarillo, nada entendido. | highlighted textbook
+🗓️ | Calendario de exámenes | Los tres coinciden el mismo viernes. | exam calendar
+🎤 | Festival de fin de curso | Se ensaya poco y se aplaude mucho. | school talent show
+🎓 | Gorro de fin de ciclo | Vuela por los aires al final del acto. | graduation cap

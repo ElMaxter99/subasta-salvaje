@@ -1,0 +1,21 @@
+# nombre: Castillo de fantasmas simpáticos
+# descripcion: Una mansión misteriosa pero amable, ideal para jugar en familia sin sustos de verdad.
+# tono: familiar
+# tematica: Casa encantada
+# base: mansion-encantada
+# edad: familiar
+# presupuesto: 20
+# rondas: 10
+---
+👻 | Fantasma bromista | Esconde los calcetines para reírse. | friendly ghost
+🏰 | Torre con telarañas | Tiene escaleras de caracol y muchos murciélagos. | castle tower
+🦇 | Murciélago de peluche | Cuelga del techo y nunca se asusta. | plush bat
+🕯️ | Candelabro dorado | Ilumina un salón enorme. | candelabra
+🧙 | Bruja de la cocina | Cocina sopas de colores. | friendly witch
+🎩 | Sombrero de mago olvidado | Contiene dos conejos y una bufanda. | magician hat
+📜 | Mapa del tesoro del desván | Tiene una cruz y una mancha de mermelada. | treasure map attic
+🪑 | Silla que se mueve | Nadie sabe quién la empuja. | rocking chair
+🍬 | Caramelos de la bruja | Cambian de sabor cada vez. | witch candy
+🖼️ | Retrato que guiña | El abuelo del cuadro sonríe. | portrait painting
+🐈 | Gato negro guardián | Vigila con ojos amarillos. | black cat
+🧹 | Escoba voladora | Barre y vuela, depende del día. | witch broom

@@ -1,0 +1,21 @@
+# nombre: Laboratorio exprés
+# descripcion: Experimentos rápidos en ocho rondas, para una partida de ciencia sin complicaciones.
+# tono: educativo
+# tematica: Ciencia
+# base: laboratorio-loco
+# duracion: corta
+# presupuesto: 16
+# rondas: 8
+---
+🔬 | Microscopio de mesa | Descubre un mundo dentro de una gota. | microscope
+🧫 | Placa de cultivo | Crece algo, pero nadie sabe qué. | petri dish
+🧪 | Tubo burbujeante | Cambia de color con una gota de zumo. | bubbling test tube
+🌡️ | Termómetro de cristal | Marca fiebre en la sopa. | glass thermometer
+⚗️ | Matraz de cuello largo | Hierve sin derramarse. | erlenmeyer flask
+🥽 | Gafas antisalpicaduras | Se empañan cuando todo va bien. | safety goggles
+🧲 | Imán potente | Atrae las llaves y los clips. | strong magnet
+💡 | Bombilla de ideas | Se enciende con un gran descubrimiento. | light bulb
+📐 | Escuadra del ingeniero | Precisa hasta el último milímetro. | set square
+🧬 | Hélice de plástico | Se retuerce como una escalera de caracol. | dna model
+🔋 | Pila de limón | Da la energía justa para un reloj. | lemon battery
+📓 | Cuaderno de apuntes | Lleno de tachones y flechas. | lab notebook

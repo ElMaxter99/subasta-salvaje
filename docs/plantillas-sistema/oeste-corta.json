@@ -1,0 +1,88 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Salvaje Oeste exprés",
+  "tematica": "Oeste",
+  "reglas": {
+    "presupuesto": 16,
+    "puja_minima": 1,
+    "rondas_maximas": 8,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Cactus gigante",
+      "descripcion": "Pincha, pero da buena sombra al mediodía.",
+      "emoji": "🌵",
+      "foto": null
+    },
+    {
+      "titulo": "Mapa del desfiladero",
+      "descripcion": "Marca un atajo que no existe.",
+      "emoji": "🏜️",
+      "foto": null
+    },
+    {
+      "titulo": "Potro salvaje",
+      "descripcion": "Llega primero al abrevadero.",
+      "emoji": "🐎",
+      "foto": null
+    },
+    {
+      "titulo": "Tambor del jefe de tribu",
+      "descripcion": "Marca el ritmo de la danza.",
+      "emoji": "🥁",
+      "foto": null
+    },
+    {
+      "titulo": "Campana de la diligencia",
+      "descripcion": "Avisa de que llega el correo.",
+      "emoji": "🔔",
+      "foto": null
+    },
+    {
+      "titulo": "Barril de sal",
+      "descripcion": "Guarda las provisiones del invierno.",
+      "emoji": "🧂",
+      "foto": null
+    },
+    {
+      "titulo": "Cabaña abandonada",
+      "descripcion": "Con puertas que chirrían y ventanas rotas.",
+      "emoji": "🏚️",
+      "foto": null
+    },
+    {
+      "titulo": "Banjo del salón",
+      "descripcion": "Suena alegre aunque nadie sepa tocarlo.",
+      "emoji": "🪕",
+      "foto": null
+    },
+    {
+      "titulo": "Pañuelo del cuello",
+      "descripcion": "Protege del polvo del camino.",
+      "emoji": "🧣",
+      "foto": null
+    },
+    {
+      "titulo": "Filón de oro",
+      "descripcion": "Brilla más que la luna.",
+      "emoji": "🪙",
+      "foto": null
+    },
+    {
+      "titulo": "Espuelas de plata",
+      "descripcion": "Tintinean al andar.",
+      "emoji": "🥾",
+      "foto": null
+    },
+    {
+      "titulo": "Fogata de la pradera",
+      "descripcion": "Calienta las judías de la cena.",
+      "emoji": "🔥",
+      "foto": null
+    }
+  ]
+}

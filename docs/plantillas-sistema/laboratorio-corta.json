@@ -1,0 +1,88 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Laboratorio exprés",
+  "tematica": "Ciencia",
+  "reglas": {
+    "presupuesto": 16,
+    "puja_minima": 1,
+    "rondas_maximas": 8,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Microscopio de mesa",
+      "descripcion": "Descubre un mundo dentro de una gota.",
+      "emoji": "🔬",
+      "foto": null
+    },
+    {
+      "titulo": "Placa de cultivo",
+      "descripcion": "Crece algo, pero nadie sabe qué.",
+      "emoji": "🧫",
+      "foto": null
+    },
+    {
+      "titulo": "Tubo burbujeante",
+      "descripcion": "Cambia de color con una gota de zumo.",
+      "emoji": "🧪",
+      "foto": null
+    },
+    {
+      "titulo": "Termómetro de cristal",
+      "descripcion": "Marca fiebre en la sopa.",
+      "emoji": "🌡️",
+      "foto": null
+    },
+    {
+      "titulo": "Matraz de cuello largo",
+      "descripcion": "Hierve sin derramarse.",
+      "emoji": "⚗️",
+      "foto": null
+    },
+    {
+      "titulo": "Gafas antisalpicaduras",
+      "descripcion": "Se empañan cuando todo va bien.",
+      "emoji": "🥽",
+      "foto": null
+    },
+    {
+      "titulo": "Imán potente",
+      "descripcion": "Atrae las llaves y los clips.",
+      "emoji": "🧲",
+      "foto": null
+    },
+    {
+      "titulo": "Bombilla de ideas",
+      "descripcion": "Se enciende con un gran descubrimiento.",
+      "emoji": "💡",
+      "foto": null
+    },
+    {
+      "titulo": "Escuadra del ingeniero",
+      "descripcion": "Precisa hasta el último milímetro.",
+      "emoji": "📐",
+      "foto": null
+    },
+    {
+      "titulo": "Hélice de plástico",
+      "descripcion": "Se retuerce como una escalera de caracol.",
+      "emoji": "🧬",
+      "foto": null
+    },
+    {
+      "titulo": "Pila de limón",
+      "descripcion": "Da la energía justa para un reloj.",
+      "emoji": "🔋",
+      "foto": null
+    },
+    {
+      "titulo": "Cuaderno de apuntes",
+      "descripcion": "Lleno de tachones y flechas.",
+      "emoji": "📓",
+      "foto": null
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+# nombre: Egipto: la gran expedición
+# descripcion: Veinte rondas de excavación por templos, tumbas y orillas del Nilo, para una tarde larga.
+# tono: educativo
+# tematica: Egipto
+# base: antiguo-egipto
+# duracion: larga
+# presupuesto: 40
+# rondas: 20
+---
+🏜️ | Campamento del arqueólogo | Una tienda, un farol y mucho polvo. | desert excavation camp
+🧹 | Brocha de excavación | Retira la arena grano a grano. | archaeologist brush
+🗿 | Estatua de un escriba | Está sentado y sostiene un papiro. | scribe statue
+⚱️ | Vaso canopo | Guardaba los secretos de la momificación. | canopic jar
+👑 | Doble corona | Reunía el Alto y el Bajo Egipto. | double crown pharaoh
+🪶 | Pluma de Maat | Simboliza la verdad y la justicia. | ostrich feather
+🐍 | Serpiente de oro | Brilla en la frente del faraón. | golden cobra
+🧿 | Ojo de Horus | Protege contra el mal. | eye of horus
+🌊 | Crecida del río | Dejaba un limo fértil en los campos. | nile flood
+🛶 | Barca solar | Navegaba por el cielo con el dios sol. | solar boat egypt
+🏛️ | Templo de Karnak | Un bosque de columnas gigantes. | karnak temple
+🪨 | Piedra de Rosetta | Permitió leer los jeroglíficos. | rosetta stone
+🧱 | Ladrillo de adobe | Secado al sol junto al río. | mud brick
+🍞 | Pan de cebada | Se comía en cada hogar. | barley bread
+🍯 | Tarro de miel | Dulce, sellado y muy valioso. | honey jar
+👗 | Collar de cuentas | De turquesa y cornalina. | beaded collar
+📏 | Cuerda de medir | Sirvió para trazar las pirámides. | measuring rope
+🎶 | Arpa de dieciséis cuerdas | Se tocaba en los banquetes. | ancient harp
+🌟 | Estrella Sirio | Anunciaba la crecida del Nilo. | sirius star
+🔱 | Cetro del faraón | Símbolo de poder y de protección. | pharaoh sceptre

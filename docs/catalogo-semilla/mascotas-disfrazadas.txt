@@ -1,0 +1,42 @@
+# Colección: Mascotas disfrazadas
+# Tipo: item
+# Rol: producto
+# Categoría: Mascotas disfrazadas
+# Objetivo: 30 productos publicados (se piden 36 por si alguno no encuentra foto libre)
+# Formato: Nombre; Descripción; Emoji; búsqueda en inglés || búsqueda alternativa en español (se prueba la 2.ª si la 1.ª no da resultados libres)
+Perro con sombrero; Perro con un sombrero de fiesta ladeado; 🐶; dog wearing hat || perro con sombrero
+Perro con gafas de sol; Perro con gafas oscuras y aire de estrella; 😎; dog wearing sunglasses || perro con gafas
+Perro con pajarita; Perro elegante con una pajarita al cuello; 🎀; dog bow tie || perro pajarita
+Perro de bombero; Perro con casco rojo de bombero; 🧑‍🚒; dog firefighter costume || perro disfrazado bombero
+Perro con capa de superhéroe; Perro con una capa roja al viento; 🦸; dog superhero cape || perro disfrazado superhéroe
+Perro con gorro de Papá Noel; Perro con gorro rojo y blanco en Navidad; 🎅; dog santa hat || perro gorro navideño
+Perro de calabaza; Perro disfrazado de calabaza en Halloween; 🎃; dog pumpkin costume || perro disfraz calabaza
+Perro con jersey de lana; Perro abrigado con un jersey de punto; 🧶; dog wearing sweater || perro jersey
+Perro con impermeable; Perro con chubasquero amarillo bajo la lluvia; 🌧️; dog raincoat || perro chubasquero
+Perro con corona de flores; Perro con una corona de margaritas; 🌼; dog flower crown || perro corona flores
+Perro vaquero; Perro con sombrero de cowboy; 🤠; dog cowboy hat costume || perro disfrazado vaquero
+Perro de pirata; Perro con parche y pañuelo de pirata; 🏴‍☠️; dog pirate costume || perro disfrazado pirata
+Gato con sombrero; Gato sentado con un sombrero pequeño; 🐱; cat wearing hat || gato con sombrero
+Gato con pajarita; Gato elegante para una gran cena; 🎀; cat bow tie || gato pajarita
+Gato de mago; Gato con sombrero puntiagudo de mago; 🧙; cat wizard hat || gato sombrero de mago
+Gato de bruja; Gato negro con sombrero de bruja; 🧹; cat witch hat costume || gato disfraz bruja
+Gato con gafas; Gato con gafas redondas de lectura; 👓; cat wearing glasses || gato con gafas
+Gato de tiburón; Gato dentro de un disfraz de tiburón; 🦈; cat shark costume || gato disfraz tiburón
+Gato con bufanda; Gato abrigado con una bufanda de rayas; 🧣; cat wearing scarf || gato bufanda
+Gato astronauta; Gato con casco transparente de astronauta; 🚀; cat astronaut helmet || gato astronauta
+Gato con corona; Gato rey con una corona dorada; 👑; cat wearing crown || gato con corona
+Gato de dinosaurio; Gato con un disfraz verde de dinosaurio; 🦖; cat dinosaur costume || gato disfraz dinosaurio
+Conejo con sombrero de copa; Conejo con chistera como un mago; 🎩; rabbit top hat || conejo sombrero
+Conejo con lazo; Conejo blanco con un lazo en la oreja; 🐰; rabbit ribbon bow || conejo lazo
+Hámster con casco; Hámster con un casco diminuto; ⛑️; hamster wearing helmet || hámster casco
+Hámster en traje; Hámster con una chaqueta en miniatura; 🐹; hamster tiny costume || hámster disfraz
+Cobaya con gorro; Cobaya con un gorro de punto; 🧢; guinea pig wearing hat || cobaya gorro
+Cobaya con sombrero de paja; Cobaya con sombrero veraniego; 👒; guinea pig straw hat || cobaya sombrero
+Loro pirata; Loro con un parche sobre el hombro; 🦜; parrot pirate costume || loro pirata
+Pato con botas de lluvia; Patito con botas amarillas; 🦆; duck rain boots || pato botas de agua
+Cerdito con sombrero; Cerdito rosa con un sombrero de paja; 🐷; pig wearing hat || cerdito sombrero
+Caballo con sombrero; Caballo con un sombrero con flores; 🐴; horse wearing hat || caballo con sombrero
+Tortuga con sombrero; Tortuga con gorro de fiesta; 🐢; tortoise wearing hat || tortuga con gorro
+Erizo con gorro; Erizo pequeño con un gorrito rojo; 🦔; hedgehog wearing hat || erizo con gorro
+Desfile de perros disfrazados; Varios perros con disfraces en un desfile; 🎭; dog costume parade || desfile perros disfrazados
+Concurso de mascotas; Concurso con mascotas vestidas para el premio; 🏆; pet costume contest || concurso mascotas

@@ -1,0 +1,21 @@
+# nombre: Cinéfilos de sofá
+# descripcion: Una sesión para cinéfilos veteranos: clásicos, palomitas y debates interminables.
+# tono: adultos
+# tematica: Cine
+# base: noche-de-cine
+# edad: adultos
+# presupuesto: 30
+# rondas: 12
+---
+🎞️ | Copia en 35 milímetros | Tiene arañazos que cuentan su historia. | 35mm film reel
+🍷 | Copa de vino tinto | Acompaña los diálogos más largos. | red wine glass
+📽️ | Proyector de sobremesa | Hace un zumbido al arrancar. | movie projector
+🎬 | Claqueta de rodaje | Marca el principio de cada toma. | clapperboard
+🧀 | Tabla de curados | Más vistosa que la película. | cheese board
+🛋️ | Sofá de dos plazas | Reservado para quienes llegan primero. | two seat sofa
+📖 | Guion anotado | Con comentarios a lápiz en el margen. | annotated script
+🕶️ | Gafas de director | Redondas, oscuras y muy serias. | director sunglasses
+🏅 | Estatuilla de festival | Hecha de bronce y de mucho prestigio. | festival statuette
+🎼 | Banda sonora en vinilo | Suena mejor que en el cine. | soundtrack vinyl
+☕ | Café de después | Para discutir el final hasta las tantas. | coffee cup night
+🎫 | Taquilla de preestreno | Guardada en un cajón desde hace veinte años. | vintage cinema ticket

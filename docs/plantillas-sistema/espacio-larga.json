@@ -1,0 +1,136 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Gran expedición espacial",
+  "tematica": "Espacio",
+  "reglas": {
+    "presupuesto": 40,
+    "puja_minima": 1,
+    "rondas_maximas": 20,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Casco con visera dorada",
+      "descripcion": "Protege del sol sin atenuar la vista.",
+      "emoji": "🧑‍🚀",
+      "foto": null
+    },
+    {
+      "titulo": "Caja de herramientas orbital",
+      "descripcion": "Los tornillos flotan si se abre mal.",
+      "emoji": "🧰",
+      "foto": null
+    },
+    {
+      "titulo": "Cráter lunar",
+      "descripcion": "Guarda polvo de miles de años.",
+      "emoji": "🌑",
+      "foto": null
+    },
+    {
+      "titulo": "Huella en la Luna",
+      "descripcion": "Seguirá ahí durante millones de años.",
+      "emoji": "🥾",
+      "foto": null
+    },
+    {
+      "titulo": "Vehículo explorador",
+      "descripcion": "Rueda sobre rocas de otro mundo.",
+      "emoji": "🚙",
+      "foto": null
+    },
+    {
+      "titulo": "Roca de Marte",
+      "descripcion": "Roja por el óxido de hierro.",
+      "emoji": "🔴",
+      "foto": null
+    },
+    {
+      "titulo": "Brazo robótico",
+      "descripcion": "Recoge muestras sin cansarse.",
+      "emoji": "🛠️",
+      "foto": null
+    },
+    {
+      "titulo": "Módulo habitable",
+      "descripcion": "Una casa pequeña para vivir lejos.",
+      "emoji": "🏠",
+      "foto": null
+    },
+    {
+      "titulo": "Comida liofilizada",
+      "descripcion": "Se hidrata con unas gotas de agua.",
+      "emoji": "🍽️",
+      "foto": null
+    },
+    {
+      "titulo": "Aseo de gravedad cero",
+      "descripcion": "Requiere un manual de instrucciones.",
+      "emoji": "🚽",
+      "foto": null
+    },
+    {
+      "titulo": "Nube de gas estelar",
+      "descripcion": "Allí nacen las estrellas nuevas.",
+      "emoji": "🌌",
+      "foto": null
+    },
+    {
+      "titulo": "Anillo de hielo",
+      "descripcion": "Millones de trozos que giran juntos.",
+      "emoji": "🪐",
+      "foto": null
+    },
+    {
+      "titulo": "Cometa congelado",
+      "descripcion": "Una bola de hielo sucio y polvo.",
+      "emoji": "🧊",
+      "foto": null
+    },
+    {
+      "titulo": "Estación espacial",
+      "descripcion": "Los astronautas la habitan por turnos.",
+      "emoji": "🛰️",
+      "foto": null
+    },
+    {
+      "titulo": "Antena parabólica",
+      "descripcion": "Escucha mensajes de naves lejanas.",
+      "emoji": "📡",
+      "foto": null
+    },
+    {
+      "titulo": "Carta estelar",
+      "descripcion": "Guía el rumbo entre constelaciones.",
+      "emoji": "🧭",
+      "foto": null
+    },
+    {
+      "titulo": "Linterna de casco",
+      "descripcion": "Ilumina la sombra de un cráter.",
+      "emoji": "🔦",
+      "foto": null
+    },
+    {
+      "titulo": "Amanecer orbital",
+      "descripcion": "Se ve dieciséis veces al día.",
+      "emoji": "🌅",
+      "foto": null
+    },
+    {
+      "titulo": "Cultivo de lechugas",
+      "descripcion": "Crecen sin tierra ni gravedad.",
+      "emoji": "🧪",
+      "foto": null
+    },
+    {
+      "titulo": "Bandera de la misión",
+      "descripcion": "Flamea sin viento porque lleva un alambre.",
+      "emoji": "🏁",
+      "foto": null
+    }
+  ]
+}

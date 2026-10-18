@@ -1,0 +1,21 @@
+# nombre: Fondo del mar para peques
+# descripcion: Peces, tesoros y barcos hundidos explicados para niños de 6 a 10 años.
+# tono: educativo
+# tematica: Océano
+# base: fondo-del-mar
+# edad: infantil
+# presupuesto: 14
+# rondas: 8
+---
+🐙 | Pulpo de ocho brazos | Tiene tres corazones y mucha curiosidad. | octopus
+🐢 | Tortuga nadadora | Viaja miles de kilómetros nadando. | sea turtle
+🦀 | Cangrejo de roca | Camina de lado por la arena. | crab
+🐚 | Concha brillante | Si la acercas al oído, suena el mar. | seashell
+⭐ | Estrella de mar | Tiene cinco brazos y vive pegada a las rocas. | starfish
+🐡 | Pez hinchado | Se hincha cuando se asusta. | pufferfish
+🦈 | Tiburón martillo | Su cabeza tiene forma de martillo. | hammerhead shark
+🪸 | Coral de colores | Es un arrecife lleno de vida. | coral reef
+🧜 | Sirena de cuento | Vive en una cueva con perlas. | mermaid
+⚓ | Ancla oxidada | Se quedó en el fondo hace mucho tiempo. | rusty anchor
+🫧 | Burbujas de aire | Suben despacito hacia la superficie. | underwater bubbles
+🐋 | Ballena azul | Es el animal más grande del mundo. | blue whale

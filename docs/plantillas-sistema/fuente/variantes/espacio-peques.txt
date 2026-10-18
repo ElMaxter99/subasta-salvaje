@@ -1,0 +1,21 @@
+# nombre: Astronautas en miniatura
+# descripcion: Planetas, cohetes y estrellas para pequeños exploradores de 6 a 10 años.
+# tono: educativo
+# tematica: Espacio
+# base: espacio-exterior
+# edad: infantil
+# presupuesto: 14
+# rondas: 8
+---
+🚀 | Cohete de colores | Despega con cuenta atrás y mucho humo. | colorful rocket
+🌙 | Luna sonriente | Cambia de forma cada noche. | crescent moon
+🪐 | Planeta de anillos | Lleva un aro gigante alrededor. | ringed planet
+☄️ | Cometa veloz | Deja una cola de luz al pasar. | comet
+👨‍🚀 | Disfraz de astronauta | Para flotar sin miedo en el espacio. | spacesuit
+🛰️ | Satélite viajero | Da vueltas a la Tierra sin parar. | satellite
+👽 | Marciano simpático | Dice hola con tres dedos. | friendly alien cartoon
+🔭 | Telescopio de juguete | Sirve para contar estrellas. | toy telescope
+🌍 | Planeta Tierra | Nuestro hogar azul y verde. | planet earth
+☀️ | Sol sonriente | Calienta a todos los planetas. | bright sun
+🌠 | Estrella fugaz | Pide un deseo antes de que se apague. | shooting star
+🛸 | Nave redonda | Aterriza en el patio del colegio. | flying saucer toy

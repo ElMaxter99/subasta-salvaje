@@ -1,0 +1,88 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Cena gourmet",
+  "tematica": "Gastronomía",
+  "reglas": {
+    "presupuesto": 30,
+    "puja_minima": 1,
+    "rondas_maximas": 12,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Cava de celebración",
+      "descripcion": "Se abre con un chasquido y un brindis.",
+      "emoji": "🍾",
+      "foto": null
+    },
+    {
+      "titulo": "Mantequilla artesana",
+      "descripcion": "Untada generosamente en el pan tibio.",
+      "emoji": "🧈",
+      "foto": null
+    },
+    {
+      "titulo": "Bogavante del día",
+      "descripcion": "Llega vivo y sale en su punto.",
+      "emoji": "🦞",
+      "foto": null
+    },
+    {
+      "titulo": "Trufa negra rallada",
+      "descripcion": "Un gramo cuesta lo que un menú.",
+      "emoji": "🍄",
+      "foto": null
+    },
+    {
+      "titulo": "Ajo negro envejecido",
+      "descripcion": "Dulce, oscuro y algo misterioso.",
+      "emoji": "🧄",
+      "foto": null
+    },
+    {
+      "titulo": "Tableta de cacao puro",
+      "descripcion": "Amarga, intensa y sin remordimientos.",
+      "emoji": "🍫",
+      "foto": null
+    },
+    {
+      "titulo": "Chuletón madurado",
+      "descripcion": "Cuarenta días de espera en cámara.",
+      "emoji": "🥩",
+      "foto": null
+    },
+    {
+      "titulo": "Aceite de primera prensada",
+      "descripcion": "Se sirve a gotas sobre una tostada.",
+      "emoji": "🫒",
+      "foto": null
+    },
+    {
+      "titulo": "Flan de la abuela",
+      "descripcion": "El único postre que nadie discute.",
+      "emoji": "🍮",
+      "foto": null
+    },
+    {
+      "titulo": "Cuchillo de chef",
+      "descripcion": "Corta con solo mirarlo.",
+      "emoji": "🔪",
+      "foto": null
+    },
+    {
+      "titulo": "Sal en escamas",
+      "descripcion": "Se esparce desde bien alto.",
+      "emoji": "🧂",
+      "foto": null
+    },
+    {
+      "titulo": "Copas de cristal fino",
+      "descripcion": "Se friegan a mano y con miedo.",
+      "emoji": "🥂",
+      "foto": null
+    }
+  ]
+}

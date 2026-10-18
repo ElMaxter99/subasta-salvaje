@@ -52,8 +52,9 @@ async function main() {
     where = 'ENSAYO en memoria (no se escribe nada real)';
   }
   console.log(`Destino: ${where}${apply ? ` · modo ${getRuntimeMode()}` : ''} · ${entries.length} plantillas · ${publish ? 'con publicación' : 'en borrador'}`);
+  const variantOf = new Map(entries.filter((e) => e.variante).map((e) => [e.slug, ` [variante ${[e.variante!.edad, e.variante!.duracion, e.variante!.jugadores && `${e.variante!.jugadores} jug.`].filter(Boolean).join(', ')}]`]));
   const results = await importSystemTemplates(ctx, 'script-importador', entries, { publish });
-  for (const r of results) console.log(`  ${r.action === 'error' ? '✗' : '✓'} ${r.slug.padEnd(32)} ${r.action}${r.status ? ` (${r.status === 'published' ? 'publicada' : 'borrador'})` : ''}${r.error ? ` — ${r.error}` : ''}`);
+  for (const r of results) console.log(`  ${r.action === 'error' ? '✗' : '✓'} ${r.slug.padEnd(32)} ${r.action}${r.status ? ` (${r.status === 'published' ? 'publicada' : 'borrador'})` : ''}${r.error ? ` — ${r.error}` : ''}${variantOf.get(r.slug) ?? ''}`);
   const c = (a: string) => results.filter((r) => r.action === a).length;
   console.log(`\nCreadas ${c('created')} · actualizadas ${c('updated')} · sin cambios ${c('unchanged')} · errores ${c('error')}`);
   if (!apply) console.log('Era un ensayo. Para importar de verdad: npm run templates:import -- --apply');

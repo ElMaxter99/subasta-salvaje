@@ -5,11 +5,13 @@
  */
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
-import { BUNDLE_FORMAT, type BundleEntry } from '@/lib/domain/system-template-pack';
+import { BUNDLE_FORMAT, VARIANT_AGES, VARIANT_DURATIONS, VARIANT_PLAYERS, type BundleEntry, type Variant } from '@/lib/domain/system-template-pack';
 import { TEMPLATE_FORMAT } from '@/lib/domain/template';
 
 export const PACK_DIR = path.join(process.cwd(), 'docs', 'plantillas-sistema');
 export const SOURCE_DIR = path.join(PACK_DIR, 'fuente');
+/** Variantes (edad, duración, jugadores) de las plantillas base: `fuente/variantes/<slug>.txt`, con las cabeceras extra `# base`, `# edad`, `# duracion`, `# jugadores`. */
+export const VARIANT_DIR = path.join(SOURCE_DIR, 'variantes');
 
 export function parseSource(slug: string, text: string, index: number): BundleEntry {
   const [head = '', body = ''] = text.split(/^---\s*$/m);
@@ -26,6 +28,15 @@ export function parseSource(slug: string, text: string, index: number): BundleEn
     items.push({ emoji: parts[0]!, titulo: parts[1]!, descripcion: parts[2]! });
     tags.push(parts[3]!.split(',').map((t) => t.trim()).filter(Boolean));
   });
+  const pick = <T extends string>(k: string, allowed: readonly T[]): T | undefined => {
+    const v = meta[k];
+    if (v === undefined) return undefined;
+    if (!(allowed as readonly string[]).includes(v)) throw new Error(`${slug}: «${k}» debe ser uno de ${allowed.join(', ')} (es «${v}»)`);
+    return v as T;
+  };
+  const variante: Variant | undefined = meta.edad || meta.duracion || meta.jugadores || meta.base
+    ? { ...(meta.base ? { base: meta.base } : {}), ...(meta.edad ? { edad: pick('edad', VARIANT_AGES) } : {}), ...(meta.duracion ? { duracion: pick('duracion', VARIANT_DURATIONS) } : {}), ...(meta.jugadores ? { jugadores: pick('jugadores', VARIANT_PLAYERS) } : {}) }
+    : undefined;
   const num = (k: string, d: number) => (meta[k] ? Number(meta[k]!.replace(',', '.')) : d);
   return {
     slug,
@@ -34,6 +45,7 @@ export function parseSource(slug: string, text: string, index: number): BundleEn
     orden: 200 + index * 10,
     tono: meta.tono,
     etiquetas: tags,
+    ...(variante ? { variante } : {}),
     plantilla: {
       formato: TEMPLATE_FORMAT,
       nombre: meta.nombre ?? slug,
@@ -44,8 +56,10 @@ export function parseSource(slug: string, text: string, index: number): BundleEn
   };
 }
 
+/** Primero las plantillas base (orden histórico, sin cambios) y a continuación las variantes, también por orden alfabético. */
 export function loadSources(): BundleEntry[] {
-  return readdirSync(SOURCE_DIR).filter((f) => f.endsWith('.txt')).sort().map((f, i) => parseSource(f.replace(/\.txt$/, ''), readFileSync(path.join(SOURCE_DIR, f), 'utf8'), i));
+  const list = (dir: string) => (existsSync(dir) ? readdirSync(dir).filter((f) => f.endsWith('.txt')).sort().map((f) => path.join(dir, f)) : []);
+  return [...list(SOURCE_DIR), ...list(VARIANT_DIR)].map((f, i) => parseSource(path.basename(f).replace(/\.txt$/, ''), readFileSync(f, 'utf8'), i));
 }
 
 /** Lee el lote generado (`lote.json`) tal como se commitea. */

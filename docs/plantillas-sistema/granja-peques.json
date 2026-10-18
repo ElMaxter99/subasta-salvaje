@@ -1,0 +1,88 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Granja para peques",
+  "tematica": "Granja",
+  "reglas": {
+    "presupuesto": 14,
+    "puja_minima": 1,
+    "rondas_maximas": 8,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Vaca Margarita",
+      "descripcion": "Da leche y mira con ojos grandes.",
+      "emoji": "🐄",
+      "foto": null
+    },
+    {
+      "titulo": "Cerdito Rosita",
+      "descripcion": "Le encanta revolcarse en el barro.",
+      "emoji": "🐖",
+      "foto": null
+    },
+    {
+      "titulo": "Corderito blanco",
+      "descripcion": "Tiene lana suave como una nube.",
+      "emoji": "🐑",
+      "foto": null
+    },
+    {
+      "titulo": "Gallo cantarín",
+      "descripcion": "Despierta a todos con su quiquiriquí.",
+      "emoji": "🐓",
+      "foto": null
+    },
+    {
+      "titulo": "Huevos de gallina",
+      "descripcion": "Recién puestos por las gallinas.",
+      "emoji": "🥚",
+      "foto": null
+    },
+    {
+      "titulo": "Tractor de pueblo",
+      "descripcion": "Grande, ruidoso y muy divertido.",
+      "emoji": "🚜",
+      "foto": null
+    },
+    {
+      "titulo": "Poni peludo",
+      "descripcion": "Se deja cepillar con paciencia.",
+      "emoji": "🐴",
+      "foto": null
+    },
+    {
+      "titulo": "Mazorca dorada",
+      "descripcion": "Crece muy alta en el campo.",
+      "emoji": "🌽",
+      "foto": null
+    },
+    {
+      "titulo": "Conejo saltarín",
+      "descripcion": "Se escapa de la conejera cada día.",
+      "emoji": "🐇",
+      "foto": null
+    },
+    {
+      "titulo": "Patito curioso",
+      "descripcion": "Sigue a su mamá en fila.",
+      "emoji": "🦆",
+      "foto": null
+    },
+    {
+      "titulo": "Manzana del huerto",
+      "descripcion": "Crujiente y recién cogida del árbol.",
+      "emoji": "🍎",
+      "foto": null
+    },
+    {
+      "titulo": "Espantapájaros alegre",
+      "descripcion": "Cuida los cultivos con su sombrero de paja.",
+      "emoji": "🧑‍🌾",
+      "foto": null
+    }
+  ]
+}

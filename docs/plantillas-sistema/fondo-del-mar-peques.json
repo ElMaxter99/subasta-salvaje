@@ -1,0 +1,88 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Fondo del mar para peques",
+  "tematica": "Océano",
+  "reglas": {
+    "presupuesto": 14,
+    "puja_minima": 1,
+    "rondas_maximas": 8,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Pulpo de ocho brazos",
+      "descripcion": "Tiene tres corazones y mucha curiosidad.",
+      "emoji": "🐙",
+      "foto": null
+    },
+    {
+      "titulo": "Tortuga nadadora",
+      "descripcion": "Viaja miles de kilómetros nadando.",
+      "emoji": "🐢",
+      "foto": null
+    },
+    {
+      "titulo": "Cangrejo de roca",
+      "descripcion": "Camina de lado por la arena.",
+      "emoji": "🦀",
+      "foto": null
+    },
+    {
+      "titulo": "Concha brillante",
+      "descripcion": "Si la acercas al oído, suena el mar.",
+      "emoji": "🐚",
+      "foto": null
+    },
+    {
+      "titulo": "Estrella de mar",
+      "descripcion": "Tiene cinco brazos y vive pegada a las rocas.",
+      "emoji": "⭐",
+      "foto": null
+    },
+    {
+      "titulo": "Pez hinchado",
+      "descripcion": "Se hincha cuando se asusta.",
+      "emoji": "🐡",
+      "foto": null
+    },
+    {
+      "titulo": "Tiburón martillo",
+      "descripcion": "Su cabeza tiene forma de martillo.",
+      "emoji": "🦈",
+      "foto": null
+    },
+    {
+      "titulo": "Coral de colores",
+      "descripcion": "Es un arrecife lleno de vida.",
+      "emoji": "🪸",
+      "foto": null
+    },
+    {
+      "titulo": "Sirena de cuento",
+      "descripcion": "Vive en una cueva con perlas.",
+      "emoji": "🧜",
+      "foto": null
+    },
+    {
+      "titulo": "Ancla oxidada",
+      "descripcion": "Se quedó en el fondo hace mucho tiempo.",
+      "emoji": "⚓",
+      "foto": null
+    },
+    {
+      "titulo": "Burbujas de aire",
+      "descripcion": "Suben despacito hacia la superficie.",
+      "emoji": "🫧",
+      "foto": null
+    },
+    {
+      "titulo": "Ballena azul",
+      "descripcion": "Es el animal más grande del mundo.",
+      "emoji": "🐋",
+      "foto": null
+    }
+  ]
+}

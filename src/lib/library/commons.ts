@@ -121,6 +121,12 @@ export function parsePack(text: string, fallbackCollection: string): Pack {
   return { collection, kind, ...(roles && roles.length ? { roles } : {}), ...(category ? { category } : {}), products };
 }
 
+/** La 4.ª columna de un pack admite alternativas separadas por `||` (p. ej. «dog hat || perro con sombrero»): se prueban en orden hasta que una dé resultados libres. */
+export const splitQueries = (query: string): string[] => {
+  const list = query.split('||').map((q) => q.trim()).filter(Boolean);
+  return list.length ? list : [query.trim()];
+};
+
 /* ---------- Manifiesto (CSV) que lee también la pantalla de subida ---------- */
 
 export interface ManifestRow {

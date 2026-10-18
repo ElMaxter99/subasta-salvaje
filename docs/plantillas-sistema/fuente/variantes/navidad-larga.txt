@@ -1,0 +1,29 @@
+# nombre: Navidad: la gran subasta
+# descripcion: Veinte rondas de belenes, regalos y sobremesas para una Navidad larga.
+# tono: familiar
+# tematica: Navidad
+# base: navidad-desastre
+# duracion: larga
+# presupuesto: 40
+# rondas: 20
+---
+🎄 | Abeto de salón | Hay que apretar la mesa para meterlo. | christmas tree living room
+🔔 | Cascabeles del trineo | Suenan desde la azotea. | sleigh bells
+🧦 | Calcetín en la chimenea | Cuelga vacío hasta medianoche. | christmas stocking
+🕯️ | Corona de adviento | Cada domingo se enciende una vela. | advent wreath
+⛪ | Belén con musgo | Figuritas de barro y un río de papel. | nativity scene
+🎅 | Gorro de elfo | Pica en la frente y lo llevan todos. | santa hat
+🌟 | Estrella de papel dorado | Siempre se tuerce un poco. | tree top star
+🍪 | Mantecados de canela | Cuesta mucho no comerse las figuritas. | gingerbread cookies
+🥛 | Vaso de leche para el reno | Aparece vacío por la mañana. | milk and cookies
+🧣 | Bufanda de lana tejida | Regalo de la abuela, a rayas. | knitted scarf
+🍬 | Bastón de caramelo | Se pega a los dedos. | candy cane
+🎶 | Villancico a coro | Se canta cada vez peor. | christmas carol
+🥂 | Brindis de Nochevieja | Doce uvas a toda prisa. | new year toast
+🍇 | Racimo de uvas | Doce campanadas y doce granos. | grapes new year
+👑 | Corona de los Reyes | Dorada y con joyas de cartón. | three kings crown
+🎁 | Roscón de Reyes | Esconde una sorpresa y un haba. | kings cake
+🛷 | Trineo de madera | Baja la cuesta más rápido de lo previsto. | wooden sled
+⛄ | Muñeco de nieve de jardín | Su nariz es una zanahoria. | snowman
+📮 | Carta a los Reyes Magos | Lleva una lista larguísima. | letter to santa
+🍫 | Chocolate caliente | Con nata y sin prisa. | hot chocolate

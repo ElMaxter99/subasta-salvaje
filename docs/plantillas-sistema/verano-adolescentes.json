@@ -1,0 +1,88 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Viaje de fin de curso",
+  "tematica": "Verano",
+  "reglas": {
+    "presupuesto": 20,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Maleta desbordada",
+      "descripcion": "Alguien se sienta encima para lograrlo.",
+      "emoji": "🧳",
+      "foto": null
+    },
+    {
+      "titulo": "Autobús del viaje",
+      "descripcion": "Tiene música a todo volumen y el aire roto.",
+      "emoji": "🚌",
+      "foto": null
+    },
+    {
+      "titulo": "Toalla de rayas",
+      "descripcion": "Reserva sitio en la arena desde primera hora.",
+      "emoji": "🏖️",
+      "foto": null
+    },
+    {
+      "titulo": "Helado triple",
+      "descripcion": "Se derrite antes de llegar a la orilla.",
+      "emoji": "🍦",
+      "foto": null
+    },
+    {
+      "titulo": "Palo para selfis",
+      "descripcion": "Aparece en todas las fotos de grupo.",
+      "emoji": "📸",
+      "foto": null
+    },
+    {
+      "titulo": "Gafas de espejo",
+      "descripcion": "Siempre se pierden el último día.",
+      "emoji": "🕶️",
+      "foto": null
+    },
+    {
+      "titulo": "Lista de reproducción del viaje",
+      "descripcion": "Doscientas canciones y ninguna se repite.",
+      "emoji": "🎧",
+      "foto": null
+    },
+    {
+      "titulo": "Tabla de surf alquilada",
+      "descripcion": "Se usa más para sentarse que para surfear.",
+      "emoji": "🏄",
+      "foto": null
+    },
+    {
+      "titulo": "Atardecer en la playa",
+      "descripcion": "Todos callan por un momento.",
+      "emoji": "🌅",
+      "foto": null
+    },
+    {
+      "titulo": "Sandía compartida",
+      "descripcion": "Se parte con las manos entre risas.",
+      "emoji": "🍉",
+      "foto": null
+    },
+    {
+      "titulo": "Baraja de cartas gastadas",
+      "descripcion": "Falta el cuatro de bastos.",
+      "emoji": "🎲",
+      "foto": null
+    },
+    {
+      "titulo": "Diario de viaje",
+      "descripcion": "Lleva garabatos y entradas de museo.",
+      "emoji": "📔",
+      "foto": null
+    }
+  ]
+}

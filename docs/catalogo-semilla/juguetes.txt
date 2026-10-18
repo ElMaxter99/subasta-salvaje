@@ -1,0 +1,50 @@
+# Colección: Juguetes
+# Tipo: item
+# Rol: producto
+# Categoría: Juguetes
+# Objetivo: 40 productos publicados (se piden 44 por si alguno no encuentra foto libre)
+# Formato: Nombre; Descripción; Emoji; búsqueda en inglés || búsqueda alternativa en español (se prueba la 2.ª si la 1.ª no da resultados libres)
+# Ojo: nada de marcas ni personajes con derechos; busca juguetes genéricos, antiguos o de madera (los de dominio público abundan en museos).
+Osito de peluche; Oso de peluche marrón con lazo; 🧸; teddy bear || osito de peluche
+Muñeca de trapo; Muñeca de tela con trenzas de lana; 🪆; rag doll || muñeca de trapo
+Muñeca rusa; Matrioska pintada con muñecas dentro; 🪆; matryoshka nesting doll || matrioska
+Caballito de madera; Caballito de balancín pintado; 🐴; rocking horse || caballito de balancín
+Tren de madera; Tren de juguete con vagones de colores; 🚂; wooden toy train || tren de juguete madera
+Cubos de madera; Cubos con letras de colores apilados; 🔠; wooden alphabet blocks || cubos de madera letras
+Peonza; Peonza de madera girando; 🪀; spinning top toy || peonza
+Yoyó; Yoyó de colores con su cuerda; 🪀; yo-yo toy || yoyó
+Cometa; Cometa de colores en el cielo; 🪁; kite flying || cometa
+Cometa de rombos; Cometa clásica con cola larga; 🪁; diamond kite || cometa
+Pelota de goma; Pelota de goma de rayas; ⚽; rubber ball toy || pelota de goma
+Canica; Canicas de cristal de colores; 🔮; glass marbles || canicas
+Pompero; Pompas de jabón de colores; 🫧; soap bubbles || pompas de jabón
+Caja de música; Caja de música de madera con bailarina; 🎶; music box || caja de música
+Tambor de juguete; Tambor pequeño con baquetas; 🥁; toy drum || tambor de juguete
+Trompeta de juguete; Trompeta de plástico dorada; 🎺; toy trumpet || trompeta de juguete
+Piano de juguete; Pianito de colores para pequeños; 🎹; toy piano || piano de juguete
+Casa de muñecas; Casa de muñecas con muebles diminutos; 🏠; dollhouse || casa de muñecas
+Cochecito de juguete; Coche de hojalata antiguo; 🚗; tin toy car || coche de hojalata
+Camión de juguete; Camión de madera con remolque; 🚚; wooden toy truck || camión de juguete
+Avión de juguete; Avioncito de madera con hélice; ✈️; toy airplane || avión de juguete
+Barco de juguete; Barquito de vela para la bañera; ⛵; toy sailboat || barco de juguete
+Robot de hojalata; Robot de juguete de hojalata de cuerda; 🤖; tin toy robot || robot de hojalata
+Soldaditos de plomo; Soldados de juguete en fila; 💂; toy soldiers || soldaditos de plomo
+Payaso de cuerda; Payaso de juguete que da volteretas; 🤡; wind-up clown toy || payaso de juguete
+Sonajero; Sonajero de madera para bebés; 🍼; baby rattle || sonajero
+Pato de goma; Patito amarillo para el baño; 🦆; rubber duck || patito de goma
+Muñeco de nieve de juguete; Figura de nieve con bufanda; ⛄; toy snowman || muñeco de nieve juguete
+Dominó; Fichas de dominó alineadas; 🁢; dominoes || dominó
+Damas y tablero; Tablero de damas con fichas rojas y negras; 🔴; checkers board || damas tablero
+Ajedrez de madera; Piezas de ajedrez talladas; ♟️; wooden chess set || ajedrez de madera
+Rompecabezas; Puzle de madera a medio montar; 🧩; jigsaw puzzle || rompecabezas
+Cubo mágico; Cubo de colores de caras giratorias; 🧊; puzzle cube || cubo de colores puzle
+Comba; Cuerda de saltar con mangos de madera; 🪢; skipping rope || comba
+Aro; Aro de colores para hacer girar; ⭕; hula hoop || aro
+Patinete; Patinete de dos ruedas; 🛴; kick scooter || patinete
+Triciclo; Triciclo rojo para los más pequeños; 🚲; tricycle || triciclo
+Cubo y pala; Cubo y pala de playa; 🪣; beach bucket and spade || cubo y pala
+Guitarra de juguete; Guitarrita con cuerdas de colores; 🎸; toy guitar || guitarra de juguete
+Marioneta; Marioneta de hilos de madera; 🎭; string puppet marionette || marioneta
+Títere de guante; Títere de mano de tela; 🧦; hand puppet || títere de mano
+Caballito de cartón; Caballo de juguete con palo; 🐎; hobby horse || caballito de palo
+Juego de té infantil; Tacitas y tetera de juguete; 🫖; toy tea set || juego de té de juguete

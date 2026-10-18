@@ -71,6 +71,76 @@ describe('catálogo de plantillas del sistema (docs/plantillas-sistema)', () => 
   });
 });
 
+describe('variantes por edad, duración y jugadores', () => {
+  const variants = entries.filter((e) => e.variante);
+  const rules = (e: BundleEntry) => (e.plantilla as { reglas: { presupuesto: number; rondas_maximas: number } }).reglas;
+  const items = (e: BundleEntry) => (e.plantilla as { catalogo: { titulo: string; descripcion: string }[] }).catalogo;
+  const clone = (e: BundleEntry) => JSON.parse(JSON.stringify(e)) as BundleEntry;
+
+  it('hay al menos 30 variantes, cada una con su base, y cubren todas las edades, duraciones y tramos de jugadores', () => {
+    expect(variants.length).toBeGreaterThanOrEqual(30);
+    const bases = new Map(entries.filter((e) => !e.variante).map((e) => [e.slug, e]));
+    for (const v of variants) {
+      const base = bases.get(v.variante!.base!);
+      expect(base, v.slug).toBeDefined();
+      expect((v.plantilla as { tematica: string }).tematica, v.slug).toBe((base!.plantilla as { tematica: string }).tematica);
+    }
+    for (const edad of ['infantil', 'familiar', 'adolescentes', 'adultos']) expect(variants.some((v) => v.variante!.edad === edad), edad).toBe(true);
+    for (const d of ['corta', 'larga']) expect(variants.some((v) => v.variante!.duracion === d), d).toBe(true);
+    for (const j of ['2-3', '4-6', '7-10']) expect(variants.some((v) => v.variante!.jugadores === j), j).toBe(true);
+  });
+
+  it('corta = 8 rondas, larga = 20 rondas con 20+ elementos y presupuestos proporcionados; ningún elemento se repite', () => {
+    for (const v of variants) {
+      const r = rules(v);
+      if (v.variante!.duracion === 'corta') expect(r.rondas_maximas, v.slug).toBe(8);
+      if (v.variante!.duracion === 'larga') { expect(r.rondas_maximas, v.slug).toBe(20); expect(items(v).length, v.slug).toBeGreaterThanOrEqual(20); }
+      expect(r.presupuesto / r.rondas_maximas, v.slug).toBeGreaterThanOrEqual(1.5);
+      expect(r.presupuesto / r.rondas_maximas, v.slug).toBeLessThanOrEqual(3.5);
+    }
+    const titles = entries.flatMap((e) => items(e).map((i) => i.titulo.toLowerCase()));
+    expect(new Set(titles).size).toBe(titles.length); // por eso el límite del 25 % de solapamiento no hace falta relajarlo
+  });
+
+  it('infantil: descripciones sencillas y tono apto', () => {
+    for (const v of variants.filter((x) => x.variante!.edad === 'infantil')) {
+      expect(['familiar', 'educativo'], v.slug).toContain(v.tono);
+      expect(items(v).every((i) => i.descripcion.length <= 100), v.slug).toBe(true);
+    }
+  });
+
+  it('el validador rechaza variantes incoherentes', () => {
+    const corta = clone(variants.find((v) => v.variante!.duracion === 'corta')!);
+    (corta.plantilla as { reglas: { rondas_maximas: number } }).reglas.rondas_maximas = 10;
+    expect(validatePack([corta]).errors.join('\n')).toMatch(/partida corta tiene 8 rondas/);
+
+    const cara = clone(variants[0]!);
+    (cara.plantilla as { reglas: { presupuesto: number } }).reglas.presupuesto = 500;
+    expect(validatePack([cara]).errors.join('\n')).toMatch(/presupuesto incoherente/);
+
+    const peques = clone(variants.find((v) => v.variante!.edad === 'infantil')!);
+    items(peques)[0]!.descripcion = 'Una copa de vino para brindar con los mayores.';
+    expect(validatePack([peques]).errors.join('\n')).toMatch(/no es apto para una variante infantil/);
+    peques.tono = 'adultos';
+    expect(validatePack([peques]).errors.join('\n')).toMatch(/no encaja con la edad/);
+
+    const larga = clone(variants.find((v) => v.variante!.duracion === 'larga')!);
+    (larga.plantilla as { catalogo: unknown[] }).catalogo = items(larga).slice(0, 15);
+    larga.etiquetas = larga.etiquetas!.slice(0, 15);
+    expect(validatePack([larga]).errors.join('\n')).toMatch(/partida larga necesita al menos 20 elementos/);
+
+    const sinDato = clone(variants[0]!);
+    sinDato.variante = {} as BundleEntry['variante'];
+    expect(parseBundle(JSON.stringify({ formato: BUNDLE_FORMAT, plantillas: [sinDato] })).ok).toBe(false);
+  });
+
+  it('un lote antiguo sin «variante» sigue siendo válido', () => {
+    const base = clone(entries.find((e) => !e.variante)!);
+    expect('variante' in base).toBe(false);
+    expect(parseBundle(JSON.stringify({ formato: BUNDLE_FORMAT, plantillas: [base] })).ok).toBe(true);
+  });
+});
+
 describe('importador de plantillas del sistema (PGlite)', () => {
   let ctx: TestCtx;
   beforeAll(async () => { ctx = await makeCtx(); });
@@ -119,7 +189,7 @@ describe('importador de plantillas del sistema (PGlite)', () => {
     expect(r[1]!.action).toBe('created');
   });
 
-  it('importa los 36 del catálogo completos', async () => {
+  it('importa todo el catálogo (base y variantes) completo', async () => {
     const all = await importSystemTemplates(ctx, 'test', entries);
     expect(all.filter((r) => r.action === 'error')).toEqual([]);
     expect((await listSystemTemplates(ctx, { admin: true })).length).toBeGreaterThanOrEqual(entries.length);

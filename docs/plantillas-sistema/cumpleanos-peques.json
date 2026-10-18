@@ -1,0 +1,88 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Cumpleaños de peques",
+  "tematica": "Cumpleaños",
+  "reglas": {
+    "presupuesto": 14,
+    "puja_minima": 1,
+    "rondas_maximas": 8,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Tarta de fresa",
+      "descripcion": "Rosa, con nata y una vela encima.",
+      "emoji": "🎂",
+      "foto": null
+    },
+    {
+      "titulo": "Globo gigante",
+      "descripcion": "Vuela hasta el techo si lo sueltas.",
+      "emoji": "🎈",
+      "foto": null
+    },
+    {
+      "titulo": "Regalo con lazo",
+      "descripcion": "Nadie sabe qué hay dentro todavía.",
+      "emoji": "🎁",
+      "foto": null
+    },
+    {
+      "titulo": "Gorro de fiesta",
+      "descripcion": "Puntiagudo y de mil colores.",
+      "emoji": "🥳",
+      "foto": null
+    },
+    {
+      "titulo": "Magdalena con bolitas",
+      "descripcion": "Dulce, pequeñita y con sprinkles.",
+      "emoji": "🧁",
+      "foto": null
+    },
+    {
+      "titulo": "Piñata de estrella",
+      "descripcion": "Hay que darle muy fuerte para que suelte caramelos.",
+      "emoji": "🪅",
+      "foto": null
+    },
+    {
+      "titulo": "Canción de cumpleaños",
+      "descripcion": "Se canta todos juntos, aunque desafinen.",
+      "emoji": "🎶",
+      "foto": null
+    },
+    {
+      "titulo": "Foto con todos los amigos",
+      "descripcion": "Todos sonriendo apretaditos.",
+      "emoji": "📸",
+      "foto": null
+    },
+    {
+      "titulo": "Piruleta de colores",
+      "descripcion": "Dura mucho y mancha la lengua.",
+      "emoji": "🍭",
+      "foto": null
+    },
+    {
+      "titulo": "Mago de la fiesta",
+      "descripcion": "Saca un conejo de su sombrero.",
+      "emoji": "🤹",
+      "foto": null
+    },
+    {
+      "titulo": "Zumo con pajita",
+      "descripcion": "Fresquito, para brindar sin burbujas.",
+      "emoji": "🧃",
+      "foto": null
+    },
+    {
+      "titulo": "Tiovivo de juguete",
+      "descripcion": "Da vueltas y vueltas con música.",
+      "emoji": "🎠",
+      "foto": null
+    }
+  ]
+}

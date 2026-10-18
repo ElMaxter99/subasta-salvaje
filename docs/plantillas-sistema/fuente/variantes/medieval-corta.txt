@@ -1,0 +1,21 @@
+# nombre: Mercado medieval exprés
+# descripcion: Ocho rondas de regateo entre puestos del mercado: una partida corta y animada.
+# tono: educativo
+# tematica: Edad Media
+# base: mercado-medieval
+# duracion: corta
+# presupuesto: 16
+# rondas: 8
+---
+🧀 | Queso de cueva | Curado entre piedras durante meses. | cave cheese
+🍞 | Hogaza de pan negro | Dura y sabrosa, para el camino. | dark bread loaf
+🐓 | Ganso del corral | Valiosa por sus huevos diarios. | laying hen
+🧵 | Rollo de lana teñida | Colores vivos para el sastre. | dyed wool
+⚖️ | Balanza del mercader | Pesa especias, sal y monedas. | merchant scale
+🕯️ | Velas de sebo | Alumbran con humo y olor fuerte. | tallow candles
+🏺 | Jarra de barro | Guarda agua fresca en verano. | clay jug
+🍺 | Barril de hidromiel | Dulce, con aroma de miel. | mead barrel
+🗝️ | Llave de hierro forjado | Abre el arcón del tesoro. | iron key
+🪓 | Hacha del leñador | Afilada para cortar la leña del invierno. | woodcutter axe
+📜 | Pergamino del heraldo | Anuncia las noticias del reino. | herald scroll
+🛡️ | Escudo de torneo | Pintado con un león rampante. | tournament shield

@@ -1,0 +1,88 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Jardín de bichitos",
+  "tematica": "Plantas",
+  "reglas": {
+    "presupuesto": 14,
+    "puja_minima": 1,
+    "rondas_maximas": 8,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Oruga hambrienta",
+      "descripcion": "Se come una hoja entera sin parar.",
+      "emoji": "🐛",
+      "foto": null
+    },
+    {
+      "titulo": "Mariposa de alas azules",
+      "descripcion": "Antes fue una oruga.",
+      "emoji": "🦋",
+      "foto": null
+    },
+    {
+      "titulo": "Abeja trabajadora",
+      "descripcion": "Zumba entre las flores buscando néctar.",
+      "emoji": "🐝",
+      "foto": null
+    },
+    {
+      "titulo": "Mariquita de siete puntos",
+      "descripcion": "Trae buena suerte si se posa en la mano.",
+      "emoji": "🐞",
+      "foto": null
+    },
+    {
+      "titulo": "Girasol enorme",
+      "descripcion": "Siempre mira hacia el sol.",
+      "emoji": "🌻",
+      "foto": null
+    },
+    {
+      "titulo": "Tulipán rojo",
+      "descripcion": "Se abre cuando llega la primavera.",
+      "emoji": "🌷",
+      "foto": null
+    },
+    {
+      "titulo": "Caracol lento",
+      "descripcion": "Lleva su casa a cuestas.",
+      "emoji": "🐌",
+      "foto": null
+    },
+    {
+      "titulo": "Plantita recién nacida",
+      "descripcion": "Acaba de salir de la semilla.",
+      "emoji": "🌱",
+      "foto": null
+    },
+    {
+      "titulo": "Regadera de lata",
+      "descripcion": "Da de beber a todas las plantas.",
+      "emoji": "💧",
+      "foto": null
+    },
+    {
+      "titulo": "Fresa del huerto",
+      "descripcion": "Roja, dulce y escondida bajo las hojas.",
+      "emoji": "🍓",
+      "foto": null
+    },
+    {
+      "titulo": "Araña tejedora",
+      "descripcion": "Hace una tela que brilla con el rocío.",
+      "emoji": "🕷️",
+      "foto": null
+    },
+    {
+      "titulo": "Seta con lunares",
+      "descripcion": "Es muy bonita, pero no se toca.",
+      "emoji": "🍄",
+      "foto": null
+    }
+  ]
+}

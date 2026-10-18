@@ -1,0 +1,21 @@
+# nombre: Boda con muchos invitados
+# descripcion: Un banquete multitudinario para grupos de siete a diez jugadores, con más rondas y más presupuesto.
+# tono: adultos
+# tematica: Boda
+# base: boda-por-todo-lo-alto
+# jugadores: 7-10
+# presupuesto: 30
+# rondas: 12
+---
+💐 | Ramo de peonías | Vuela por encima de las cabezas. | bridal bouquet
+💍 | Cajita de alianzas | Pequeños y brillantes. | wedding rings
+🎂 | Tarta nupcial de tres pisos | Hay que cortarla con mucho cuidado. | wedding cake tiers
+🥂 | Torre de copas | Se llena de cava desde arriba. | champagne tower
+🍽️ | Mesa imperial | Capaz de sentar a cien invitados. | long banquet table
+📋 | Plano de mesas | Se cambia diez veces antes del convite. | seating chart
+🎶 | Orquesta de baile | Toca desde el aperitivo hasta el amanecer. | wedding band
+🎩 | Chistera del padrino | Guarda el discurso y un pañuelo. | groom top hat
+📸 | Fotógrafo de la boda | Siempre tiene una última foto más. | wedding photographer
+🍾 | Botella de recuerdo | Lleva etiqueta con la fecha. | souvenir bottle
+🌸 | Arco de flores | Enmarca el sí quiero. | flower arch
+🚗 | Limusina con lazo | Brilla con lazo en el capó. | vintage wedding car

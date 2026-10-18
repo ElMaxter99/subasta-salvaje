@@ -1,0 +1,88 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Castillo de fantasmas simpáticos",
+  "tematica": "Casa encantada",
+  "reglas": {
+    "presupuesto": 20,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Fantasma bromista",
+      "descripcion": "Esconde los calcetines para reírse.",
+      "emoji": "👻",
+      "foto": null
+    },
+    {
+      "titulo": "Torre con telarañas",
+      "descripcion": "Tiene escaleras de caracol y muchos murciélagos.",
+      "emoji": "🏰",
+      "foto": null
+    },
+    {
+      "titulo": "Murciélago de peluche",
+      "descripcion": "Cuelga del techo y nunca se asusta.",
+      "emoji": "🦇",
+      "foto": null
+    },
+    {
+      "titulo": "Candelabro dorado",
+      "descripcion": "Ilumina un salón enorme.",
+      "emoji": "🕯️",
+      "foto": null
+    },
+    {
+      "titulo": "Bruja de la cocina",
+      "descripcion": "Cocina sopas de colores.",
+      "emoji": "🧙",
+      "foto": null
+    },
+    {
+      "titulo": "Sombrero de mago olvidado",
+      "descripcion": "Contiene dos conejos y una bufanda.",
+      "emoji": "🎩",
+      "foto": null
+    },
+    {
+      "titulo": "Mapa del tesoro del desván",
+      "descripcion": "Tiene una cruz y una mancha de mermelada.",
+      "emoji": "📜",
+      "foto": null
+    },
+    {
+      "titulo": "Silla que se mueve",
+      "descripcion": "Nadie sabe quién la empuja.",
+      "emoji": "🪑",
+      "foto": null
+    },
+    {
+      "titulo": "Caramelos de la bruja",
+      "descripcion": "Cambian de sabor cada vez.",
+      "emoji": "🍬",
+      "foto": null
+    },
+    {
+      "titulo": "Retrato que guiña",
+      "descripcion": "El abuelo del cuadro sonríe.",
+      "emoji": "🖼️",
+      "foto": null
+    },
+    {
+      "titulo": "Gato negro guardián",
+      "descripcion": "Vigila con ojos amarillos.",
+      "emoji": "🐈",
+      "foto": null
+    },
+    {
+      "titulo": "Escoba voladora",
+      "descripcion": "Barre y vuela, depende del día.",
+      "emoji": "🧹",
+      "foto": null
+    }
+  ]
+}

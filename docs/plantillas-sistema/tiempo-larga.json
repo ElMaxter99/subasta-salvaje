@@ -1,0 +1,136 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Viaje en el tiempo: gran travesía",
+  "tematica": "Historia",
+  "reglas": {
+    "presupuesto": 40,
+    "puja_minima": 1,
+    "rondas_maximas": 20,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Hacha de sílex",
+      "descripcion": "Tallada a golpes hace miles de años.",
+      "emoji": "🦴",
+      "foto": null
+    },
+    {
+      "titulo": "Brasas de la primera hoguera",
+      "descripcion": "Cuidadas para que nunca se apaguen.",
+      "emoji": "🔥",
+      "foto": null
+    },
+    {
+      "titulo": "Pintura de cueva",
+      "descripcion": "Un bisonte dibujado con ocre y carbón.",
+      "emoji": "🎨",
+      "foto": null
+    },
+    {
+      "titulo": "Trigo de la primera cosecha",
+      "descripcion": "Cambió la manera de vivir de los pueblos.",
+      "emoji": "🌾",
+      "foto": null
+    },
+    {
+      "titulo": "Rueda de madera",
+      "descripcion": "Un invento que lo movió todo.",
+      "emoji": "🛞",
+      "foto": null
+    },
+    {
+      "titulo": "Columna griega",
+      "descripcion": "Sostiene un templo desde hace siglos.",
+      "emoji": "🏛️",
+      "foto": null
+    },
+    {
+      "titulo": "Ánfora de aceite",
+      "descripcion": "Cruzó el mar en un barco de vela.",
+      "emoji": "🏺",
+      "foto": null
+    },
+    {
+      "titulo": "Calzada romana",
+      "descripcion": "Recta y firme, aún se puede pisar.",
+      "emoji": "🛤️",
+      "foto": null
+    },
+    {
+      "titulo": "Gladio de legionario",
+      "descripcion": "Corto, pesado y de buena fabricación.",
+      "emoji": "⚔️",
+      "foto": null
+    },
+    {
+      "titulo": "Almena del castillo",
+      "descripcion": "Desde ahí se vigilaba el valle.",
+      "emoji": "🏰",
+      "foto": null
+    },
+    {
+      "titulo": "Brújula de navegante",
+      "descripcion": "Apunta siempre hacia el norte.",
+      "emoji": "🧭",
+      "foto": null
+    },
+    {
+      "titulo": "Manuscrito iluminado",
+      "descripcion": "Copiado a mano por un monje paciente.",
+      "emoji": "📖",
+      "foto": null
+    },
+    {
+      "titulo": "Carabela del descubrimiento",
+      "descripcion": "Zarpó con tres barcos y mucha esperanza.",
+      "emoji": "⛵",
+      "foto": null
+    },
+    {
+      "titulo": "Prensa de Gutenberg",
+      "descripcion": "Hizo posible que los libros llegasen a todos.",
+      "emoji": "🖨️",
+      "foto": null
+    },
+    {
+      "titulo": "Máscara del carnaval veneciano",
+      "descripcion": "Esconde al que la lleva.",
+      "emoji": "🎭",
+      "foto": null
+    },
+    {
+      "titulo": "Engranaje de la fábrica",
+      "descripcion": "Movió la primera máquina de vapor.",
+      "emoji": "⚙️",
+      "foto": null
+    },
+    {
+      "titulo": "Locomotora de carbón",
+      "descripcion": "Silba al salir de la estación.",
+      "emoji": "🚂",
+      "foto": null
+    },
+    {
+      "titulo": "Primera bombilla",
+      "descripcion": "Una luz que cambió las noches.",
+      "emoji": "💡",
+      "foto": null
+    },
+    {
+      "titulo": "Teléfono de pared",
+      "descripcion": "Se marca girando un disco.",
+      "emoji": "📞",
+      "foto": null
+    },
+    {
+      "titulo": "Satélite pionero",
+      "descripcion": "Dio la vuelta al mundo y emitió un pitido.",
+      "emoji": "🛰️",
+      "foto": null
+    }
+  ]
+}

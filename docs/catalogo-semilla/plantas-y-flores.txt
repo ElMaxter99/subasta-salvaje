@@ -1,0 +1,49 @@
+# Colección: Plantas y flores
+# Tipo: item
+# Rol: producto
+# Categoría: Plantas y flores
+# Objetivo: 40 productos publicados (se piden 44 por si alguno no encuentra foto libre)
+# Formato: Nombre; Descripción; Emoji; búsqueda en inglés || búsqueda alternativa en español (se prueba la 2.ª si la 1.ª no da resultados libres)
+Rosa roja; Rosa roja abierta con rocío; 🌹; red rose flower || rosa roja
+Girasol; Girasol enorme mirando al sol; 🌻; sunflower || girasol
+Tulipán; Tulipán de pétalos cerrados; 🌷; tulip || tulipán
+Margarita; Margarita blanca de centro amarillo; 🌼; daisy flower || margarita
+Amapola; Amapola roja entre el trigo; 🌺; poppy flower || amapola
+Lavanda; Ramas de lavanda en flor; 💜; lavender flowers || lavanda
+Orquídea; Orquídea blanca con pétalos suaves; 🪷; orchid flower || orquídea
+Lirio; Lirio blanco en un jarrón; 🌸; lily flower || lirio
+Clavel; Clavel rojo de bordes rizados; 🌺; carnation flower || clavel
+Peonía; Peonía rosa de muchos pétalos; 🌸; peony flower || peonía
+Dalia; Dalia naranja de pétalos ordenados; 🌼; dahlia flower || dalia
+Hortensia; Hortensia azul de bolas de flores; 💠; hydrangea flower || hortensia
+Jazmín; Ramillete de jazmín perfumado; 🤍; jasmine flower || jazmín
+Azahar; Flores blancas del naranjo; 🌸; orange blossom || azahar
+Flor de cerezo; Ramas de cerezo en flor; 🌸; cherry blossom || flor de cerezo
+Diente de león; Diente de león con semillas al viento; 🌬️; dandelion seed head || diente de león
+Violeta; Violetas pequeñas de color morado; 🪻; violet flower || violeta
+Pensamiento; Pensamiento de colores mezclados; 🌼; pansy flower || pensamiento
+Nenúfar; Nenúfar rosa en un estanque; 🪷; water lily || nenúfar
+Loto; Flor de loto abierta sobre el agua; 🪷; lotus flower || flor de loto
+Cactus; Cactus redondo con espinas; 🌵; cactus plant || cactus
+Cactus en flor; Cactus con una flor en la cima; 🌵; flowering cactus || cactus en flor
+Suculenta; Suculenta en roseta de hojas gruesas; 🪴; succulent plant || suculenta
+Aloe vera; Hojas gordas y verdes de aloe; 🌿; aloe vera plant || aloe vera
+Helecho; Helecho de hojas largas y rizadas; 🌿; fern plant || helecho
+Monstera; Hoja grande de monstera con agujeros; 🍃; monstera leaf || monstera
+Bambú; Tallos de bambú verdes; 🎋; bamboo plant || bambú
+Bonsái; Árbol pequeño en una maceta plana; 🪴; bonsai tree || bonsái
+Palmera; Palmera con hojas largas; 🌴; palm tree || palmera
+Olivo; Rama de olivo con aceitunas; 🫒; olive branch || rama de olivo
+Hiedra; Hiedra trepando por un muro; 🌿; ivy on wall || hiedra
+Trébol de cuatro hojas; Trébol que dicen que da suerte; 🍀; four-leaf clover || trébol de cuatro hojas
+Planta en maceta; Planta verde en maceta de barro; 🪴; potted plant || planta en maceta
+Maceta de barro; Maceta de terracota vacía; 🏺; terracotta flower pot || maceta de barro
+Regadera; Regadera de metal para el jardín; 🚿; watering can garden || regadera
+Ramo de flores; Ramo silvestre atado con cuerda; 💐; bouquet of flowers || ramo de flores
+Jarrón con flores; Flores frescas en un jarrón de cristal; 💐; flowers in vase || jarrón con flores
+Corona de flores; Corona de flores silvestres; 🌼; flower crown || corona de flores
+Semillas; Semillas variadas en una mano; 🌱; seeds in hand || semillas
+Brote; Planta recién brotada de la tierra; 🌱; seedling sprout || brote plántula
+Invernadero; Invernadero de cristal con plantas; 🏡; greenhouse plants || invernadero
+Seta; Seta marrón en el suelo del bosque; 🍄; mushroom forest || seta
+Campo de flores; Campo lleno de flores de colores; 🌾; flower field || campo de flores

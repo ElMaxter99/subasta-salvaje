@@ -1,0 +1,21 @@
+# nombre: Mi primer cole
+# descripcion: Pupitres, estuches y recreo contados para niños y niñas de 6 a 10 años.
+# tono: familiar
+# tematica: Colegio
+# base: cole-y-mochila
+# edad: infantil
+# presupuesto: 14
+# rondas: 8
+---
+✏️ | Lápiz con goma | Sirve para dibujar y para corregir. | pencil eraser
+🖍️ | Estuche de ceras blandas | Doce colores, aunque falta el verde. | wax crayons
+📚 | Libro de cuentos | Tiene dragones en cada página. | storybook
+🧮 | Regletas de colores | Cuenta con bolitas hasta diez. | abacus
+🎒 | Mochila con dibujos | Pesa menos cuando rueda. | rolling backpack
+🍎 | Manzana de la merienda | Se come en el recreo. | school apple
+🖌️ | Pincel y acuarelas | Para pintar un arcoíris. | paintbrush watercolor
+🔔 | Campana del patio | Todos corren al patio al oírlo. | school bell
+🌍 | Mapamundi de pared | Gira para encontrar cualquier país. | globe
+📏 | Regla de madera | Mide casi todo, menos la imaginación. | wooden ruler
+🧩 | Puzle de la clase | Faltaba una pieza y apareció debajo de la mesa. | classroom puzzle
+🛝 | Tobogán del patio | Tiene cola desde la primera hora. | playground slide

@@ -1,0 +1,21 @@
+# nombre: Reunión de clan
+# descripcion: La gran comida familiar con primos, tíos y abuelos: siete a diez jugadores con rondas de sobra.
+# tono: familiar
+# tematica: Familia
+# base: reunion-familiar
+# jugadores: 7-10
+# presupuesto: 30
+# rondas: 12
+---
+🍗 | Pollo asado para veinte | Aún quedan tres alitas. | roast chicken
+🥘 | Olla familiar | Alimenta a medio barrio. | family pot
+🪑 | Silla plegable extra | Siempre falta una para el último que llega. | folding chair
+🧓 | Abuela cuentacuentos | Nadie interrumpe sus historias. | storytelling grandmother
+👶 | Cochecito del benjamín | Tiene el sueño más ligero del mundo. | baby stroller
+📷 | Foto de familia | Siempre sale alguien con los ojos cerrados. | family photo
+🎲 | Parchís gigante | Termina en discusión y en abrazos. | giant ludo
+🍰 | Tarta de los primos | Hecha por tres personas en secreto. | homemade cake
+🗣️ | Brindis del tío | Empieza sencillo y acaba largo. | uncle toast
+🧺 | Cesta de postres | Hay tarta, flan, fruta y galletas. | dessert basket
+🎼 | Guitarra de sobremesa | Suena cuando se van los niños. | acoustic guitar
+🏡 | Mesa de pueblo | Larga, de madera y llena de manteles. | village table

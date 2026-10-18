@@ -1,0 +1,88 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Escapada de adultos",
+  "tematica": "Viajes",
+  "reglas": {
+    "presupuesto": 30,
+    "puja_minima": 1,
+    "rondas_maximas": 12,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Habitación con vistas",
+      "descripcion": "Se ve el campanario desde la cama.",
+      "emoji": "🏨",
+      "foto": null
+    },
+    {
+      "titulo": "Albornoz del hotel",
+      "descripcion": "Es tan cómodo que casi se lo llevan.",
+      "emoji": "🧖",
+      "foto": null
+    },
+    {
+      "titulo": "Menú degustación",
+      "descripcion": "Siete platos pequeños y una factura grande.",
+      "emoji": "🍽️",
+      "foto": null
+    },
+    {
+      "titulo": "Billete de tren panorámico",
+      "descripcion": "Con ventana grande y sin prisa.",
+      "emoji": "🚆",
+      "foto": null
+    },
+    {
+      "titulo": "Plano de calles estrechas",
+      "descripcion": "Se pierde uno encantado.",
+      "emoji": "🗺️",
+      "foto": null
+    },
+    {
+      "titulo": "Cata en la bodega",
+      "descripcion": "Termina con tres botellas compradas.",
+      "emoji": "🍷",
+      "foto": null
+    },
+    {
+      "titulo": "Paseo en barca por el canal",
+      "descripcion": "Tranquilo, lento y fotogénico.",
+      "emoji": "🛶",
+      "foto": null
+    },
+    {
+      "titulo": "Bolsas de la tienda de delicatessen",
+      "descripcion": "Pesan más que el equipaje.",
+      "emoji": "🛍️",
+      "foto": null
+    },
+    {
+      "titulo": "Concierto en la catedral",
+      "descripcion": "Un cuarteto de cuerda y piedra antigua.",
+      "emoji": "🎻",
+      "foto": null
+    },
+    {
+      "titulo": "Café en la terraza",
+      "descripcion": "Lo mejor del día, sin mirar el reloj.",
+      "emoji": "☕",
+      "foto": null
+    },
+    {
+      "titulo": "Libro sin abrir",
+      "descripcion": "Se llevó para leer y vuelve intacto.",
+      "emoji": "📖",
+      "foto": null
+    },
+    {
+      "titulo": "Maleta de cabina",
+      "descripcion": "Todo cabe si uno es disciplinado.",
+      "emoji": "🧳",
+      "foto": null
+    }
+  ]
+}

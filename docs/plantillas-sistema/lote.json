@@ -6183,6 +6183,4887 @@
      }
     ]
    }
+  },
+  {
+   "slug": "boda-7-10",
+   "titulo": "Boda con muchos invitados",
+   "descripcion": "Un banquete multitudinario para grupos de siete a diez jugadores, con más rondas y más presupuesto.",
+   "orden": 560,
+   "tono": "adultos",
+   "etiquetas": [
+    [
+     "bridal bouquet"
+    ],
+    [
+     "wedding rings"
+    ],
+    [
+     "wedding cake tiers"
+    ],
+    [
+     "champagne tower"
+    ],
+    [
+     "long banquet table"
+    ],
+    [
+     "seating chart"
+    ],
+    [
+     "wedding band"
+    ],
+    [
+     "groom top hat"
+    ],
+    [
+     "wedding photographer"
+    ],
+    [
+     "souvenir bottle"
+    ],
+    [
+     "flower arch"
+    ],
+    [
+     "vintage wedding car"
+    ]
+   ],
+   "variante": {
+    "base": "boda-por-todo-lo-alto",
+    "jugadores": "7-10"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Boda con muchos invitados",
+    "tematica": "Boda",
+    "reglas": {
+     "presupuesto": 30,
+     "puja_minima": 1,
+     "rondas_maximas": 12,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Ramo de peonías",
+      "descripcion": "Vuela por encima de las cabezas.",
+      "emoji": "💐",
+      "foto": null
+     },
+     {
+      "titulo": "Cajita de alianzas",
+      "descripcion": "Pequeños y brillantes.",
+      "emoji": "💍",
+      "foto": null
+     },
+     {
+      "titulo": "Tarta nupcial de tres pisos",
+      "descripcion": "Hay que cortarla con mucho cuidado.",
+      "emoji": "🎂",
+      "foto": null
+     },
+     {
+      "titulo": "Torre de copas",
+      "descripcion": "Se llena de cava desde arriba.",
+      "emoji": "🥂",
+      "foto": null
+     },
+     {
+      "titulo": "Mesa imperial",
+      "descripcion": "Capaz de sentar a cien invitados.",
+      "emoji": "🍽️",
+      "foto": null
+     },
+     {
+      "titulo": "Plano de mesas",
+      "descripcion": "Se cambia diez veces antes del convite.",
+      "emoji": "📋",
+      "foto": null
+     },
+     {
+      "titulo": "Orquesta de baile",
+      "descripcion": "Toca desde el aperitivo hasta el amanecer.",
+      "emoji": "🎶",
+      "foto": null
+     },
+     {
+      "titulo": "Chistera del padrino",
+      "descripcion": "Guarda el discurso y un pañuelo.",
+      "emoji": "🎩",
+      "foto": null
+     },
+     {
+      "titulo": "Fotógrafo de la boda",
+      "descripcion": "Siempre tiene una última foto más.",
+      "emoji": "📸",
+      "foto": null
+     },
+     {
+      "titulo": "Botella de recuerdo",
+      "descripcion": "Lleva etiqueta con la fecha.",
+      "emoji": "🍾",
+      "foto": null
+     },
+     {
+      "titulo": "Arco de flores",
+      "descripcion": "Enmarca el sí quiero.",
+      "emoji": "🌸",
+      "foto": null
+     },
+     {
+      "titulo": "Limusina con lazo",
+      "descripcion": "Brilla con lazo en el capó.",
+      "emoji": "🚗",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "camping-adultos",
+   "titulo": "Glamping de lujo",
+   "descripcion": "Acampar sin renunciar a la comodidad: tienda con cama, vino y estrellas.",
+   "orden": 570,
+   "tono": "adultos",
+   "etiquetas": [
+    [
+     "glamping tent"
+    ],
+    [
+     "campfire mulled wine"
+    ],
+    [
+     "air mattress"
+    ],
+    [
+     "camp stove"
+    ],
+    [
+     "star chart"
+    ],
+    [
+     "cooler box"
+    ],
+    [
+     "owl night forest"
+    ],
+    [
+     "hiking boots"
+    ],
+    [
+     "firewood stack"
+    ],
+    [
+     "wicker picnic basket"
+    ],
+    [
+     "trekking backpack"
+    ],
+    [
+     "percolator coffee"
+    ]
+   ],
+   "variante": {
+    "base": "camping-aventura",
+    "edad": "adultos"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Glamping de lujo",
+    "tematica": "Naturaleza",
+    "reglas": {
+     "presupuesto": 30,
+     "puja_minima": 1,
+     "rondas_maximas": 12,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Tienda con cama de matrimonio",
+      "descripcion": "Tiene alfombra y lámpara de pie.",
+      "emoji": "⛺",
+      "foto": null
+     },
+     {
+      "titulo": "Hoguera con vino caliente",
+      "descripcion": "Huele a canela y a leña.",
+      "emoji": "🔥",
+      "foto": null
+     },
+     {
+      "titulo": "Colchón hinchable doble",
+      "descripcion": "Se deshincha a las tres de la mañana.",
+      "emoji": "🛏️",
+      "foto": null
+     },
+     {
+      "titulo": "Cocina de campaña",
+      "descripcion": "Un hornillo de gas que pretende ser restaurante.",
+      "emoji": "🍳",
+      "foto": null
+     },
+     {
+      "titulo": "Mapa de estrellas",
+      "descripcion": "Sirve para presumir de constelaciones.",
+      "emoji": "🔭",
+      "foto": null
+     },
+     {
+      "titulo": "Nevera con hielo",
+      "descripcion": "Guarda queso, embutido y bebidas frías.",
+      "emoji": "🧊",
+      "foto": null
+     },
+     {
+      "titulo": "Concierto de búhos",
+      "descripcion": "Empieza al caer la noche.",
+      "emoji": "🦉",
+      "foto": null
+     },
+     {
+      "titulo": "Botas de senderismo",
+      "descripcion": "Ya domadas, cómodas como zapatillas.",
+      "emoji": "🥾",
+      "foto": null
+     },
+     {
+      "titulo": "Troncos de encina",
+      "descripcion": "Un metro cúbico que dura una noche.",
+      "emoji": "🪵",
+      "foto": null
+     },
+     {
+      "titulo": "Cesta de picnic de mimbre",
+      "descripcion": "Con mantel de cuadros y todo.",
+      "emoji": "🧺",
+      "foto": null
+     },
+     {
+      "titulo": "Mochila de ruta",
+      "descripcion": "Lleva agua, fruta y una navaja.",
+      "emoji": "🎒",
+      "foto": null
+     },
+     {
+      "titulo": "Cafetera de montaña",
+      "descripcion": "Hace un café con sabor a humo.",
+      "emoji": "☕",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "cocina-adultos",
+   "titulo": "Cena gourmet",
+   "descripcion": "Productos de despensa selecta, vinos y utensilios para una cena entre adultos.",
+   "orden": 580,
+   "tono": "adultos",
+   "etiquetas": [
+    [
+     "sparkling wine"
+    ],
+    [
+     "artisan butter"
+    ],
+    [
+     "lobster"
+    ],
+    [
+     "black truffle"
+    ],
+    [
+     "black garlic"
+    ],
+    [
+     "dark chocolate bar"
+    ],
+    [
+     "aged steak"
+    ],
+    [
+     "extra virgin olive oil"
+    ],
+    [
+     "caramel flan"
+    ],
+    [
+     "chef knife"
+    ],
+    [
+     "flaky sea salt"
+    ],
+    [
+     "crystal glasses"
+    ]
+   ],
+   "variante": {
+    "base": "cocina-del-mundo",
+    "edad": "adultos"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Cena gourmet",
+    "tematica": "Gastronomía",
+    "reglas": {
+     "presupuesto": 30,
+     "puja_minima": 1,
+     "rondas_maximas": 12,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Cava de celebración",
+      "descripcion": "Se abre con un chasquido y un brindis.",
+      "emoji": "🍾",
+      "foto": null
+     },
+     {
+      "titulo": "Mantequilla artesana",
+      "descripcion": "Untada generosamente en el pan tibio.",
+      "emoji": "🧈",
+      "foto": null
+     },
+     {
+      "titulo": "Bogavante del día",
+      "descripcion": "Llega vivo y sale en su punto.",
+      "emoji": "🦞",
+      "foto": null
+     },
+     {
+      "titulo": "Trufa negra rallada",
+      "descripcion": "Un gramo cuesta lo que un menú.",
+      "emoji": "🍄",
+      "foto": null
+     },
+     {
+      "titulo": "Ajo negro envejecido",
+      "descripcion": "Dulce, oscuro y algo misterioso.",
+      "emoji": "🧄",
+      "foto": null
+     },
+     {
+      "titulo": "Tableta de cacao puro",
+      "descripcion": "Amarga, intensa y sin remordimientos.",
+      "emoji": "🍫",
+      "foto": null
+     },
+     {
+      "titulo": "Chuletón madurado",
+      "descripcion": "Cuarenta días de espera en cámara.",
+      "emoji": "🥩",
+      "foto": null
+     },
+     {
+      "titulo": "Aceite de primera prensada",
+      "descripcion": "Se sirve a gotas sobre una tostada.",
+      "emoji": "🫒",
+      "foto": null
+     },
+     {
+      "titulo": "Flan de la abuela",
+      "descripcion": "El único postre que nadie discute.",
+      "emoji": "🍮",
+      "foto": null
+     },
+     {
+      "titulo": "Cuchillo de chef",
+      "descripcion": "Corta con solo mirarlo.",
+      "emoji": "🔪",
+      "foto": null
+     },
+     {
+      "titulo": "Sal en escamas",
+      "descripcion": "Se esparce desde bien alto.",
+      "emoji": "🧂",
+      "foto": null
+     },
+     {
+      "titulo": "Copas de cristal fino",
+      "descripcion": "Se friegan a mano y con miedo.",
+      "emoji": "🥂",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "cocina-larga",
+   "titulo": "Maratón gastronómica",
+   "descripcion": "Veinte rondas para dar la vuelta al mundo por sus cocinas, platos y mercados.",
+   "orden": 590,
+   "tono": "familiar",
+   "etiquetas": [
+    [
+     "noodle soup bowl"
+    ],
+    [
+     "steamed dumpling"
+    ],
+    [
+     "pork taco"
+    ],
+    [
+     "tamale"
+    ],
+    [
+     "lentil curry"
+    ],
+    [
+     "flatbread oven"
+    ],
+    [
+     "paella pan"
+    ],
+    [
+     "pasta tomato"
+    ],
+    [
+     "croissant"
+    ],
+    [
+     "croquette"
+    ],
+    [
+     "sushi platter"
+    ],
+    [
+     "chicken kebab"
+    ],
+    [
+     "stew pot"
+    ],
+    [
+     "rice pudding"
+    ],
+    [
+     "ripe mango"
+    ],
+    [
+     "roasted peanuts"
+    ],
+    [
+     "mint tea pot"
+    ],
+    [
+     "waffle fruit"
+    ],
+    [
+     "dried chili string"
+    ],
+    [
+     "spice market"
+    ]
+   ],
+   "variante": {
+    "base": "cocina-del-mundo",
+    "duracion": "larga"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Maratón gastronómica",
+    "tematica": "Gastronomía",
+    "reglas": {
+     "presupuesto": 40,
+     "puja_minima": 1,
+     "rondas_maximas": 20,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Fideos de caldo largo",
+      "descripcion": "Se sirven humeantes con cebolleta.",
+      "emoji": "🍜",
+      "foto": null
+     },
+     {
+      "titulo": "Empanadilla de vapor",
+      "descripcion": "Una bolsita rellena que se come de un bocado.",
+      "emoji": "🥟",
+      "foto": null
+     },
+     {
+      "titulo": "Taco de cochinita",
+      "descripcion": "Con cebolla morada y mucho limón.",
+      "emoji": "🌮",
+      "foto": null
+     },
+     {
+      "titulo": "Tamal en hoja",
+      "descripcion": "Maíz suave envuelto y cocido al vapor.",
+      "emoji": "🫔",
+      "foto": null
+     },
+     {
+      "titulo": "Curry de lentejas",
+      "descripcion": "Especiado y reconfortante.",
+      "emoji": "🍛",
+      "foto": null
+     },
+     {
+      "titulo": "Pan de nube",
+      "descripcion": "Se hincha en el horno de barro.",
+      "emoji": "🫓",
+      "foto": null
+     },
+     {
+      "titulo": "Paella de domingo",
+      "descripcion": "Se come directamente de la paella.",
+      "emoji": "🥘",
+      "foto": null
+     },
+     {
+      "titulo": "Pasta con tomate fresco",
+      "descripcion": "Albahaca arrugada y queso rallado.",
+      "emoji": "🍝",
+      "foto": null
+     },
+     {
+      "titulo": "Cruasán de almendra",
+      "descripcion": "Hojaldrado y crujiente a primera hora.",
+      "emoji": "🥐",
+      "foto": null
+     },
+     {
+      "titulo": "Croqueta de pollo",
+      "descripcion": "Cremosa por dentro, crujiente por fuera.",
+      "emoji": "🧆",
+      "foto": null
+     },
+     {
+      "titulo": "Tabla de nigiris",
+      "descripcion": "Piezas pequeñas con mucho cuidado.",
+      "emoji": "🍣",
+      "foto": null
+     },
+     {
+      "titulo": "Kebab de pollo",
+      "descripcion": "Con salsa de yogur y pan caliente.",
+      "emoji": "🥙",
+      "foto": null
+     },
+     {
+      "titulo": "Cocido de olla",
+      "descripcion": "Tres vuelcos y una siesta.",
+      "emoji": "🍲",
+      "foto": null
+     },
+     {
+      "titulo": "Arroz con leche",
+      "descripcion": "Con canela por encima.",
+      "emoji": "🍚",
+      "foto": null
+     },
+     {
+      "titulo": "Mango maduro",
+      "descripcion": "Jugoso, dorado y pegajoso.",
+      "emoji": "🥭",
+      "foto": null
+     },
+     {
+      "titulo": "Cacahuetes tostados",
+      "descripcion": "Se pelan de dos en dos.",
+      "emoji": "🥜",
+      "foto": null
+     },
+     {
+      "titulo": "Tetera de menta",
+      "descripcion": "Se sirve desde muy alto.",
+      "emoji": "🍵",
+      "foto": null
+     },
+     {
+      "titulo": "Gofre con fruta",
+      "descripcion": "Cuadriculado y con nata.",
+      "emoji": "🧇",
+      "foto": null
+     },
+     {
+      "titulo": "Ristra de guindillas",
+      "descripcion": "Cuelga secándose en la cocina.",
+      "emoji": "🌶️",
+      "foto": null
+     },
+     {
+      "titulo": "Mercado de especias",
+      "descripcion": "Hay montañas de color y aroma.",
+      "emoji": "🫖",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "cole-peques",
+   "titulo": "Mi primer cole",
+   "descripcion": "Pupitres, estuches y recreo contados para niños y niñas de 6 a 10 años.",
+   "orden": 600,
+   "tono": "familiar",
+   "etiquetas": [
+    [
+     "pencil eraser"
+    ],
+    [
+     "wax crayons"
+    ],
+    [
+     "storybook"
+    ],
+    [
+     "abacus"
+    ],
+    [
+     "rolling backpack"
+    ],
+    [
+     "school apple"
+    ],
+    [
+     "paintbrush watercolor"
+    ],
+    [
+     "school bell"
+    ],
+    [
+     "globe"
+    ],
+    [
+     "wooden ruler"
+    ],
+    [
+     "classroom puzzle"
+    ],
+    [
+     "playground slide"
+    ]
+   ],
+   "variante": {
+    "base": "cole-y-mochila",
+    "edad": "infantil"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Mi primer cole",
+    "tematica": "Colegio",
+    "reglas": {
+     "presupuesto": 14,
+     "puja_minima": 1,
+     "rondas_maximas": 8,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Lápiz con goma",
+      "descripcion": "Sirve para dibujar y para corregir.",
+      "emoji": "✏️",
+      "foto": null
+     },
+     {
+      "titulo": "Estuche de ceras blandas",
+      "descripcion": "Doce colores, aunque falta el verde.",
+      "emoji": "🖍️",
+      "foto": null
+     },
+     {
+      "titulo": "Libro de cuentos",
+      "descripcion": "Tiene dragones en cada página.",
+      "emoji": "📚",
+      "foto": null
+     },
+     {
+      "titulo": "Regletas de colores",
+      "descripcion": "Cuenta con bolitas hasta diez.",
+      "emoji": "🧮",
+      "foto": null
+     },
+     {
+      "titulo": "Mochila con dibujos",
+      "descripcion": "Pesa menos cuando rueda.",
+      "emoji": "🎒",
+      "foto": null
+     },
+     {
+      "titulo": "Manzana de la merienda",
+      "descripcion": "Se come en el recreo.",
+      "emoji": "🍎",
+      "foto": null
+     },
+     {
+      "titulo": "Pincel y acuarelas",
+      "descripcion": "Para pintar un arcoíris.",
+      "emoji": "🖌️",
+      "foto": null
+     },
+     {
+      "titulo": "Campana del patio",
+      "descripcion": "Todos corren al patio al oírlo.",
+      "emoji": "🔔",
+      "foto": null
+     },
+     {
+      "titulo": "Mapamundi de pared",
+      "descripcion": "Gira para encontrar cualquier país.",
+      "emoji": "🌍",
+      "foto": null
+     },
+     {
+      "titulo": "Regla de madera",
+      "descripcion": "Mide casi todo, menos la imaginación.",
+      "emoji": "📏",
+      "foto": null
+     },
+     {
+      "titulo": "Puzle de la clase",
+      "descripcion": "Faltaba una pieza y apareció debajo de la mesa.",
+      "emoji": "🧩",
+      "foto": null
+     },
+     {
+      "titulo": "Tobogán del patio",
+      "descripcion": "Tiene cola desde la primera hora.",
+      "emoji": "🛝",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "cumpleanos-peques",
+   "titulo": "Cumpleaños de peques",
+   "descripcion": "Tartas, globos y sorpresas para una fiesta de 6 a 10 años, con reglas sencillas.",
+   "orden": 610,
+   "tono": "familiar",
+   "etiquetas": [
+    [
+     "strawberry cake"
+    ],
+    [
+     "big balloon"
+    ],
+    [
+     "wrapped gift"
+    ],
+    [
+     "party hat"
+    ],
+    [
+     "cupcake sprinkles"
+    ],
+    [
+     "pinata"
+    ],
+    [
+     "birthday song"
+    ],
+    [
+     "group photo"
+    ],
+    [
+     "lollipop"
+    ],
+    [
+     "magician rabbit hat"
+    ],
+    [
+     "juice straw"
+    ],
+    [
+     "toy carousel"
+    ]
+   ],
+   "variante": {
+    "base": "cumpleanos-epico",
+    "edad": "infantil"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Cumpleaños de peques",
+    "tematica": "Cumpleaños",
+    "reglas": {
+     "presupuesto": 14,
+     "puja_minima": 1,
+     "rondas_maximas": 8,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Tarta de fresa",
+      "descripcion": "Rosa, con nata y una vela encima.",
+      "emoji": "🎂",
+      "foto": null
+     },
+     {
+      "titulo": "Globo gigante",
+      "descripcion": "Vuela hasta el techo si lo sueltas.",
+      "emoji": "🎈",
+      "foto": null
+     },
+     {
+      "titulo": "Regalo con lazo",
+      "descripcion": "Nadie sabe qué hay dentro todavía.",
+      "emoji": "🎁",
+      "foto": null
+     },
+     {
+      "titulo": "Gorro de fiesta",
+      "descripcion": "Puntiagudo y de mil colores.",
+      "emoji": "🥳",
+      "foto": null
+     },
+     {
+      "titulo": "Magdalena con bolitas",
+      "descripcion": "Dulce, pequeñita y con sprinkles.",
+      "emoji": "🧁",
+      "foto": null
+     },
+     {
+      "titulo": "Piñata de estrella",
+      "descripcion": "Hay que darle muy fuerte para que suelte caramelos.",
+      "emoji": "🪅",
+      "foto": null
+     },
+     {
+      "titulo": "Canción de cumpleaños",
+      "descripcion": "Se canta todos juntos, aunque desafinen.",
+      "emoji": "🎶",
+      "foto": null
+     },
+     {
+      "titulo": "Foto con todos los amigos",
+      "descripcion": "Todos sonriendo apretaditos.",
+      "emoji": "📸",
+      "foto": null
+     },
+     {
+      "titulo": "Piruleta de colores",
+      "descripcion": "Dura mucho y mancha la lengua.",
+      "emoji": "🍭",
+      "foto": null
+     },
+     {
+      "titulo": "Mago de la fiesta",
+      "descripcion": "Saca un conejo de su sombrero.",
+      "emoji": "🤹",
+      "foto": null
+     },
+     {
+      "titulo": "Zumo con pajita",
+      "descripcion": "Fresquito, para brindar sin burbujas.",
+      "emoji": "🧃",
+      "foto": null
+     },
+     {
+      "titulo": "Tiovivo de juguete",
+      "descripcion": "Da vueltas y vueltas con música.",
+      "emoji": "🎠",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "disfraces-familiar",
+   "titulo": "Disfraces en familia",
+   "descripcion": "Un baúl de disfraces para todas las edades, con risas y mucha imaginación.",
+   "orden": 620,
+   "tono": "familiar",
+   "etiquetas": [
+    [
+     "inflatable dinosaur costume"
+    ],
+    [
+     "fairy wings"
+    ],
+    [
+     "pirate eyepatch"
+    ],
+    [
+     "clown nose"
+    ],
+    [
+     "ninja costume"
+    ],
+    [
+     "toy tiara"
+    ],
+    [
+     "vampire cape"
+    ],
+    [
+     "bear onesie"
+    ],
+    [
+     "top hat"
+    ],
+    [
+     "hero eye mask"
+    ],
+    [
+     "rainbow wig"
+    ],
+    [
+     "face paint"
+    ]
+   ],
+   "variante": {
+    "base": "fiesta-de-disfraces",
+    "edad": "familiar"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Disfraces en familia",
+    "tematica": "Fiesta",
+    "reglas": {
+     "presupuesto": 20,
+     "puja_minima": 1,
+     "rondas_maximas": 10,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Traje de dinosaurio hinchable",
+      "descripcion": "Cuesta caminar y sentarse.",
+      "emoji": "🦖",
+      "foto": null
+     },
+     {
+      "titulo": "Alas de hada",
+      "descripcion": "Brillan con la luz del sol.",
+      "emoji": "🧚",
+      "foto": null
+     },
+     {
+      "titulo": "Garfio de pirata",
+      "descripcion": "Se pone en el ojo que no ves.",
+      "emoji": "🏴‍☠️",
+      "foto": null
+     },
+     {
+      "titulo": "Nariz roja de payaso",
+      "descripcion": "Suena cuando se aprieta.",
+      "emoji": "🤡",
+      "foto": null
+     },
+     {
+      "titulo": "Disfraz de ninja",
+      "descripcion": "Silencioso salvo por el crujido de los pies.",
+      "emoji": "🥷",
+      "foto": null
+     },
+     {
+      "titulo": "Corona de princesa",
+      "descripcion": "Con joyas de plástico.",
+      "emoji": "👸",
+      "foto": null
+     },
+     {
+      "titulo": "Capa de vampiro",
+      "descripcion": "Tiene cuello alto y forro rojo.",
+      "emoji": "🧛",
+      "foto": null
+     },
+     {
+      "titulo": "Pijama de oso",
+      "descripcion": "Calentito y de pelo suave.",
+      "emoji": "🐻",
+      "foto": null
+     },
+     {
+      "titulo": "Chistera de mago",
+      "descripcion": "Guarda un pañuelo infinito.",
+      "emoji": "🎩",
+      "foto": null
+     },
+     {
+      "titulo": "Antifaz de héroe",
+      "descripcion": "Hace falta una buena voz de héroe.",
+      "emoji": "🦸",
+      "foto": null
+     },
+     {
+      "titulo": "Peluca arcoíris",
+      "descripcion": "Se ve desde la otra acera.",
+      "emoji": "🌈",
+      "foto": null
+     },
+     {
+      "titulo": "Maleta de maquillaje",
+      "descripcion": "Con pintura facial de todos los colores.",
+      "emoji": "🧸",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "egipto-larga",
+   "titulo": "Egipto: la gran expedición",
+   "descripcion": "Veinte rondas de excavación por templos, tumbas y orillas del Nilo, para una tarde larga.",
+   "orden": 630,
+   "tono": "educativo",
+   "etiquetas": [
+    [
+     "desert excavation camp"
+    ],
+    [
+     "archaeologist brush"
+    ],
+    [
+     "scribe statue"
+    ],
+    [
+     "canopic jar"
+    ],
+    [
+     "double crown pharaoh"
+    ],
+    [
+     "ostrich feather"
+    ],
+    [
+     "golden cobra"
+    ],
+    [
+     "eye of horus"
+    ],
+    [
+     "nile flood"
+    ],
+    [
+     "solar boat egypt"
+    ],
+    [
+     "karnak temple"
+    ],
+    [
+     "rosetta stone"
+    ],
+    [
+     "mud brick"
+    ],
+    [
+     "barley bread"
+    ],
+    [
+     "honey jar"
+    ],
+    [
+     "beaded collar"
+    ],
+    [
+     "measuring rope"
+    ],
+    [
+     "ancient harp"
+    ],
+    [
+     "sirius star"
+    ],
+    [
+     "pharaoh sceptre"
+    ]
+   ],
+   "variante": {
+    "base": "antiguo-egipto",
+    "duracion": "larga"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Egipto: la gran expedición",
+    "tematica": "Egipto",
+    "reglas": {
+     "presupuesto": 40,
+     "puja_minima": 1,
+     "rondas_maximas": 20,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Campamento del arqueólogo",
+      "descripcion": "Una tienda, un farol y mucho polvo.",
+      "emoji": "🏜️",
+      "foto": null
+     },
+     {
+      "titulo": "Brocha de excavación",
+      "descripcion": "Retira la arena grano a grano.",
+      "emoji": "🧹",
+      "foto": null
+     },
+     {
+      "titulo": "Estatua de un escriba",
+      "descripcion": "Está sentado y sostiene un papiro.",
+      "emoji": "🗿",
+      "foto": null
+     },
+     {
+      "titulo": "Vaso canopo",
+      "descripcion": "Guardaba los secretos de la momificación.",
+      "emoji": "⚱️",
+      "foto": null
+     },
+     {
+      "titulo": "Doble corona",
+      "descripcion": "Reunía el Alto y el Bajo Egipto.",
+      "emoji": "👑",
+      "foto": null
+     },
+     {
+      "titulo": "Pluma de Maat",
+      "descripcion": "Simboliza la verdad y la justicia.",
+      "emoji": "🪶",
+      "foto": null
+     },
+     {
+      "titulo": "Serpiente de oro",
+      "descripcion": "Brilla en la frente del faraón.",
+      "emoji": "🐍",
+      "foto": null
+     },
+     {
+      "titulo": "Ojo de Horus",
+      "descripcion": "Protege contra el mal.",
+      "emoji": "🧿",
+      "foto": null
+     },
+     {
+      "titulo": "Crecida del río",
+      "descripcion": "Dejaba un limo fértil en los campos.",
+      "emoji": "🌊",
+      "foto": null
+     },
+     {
+      "titulo": "Barca solar",
+      "descripcion": "Navegaba por el cielo con el dios sol.",
+      "emoji": "🛶",
+      "foto": null
+     },
+     {
+      "titulo": "Templo de Karnak",
+      "descripcion": "Un bosque de columnas gigantes.",
+      "emoji": "🏛️",
+      "foto": null
+     },
+     {
+      "titulo": "Piedra de Rosetta",
+      "descripcion": "Permitió leer los jeroglíficos.",
+      "emoji": "🪨",
+      "foto": null
+     },
+     {
+      "titulo": "Ladrillo de adobe",
+      "descripcion": "Secado al sol junto al río.",
+      "emoji": "🧱",
+      "foto": null
+     },
+     {
+      "titulo": "Pan de cebada",
+      "descripcion": "Se comía en cada hogar.",
+      "emoji": "🍞",
+      "foto": null
+     },
+     {
+      "titulo": "Tarro de miel",
+      "descripcion": "Dulce, sellado y muy valioso.",
+      "emoji": "🍯",
+      "foto": null
+     },
+     {
+      "titulo": "Collar de cuentas",
+      "descripcion": "De turquesa y cornalina.",
+      "emoji": "👗",
+      "foto": null
+     },
+     {
+      "titulo": "Cuerda de medir",
+      "descripcion": "Sirvió para trazar las pirámides.",
+      "emoji": "📏",
+      "foto": null
+     },
+     {
+      "titulo": "Arpa de dieciséis cuerdas",
+      "descripcion": "Se tocaba en los banquetes.",
+      "emoji": "🎶",
+      "foto": null
+     },
+     {
+      "titulo": "Estrella Sirio",
+      "descripcion": "Anunciaba la crecida del Nilo.",
+      "emoji": "🌟",
+      "foto": null
+     },
+     {
+      "titulo": "Cetro del faraón",
+      "descripcion": "Símbolo de poder y de protección.",
+      "emoji": "🔱",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "escapada-adultos",
+   "titulo": "Escapada de adultos",
+   "descripcion": "Un fin de semana de hotel con encanto, buena mesa y paseos sin prisa.",
+   "orden": 640,
+   "tono": "adultos",
+   "etiquetas": [
+    [
+     "hotel room view"
+    ],
+    [
+     "hotel bathrobe"
+    ],
+    [
+     "tasting menu"
+    ],
+    [
+     "scenic train ticket"
+    ],
+    [
+     "old town map"
+    ],
+    [
+     "winery tasting"
+    ],
+    [
+     "canal boat"
+    ],
+    [
+     "delicatessen bags"
+    ],
+    [
+     "cathedral concert"
+    ],
+    [
+     "terrace cafe"
+    ],
+    [
+     "unread paperback"
+    ],
+    [
+     "cabin suitcase"
+    ]
+   ],
+   "variante": {
+    "base": "viaje-por-europa",
+    "edad": "adultos"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Escapada de adultos",
+    "tematica": "Viajes",
+    "reglas": {
+     "presupuesto": 30,
+     "puja_minima": 1,
+     "rondas_maximas": 12,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Habitación con vistas",
+      "descripcion": "Se ve el campanario desde la cama.",
+      "emoji": "🏨",
+      "foto": null
+     },
+     {
+      "titulo": "Albornoz del hotel",
+      "descripcion": "Es tan cómodo que casi se lo llevan.",
+      "emoji": "🧖",
+      "foto": null
+     },
+     {
+      "titulo": "Menú degustación",
+      "descripcion": "Siete platos pequeños y una factura grande.",
+      "emoji": "🍽️",
+      "foto": null
+     },
+     {
+      "titulo": "Billete de tren panorámico",
+      "descripcion": "Con ventana grande y sin prisa.",
+      "emoji": "🚆",
+      "foto": null
+     },
+     {
+      "titulo": "Plano de calles estrechas",
+      "descripcion": "Se pierde uno encantado.",
+      "emoji": "🗺️",
+      "foto": null
+     },
+     {
+      "titulo": "Cata en la bodega",
+      "descripcion": "Termina con tres botellas compradas.",
+      "emoji": "🍷",
+      "foto": null
+     },
+     {
+      "titulo": "Paseo en barca por el canal",
+      "descripcion": "Tranquilo, lento y fotogénico.",
+      "emoji": "🛶",
+      "foto": null
+     },
+     {
+      "titulo": "Bolsas de la tienda de delicatessen",
+      "descripcion": "Pesan más que el equipaje.",
+      "emoji": "🛍️",
+      "foto": null
+     },
+     {
+      "titulo": "Concierto en la catedral",
+      "descripcion": "Un cuarteto de cuerda y piedra antigua.",
+      "emoji": "🎻",
+      "foto": null
+     },
+     {
+      "titulo": "Café en la terraza",
+      "descripcion": "Lo mejor del día, sin mirar el reloj.",
+      "emoji": "☕",
+      "foto": null
+     },
+     {
+      "titulo": "Libro sin abrir",
+      "descripcion": "Se llevó para leer y vuelve intacto.",
+      "emoji": "📖",
+      "foto": null
+     },
+     {
+      "titulo": "Maleta de cabina",
+      "descripcion": "Todo cabe si uno es disciplinado.",
+      "emoji": "🧳",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "espacio-larga",
+   "titulo": "Gran expedición espacial",
+   "descripcion": "Veinte rondas para una misión larga que recorre la Luna, Marte y más allá.",
+   "orden": 650,
+   "tono": "educativo",
+   "etiquetas": [
+    [
+     "astronaut helmet"
+    ],
+    [
+     "space toolbox"
+    ],
+    [
+     "moon crater"
+    ],
+    [
+     "moon footprint"
+    ],
+    [
+     "moon rover"
+    ],
+    [
+     "mars rock"
+    ],
+    [
+     "robotic arm"
+    ],
+    [
+     "space habitat"
+    ],
+    [
+     "freeze dried food"
+    ],
+    [
+     "space toilet"
+    ],
+    [
+     "nebula"
+    ],
+    [
+     "saturn rings"
+    ],
+    [
+     "comet ice"
+    ],
+    [
+     "space station"
+    ],
+    [
+     "radio dish"
+    ],
+    [
+     "star map"
+    ],
+    [
+     "helmet light"
+    ],
+    [
+     "orbital sunrise"
+    ],
+    [
+     "space lettuce"
+    ],
+    [
+     "mission flag"
+    ]
+   ],
+   "variante": {
+    "base": "espacio-exterior",
+    "duracion": "larga"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Gran expedición espacial",
+    "tematica": "Espacio",
+    "reglas": {
+     "presupuesto": 40,
+     "puja_minima": 1,
+     "rondas_maximas": 20,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Casco con visera dorada",
+      "descripcion": "Protege del sol sin atenuar la vista.",
+      "emoji": "🧑‍🚀",
+      "foto": null
+     },
+     {
+      "titulo": "Caja de herramientas orbital",
+      "descripcion": "Los tornillos flotan si se abre mal.",
+      "emoji": "🧰",
+      "foto": null
+     },
+     {
+      "titulo": "Cráter lunar",
+      "descripcion": "Guarda polvo de miles de años.",
+      "emoji": "🌑",
+      "foto": null
+     },
+     {
+      "titulo": "Huella en la Luna",
+      "descripcion": "Seguirá ahí durante millones de años.",
+      "emoji": "🥾",
+      "foto": null
+     },
+     {
+      "titulo": "Vehículo explorador",
+      "descripcion": "Rueda sobre rocas de otro mundo.",
+      "emoji": "🚙",
+      "foto": null
+     },
+     {
+      "titulo": "Roca de Marte",
+      "descripcion": "Roja por el óxido de hierro.",
+      "emoji": "🔴",
+      "foto": null
+     },
+     {
+      "titulo": "Brazo robótico",
+      "descripcion": "Recoge muestras sin cansarse.",
+      "emoji": "🛠️",
+      "foto": null
+     },
+     {
+      "titulo": "Módulo habitable",
+      "descripcion": "Una casa pequeña para vivir lejos.",
+      "emoji": "🏠",
+      "foto": null
+     },
+     {
+      "titulo": "Comida liofilizada",
+      "descripcion": "Se hidrata con unas gotas de agua.",
+      "emoji": "🍽️",
+      "foto": null
+     },
+     {
+      "titulo": "Aseo de gravedad cero",
+      "descripcion": "Requiere un manual de instrucciones.",
+      "emoji": "🚽",
+      "foto": null
+     },
+     {
+      "titulo": "Nube de gas estelar",
+      "descripcion": "Allí nacen las estrellas nuevas.",
+      "emoji": "🌌",
+      "foto": null
+     },
+     {
+      "titulo": "Anillo de hielo",
+      "descripcion": "Millones de trozos que giran juntos.",
+      "emoji": "🪐",
+      "foto": null
+     },
+     {
+      "titulo": "Cometa congelado",
+      "descripcion": "Una bola de hielo sucio y polvo.",
+      "emoji": "🧊",
+      "foto": null
+     },
+     {
+      "titulo": "Estación espacial",
+      "descripcion": "Los astronautas la habitan por turnos.",
+      "emoji": "🛰️",
+      "foto": null
+     },
+     {
+      "titulo": "Antena parabólica",
+      "descripcion": "Escucha mensajes de naves lejanas.",
+      "emoji": "📡",
+      "foto": null
+     },
+     {
+      "titulo": "Carta estelar",
+      "descripcion": "Guía el rumbo entre constelaciones.",
+      "emoji": "🧭",
+      "foto": null
+     },
+     {
+      "titulo": "Linterna de casco",
+      "descripcion": "Ilumina la sombra de un cráter.",
+      "emoji": "🔦",
+      "foto": null
+     },
+     {
+      "titulo": "Amanecer orbital",
+      "descripcion": "Se ve dieciséis veces al día.",
+      "emoji": "🌅",
+      "foto": null
+     },
+     {
+      "titulo": "Cultivo de lechugas",
+      "descripcion": "Crecen sin tierra ni gravedad.",
+      "emoji": "🧪",
+      "foto": null
+     },
+     {
+      "titulo": "Bandera de la misión",
+      "descripcion": "Flamea sin viento porque lleva un alambre.",
+      "emoji": "🏁",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "espacio-peques",
+   "titulo": "Astronautas en miniatura",
+   "descripcion": "Planetas, cohetes y estrellas para pequeños exploradores de 6 a 10 años.",
+   "orden": 660,
+   "tono": "educativo",
+   "etiquetas": [
+    [
+     "colorful rocket"
+    ],
+    [
+     "crescent moon"
+    ],
+    [
+     "ringed planet"
+    ],
+    [
+     "comet"
+    ],
+    [
+     "spacesuit"
+    ],
+    [
+     "satellite"
+    ],
+    [
+     "friendly alien cartoon"
+    ],
+    [
+     "toy telescope"
+    ],
+    [
+     "planet earth"
+    ],
+    [
+     "bright sun"
+    ],
+    [
+     "shooting star"
+    ],
+    [
+     "flying saucer toy"
+    ]
+   ],
+   "variante": {
+    "base": "espacio-exterior",
+    "edad": "infantil"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Astronautas en miniatura",
+    "tematica": "Espacio",
+    "reglas": {
+     "presupuesto": 14,
+     "puja_minima": 1,
+     "rondas_maximas": 8,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Cohete de colores",
+      "descripcion": "Despega con cuenta atrás y mucho humo.",
+      "emoji": "🚀",
+      "foto": null
+     },
+     {
+      "titulo": "Luna sonriente",
+      "descripcion": "Cambia de forma cada noche.",
+      "emoji": "🌙",
+      "foto": null
+     },
+     {
+      "titulo": "Planeta de anillos",
+      "descripcion": "Lleva un aro gigante alrededor.",
+      "emoji": "🪐",
+      "foto": null
+     },
+     {
+      "titulo": "Cometa veloz",
+      "descripcion": "Deja una cola de luz al pasar.",
+      "emoji": "☄️",
+      "foto": null
+     },
+     {
+      "titulo": "Disfraz de astronauta",
+      "descripcion": "Para flotar sin miedo en el espacio.",
+      "emoji": "👨‍🚀",
+      "foto": null
+     },
+     {
+      "titulo": "Satélite viajero",
+      "descripcion": "Da vueltas a la Tierra sin parar.",
+      "emoji": "🛰️",
+      "foto": null
+     },
+     {
+      "titulo": "Marciano simpático",
+      "descripcion": "Dice hola con tres dedos.",
+      "emoji": "👽",
+      "foto": null
+     },
+     {
+      "titulo": "Telescopio de juguete",
+      "descripcion": "Sirve para contar estrellas.",
+      "emoji": "🔭",
+      "foto": null
+     },
+     {
+      "titulo": "Planeta Tierra",
+      "descripcion": "Nuestro hogar azul y verde.",
+      "emoji": "🌍",
+      "foto": null
+     },
+     {
+      "titulo": "Sol sonriente",
+      "descripcion": "Calienta a todos los planetas.",
+      "emoji": "☀️",
+      "foto": null
+     },
+     {
+      "titulo": "Estrella fugaz",
+      "descripcion": "Pide un deseo antes de que se apague.",
+      "emoji": "🌠",
+      "foto": null
+     },
+     {
+      "titulo": "Nave redonda",
+      "descripcion": "Aterriza en el patio del colegio.",
+      "emoji": "🛸",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "festival-adolescentes",
+   "titulo": "Mi primer festival",
+   "descripcion": "Entradas, pulseras y escenarios para quien vive su primer concierto con amigos.",
+   "orden": 670,
+   "tono": "familiar",
+   "etiquetas": [
+    [
+     "festival ticket"
+    ],
+    [
+     "festival wristband"
+    ],
+    [
+     "stage microphone"
+    ],
+    [
+     "drum kit"
+    ],
+    [
+     "festival cap"
+    ],
+    [
+     "rain poncho"
+    ],
+    [
+     "power bank"
+    ],
+    [
+     "festival burger"
+    ],
+    [
+     "dancing sneakers"
+    ],
+    [
+     "electric guitar"
+    ],
+    [
+     "disposable camera"
+    ],
+    [
+     "festival tent"
+    ]
+   ],
+   "variante": {
+    "base": "festival-de-musica",
+    "edad": "adolescentes"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Mi primer festival",
+    "tematica": "Música",
+    "reglas": {
+     "presupuesto": 20,
+     "puja_minima": 1,
+     "rondas_maximas": 10,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Entrada de abono",
+      "descripcion": "Se guarda como un tesoro en la cartera.",
+      "emoji": "🎟️",
+      "foto": null
+     },
+     {
+      "titulo": "Pulsera de colores",
+      "descripcion": "No te la quitas hasta que se rompe.",
+      "emoji": "📿",
+      "foto": null
+     },
+     {
+      "titulo": "Micrófono del escenario pequeño",
+      "descripcion": "Allí empiezan los grupos del futuro.",
+      "emoji": "🎤",
+      "foto": null
+     },
+     {
+      "titulo": "Batería con baquetas rotas",
+      "descripcion": "Resiste el ritmo hasta el final.",
+      "emoji": "🥁",
+      "foto": null
+     },
+     {
+      "titulo": "Gorra de la edición",
+      "descripcion": "Es la prueba de que estuviste allí.",
+      "emoji": "🧢",
+      "foto": null
+     },
+     {
+      "titulo": "Chubasquero improvisado",
+      "descripcion": "Hecho de bolsa de basura y buen humor.",
+      "emoji": "🌧️",
+      "foto": null
+     },
+     {
+      "titulo": "Cargador portátil",
+      "descripcion": "Vale más que la entrada.",
+      "emoji": "🔋",
+      "foto": null
+     },
+     {
+      "titulo": "Hamburguesa de la carpa",
+      "descripcion": "Larga cola y mucha salsa.",
+      "emoji": "🍔",
+      "foto": null
+     },
+     {
+      "titulo": "Zapatillas para saltar",
+      "descripcion": "Aguantan tres días de baile.",
+      "emoji": "🕺",
+      "foto": null
+     },
+     {
+      "titulo": "Guitarra eléctrica de la banda del barrio",
+      "descripcion": "Suena mejor de lo que parece.",
+      "emoji": "🎸",
+      "foto": null
+     },
+     {
+      "titulo": "Cámara desechable",
+      "descripcion": "Sale la mitad de las fotos movidas.",
+      "emoji": "📷",
+      "foto": null
+     },
+     {
+      "titulo": "Tienda de campaña del grupo",
+      "descripcion": "Duermen seis donde caben tres.",
+      "emoji": "🏕️",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "fondo-del-mar-peques",
+   "titulo": "Fondo del mar para peques",
+   "descripcion": "Peces, tesoros y barcos hundidos explicados para niños de 6 a 10 años.",
+   "orden": 680,
+   "tono": "educativo",
+   "etiquetas": [
+    [
+     "octopus"
+    ],
+    [
+     "sea turtle"
+    ],
+    [
+     "crab"
+    ],
+    [
+     "seashell"
+    ],
+    [
+     "starfish"
+    ],
+    [
+     "pufferfish"
+    ],
+    [
+     "hammerhead shark"
+    ],
+    [
+     "coral reef"
+    ],
+    [
+     "mermaid"
+    ],
+    [
+     "rusty anchor"
+    ],
+    [
+     "underwater bubbles"
+    ],
+    [
+     "blue whale"
+    ]
+   ],
+   "variante": {
+    "base": "fondo-del-mar",
+    "edad": "infantil"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Fondo del mar para peques",
+    "tematica": "Océano",
+    "reglas": {
+     "presupuesto": 14,
+     "puja_minima": 1,
+     "rondas_maximas": 8,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Pulpo de ocho brazos",
+      "descripcion": "Tiene tres corazones y mucha curiosidad.",
+      "emoji": "🐙",
+      "foto": null
+     },
+     {
+      "titulo": "Tortuga nadadora",
+      "descripcion": "Viaja miles de kilómetros nadando.",
+      "emoji": "🐢",
+      "foto": null
+     },
+     {
+      "titulo": "Cangrejo de roca",
+      "descripcion": "Camina de lado por la arena.",
+      "emoji": "🦀",
+      "foto": null
+     },
+     {
+      "titulo": "Concha brillante",
+      "descripcion": "Si la acercas al oído, suena el mar.",
+      "emoji": "🐚",
+      "foto": null
+     },
+     {
+      "titulo": "Estrella de mar",
+      "descripcion": "Tiene cinco brazos y vive pegada a las rocas.",
+      "emoji": "⭐",
+      "foto": null
+     },
+     {
+      "titulo": "Pez hinchado",
+      "descripcion": "Se hincha cuando se asusta.",
+      "emoji": "🐡",
+      "foto": null
+     },
+     {
+      "titulo": "Tiburón martillo",
+      "descripcion": "Su cabeza tiene forma de martillo.",
+      "emoji": "🦈",
+      "foto": null
+     },
+     {
+      "titulo": "Coral de colores",
+      "descripcion": "Es un arrecife lleno de vida.",
+      "emoji": "🪸",
+      "foto": null
+     },
+     {
+      "titulo": "Sirena de cuento",
+      "descripcion": "Vive en una cueva con perlas.",
+      "emoji": "🧜",
+      "foto": null
+     },
+     {
+      "titulo": "Ancla oxidada",
+      "descripcion": "Se quedó en el fondo hace mucho tiempo.",
+      "emoji": "⚓",
+      "foto": null
+     },
+     {
+      "titulo": "Burbujas de aire",
+      "descripcion": "Suben despacito hacia la superficie.",
+      "emoji": "🫧",
+      "foto": null
+     },
+     {
+      "titulo": "Ballena azul",
+      "descripcion": "Es el animal más grande del mundo.",
+      "emoji": "🐋",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "granja-peques",
+   "titulo": "Granja para peques",
+   "descripcion": "Un paseo por la granja con animales simpáticos y tractores, pensado para 6–10 años.",
+   "orden": 690,
+   "tono": "familiar",
+   "etiquetas": [
+    [
+     "cow"
+    ],
+    [
+     "piglet"
+    ],
+    [
+     "lamb"
+    ],
+    [
+     "rooster"
+    ],
+    [
+     "basket eggs"
+    ],
+    [
+     "red tractor"
+    ],
+    [
+     "pony"
+    ],
+    [
+     "corn cob"
+    ],
+    [
+     "rabbit"
+    ],
+    [
+     "duckling"
+    ],
+    [
+     "apple tree"
+    ],
+    [
+     "scarecrow"
+    ]
+   ],
+   "variante": {
+    "base": "granja-feliz",
+    "edad": "infantil"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Granja para peques",
+    "tematica": "Granja",
+    "reglas": {
+     "presupuesto": 14,
+     "puja_minima": 1,
+     "rondas_maximas": 8,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Vaca Margarita",
+      "descripcion": "Da leche y mira con ojos grandes.",
+      "emoji": "🐄",
+      "foto": null
+     },
+     {
+      "titulo": "Cerdito Rosita",
+      "descripcion": "Le encanta revolcarse en el barro.",
+      "emoji": "🐖",
+      "foto": null
+     },
+     {
+      "titulo": "Corderito blanco",
+      "descripcion": "Tiene lana suave como una nube.",
+      "emoji": "🐑",
+      "foto": null
+     },
+     {
+      "titulo": "Gallo cantarín",
+      "descripcion": "Despierta a todos con su quiquiriquí.",
+      "emoji": "🐓",
+      "foto": null
+     },
+     {
+      "titulo": "Huevos de gallina",
+      "descripcion": "Recién puestos por las gallinas.",
+      "emoji": "🥚",
+      "foto": null
+     },
+     {
+      "titulo": "Tractor de pueblo",
+      "descripcion": "Grande, ruidoso y muy divertido.",
+      "emoji": "🚜",
+      "foto": null
+     },
+     {
+      "titulo": "Poni peludo",
+      "descripcion": "Se deja cepillar con paciencia.",
+      "emoji": "🐴",
+      "foto": null
+     },
+     {
+      "titulo": "Mazorca dorada",
+      "descripcion": "Crece muy alta en el campo.",
+      "emoji": "🌽",
+      "foto": null
+     },
+     {
+      "titulo": "Conejo saltarín",
+      "descripcion": "Se escapa de la conejera cada día.",
+      "emoji": "🐇",
+      "foto": null
+     },
+     {
+      "titulo": "Patito curioso",
+      "descripcion": "Sigue a su mamá en fila.",
+      "emoji": "🦆",
+      "foto": null
+     },
+     {
+      "titulo": "Manzana del huerto",
+      "descripcion": "Crujiente y recién cogida del árbol.",
+      "emoji": "🍎",
+      "foto": null
+     },
+     {
+      "titulo": "Espantapájaros alegre",
+      "descripcion": "Cuida los cultivos con su sombrero de paja.",
+      "emoji": "🧑‍🌾",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "instituto-adolescentes",
+   "titulo": "Vida de instituto",
+   "descripcion": "Taquillas, exámenes y recreos, tal como se viven en la secundaria.",
+   "orden": 700,
+   "tono": "humor",
+   "etiquetas": [
+    [
+     "school locker"
+    ],
+    [
+     "tiny note paper"
+    ],
+    [
+     "sandwich backpack"
+    ],
+    [
+     "confiscated phone"
+    ],
+    [
+     "math teacher"
+    ],
+    [
+     "grades chart"
+    ],
+    [
+     "school basketball court"
+    ],
+    [
+     "school trip bus"
+    ],
+    [
+     "highlighted textbook"
+    ],
+    [
+     "exam calendar"
+    ],
+    [
+     "school talent show"
+    ],
+    [
+     "graduation cap"
+    ]
+   ],
+   "variante": {
+    "base": "cole-y-mochila",
+    "edad": "adolescentes"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Vida de instituto",
+    "tematica": "Colegio",
+    "reglas": {
+     "presupuesto": 20,
+     "puja_minima": 1,
+     "rondas_maximas": 10,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Taquilla atascada",
+      "descripcion": "Se abre a la quinta patada.",
+      "emoji": "🔐",
+      "foto": null
+     },
+     {
+      "titulo": "Chuleta microscópica",
+      "descripcion": "Más pequeña que un grano de arroz.",
+      "emoji": "📝",
+      "foto": null
+     },
+     {
+      "titulo": "Bocadillo del recreo",
+      "descripcion": "Aplastado en el fondo de la mochila.",
+      "emoji": "🥪",
+      "foto": null
+     },
+     {
+      "titulo": "Móvil confiscado",
+      "descripcion": "Vuelve a su dueño al final del trimestre.",
+      "emoji": "📵",
+      "foto": null
+     },
+     {
+      "titulo": "Profe de mates",
+      "descripcion": "Es capaz de explicar con tres colores de tiza.",
+      "emoji": "🧑‍🏫",
+      "foto": null
+     },
+     {
+      "titulo": "Gráfica de notas",
+      "descripcion": "Sube mucho justo antes de la evaluación.",
+      "emoji": "📈",
+      "foto": null
+     },
+     {
+      "titulo": "Pista del patio",
+      "descripcion": "Allí se decide todo con un tres contra tres.",
+      "emoji": "🏀",
+      "foto": null
+     },
+     {
+      "titulo": "Excursión al museo",
+      "descripcion": "El mejor momento es la vuelta en autobús.",
+      "emoji": "🚌",
+      "foto": null
+     },
+     {
+      "titulo": "Libro de texto subrayado",
+      "descripcion": "Todo en amarillo, nada entendido.",
+      "emoji": "📚",
+      "foto": null
+     },
+     {
+      "titulo": "Calendario de exámenes",
+      "descripcion": "Los tres coinciden el mismo viernes.",
+      "emoji": "🗓️",
+      "foto": null
+     },
+     {
+      "titulo": "Festival de fin de curso",
+      "descripcion": "Se ensaya poco y se aplaude mucho.",
+      "emoji": "🎤",
+      "foto": null
+     },
+     {
+      "titulo": "Gorro de fin de ciclo",
+      "descripcion": "Vuela por los aires al final del acto.",
+      "emoji": "🎓",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "jardin-peques",
+   "titulo": "Jardín de bichitos",
+   "descripcion": "Flores, mariposas y bichitos del jardín para descubrir la naturaleza con 6–10 años.",
+   "orden": 710,
+   "tono": "educativo",
+   "etiquetas": [
+    [
+     "caterpillar"
+    ],
+    [
+     "blue butterfly"
+    ],
+    [
+     "bee flower"
+    ],
+    [
+     "ladybug"
+    ],
+    [
+     "sunflower"
+    ],
+    [
+     "red tulip"
+    ],
+    [
+     "snail"
+    ],
+    [
+     "seedling sprout"
+    ],
+    [
+     "watering can"
+    ],
+    [
+     "garden strawberry"
+    ],
+    [
+     "spider web dew"
+    ],
+    [
+     "red mushroom"
+    ]
+   ],
+   "variante": {
+    "base": "jardin-botanico",
+    "edad": "infantil"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Jardín de bichitos",
+    "tematica": "Plantas",
+    "reglas": {
+     "presupuesto": 14,
+     "puja_minima": 1,
+     "rondas_maximas": 8,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Oruga hambrienta",
+      "descripcion": "Se come una hoja entera sin parar.",
+      "emoji": "🐛",
+      "foto": null
+     },
+     {
+      "titulo": "Mariposa de alas azules",
+      "descripcion": "Antes fue una oruga.",
+      "emoji": "🦋",
+      "foto": null
+     },
+     {
+      "titulo": "Abeja trabajadora",
+      "descripcion": "Zumba entre las flores buscando néctar.",
+      "emoji": "🐝",
+      "foto": null
+     },
+     {
+      "titulo": "Mariquita de siete puntos",
+      "descripcion": "Trae buena suerte si se posa en la mano.",
+      "emoji": "🐞",
+      "foto": null
+     },
+     {
+      "titulo": "Girasol enorme",
+      "descripcion": "Siempre mira hacia el sol.",
+      "emoji": "🌻",
+      "foto": null
+     },
+     {
+      "titulo": "Tulipán rojo",
+      "descripcion": "Se abre cuando llega la primavera.",
+      "emoji": "🌷",
+      "foto": null
+     },
+     {
+      "titulo": "Caracol lento",
+      "descripcion": "Lleva su casa a cuestas.",
+      "emoji": "🐌",
+      "foto": null
+     },
+     {
+      "titulo": "Plantita recién nacida",
+      "descripcion": "Acaba de salir de la semilla.",
+      "emoji": "🌱",
+      "foto": null
+     },
+     {
+      "titulo": "Regadera de lata",
+      "descripcion": "Da de beber a todas las plantas.",
+      "emoji": "💧",
+      "foto": null
+     },
+     {
+      "titulo": "Fresa del huerto",
+      "descripcion": "Roja, dulce y escondida bajo las hojas.",
+      "emoji": "🍓",
+      "foto": null
+     },
+     {
+      "titulo": "Araña tejedora",
+      "descripcion": "Hace una tela que brilla con el rocío.",
+      "emoji": "🕷️",
+      "foto": null
+     },
+     {
+      "titulo": "Seta con lunares",
+      "descripcion": "Es muy bonita, pero no se toca.",
+      "emoji": "🍄",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "juegos-2-3",
+   "titulo": "Duelo de mesa",
+   "descripcion": "Una partida corta y tensa para dos o tres jugadores con juegos de mesa de siempre.",
+   "orden": 720,
+   "tono": "familiar",
+   "etiquetas": [
+    [
+     "wooden chess set"
+    ],
+    [
+     "twenty sided die"
+    ],
+    [
+     "poker deck"
+    ],
+    [
+     "jigsaw puzzle"
+    ],
+    [
+     "hourglass"
+    ],
+    [
+     "darts board"
+    ],
+    [
+     "game tokens"
+    ],
+    [
+     "rule book"
+    ],
+    [
+     "board game finish"
+    ],
+    [
+     "small trophy"
+    ],
+    [
+     "popcorn bowl"
+    ],
+    [
+     "wild card chip"
+    ]
+   ],
+   "variante": {
+    "base": "noche-de-juegos-de-mesa",
+    "jugadores": "2-3"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Duelo de mesa",
+    "tematica": "Juegos de mesa",
+    "reglas": {
+     "presupuesto": 14,
+     "puja_minima": 1,
+     "rondas_maximas": 8,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Tablero de ajedrez de madera",
+      "descripcion": "Treinta y dos piezas, dos reyes y mucho silencio.",
+      "emoji": "♟️",
+      "foto": null
+     },
+     {
+      "titulo": "Dado de veinte caras",
+      "descripcion": "Decide el destino de un héroe.",
+      "emoji": "🎲",
+      "foto": null
+     },
+     {
+      "titulo": "Baraja de póquer",
+      "descripcion": "Suena distinto cuando se baraja bien.",
+      "emoji": "🃏",
+      "foto": null
+     },
+     {
+      "titulo": "Rompecabezas de doscientas piezas",
+      "descripcion": "La última nunca aparece.",
+      "emoji": "🧩",
+      "foto": null
+     },
+     {
+      "titulo": "Cronómetro de turno",
+      "descripcion": "Mide el turno de cada jugador.",
+      "emoji": "⏳",
+      "foto": null
+     },
+     {
+      "titulo": "Dardos de salón",
+      "descripcion": "Pinchan más la pared que la diana.",
+      "emoji": "🎯",
+      "foto": null
+     },
+     {
+      "titulo": "Peones de madera",
+      "descripcion": "Hay que guardarlas por si faltan.",
+      "emoji": "🪙",
+      "foto": null
+     },
+     {
+      "titulo": "Libro de reglas",
+      "descripcion": "Tiene letra pequeña y poca paciencia.",
+      "emoji": "📜",
+      "foto": null
+     },
+     {
+      "titulo": "Línea de llegada",
+      "descripcion": "El último paso suele ser el más largo.",
+      "emoji": "🏁",
+      "foto": null
+     },
+     {
+      "titulo": "Copa de campeón doméstico",
+      "descripcion": "Cambia de dueño cada semana.",
+      "emoji": "🥇",
+      "foto": null
+     },
+     {
+      "titulo": "Bol de palomitas",
+      "descripcion": "Se agota antes de empezar la segunda partida.",
+      "emoji": "🍿",
+      "foto": null
+     },
+     {
+      "titulo": "Ficha de comodín",
+      "descripcion": "Se guarda hasta el último momento.",
+      "emoji": "🕹️",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "laboratorio-corta",
+   "titulo": "Laboratorio exprés",
+   "descripcion": "Experimentos rápidos en ocho rondas, para una partida de ciencia sin complicaciones.",
+   "orden": 730,
+   "tono": "educativo",
+   "etiquetas": [
+    [
+     "microscope"
+    ],
+    [
+     "petri dish"
+    ],
+    [
+     "bubbling test tube"
+    ],
+    [
+     "glass thermometer"
+    ],
+    [
+     "erlenmeyer flask"
+    ],
+    [
+     "safety goggles"
+    ],
+    [
+     "strong magnet"
+    ],
+    [
+     "light bulb"
+    ],
+    [
+     "set square"
+    ],
+    [
+     "dna model"
+    ],
+    [
+     "lemon battery"
+    ],
+    [
+     "lab notebook"
+    ]
+   ],
+   "variante": {
+    "base": "laboratorio-loco",
+    "duracion": "corta"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Laboratorio exprés",
+    "tematica": "Ciencia",
+    "reglas": {
+     "presupuesto": 16,
+     "puja_minima": 1,
+     "rondas_maximas": 8,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Microscopio de mesa",
+      "descripcion": "Descubre un mundo dentro de una gota.",
+      "emoji": "🔬",
+      "foto": null
+     },
+     {
+      "titulo": "Placa de cultivo",
+      "descripcion": "Crece algo, pero nadie sabe qué.",
+      "emoji": "🧫",
+      "foto": null
+     },
+     {
+      "titulo": "Tubo burbujeante",
+      "descripcion": "Cambia de color con una gota de zumo.",
+      "emoji": "🧪",
+      "foto": null
+     },
+     {
+      "titulo": "Termómetro de cristal",
+      "descripcion": "Marca fiebre en la sopa.",
+      "emoji": "🌡️",
+      "foto": null
+     },
+     {
+      "titulo": "Matraz de cuello largo",
+      "descripcion": "Hierve sin derramarse.",
+      "emoji": "⚗️",
+      "foto": null
+     },
+     {
+      "titulo": "Gafas antisalpicaduras",
+      "descripcion": "Se empañan cuando todo va bien.",
+      "emoji": "🥽",
+      "foto": null
+     },
+     {
+      "titulo": "Imán potente",
+      "descripcion": "Atrae las llaves y los clips.",
+      "emoji": "🧲",
+      "foto": null
+     },
+     {
+      "titulo": "Bombilla de ideas",
+      "descripcion": "Se enciende con un gran descubrimiento.",
+      "emoji": "💡",
+      "foto": null
+     },
+     {
+      "titulo": "Escuadra del ingeniero",
+      "descripcion": "Precisa hasta el último milímetro.",
+      "emoji": "📐",
+      "foto": null
+     },
+     {
+      "titulo": "Hélice de plástico",
+      "descripcion": "Se retuerce como una escalera de caracol.",
+      "emoji": "🧬",
+      "foto": null
+     },
+     {
+      "titulo": "Pila de limón",
+      "descripcion": "Da la energía justa para un reloj.",
+      "emoji": "🔋",
+      "foto": null
+     },
+     {
+      "titulo": "Cuaderno de apuntes",
+      "descripcion": "Lleno de tachones y flechas.",
+      "emoji": "📓",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "mansion-adolescentes",
+   "titulo": "Noche de miedo en el instituto",
+   "descripcion": "Una noche de fantasmas y sustos de pasillo pensada para adolescentes con humor.",
+   "orden": 740,
+   "tono": "humor",
+   "etiquetas": [
+    [
+     "lab ghost"
+    ],
+    [
+     "phone flashlight"
+    ],
+    [
+     "group chat phone"
+    ],
+    [
+     "gym door"
+    ],
+    [
+     "abandoned backpack"
+    ],
+    [
+     "locker room mirror"
+    ],
+    [
+     "library cobweb"
+    ],
+    [
+     "vampire student"
+    ],
+    [
+     "pumpkin locker"
+    ],
+    [
+     "candle ouija"
+    ],
+    [
+     "old videotape"
+    ],
+    [
+     "school bell night"
+    ]
+   ],
+   "variante": {
+    "base": "mansion-encantada",
+    "edad": "adolescentes"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Noche de miedo en el instituto",
+    "tematica": "Casa encantada",
+    "reglas": {
+     "presupuesto": 20,
+     "puja_minima": 1,
+     "rondas_maximas": 10,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Fantasma del laboratorio",
+      "descripcion": "Aparece siempre justo antes del examen de química.",
+      "emoji": "👻",
+      "foto": null
+     },
+     {
+      "titulo": "Linterna del móvil",
+      "descripcion": "Alumbra poco y gasta toda la batería.",
+      "emoji": "🔦",
+      "foto": null
+     },
+     {
+      "titulo": "Grupo de clase fantasma",
+      "descripcion": "Tiene 200 mensajes y nadie escribe.",
+      "emoji": "📱",
+      "foto": null
+     },
+     {
+      "titulo": "Puerta del gimnasio",
+      "descripcion": "Se cierra sola cuando más prisa tienes.",
+      "emoji": "🚪",
+      "foto": null
+     },
+     {
+      "titulo": "Mochila misteriosa",
+      "descripcion": "Alguien dejó dentro un bocadillo del curso pasado.",
+      "emoji": "🎒",
+      "foto": null
+     },
+     {
+      "titulo": "Espejo de los vestuarios",
+      "descripcion": "Refleja cosas que preferirías no ver.",
+      "emoji": "🪞",
+      "foto": null
+     },
+     {
+      "titulo": "Telaraña de la biblioteca",
+      "descripcion": "Nadie ha pedido ese libro desde 1998.",
+      "emoji": "🕸️",
+      "foto": null
+     },
+     {
+      "titulo": "Delegado vampiro",
+      "descripcion": "Solo aparece cuando se pone el sol.",
+      "emoji": "🧛",
+      "foto": null
+     },
+     {
+      "titulo": "Calabaza de taquilla",
+      "descripcion": "Alguien la dejó ahí y huele raro.",
+      "emoji": "🎃",
+      "foto": null
+     },
+     {
+      "titulo": "Vela de la sesión de espiritismo",
+      "descripcion": "Se apagó justo cuando preguntaron por la nota.",
+      "emoji": "🕯️",
+      "foto": null
+     },
+     {
+      "titulo": "Cinta de vídeo del viaje de fin de curso",
+      "descripcion": "Dicen que sale un fantasma al fondo.",
+      "emoji": "📼",
+      "foto": null
+     },
+     {
+      "titulo": "Timbre a medianoche",
+      "descripcion": "Suena sin que nadie lo toque.",
+      "emoji": "🔔",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "mansion-familiar",
+   "titulo": "Castillo de fantasmas simpáticos",
+   "descripcion": "Una mansión misteriosa pero amable, ideal para jugar en familia sin sustos de verdad.",
+   "orden": 750,
+   "tono": "familiar",
+   "etiquetas": [
+    [
+     "friendly ghost"
+    ],
+    [
+     "castle tower"
+    ],
+    [
+     "plush bat"
+    ],
+    [
+     "candelabra"
+    ],
+    [
+     "friendly witch"
+    ],
+    [
+     "magician hat"
+    ],
+    [
+     "treasure map attic"
+    ],
+    [
+     "rocking chair"
+    ],
+    [
+     "witch candy"
+    ],
+    [
+     "portrait painting"
+    ],
+    [
+     "black cat"
+    ],
+    [
+     "witch broom"
+    ]
+   ],
+   "variante": {
+    "base": "mansion-encantada",
+    "edad": "familiar"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Castillo de fantasmas simpáticos",
+    "tematica": "Casa encantada",
+    "reglas": {
+     "presupuesto": 20,
+     "puja_minima": 1,
+     "rondas_maximas": 10,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Fantasma bromista",
+      "descripcion": "Esconde los calcetines para reírse.",
+      "emoji": "👻",
+      "foto": null
+     },
+     {
+      "titulo": "Torre con telarañas",
+      "descripcion": "Tiene escaleras de caracol y muchos murciélagos.",
+      "emoji": "🏰",
+      "foto": null
+     },
+     {
+      "titulo": "Murciélago de peluche",
+      "descripcion": "Cuelga del techo y nunca se asusta.",
+      "emoji": "🦇",
+      "foto": null
+     },
+     {
+      "titulo": "Candelabro dorado",
+      "descripcion": "Ilumina un salón enorme.",
+      "emoji": "🕯️",
+      "foto": null
+     },
+     {
+      "titulo": "Bruja de la cocina",
+      "descripcion": "Cocina sopas de colores.",
+      "emoji": "🧙",
+      "foto": null
+     },
+     {
+      "titulo": "Sombrero de mago olvidado",
+      "descripcion": "Contiene dos conejos y una bufanda.",
+      "emoji": "🎩",
+      "foto": null
+     },
+     {
+      "titulo": "Mapa del tesoro del desván",
+      "descripcion": "Tiene una cruz y una mancha de mermelada.",
+      "emoji": "📜",
+      "foto": null
+     },
+     {
+      "titulo": "Silla que se mueve",
+      "descripcion": "Nadie sabe quién la empuja.",
+      "emoji": "🪑",
+      "foto": null
+     },
+     {
+      "titulo": "Caramelos de la bruja",
+      "descripcion": "Cambian de sabor cada vez.",
+      "emoji": "🍬",
+      "foto": null
+     },
+     {
+      "titulo": "Retrato que guiña",
+      "descripcion": "El abuelo del cuadro sonríe.",
+      "emoji": "🖼️",
+      "foto": null
+     },
+     {
+      "titulo": "Gato negro guardián",
+      "descripcion": "Vigila con ojos amarillos.",
+      "emoji": "🐈",
+      "foto": null
+     },
+     {
+      "titulo": "Escoba voladora",
+      "descripcion": "Barre y vuela, depende del día.",
+      "emoji": "🧹",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "mascotas-peques",
+   "titulo": "Mascotas para peques",
+   "descripcion": "Animales de compañía y sus cosas favoritas, con descripciones cortas para 6–10 años.",
+   "orden": 760,
+   "tono": "familiar",
+   "etiquetas": [
+    [
+     "happy puppy"
+    ],
+    [
+     "sleeping kitten"
+    ],
+    [
+     "goldfish"
+    ],
+    [
+     "white rabbit"
+    ],
+    [
+     "green lizard"
+    ],
+    [
+     "pet bowl"
+    ],
+    [
+     "tennis ball dog"
+    ],
+    [
+     "chewed plush"
+    ],
+    [
+     "dog house"
+    ],
+    [
+     "canary"
+    ],
+    [
+     "dog bath bubbles"
+    ],
+    [
+     "rope toy"
+    ]
+   ],
+   "variante": {
+    "base": "mascotas-locas",
+    "edad": "infantil"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Mascotas para peques",
+    "tematica": "Mascotas",
+    "reglas": {
+     "presupuesto": 14,
+     "puja_minima": 1,
+     "rondas_maximas": 8,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Perrito saltarín",
+      "descripcion": "Mueve la cola cuando te ve llegar.",
+      "emoji": "🐕",
+      "foto": null
+     },
+     {
+      "titulo": "Gatito dormilón",
+      "descripcion": "Duerme quince horas al día.",
+      "emoji": "🐈",
+      "foto": null
+     },
+     {
+      "titulo": "Pez de colores",
+      "descripcion": "Nada en círculos en su pecera.",
+      "emoji": "🐠",
+      "foto": null
+     },
+     {
+      "titulo": "Conejito blanco",
+      "descripcion": "Tiene el hocico siempre en movimiento.",
+      "emoji": "🐰",
+      "foto": null
+     },
+     {
+      "titulo": "Lagartija verde",
+      "descripcion": "Toma el sol sobre una piedra.",
+      "emoji": "🦎",
+      "foto": null
+     },
+     {
+      "titulo": "Cuenco de comida",
+      "descripcion": "Siempre está vacío a la hora de cenar.",
+      "emoji": "🐾",
+      "foto": null
+     },
+     {
+      "titulo": "Pelota de tenis",
+      "descripcion": "La favorita para jugar en el parque.",
+      "emoji": "🎾",
+      "foto": null
+     },
+     {
+      "titulo": "Peluche mordido",
+      "descripcion": "Ya no tiene una oreja, pero se lo quiere.",
+      "emoji": "🧸",
+      "foto": null
+     },
+     {
+      "titulo": "Casita de perro",
+      "descripcion": "De madera, con tejado rojo.",
+      "emoji": "🏠",
+      "foto": null
+     },
+     {
+      "titulo": "Canario cantor",
+      "descripcion": "Silba melodías por la mañana.",
+      "emoji": "🐦",
+      "foto": null
+     },
+     {
+      "titulo": "Baño de espuma",
+      "descripcion": "Hay burbujas hasta en el techo.",
+      "emoji": "🛁",
+      "foto": null
+     },
+     {
+      "titulo": "Cuerda de juego",
+      "descripcion": "Tira de un lado y del otro.",
+      "emoji": "🪢",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "medieval-corta",
+   "titulo": "Mercado medieval exprés",
+   "descripcion": "Ocho rondas de regateo entre puestos del mercado: una partida corta y animada.",
+   "orden": 770,
+   "tono": "educativo",
+   "etiquetas": [
+    [
+     "cave cheese"
+    ],
+    [
+     "dark bread loaf"
+    ],
+    [
+     "laying hen"
+    ],
+    [
+     "dyed wool"
+    ],
+    [
+     "merchant scale"
+    ],
+    [
+     "tallow candles"
+    ],
+    [
+     "clay jug"
+    ],
+    [
+     "mead barrel"
+    ],
+    [
+     "iron key"
+    ],
+    [
+     "woodcutter axe"
+    ],
+    [
+     "herald scroll"
+    ],
+    [
+     "tournament shield"
+    ]
+   ],
+   "variante": {
+    "base": "mercado-medieval",
+    "duracion": "corta"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Mercado medieval exprés",
+    "tematica": "Edad Media",
+    "reglas": {
+     "presupuesto": 16,
+     "puja_minima": 1,
+     "rondas_maximas": 8,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Queso de cueva",
+      "descripcion": "Curado entre piedras durante meses.",
+      "emoji": "🧀",
+      "foto": null
+     },
+     {
+      "titulo": "Hogaza de pan negro",
+      "descripcion": "Dura y sabrosa, para el camino.",
+      "emoji": "🍞",
+      "foto": null
+     },
+     {
+      "titulo": "Ganso del corral",
+      "descripcion": "Valiosa por sus huevos diarios.",
+      "emoji": "🐓",
+      "foto": null
+     },
+     {
+      "titulo": "Rollo de lana teñida",
+      "descripcion": "Colores vivos para el sastre.",
+      "emoji": "🧵",
+      "foto": null
+     },
+     {
+      "titulo": "Balanza del mercader",
+      "descripcion": "Pesa especias, sal y monedas.",
+      "emoji": "⚖️",
+      "foto": null
+     },
+     {
+      "titulo": "Velas de sebo",
+      "descripcion": "Alumbran con humo y olor fuerte.",
+      "emoji": "🕯️",
+      "foto": null
+     },
+     {
+      "titulo": "Jarra de barro",
+      "descripcion": "Guarda agua fresca en verano.",
+      "emoji": "🏺",
+      "foto": null
+     },
+     {
+      "titulo": "Barril de hidromiel",
+      "descripcion": "Dulce, con aroma de miel.",
+      "emoji": "🍺",
+      "foto": null
+     },
+     {
+      "titulo": "Llave de hierro forjado",
+      "descripcion": "Abre el arcón del tesoro.",
+      "emoji": "🗝️",
+      "foto": null
+     },
+     {
+      "titulo": "Hacha del leñador",
+      "descripcion": "Afilada para cortar la leña del invierno.",
+      "emoji": "🪓",
+      "foto": null
+     },
+     {
+      "titulo": "Pergamino del heraldo",
+      "descripcion": "Anuncia las noticias del reino.",
+      "emoji": "📜",
+      "foto": null
+     },
+     {
+      "titulo": "Escudo de torneo",
+      "descripcion": "Pintado con un león rampante.",
+      "emoji": "🛡️",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "mudanza-4-6",
+   "titulo": "Mudanza en equipo",
+   "descripcion": "Cajas, muebles y objetos varios, a medida de un grupo de cuatro a seis personas.",
+   "orden": 780,
+   "tono": "humor",
+   "etiquetas": [
+    [
+     "heavy moving box"
+    ],
+    [
+     "sofa stuck doorway"
+    ],
+    [
+     "duct tape roll"
+    ],
+    [
+     "hand truck"
+    ],
+    [
+     "tape measure"
+    ],
+    [
+     "houseplant moving"
+    ],
+    [
+     "disassembled bed frame"
+    ],
+    [
+     "pizza floor"
+    ],
+    [
+     "new house keys"
+    ],
+    [
+     "drinks cooler"
+    ],
+    [
+     "colored labels"
+    ],
+    [
+     "rental van"
+    ]
+   ],
+   "variante": {
+    "base": "mudanza-imposible",
+    "jugadores": "4-6"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Mudanza en equipo",
+    "tematica": "Hogar",
+    "reglas": {
+     "presupuesto": 20,
+     "puja_minima": 1,
+     "rondas_maximas": 10,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Caja que pesa media tonelada",
+      "descripcion": "Pone «libros» pero suena a piedras.",
+      "emoji": "📦",
+      "foto": null
+     },
+     {
+      "titulo": "Sofá que no pasa por la puerta",
+      "descripcion": "Hay que girarlo tres veces.",
+      "emoji": "🛋️",
+      "foto": null
+     },
+     {
+      "titulo": "Rollo de cinta americana",
+      "descripcion": "Sirve para sujetar casi todo.",
+      "emoji": "🧻",
+      "foto": null
+     },
+     {
+      "titulo": "Carro de mudanza",
+      "descripcion": "Llega a la tercera planta con dificultad.",
+      "emoji": "🧰",
+      "foto": null
+     },
+     {
+      "titulo": "Cinta métrica",
+      "descripcion": "Dice que no cabe, pero cabe.",
+      "emoji": "📏",
+      "foto": null
+     },
+     {
+      "titulo": "Planta trepadora",
+      "descripcion": "Se queda atrapada en la cortina.",
+      "emoji": "🪴",
+      "foto": null
+     },
+     {
+      "titulo": "Somier desmontado",
+      "descripcion": "Faltan cuatro tornillos.",
+      "emoji": "🛏️",
+      "foto": null
+     },
+     {
+      "titulo": "Cena de cajas",
+      "descripcion": "Se come sentados en el suelo.",
+      "emoji": "🍕",
+      "foto": null
+     },
+     {
+      "titulo": "Llaves del piso nuevo",
+      "descripcion": "Brillan cuando abren la puerta.",
+      "emoji": "🔑",
+      "foto": null
+     },
+     {
+      "titulo": "Nevera de bebidas",
+      "descripcion": "Las bebidas llegan antes que el sofá.",
+      "emoji": "🥤",
+      "foto": null
+     },
+     {
+      "titulo": "Etiquetas de colores",
+      "descripcion": "Cada habitación tiene su color.",
+      "emoji": "🏷️",
+      "foto": null
+     },
+     {
+      "titulo": "Furgoneta alquilada",
+      "descripcion": "Huele a café y tiene el asiento corrido.",
+      "emoji": "🚐",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "navidad-larga",
+   "titulo": "Navidad: la gran subasta",
+   "descripcion": "Veinte rondas de belenes, regalos y sobremesas para una Navidad larga.",
+   "orden": 790,
+   "tono": "familiar",
+   "etiquetas": [
+    [
+     "christmas tree living room"
+    ],
+    [
+     "sleigh bells"
+    ],
+    [
+     "christmas stocking"
+    ],
+    [
+     "advent wreath"
+    ],
+    [
+     "nativity scene"
+    ],
+    [
+     "santa hat"
+    ],
+    [
+     "tree top star"
+    ],
+    [
+     "gingerbread cookies"
+    ],
+    [
+     "milk and cookies"
+    ],
+    [
+     "knitted scarf"
+    ],
+    [
+     "candy cane"
+    ],
+    [
+     "christmas carol"
+    ],
+    [
+     "new year toast"
+    ],
+    [
+     "grapes new year"
+    ],
+    [
+     "three kings crown"
+    ],
+    [
+     "kings cake"
+    ],
+    [
+     "wooden sled"
+    ],
+    [
+     "snowman"
+    ],
+    [
+     "letter to santa"
+    ],
+    [
+     "hot chocolate"
+    ]
+   ],
+   "variante": {
+    "base": "navidad-desastre",
+    "duracion": "larga"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Navidad: la gran subasta",
+    "tematica": "Navidad",
+    "reglas": {
+     "presupuesto": 40,
+     "puja_minima": 1,
+     "rondas_maximas": 20,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Abeto de salón",
+      "descripcion": "Hay que apretar la mesa para meterlo.",
+      "emoji": "🎄",
+      "foto": null
+     },
+     {
+      "titulo": "Cascabeles del trineo",
+      "descripcion": "Suenan desde la azotea.",
+      "emoji": "🔔",
+      "foto": null
+     },
+     {
+      "titulo": "Calcetín en la chimenea",
+      "descripcion": "Cuelga vacío hasta medianoche.",
+      "emoji": "🧦",
+      "foto": null
+     },
+     {
+      "titulo": "Corona de adviento",
+      "descripcion": "Cada domingo se enciende una vela.",
+      "emoji": "🕯️",
+      "foto": null
+     },
+     {
+      "titulo": "Belén con musgo",
+      "descripcion": "Figuritas de barro y un río de papel.",
+      "emoji": "⛪",
+      "foto": null
+     },
+     {
+      "titulo": "Gorro de elfo",
+      "descripcion": "Pica en la frente y lo llevan todos.",
+      "emoji": "🎅",
+      "foto": null
+     },
+     {
+      "titulo": "Estrella de papel dorado",
+      "descripcion": "Siempre se tuerce un poco.",
+      "emoji": "🌟",
+      "foto": null
+     },
+     {
+      "titulo": "Mantecados de canela",
+      "descripcion": "Cuesta mucho no comerse las figuritas.",
+      "emoji": "🍪",
+      "foto": null
+     },
+     {
+      "titulo": "Vaso de leche para el reno",
+      "descripcion": "Aparece vacío por la mañana.",
+      "emoji": "🥛",
+      "foto": null
+     },
+     {
+      "titulo": "Bufanda de lana tejida",
+      "descripcion": "Regalo de la abuela, a rayas.",
+      "emoji": "🧣",
+      "foto": null
+     },
+     {
+      "titulo": "Bastón de caramelo",
+      "descripcion": "Se pega a los dedos.",
+      "emoji": "🍬",
+      "foto": null
+     },
+     {
+      "titulo": "Villancico a coro",
+      "descripcion": "Se canta cada vez peor.",
+      "emoji": "🎶",
+      "foto": null
+     },
+     {
+      "titulo": "Brindis de Nochevieja",
+      "descripcion": "Doce uvas a toda prisa.",
+      "emoji": "🥂",
+      "foto": null
+     },
+     {
+      "titulo": "Racimo de uvas",
+      "descripcion": "Doce campanadas y doce granos.",
+      "emoji": "🍇",
+      "foto": null
+     },
+     {
+      "titulo": "Corona de los Reyes",
+      "descripcion": "Dorada y con joyas de cartón.",
+      "emoji": "👑",
+      "foto": null
+     },
+     {
+      "titulo": "Roscón de Reyes",
+      "descripcion": "Esconde una sorpresa y un haba.",
+      "emoji": "🎁",
+      "foto": null
+     },
+     {
+      "titulo": "Trineo de madera",
+      "descripcion": "Baja la cuesta más rápido de lo previsto.",
+      "emoji": "🛷",
+      "foto": null
+     },
+     {
+      "titulo": "Muñeco de nieve de jardín",
+      "descripcion": "Su nariz es una zanahoria.",
+      "emoji": "⛄",
+      "foto": null
+     },
+     {
+      "titulo": "Carta a los Reyes Magos",
+      "descripcion": "Lleva una lista larguísima.",
+      "emoji": "📮",
+      "foto": null
+     },
+     {
+      "titulo": "Chocolate caliente",
+      "descripcion": "Con nata y sin prisa.",
+      "emoji": "🍫",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "noche-de-cine-adultos",
+   "titulo": "Cinéfilos de sofá",
+   "descripcion": "Una sesión para cinéfilos veteranos: clásicos, palomitas y debates interminables.",
+   "orden": 800,
+   "tono": "adultos",
+   "etiquetas": [
+    [
+     "35mm film reel"
+    ],
+    [
+     "red wine glass"
+    ],
+    [
+     "movie projector"
+    ],
+    [
+     "clapperboard"
+    ],
+    [
+     "cheese board"
+    ],
+    [
+     "two seat sofa"
+    ],
+    [
+     "annotated script"
+    ],
+    [
+     "director sunglasses"
+    ],
+    [
+     "festival statuette"
+    ],
+    [
+     "soundtrack vinyl"
+    ],
+    [
+     "coffee cup night"
+    ],
+    [
+     "vintage cinema ticket"
+    ]
+   ],
+   "variante": {
+    "base": "noche-de-cine",
+    "edad": "adultos"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Cinéfilos de sofá",
+    "tematica": "Cine",
+    "reglas": {
+     "presupuesto": 30,
+     "puja_minima": 1,
+     "rondas_maximas": 12,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Copia en 35 milímetros",
+      "descripcion": "Tiene arañazos que cuentan su historia.",
+      "emoji": "🎞️",
+      "foto": null
+     },
+     {
+      "titulo": "Copa de vino tinto",
+      "descripcion": "Acompaña los diálogos más largos.",
+      "emoji": "🍷",
+      "foto": null
+     },
+     {
+      "titulo": "Proyector de sobremesa",
+      "descripcion": "Hace un zumbido al arrancar.",
+      "emoji": "📽️",
+      "foto": null
+     },
+     {
+      "titulo": "Claqueta de rodaje",
+      "descripcion": "Marca el principio de cada toma.",
+      "emoji": "🎬",
+      "foto": null
+     },
+     {
+      "titulo": "Tabla de curados",
+      "descripcion": "Más vistosa que la película.",
+      "emoji": "🧀",
+      "foto": null
+     },
+     {
+      "titulo": "Sofá de dos plazas",
+      "descripcion": "Reservado para quienes llegan primero.",
+      "emoji": "🛋️",
+      "foto": null
+     },
+     {
+      "titulo": "Guion anotado",
+      "descripcion": "Con comentarios a lápiz en el margen.",
+      "emoji": "📖",
+      "foto": null
+     },
+     {
+      "titulo": "Gafas de director",
+      "descripcion": "Redondas, oscuras y muy serias.",
+      "emoji": "🕶️",
+      "foto": null
+     },
+     {
+      "titulo": "Estatuilla de festival",
+      "descripcion": "Hecha de bronce y de mucho prestigio.",
+      "emoji": "🏅",
+      "foto": null
+     },
+     {
+      "titulo": "Banda sonora en vinilo",
+      "descripcion": "Suena mejor que en el cine.",
+      "emoji": "🎼",
+      "foto": null
+     },
+     {
+      "titulo": "Café de después",
+      "descripcion": "Para discutir el final hasta las tantas.",
+      "emoji": "☕",
+      "foto": null
+     },
+     {
+      "titulo": "Taquilla de preestreno",
+      "descripcion": "Guardada en un cajón desde hace veinte años.",
+      "emoji": "🎫",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "oeste-corta",
+   "titulo": "Salvaje Oeste exprés",
+   "descripcion": "Ocho rondas rápidas en un pueblo del Oeste: ideal cuando solo hay media hora.",
+   "orden": 810,
+   "tono": "familiar",
+   "etiquetas": [
+    [
+     "giant cactus"
+    ],
+    [
+     "canyon map"
+    ],
+    [
+     "galloping horse"
+    ],
+    [
+     "native drum"
+    ],
+    [
+     "stagecoach bell"
+    ],
+    [
+     "salt barrel"
+    ],
+    [
+     "abandoned cabin"
+    ],
+    [
+     "banjo"
+    ],
+    [
+     "bandana"
+    ],
+    [
+     "gold nugget"
+    ],
+    [
+     "cowboy boots spurs"
+    ],
+    [
+     "campfire beans"
+    ]
+   ],
+   "variante": {
+    "base": "salvaje-oeste",
+    "duracion": "corta"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Salvaje Oeste exprés",
+    "tematica": "Oeste",
+    "reglas": {
+     "presupuesto": 16,
+     "puja_minima": 1,
+     "rondas_maximas": 8,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Cactus gigante",
+      "descripcion": "Pincha, pero da buena sombra al mediodía.",
+      "emoji": "🌵",
+      "foto": null
+     },
+     {
+      "titulo": "Mapa del desfiladero",
+      "descripcion": "Marca un atajo que no existe.",
+      "emoji": "🏜️",
+      "foto": null
+     },
+     {
+      "titulo": "Potro salvaje",
+      "descripcion": "Llega primero al abrevadero.",
+      "emoji": "🐎",
+      "foto": null
+     },
+     {
+      "titulo": "Tambor del jefe de tribu",
+      "descripcion": "Marca el ritmo de la danza.",
+      "emoji": "🥁",
+      "foto": null
+     },
+     {
+      "titulo": "Campana de la diligencia",
+      "descripcion": "Avisa de que llega el correo.",
+      "emoji": "🔔",
+      "foto": null
+     },
+     {
+      "titulo": "Barril de sal",
+      "descripcion": "Guarda las provisiones del invierno.",
+      "emoji": "🧂",
+      "foto": null
+     },
+     {
+      "titulo": "Cabaña abandonada",
+      "descripcion": "Con puertas que chirrían y ventanas rotas.",
+      "emoji": "🏚️",
+      "foto": null
+     },
+     {
+      "titulo": "Banjo del salón",
+      "descripcion": "Suena alegre aunque nadie sepa tocarlo.",
+      "emoji": "🪕",
+      "foto": null
+     },
+     {
+      "titulo": "Pañuelo del cuello",
+      "descripcion": "Protege del polvo del camino.",
+      "emoji": "🧣",
+      "foto": null
+     },
+     {
+      "titulo": "Filón de oro",
+      "descripcion": "Brilla más que la luna.",
+      "emoji": "🪙",
+      "foto": null
+     },
+     {
+      "titulo": "Espuelas de plata",
+      "descripcion": "Tintinean al andar.",
+      "emoji": "🥾",
+      "foto": null
+     },
+     {
+      "titulo": "Fogata de la pradera",
+      "descripcion": "Calienta las judías de la cena.",
+      "emoji": "🔥",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "olimpiadas-7-10",
+   "titulo": "Olimpiadas de sofá a lo grande",
+   "descripcion": "Un torneo de pruebas absurdas para grupos grandes de siete a diez jugadores.",
+   "orden": 820,
+   "tono": "humor",
+   "etiquetas": [
+    [
+     "cardboard medal"
+    ],
+    [
+     "cardboard podium"
+    ],
+    [
+     "sock race"
+    ],
+    [
+     "balloon volleyball"
+    ],
+    [
+     "egg and spoon"
+    ],
+    [
+     "paper plate target"
+    ],
+    [
+     "tug of war rope"
+    ],
+    [
+     "cushion balance"
+    ],
+    [
+     "race bib"
+    ],
+    [
+     "referee megaphone"
+    ],
+    [
+     "kitchen timer"
+    ],
+    [
+     "paper torch"
+    ]
+   ],
+   "variante": {
+    "base": "olimpiadas-del-sofa",
+    "jugadores": "7-10"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Olimpiadas de sofá a lo grande",
+    "tematica": "Deportes",
+    "reglas": {
+     "presupuesto": 30,
+     "puja_minima": 1,
+     "rondas_maximas": 12,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Medalla de cartón",
+      "descripcion": "Se entrega con un aplauso moderado.",
+      "emoji": "🏅",
+      "foto": null
+     },
+     {
+      "titulo": "Podio de cajas",
+      "descripcion": "Tres cajas de zapatos unidas.",
+      "emoji": "🥇",
+      "foto": null
+     },
+     {
+      "titulo": "Carrera de calcetines",
+      "descripcion": "Se resbala por el pasillo.",
+      "emoji": "🏃",
+      "foto": null
+     },
+     {
+      "titulo": "Globo de voleibol",
+      "descripcion": "Se queda en el aire más que la pelota.",
+      "emoji": "🏐",
+      "foto": null
+     },
+     {
+      "titulo": "Carrera de huevo y cuchara",
+      "descripcion": "El huevo cae, la risa permanece.",
+      "emoji": "🥄",
+      "foto": null
+     },
+     {
+      "titulo": "Diana de platos de plástico",
+      "descripcion": "Con cuatro puntos y una buena excusa.",
+      "emoji": "🎯",
+      "foto": null
+     },
+     {
+      "titulo": "Cuerda para el pulso",
+      "descripcion": "Tira de un lado y de otro.",
+      "emoji": "🪢",
+      "foto": null
+     },
+     {
+      "titulo": "Prueba de equilibrio sobre un cojín",
+      "descripcion": "Gana quien tarda más en caerse.",
+      "emoji": "🧘",
+      "foto": null
+     },
+     {
+      "titulo": "Dorsal con el nombre mal escrito",
+      "descripcion": "Sirve para la foto.",
+      "emoji": "🎽",
+      "foto": null
+     },
+     {
+      "titulo": "Megáfono del árbitro",
+      "descripcion": "Anuncia las normas inventadas.",
+      "emoji": "📣",
+      "foto": null
+     },
+     {
+      "titulo": "Cronómetro del cocinero",
+      "descripcion": "Cuenta los segundos de cada prueba.",
+      "emoji": "⏱️",
+      "foto": null
+     },
+     {
+      "titulo": "Antorcha de papel",
+      "descripcion": "Se enciende con un rotulador naranja.",
+      "emoji": "🔥",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "reunion-7-10",
+   "titulo": "Reunión de clan",
+   "descripcion": "La gran comida familiar con primos, tíos y abuelos: siete a diez jugadores con rondas de sobra.",
+   "orden": 830,
+   "tono": "familiar",
+   "etiquetas": [
+    [
+     "roast chicken"
+    ],
+    [
+     "family pot"
+    ],
+    [
+     "folding chair"
+    ],
+    [
+     "storytelling grandmother"
+    ],
+    [
+     "baby stroller"
+    ],
+    [
+     "family photo"
+    ],
+    [
+     "giant ludo"
+    ],
+    [
+     "homemade cake"
+    ],
+    [
+     "uncle toast"
+    ],
+    [
+     "dessert basket"
+    ],
+    [
+     "acoustic guitar"
+    ],
+    [
+     "village table"
+    ]
+   ],
+   "variante": {
+    "base": "reunion-familiar",
+    "jugadores": "7-10"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Reunión de clan",
+    "tematica": "Familia",
+    "reglas": {
+     "presupuesto": 30,
+     "puja_minima": 1,
+     "rondas_maximas": 12,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Pollo asado para veinte",
+      "descripcion": "Aún quedan tres alitas.",
+      "emoji": "🍗",
+      "foto": null
+     },
+     {
+      "titulo": "Olla familiar",
+      "descripcion": "Alimenta a medio barrio.",
+      "emoji": "🥘",
+      "foto": null
+     },
+     {
+      "titulo": "Silla plegable extra",
+      "descripcion": "Siempre falta una para el último que llega.",
+      "emoji": "🪑",
+      "foto": null
+     },
+     {
+      "titulo": "Abuela cuentacuentos",
+      "descripcion": "Nadie interrumpe sus historias.",
+      "emoji": "🧓",
+      "foto": null
+     },
+     {
+      "titulo": "Cochecito del benjamín",
+      "descripcion": "Tiene el sueño más ligero del mundo.",
+      "emoji": "👶",
+      "foto": null
+     },
+     {
+      "titulo": "Foto de familia",
+      "descripcion": "Siempre sale alguien con los ojos cerrados.",
+      "emoji": "📷",
+      "foto": null
+     },
+     {
+      "titulo": "Parchís gigante",
+      "descripcion": "Termina en discusión y en abrazos.",
+      "emoji": "🎲",
+      "foto": null
+     },
+     {
+      "titulo": "Tarta de los primos",
+      "descripcion": "Hecha por tres personas en secreto.",
+      "emoji": "🍰",
+      "foto": null
+     },
+     {
+      "titulo": "Brindis del tío",
+      "descripcion": "Empieza sencillo y acaba largo.",
+      "emoji": "🗣️",
+      "foto": null
+     },
+     {
+      "titulo": "Cesta de postres",
+      "descripcion": "Hay tarta, flan, fruta y galletas.",
+      "emoji": "🧺",
+      "foto": null
+     },
+     {
+      "titulo": "Guitarra de sobremesa",
+      "descripcion": "Suena cuando se van los niños.",
+      "emoji": "🎼",
+      "foto": null
+     },
+     {
+      "titulo": "Mesa de pueblo",
+      "descripcion": "Larga, de madera y llena de manteles.",
+      "emoji": "🏡",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "spa-2-3",
+   "titulo": "Spa para dos o tres",
+   "descripcion": "Una tarde de relax íntima para pocos jugadores, con menos rondas y presupuesto ajustado.",
+   "orden": 840,
+   "tono": "adultos",
+   "etiquetas": [
+    [
+     "lavender candle"
+    ],
+    [
+     "cucumber mask"
+    ],
+    [
+     "hot stones"
+    ],
+    [
+     "jacuzzi"
+    ],
+    [
+     "mint infusion"
+    ],
+    [
+     "massage oil"
+    ],
+    [
+     "ocean sounds speaker"
+    ],
+    [
+     "artisan soap"
+    ],
+    [
+     "spa slippers"
+    ],
+    [
+     "yoga mat"
+    ],
+    [
+     "green tea teapot"
+    ],
+    [
+     "massage chair"
+    ]
+   ],
+   "variante": {
+    "base": "spa-y-bienestar",
+    "jugadores": "2-3"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Spa para dos o tres",
+    "tematica": "Relax",
+    "reglas": {
+     "presupuesto": 14,
+     "puja_minima": 1,
+     "rondas_maximas": 8,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Vela de lavanda",
+      "descripcion": "Perfuma la sala de relajación.",
+      "emoji": "🕯️",
+      "foto": null
+     },
+     {
+      "titulo": "Rodajas de pepino",
+      "descripcion": "Fresca y silenciosa.",
+      "emoji": "🧖",
+      "foto": null
+     },
+     {
+      "titulo": "Cantos rodados tibios",
+      "descripcion": "Deshacen las contracturas de la semana.",
+      "emoji": "🪨",
+      "foto": null
+     },
+     {
+      "titulo": "Bañera de hidromasaje",
+      "descripcion": "Burbujea con música suave.",
+      "emoji": "🛁",
+      "foto": null
+     },
+     {
+      "titulo": "Infusión de menta",
+      "descripcion": "Se sirve en taza grande.",
+      "emoji": "🌿",
+      "foto": null
+     },
+     {
+      "titulo": "Aceite de masaje",
+      "descripcion": "Huele a almendra y a descanso.",
+      "emoji": "🧴",
+      "foto": null
+     },
+     {
+      "titulo": "Murmullo de cascada",
+      "descripcion": "Se repite sin parar.",
+      "emoji": "🎶",
+      "foto": null
+     },
+     {
+      "titulo": "Jabón artesano",
+      "descripcion": "Se deshace despacio.",
+      "emoji": "🧼",
+      "foto": null
+     },
+     {
+      "titulo": "Zapatillas de felpa",
+      "descripcion": "Silenciosas y suaves.",
+      "emoji": "🩴",
+      "foto": null
+     },
+     {
+      "titulo": "Colchoneta de estiramientos",
+      "descripcion": "Aprieta el estrés en tres respiraciones.",
+      "emoji": "🧘",
+      "foto": null
+     },
+     {
+      "titulo": "Té verde en tetera",
+      "descripcion": "Sale con vapor y aroma.",
+      "emoji": "🍵",
+      "foto": null
+     },
+     {
+      "titulo": "Sillón de masaje",
+      "descripcion": "Vibra con ritmo suave.",
+      "emoji": "💆",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "superheroes-peques",
+   "titulo": "Superhéroes pequeñitos",
+   "descripcion": "Capas, poderes y buenas acciones para pequeños héroes de 6 a 10 años.",
+   "orden": 850,
+   "tono": "familiar",
+   "etiquetas": [
+    [
+     "red cape"
+    ],
+    [
+     "hero mask"
+    ],
+    [
+     "strong kid"
+    ],
+    [
+     "lightning bolt"
+    ],
+    [
+     "cardboard shield"
+    ],
+    [
+     "dog sidekick"
+    ],
+    [
+     "toy city"
+    ],
+    [
+     "colorful potion"
+    ],
+    [
+     "kids bicycle"
+    ],
+    [
+     "megaphone"
+    ],
+    [
+     "magic gloves"
+    ],
+    [
+     "gold medal"
+    ]
+   ],
+   "variante": {
+    "base": "superheroes-de-barrio",
+    "edad": "infantil"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Superhéroes pequeñitos",
+    "tematica": "Superhéroes",
+    "reglas": {
+     "presupuesto": 14,
+     "puja_minima": 1,
+     "rondas_maximas": 8,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Capa voladora",
+      "descripcion": "Ondea al viento como una bandera.",
+      "emoji": "🦸",
+      "foto": null
+     },
+     {
+      "titulo": "Antifaz secreto",
+      "descripcion": "Nadie reconoce a quien lo lleva.",
+      "emoji": "🎭",
+      "foto": null
+     },
+     {
+      "titulo": "Súper fuerza de bocadillo",
+      "descripcion": "Se activa después de merendar.",
+      "emoji": "💪",
+      "foto": null
+     },
+     {
+      "titulo": "Rayo de energía",
+      "descripcion": "Ilumina toda la habitación.",
+      "emoji": "⚡",
+      "foto": null
+     },
+     {
+      "titulo": "Escudo de cartón",
+      "descripcion": "Para parar balones y abrazos.",
+      "emoji": "🛡️",
+      "foto": null
+     },
+     {
+      "titulo": "Perro ayudante",
+      "descripcion": "Acompaña al héroe a todas partes.",
+      "emoji": "🐶",
+      "foto": null
+     },
+     {
+      "titulo": "Ciudad de juguete",
+      "descripcion": "Hay que salvarla de los monstruos de peluche.",
+      "emoji": "🏙️",
+      "foto": null
+     },
+     {
+      "titulo": "Poción de colores",
+      "descripcion": "Da poderes durante cinco minutos.",
+      "emoji": "🧪",
+      "foto": null
+     },
+     {
+      "titulo": "Bici veloz",
+      "descripcion": "Corre más que un coche de juguete.",
+      "emoji": "🚲",
+      "foto": null
+     },
+     {
+      "titulo": "Megáfono del héroe",
+      "descripcion": "Sirve para avisar a los vecinos.",
+      "emoji": "📣",
+      "foto": null
+     },
+     {
+      "titulo": "Guantes mágicos",
+      "descripcion": "Brillan cuando hay que ayudar.",
+      "emoji": "🧤",
+      "foto": null
+     },
+     {
+      "titulo": "Medalla de valiente",
+      "descripcion": "Se da a quien ayuda sin que se lo pidan.",
+      "emoji": "🏅",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "tiempo-larga",
+   "titulo": "Viaje en el tiempo: gran travesía",
+   "descripcion": "Veinte rondas para recorrer épocas y civilizaciones en una partida larga y completa.",
+   "orden": 860,
+   "tono": "educativo",
+   "etiquetas": [
+    [
+     "flint hand axe"
+    ],
+    [
+     "ancient fire embers"
+    ],
+    [
+     "cave painting bison"
+    ],
+    [
+     "wheat harvest"
+    ],
+    [
+     "wooden wheel"
+    ],
+    [
+     "greek column"
+    ],
+    [
+     "greek amphora"
+    ],
+    [
+     "roman road"
+    ],
+    [
+     "roman gladius"
+    ],
+    [
+     "castle battlement"
+    ],
+    [
+     "old compass"
+    ],
+    [
+     "illuminated manuscript"
+    ],
+    [
+     "caravel ship"
+    ],
+    [
+     "printing press"
+    ],
+    [
+     "venetian mask"
+    ],
+    [
+     "steam gear"
+    ],
+    [
+     "steam locomotive"
+    ],
+    [
+     "early light bulb"
+    ],
+    [
+     "rotary phone"
+    ],
+    [
+     "early satellite"
+    ]
+   ],
+   "variante": {
+    "base": "viaje-en-el-tiempo",
+    "duracion": "larga"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Viaje en el tiempo: gran travesía",
+    "tematica": "Historia",
+    "reglas": {
+     "presupuesto": 40,
+     "puja_minima": 1,
+     "rondas_maximas": 20,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Hacha de sílex",
+      "descripcion": "Tallada a golpes hace miles de años.",
+      "emoji": "🦴",
+      "foto": null
+     },
+     {
+      "titulo": "Brasas de la primera hoguera",
+      "descripcion": "Cuidadas para que nunca se apaguen.",
+      "emoji": "🔥",
+      "foto": null
+     },
+     {
+      "titulo": "Pintura de cueva",
+      "descripcion": "Un bisonte dibujado con ocre y carbón.",
+      "emoji": "🎨",
+      "foto": null
+     },
+     {
+      "titulo": "Trigo de la primera cosecha",
+      "descripcion": "Cambió la manera de vivir de los pueblos.",
+      "emoji": "🌾",
+      "foto": null
+     },
+     {
+      "titulo": "Rueda de madera",
+      "descripcion": "Un invento que lo movió todo.",
+      "emoji": "🛞",
+      "foto": null
+     },
+     {
+      "titulo": "Columna griega",
+      "descripcion": "Sostiene un templo desde hace siglos.",
+      "emoji": "🏛️",
+      "foto": null
+     },
+     {
+      "titulo": "Ánfora de aceite",
+      "descripcion": "Cruzó el mar en un barco de vela.",
+      "emoji": "🏺",
+      "foto": null
+     },
+     {
+      "titulo": "Calzada romana",
+      "descripcion": "Recta y firme, aún se puede pisar.",
+      "emoji": "🛤️",
+      "foto": null
+     },
+     {
+      "titulo": "Gladio de legionario",
+      "descripcion": "Corto, pesado y de buena fabricación.",
+      "emoji": "⚔️",
+      "foto": null
+     },
+     {
+      "titulo": "Almena del castillo",
+      "descripcion": "Desde ahí se vigilaba el valle.",
+      "emoji": "🏰",
+      "foto": null
+     },
+     {
+      "titulo": "Brújula de navegante",
+      "descripcion": "Apunta siempre hacia el norte.",
+      "emoji": "🧭",
+      "foto": null
+     },
+     {
+      "titulo": "Manuscrito iluminado",
+      "descripcion": "Copiado a mano por un monje paciente.",
+      "emoji": "📖",
+      "foto": null
+     },
+     {
+      "titulo": "Carabela del descubrimiento",
+      "descripcion": "Zarpó con tres barcos y mucha esperanza.",
+      "emoji": "⛵",
+      "foto": null
+     },
+     {
+      "titulo": "Prensa de Gutenberg",
+      "descripcion": "Hizo posible que los libros llegasen a todos.",
+      "emoji": "🖨️",
+      "foto": null
+     },
+     {
+      "titulo": "Máscara del carnaval veneciano",
+      "descripcion": "Esconde al que la lleva.",
+      "emoji": "🎭",
+      "foto": null
+     },
+     {
+      "titulo": "Engranaje de la fábrica",
+      "descripcion": "Movió la primera máquina de vapor.",
+      "emoji": "⚙️",
+      "foto": null
+     },
+     {
+      "titulo": "Locomotora de carbón",
+      "descripcion": "Silba al salir de la estación.",
+      "emoji": "🚂",
+      "foto": null
+     },
+     {
+      "titulo": "Primera bombilla",
+      "descripcion": "Una luz que cambió las noches.",
+      "emoji": "💡",
+      "foto": null
+     },
+     {
+      "titulo": "Teléfono de pared",
+      "descripcion": "Se marca girando un disco.",
+      "emoji": "📞",
+      "foto": null
+     },
+     {
+      "titulo": "Satélite pionero",
+      "descripcion": "Dio la vuelta al mundo y emitió un pitido.",
+      "emoji": "🛰️",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "verano-adolescentes",
+   "titulo": "Viaje de fin de curso",
+   "descripcion": "Maletas, playa y planes con la pandilla tras acabar el curso.",
+   "orden": 870,
+   "tono": "humor",
+   "etiquetas": [
+    [
+     "suitcase overstuffed"
+    ],
+    [
+     "coach bus"
+    ],
+    [
+     "striped beach towel"
+    ],
+    [
+     "triple ice cream"
+    ],
+    [
+     "selfie stick"
+    ],
+    [
+     "mirrored sunglasses"
+    ],
+    [
+     "travel playlist"
+    ],
+    [
+     "rented surfboard"
+    ],
+    [
+     "beach sunset"
+    ],
+    [
+     "watermelon slice"
+    ],
+    [
+     "worn playing cards"
+    ],
+    [
+     "travel journal"
+    ]
+   ],
+   "variante": {
+    "base": "verano-eterno",
+    "edad": "adolescentes"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Viaje de fin de curso",
+    "tematica": "Verano",
+    "reglas": {
+     "presupuesto": 20,
+     "puja_minima": 1,
+     "rondas_maximas": 10,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Maleta desbordada",
+      "descripcion": "Alguien se sienta encima para lograrlo.",
+      "emoji": "🧳",
+      "foto": null
+     },
+     {
+      "titulo": "Autobús del viaje",
+      "descripcion": "Tiene música a todo volumen y el aire roto.",
+      "emoji": "🚌",
+      "foto": null
+     },
+     {
+      "titulo": "Toalla de rayas",
+      "descripcion": "Reserva sitio en la arena desde primera hora.",
+      "emoji": "🏖️",
+      "foto": null
+     },
+     {
+      "titulo": "Helado triple",
+      "descripcion": "Se derrite antes de llegar a la orilla.",
+      "emoji": "🍦",
+      "foto": null
+     },
+     {
+      "titulo": "Palo para selfis",
+      "descripcion": "Aparece en todas las fotos de grupo.",
+      "emoji": "📸",
+      "foto": null
+     },
+     {
+      "titulo": "Gafas de espejo",
+      "descripcion": "Siempre se pierden el último día.",
+      "emoji": "🕶️",
+      "foto": null
+     },
+     {
+      "titulo": "Lista de reproducción del viaje",
+      "descripcion": "Doscientas canciones y ninguna se repite.",
+      "emoji": "🎧",
+      "foto": null
+     },
+     {
+      "titulo": "Tabla de surf alquilada",
+      "descripcion": "Se usa más para sentarse que para surfear.",
+      "emoji": "🏄",
+      "foto": null
+     },
+     {
+      "titulo": "Atardecer en la playa",
+      "descripcion": "Todos callan por un momento.",
+      "emoji": "🌅",
+      "foto": null
+     },
+     {
+      "titulo": "Sandía compartida",
+      "descripcion": "Se parte con las manos entre risas.",
+      "emoji": "🍉",
+      "foto": null
+     },
+     {
+      "titulo": "Baraja de cartas gastadas",
+      "descripcion": "Falta el cuatro de bastos.",
+      "emoji": "🎲",
+      "foto": null
+     },
+     {
+      "titulo": "Diario de viaje",
+      "descripcion": "Lleva garabatos y entradas de museo.",
+      "emoji": "📔",
+      "foto": null
+     }
+    ]
+   }
+  },
+  {
+   "slug": "videojuegos-adolescentes",
+   "titulo": "Sala gamer",
+   "descripcion": "La habitación perfecta para jugar con amigos: mandos, partidas y snacks.",
+   "orden": 880,
+   "tono": "humor",
+   "etiquetas": [
+    [
+     "game controller"
+    ],
+    [
+     "gaming headset"
+    ],
+    [
+     "curved monitor"
+    ],
+    [
+     "rgb keyboard"
+    ],
+    [
+     "late night pizza"
+    ],
+    [
+     "energy drink can"
+    ],
+    [
+     "tournament trophy"
+    ],
+    [
+     "gaming chair"
+    ],
+    [
+     "wifi router"
+    ],
+    [
+     "chess strategy"
+    ],
+    [
+     "save file memory card"
+    ],
+    [
+     "arcade joystick"
+    ]
+   ],
+   "variante": {
+    "base": "videojuegos-retro",
+    "edad": "adolescentes"
+   },
+   "plantilla": {
+    "formato": "subasta-salvaje/plantilla@1",
+    "nombre": "Sala gamer",
+    "tematica": "Videojuegos",
+    "reglas": {
+     "presupuesto": 20,
+     "puja_minima": 1,
+     "rondas_maximas": 10,
+     "pujas_enteras": true,
+     "clasificacion": "elementos",
+     "modo_juego": "movil",
+     "modo_imagenes": "pegatinas"
+    },
+    "catalogo": [
+     {
+      "titulo": "Mando con stick suelto",
+      "descripcion": "Gira solo hacia la izquierda, pero se usa igual.",
+      "emoji": "🎮",
+      "foto": null
+     },
+     {
+      "titulo": "Auriculares con micro",
+      "descripcion": "Se oye de fondo la tele de los vecinos.",
+      "emoji": "🎧",
+      "foto": null
+     },
+     {
+      "titulo": "Pantalla curva",
+      "descripcion": "Ocupa media mesa y toda la atención.",
+      "emoji": "🖥️",
+      "foto": null
+     },
+     {
+      "titulo": "Teclado con luces",
+      "descripcion": "Brilla en siete colores según la partida.",
+      "emoji": "⌨️",
+      "foto": null
+     },
+     {
+      "titulo": "Pizza de madrugada",
+      "descripcion": "Se enfría mientras sube el nivel.",
+      "emoji": "🍕",
+      "foto": null
+     },
+     {
+      "titulo": "Bebida energética sin azúcar",
+      "descripcion": "Promete energía y solo da hipo.",
+      "emoji": "🥤",
+      "foto": null
+     },
+     {
+      "titulo": "Trofeo del torneo",
+      "descripcion": "Ganado en el salón de un amigo.",
+      "emoji": "🏆",
+      "foto": null
+     },
+     {
+      "titulo": "Silla gamer",
+      "descripcion": "Reclinable, giratoria y con cojín lumbar.",
+      "emoji": "🪑",
+      "foto": null
+     },
+     {
+      "titulo": "Router del pasillo",
+      "descripcion": "Se cae justo en la final.",
+      "emoji": "📶",
+      "foto": null
+     },
+     {
+      "titulo": "Estrategia infalible",
+      "descripcion": "Funciona hasta que entra el rival.",
+      "emoji": "🧠",
+      "foto": null
+     },
+     {
+      "titulo": "Partida guardada",
+      "descripcion": "Cien horas de progreso que nadie borra.",
+      "emoji": "💾",
+      "foto": null
+     },
+     {
+      "titulo": "Palanca arcade",
+      "descripcion": "Aguanta golpes de rabia sin rendirse.",
+      "emoji": "🕹️",
+      "foto": null
+     }
+    ]
+   }
   }
  ]
 }

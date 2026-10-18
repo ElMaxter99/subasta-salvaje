@@ -1,0 +1,29 @@
+# nombre: Viaje en el tiempo: gran travesía
+# descripcion: Veinte rondas para recorrer épocas y civilizaciones en una partida larga y completa.
+# tono: educativo
+# tematica: Historia
+# base: viaje-en-el-tiempo
+# duracion: larga
+# presupuesto: 40
+# rondas: 20
+---
+🦴 | Hacha de sílex | Tallada a golpes hace miles de años. | flint hand axe
+🔥 | Brasas de la primera hoguera | Cuidadas para que nunca se apaguen. | ancient fire embers
+🎨 | Pintura de cueva | Un bisonte dibujado con ocre y carbón. | cave painting bison
+🌾 | Trigo de la primera cosecha | Cambió la manera de vivir de los pueblos. | wheat harvest
+🛞 | Rueda de madera | Un invento que lo movió todo. | wooden wheel
+🏛️ | Columna griega | Sostiene un templo desde hace siglos. | greek column
+🏺 | Ánfora de aceite | Cruzó el mar en un barco de vela. | greek amphora
+🛤️ | Calzada romana | Recta y firme, aún se puede pisar. | roman road
+⚔️ | Gladio de legionario | Corto, pesado y de buena fabricación. | roman gladius
+🏰 | Almena del castillo | Desde ahí se vigilaba el valle. | castle battlement
+🧭 | Brújula de navegante | Apunta siempre hacia el norte. | old compass
+📖 | Manuscrito iluminado | Copiado a mano por un monje paciente. | illuminated manuscript
+⛵ | Carabela del descubrimiento | Zarpó con tres barcos y mucha esperanza. | caravel ship
+🖨️ | Prensa de Gutenberg | Hizo posible que los libros llegasen a todos. | printing press
+🎭 | Máscara del carnaval veneciano | Esconde al que la lleva. | venetian mask
+⚙️ | Engranaje de la fábrica | Movió la primera máquina de vapor. | steam gear
+🚂 | Locomotora de carbón | Silba al salir de la estación. | steam locomotive
+💡 | Primera bombilla | Una luz que cambió las noches. | early light bulb
+📞 | Teléfono de pared | Se marca girando un disco. | rotary phone
+🛰️ | Satélite pionero | Dio la vuelta al mundo y emitió un pitido. | early satellite

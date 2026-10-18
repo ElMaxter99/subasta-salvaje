@@ -1,0 +1,29 @@
+# nombre: Maratón gastronómica
+# descripcion: Veinte rondas para dar la vuelta al mundo por sus cocinas, platos y mercados.
+# tono: familiar
+# tematica: Gastronomía
+# base: cocina-del-mundo
+# duracion: larga
+# presupuesto: 40
+# rondas: 20
+---
+🍜 | Fideos de caldo largo | Se sirven humeantes con cebolleta. | noodle soup bowl
+🥟 | Empanadilla de vapor | Una bolsita rellena que se come de un bocado. | steamed dumpling
+🌮 | Taco de cochinita | Con cebolla morada y mucho limón. | pork taco
+🫔 | Tamal en hoja | Maíz suave envuelto y cocido al vapor. | tamale
+🍛 | Curry de lentejas | Especiado y reconfortante. | lentil curry
+🫓 | Pan de nube | Se hincha en el horno de barro. | flatbread oven
+🥘 | Paella de domingo | Se come directamente de la paella. | paella pan
+🍝 | Pasta con tomate fresco | Albahaca arrugada y queso rallado. | pasta tomato
+🥐 | Cruasán de almendra | Hojaldrado y crujiente a primera hora. | croissant
+🧆 | Croqueta de pollo | Cremosa por dentro, crujiente por fuera. | croquette
+🍣 | Tabla de nigiris | Piezas pequeñas con mucho cuidado. | sushi platter
+🥙 | Kebab de pollo | Con salsa de yogur y pan caliente. | chicken kebab
+🍲 | Cocido de olla | Tres vuelcos y una siesta. | stew pot
+🍚 | Arroz con leche | Con canela por encima. | rice pudding
+🥭 | Mango maduro | Jugoso, dorado y pegajoso. | ripe mango
+🥜 | Cacahuetes tostados | Se pelan de dos en dos. | roasted peanuts
+🍵 | Tetera de menta | Se sirve desde muy alto. | mint tea pot
+🧇 | Gofre con fruta | Cuadriculado y con nata. | waffle fruit
+🌶️ | Ristra de guindillas | Cuelga secándose en la cocina. | dried chili string
+🫖 | Mercado de especias | Hay montañas de color y aroma. | spice market
