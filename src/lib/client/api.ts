@@ -128,6 +128,10 @@ export async function sendReactionRequest(roomCode: string, emoji: string): Prom
   await parse(await fetch(`/api/play/${roomCode}/react`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ emoji }) }));
 }
 
+export async function yieldBidRequest(roomCode: string, auctionId: string): Promise<{ snapshot: import('@/lib/domain/types').PublicSnapshot; auto_awarded: boolean }> {
+  return parse(await fetch(`/api/play/${roomCode}/yield`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ auction_id: auctionId }) }));
+}
+
 export async function leaveGameRequest(roomCode: string): Promise<void> {
   await parse(await fetch(`/api/play/${roomCode}/leave`, { method: 'POST' }));
 }

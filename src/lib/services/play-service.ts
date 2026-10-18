@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { DomainError } from '@/lib/domain/errors';
-import { galleryVoteSchema, joinSchema, playerBidSchema, reactionSchema, PLAYER_COLORS, roomCodeSchema } from '@/lib/domain/schemas';
+import { galleryVoteSchema, joinSchema, playerBidSchema, reactionSchema, yieldBidSchema, PLAYER_COLORS, roomCodeSchema } from '@/lib/domain/schemas';
 import type { PublicSnapshot } from '@/lib/domain/types';
 import type { AppContext } from './context';
 import { getPublicState } from './game-service';
@@ -83,6 +83,16 @@ export async function galleryVote(ctx: Ctx, roomCode: string, token: string | un
   const code = room(roomCode);
   await ctx.db.rpc('ss_gallery_vote', { target_id: parsed.data.target_id, room_code: code, token_hash: hashToken(token) });
   return publishAfter(ctx, code);
+}
+
+/** Ceder la puja: el jugador deja de pujar por la subasta en curso (irrevocable). Si con ello nadie más sigue, puede adjudicarse al instante. */
+export async function yieldBid(ctx: Ctx, roomCode: string, token: string | undefined | null, rawBody: unknown): Promise<{ snapshot: PublicSnapshot; autoAwarded: boolean }> {
+  const parsed = yieldBidSchema.safeParse(rawBody);
+  if (!parsed.success) throw new DomainError('invalid_input');
+  if (!token) throw new DomainError('not_player');
+  const code = room(roomCode);
+  const res = await ctx.db.rpc<{ auto_awarded?: boolean }>('ss_yield_bid', { ...parsed.data, room_code: code, token_hash: hashToken(token) });
+  return { snapshot: await publishAfter(ctx, code), autoAwarded: Boolean(res.auto_awarded) };
 }
 
 /** Reacción con emoji desde el móvil (lista cerrada, con límites en SQL). La identidad sale del token, nunca del cuerpo. */

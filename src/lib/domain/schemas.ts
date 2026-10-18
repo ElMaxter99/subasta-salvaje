@@ -115,6 +115,8 @@ export const playerBidSchema = z.object({
   amount_cents: cents,
   idempotency_key: idempotencyKey,
 });
+/** «Ceder la puja»: el jugador deja de pujar por la subasta en curso. */
+export const yieldBidSchema = z.object({ auction_id: uuid });
 /** Voto de la galería final desde el móvil del jugador. */
 export const galleryVoteSchema = z.object({ target_id: uuid });
 /** Reacciones del móvil a la TV: lista cerrada (la misma que valida `ss_send_reaction`). */

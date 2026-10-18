@@ -102,6 +102,10 @@ export interface Auction {
   bids_count?: number;
   /** Relámpago: segundos entre la última puja y la adjudicación automática. */
   flash_seconds?: number;
+  /** Jugadores que han cedido la puja (ya no pujan por este elemento). */
+  yielded?: string[];
+  /** Han cedido todos los que podían pujar más: ya no hay quien siga (la adjudicación puede ser inmediata). */
+  all_yielded?: boolean;
   /** Sobre cerrado: jugadores que ya han pujado (sin importes). */
   sealed_bidders?: string[];
   item: Pick<AuctionItem, 'id' | 'name' | 'description' | 'emoji' | 'image_path' | 'image_url'>;

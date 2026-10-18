@@ -17,6 +17,7 @@ import type { ConnectionState } from '@/lib/client/use-live-game';
 import { useAutoAwardCountdown } from '@/lib/client/auto-award';
 import type { Player, PublicSnapshot, RuntimeInfo } from '@/lib/domain/types';
 import { Ohros } from '@/components/ui/ohros';
+import { YieldButton } from './yield-button';
 import { AutoRunClock } from '@/components/screen/auto-run-clock';
 import { formatAmount, formatOhros } from '@/lib/domain/money';
 
@@ -55,6 +56,7 @@ export function PlayerScreen({
   const sealed = auction?.wild_event === 'sealed';
   const flash = auction?.wild_event === 'flash';
   // Sobre cerrado: una sola puja por jugador (el servidor lo hace cumplir; aquí solo se bloquea el pad).
+  const yielded = open && (auction.yielded ?? []).includes(me.id);
   const sealedDone = open && sealed && (auction.sealed_bidders ?? []).includes(me.id);
   const hasBids = (auction?.bids.length ?? 0) > 0;
   // Sin pujas la base es 0: el primer «+1 Ohro» es una puja de 1 Ohro (la puja mínima de la partida actúa como suelo en el pad).
@@ -254,7 +256,8 @@ export function PlayerScreen({
       </main>
 
       {open ? (
-        <div className="sticky bottom-0 z-20 border-t border-white/10 bg-night-900/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+        <div className="sticky bottom-0 z-20 space-y-2 border-t border-white/10 bg-night-900/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+          {!sealed && !leading ? <YieldButton roomCode={roomCode} auctionId={auction.id} yielded={yielded} onSnapshot={onSnapshot} onNotPlayer={onNotPlayer} /> : null}
           <BidPad
             roomCode={roomCode}
             auctionId={auction.id}
@@ -262,7 +265,7 @@ export function PlayerScreen({
             minBidCents={game.min_bid_cents}
             integerBids={game.integer_bids !== false}
             balanceCents={me.balance_cents}
-            leading={leading || sealedDone}
+            leading={leading || sealedDone || yielded}
             onSnapshot={onSnapshot}
             onNotPlayer={onNotPlayer}
           />

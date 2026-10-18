@@ -117,7 +117,7 @@ La colección con alfa real (`public/assets/mascot-vector/`) es vectorial. Para 
 - [ ] Comprobar que el crédito gratuito de Hugging Face (token con permiso de Inference Providers) sigue cubriendo ese modelo; si no, quitar `huggingface` de `IMAGE_PROVIDERS`.
 
 ## 5n. Lo añadido en la unión de ramas (probar tú, 18-10-2026)
-- [ ] Aplicar en Supabase las migraciones `…8000`–`…8401` y `…9000`/`…9001` (reacciones, repetición, reglas extra, administración, comparador, exportar, arreglos de la unión) y `notify pgrst, 'reload schema';`. Las `_security_` no se ejecutan en PGlite: **sin probar contra Supabase real**.
+- [ ] Aplicar en Supabase las migraciones `…8000`–`…8401`, `…9000`/`…9001` y `…9100`/`…9101` (ceder la puja) (reacciones, repetición, reglas extra, administración, comparador, exportar, arreglos de la unión) y `notify pgrst, 'reload schema';`. Las `_security_` no se ejecutan en PGlite: **sin probar contra Supabase real**.
 - [ ] Probar con móviles reales: reacciones (animación y sonido en la TV), ⚡ Relámpago y ✉️ Sobre cerrado, presupuesto individual y equipos.
 - [ ] Probar el **comparador de modelos** (`/admin/ia/comparar`) con Cloudflare/Pollinations reales y vigilar los 60 s de Vercel con dos elementos.
 - [ ] **GitHub Actions** (`docs/CI.md`): el workflow nunca se ha ejecutado; revisar la primera ejecución (acciones, `npm ci`, Playwright en frío, falsos positivos de `scan:secrets`).

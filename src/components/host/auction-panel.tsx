@@ -145,6 +145,12 @@ function LiveAuction({ ctx, auction, onAward, onUndo, onCancel }: { ctx: HostCtx
             {sealedPending.length > 0 ? ` · faltan: ${sealedPending.map((p) => p.name).join(', ')}` : ' · ¡todos! Ya puedes cerrar y adjudicar.'}
           </p>
         ) : null}
+        {open && (auction.yielded?.length ?? 0) > 0 ? (
+          <p role="status" className="mt-3 rounded-xl bg-night-900 px-3 py-2 text-sm font-semibold text-white/80" data-testid="host-yielded">
+            🏳️ Han cedido: {(auction.yielded ?? []).map((id) => playerById(snapshot, id)?.name ?? '?').join(', ')}
+            {auction.all_yielded ? (hasBids ? ' · ¡todos! Ya puedes cerrar y adjudicar.' : ' · ¡todos! Nadie quiere este elemento: puedes cancelarlo.') : ''}
+          </p>
+        ) : null}
         {auction.wild_event === 'flash' && open && countdown !== null ? (
           <p role="status" className="mt-3 rounded-xl bg-night-900 px-3 py-2 text-center text-lg font-bold tabular-nums text-gold" data-testid="host-flash-countdown">
             ⚡ {countdown > 0 ? `Se adjudicará en ${countdown} s` : 'Adjudicando…'}

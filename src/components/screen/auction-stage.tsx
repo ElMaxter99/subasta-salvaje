@@ -104,6 +104,11 @@ function ActiveAuction({ snap, auction, players, compact }: { snap: PublicSnapsh
           ) : null}
         </div>
 
+        {!awarded && (auction.yielded?.length ?? 0) > 0 ? (
+          <p className="mt-2 text-[1.5rem] font-semibold text-white/70" data-testid="tv-yielded">
+            🏳️ Han cedido: {(auction.yielded ?? []).map((id) => players.find((p) => p.id === id)?.name ?? '?').join(', ')}
+          </p>
+        ) : null}
         <div className="min-h-[3.5rem]">
           {sealed && blind ? (
             <p className="text-[1.9rem] font-bold text-violet-soft" data-testid="sealed-bidders">
