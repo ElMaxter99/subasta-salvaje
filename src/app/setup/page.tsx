@@ -36,7 +36,7 @@ export default function SetupPage() {
         {optional.map((o) => (
           <li key={o.name} className="rounded-xl bg-night-800/60 px-4 py-3">
             <div className="flex items-center gap-3">
-              {o.ok ? <CheckCircle2 className="size-5 shrink-0 text-teal" aria-hidden /> : <AlertTriangle className="size-5 shrink-0 text-white/40" aria-hidden />}
+              {o.ok ? <CheckCircle2 className="size-5 shrink-0 text-teal" aria-hidden /> : <AlertTriangle className="size-5 shrink-0 text-white/55" aria-hidden />}
               <code className="font-bold">{o.name}</code>
               <span className="ml-auto text-sm text-white/60">{o.ok ? 'configurada' : 'opcional · no configurada'}</span>
             </div>

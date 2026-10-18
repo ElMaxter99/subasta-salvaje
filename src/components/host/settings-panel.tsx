@@ -9,6 +9,7 @@ import { parseOhrosToCents } from '@/lib/domain/money';
 import type { ImageMode, JoinPolicy, PlayMode, RankingRule } from '@/lib/domain/types';
 import { TemplateExportCard } from './template-export-card';
 import { DeleteGameCard } from './delete-game-card';
+import { ExportGameCard } from './export-game-card';
 import { FinishGameDialog } from './finish-dialog';
 import { ResetGameDialog } from './reset-dialog';
 import { Card, Dot, Notice, inputCls } from './bits';
@@ -300,6 +301,7 @@ export function SettingsPanel({ ctx }: { ctx: HostCtx }) {
       <FinishGameDialog ctx={ctx} open={finishOpen} onClose={() => setFinishOpen(false)} />
       <ResetGameDialog ctx={ctx} open={resetOpen} onClose={() => setResetOpen(false)} />
 
+      <ExportGameCard ctx={ctx} />
       <DeleteGameCard ctx={ctx} />
     </div>
   );

@@ -58,7 +58,7 @@ export function SystemTemplatesPanel({ templates, cdnHosts }: { templates: Syste
             <tr key={t.id} className="align-top" data-testid="system-template-row">
               <td className="px-2 py-2">
                 <p className="font-semibold">{t.title}</p>
-                <p className="font-mono text-xs text-white/45">{t.slug}</p>
+                <p className="font-mono text-xs text-white/55">{t.slug}</p>
               </td>
               <td className="px-2 py-2">
                 <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${t.status === 'published' ? 'bg-teal/20 text-teal' : 'bg-white/10 text-white/80'}`}>{t.status === 'published' ? 'Publicada' : 'Borrador'}</span>
@@ -85,7 +85,7 @@ export function SystemTemplatesPanel({ templates, cdnHosts }: { templates: Syste
           <Table head={['Imagen', 'Estado', 'Formato', 'Tamaño', 'Peso', 'Nota']} empty={checks.list.length === 0 ? 'Esta plantilla no lleva imágenes.' : undefined}>
             {checks.list.map((c) => (
               <tr key={c.label + c.url} className="align-top">
-                <td className="px-2 py-1.5"><p className="font-semibold">{c.label}</p><p className="max-w-xs truncate font-mono text-xs text-white/45">{c.url}</p></td>
+                <td className="px-2 py-1.5"><p className="font-semibold">{c.label}</p><p className="max-w-xs truncate font-mono text-xs text-white/55">{c.url}</p></td>
                 <td className="px-2 py-1.5"><span className={`rounded-full px-2 py-0.5 text-xs font-bold ${!c.ok ? 'bg-rose/20 text-rose' : c.internal ? 'bg-teal/20 text-teal' : 'bg-gold/20 text-gold-soft'}`}>{!c.ok ? 'Error' : c.internal ? 'Formato interno' : 'Se reducirá'}</span></td>
                 <td className="px-2 py-1.5">{c.format ?? '—'}</td>
                 <td className="px-2 py-1.5 tabular-nums">{c.width && c.height ? `${c.width}×${c.height}` : '—'}</td>

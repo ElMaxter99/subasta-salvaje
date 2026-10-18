@@ -27,7 +27,7 @@ export function JoinScreenForm() {
         onChange={(e) => setCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12))}
         placeholder="CÓDIGO"
         autoComplete="off"
-        className="min-w-0 flex-1 rounded-xl border border-white/15 bg-night-900 px-4 py-3 text-center font-display text-xl tracking-[0.3em] placeholder:tracking-widest placeholder:text-white/30"
+        className="min-w-0 flex-1 rounded-xl border border-white/15 bg-night-900 px-4 py-3 text-center font-display text-xl tracking-[0.3em] placeholder:tracking-widest placeholder:text-white/55"
       />
       <Button type="submit" variant="secondary" size="lg" disabled={code.length < 4}>
         <Tv className="size-5" aria-hidden /> Ver pantalla
@@ -58,7 +58,7 @@ export function JoinPlayerForm() {
         placeholder="CÓDIGO"
         autoComplete="off"
         autoCapitalize="characters"
-        className="min-w-0 flex-1 rounded-xl border border-white/15 bg-night-900 px-4 py-3 text-center font-display text-xl tracking-[0.3em] placeholder:tracking-widest placeholder:text-white/30"
+        className="min-w-0 flex-1 rounded-xl border border-white/15 bg-night-900 px-4 py-3 text-center font-display text-xl tracking-[0.3em] placeholder:tracking-widest placeholder:text-white/55"
       />
       <Button type="submit" variant="primary" size="lg" disabled={code.length < 4}>
         <Smartphone className="size-5" aria-hidden /> Unirme

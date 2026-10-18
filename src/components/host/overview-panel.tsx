@@ -18,7 +18,7 @@ import { Ohros } from '@/components/ui/ohros';
 function Check({ ok, children }: { ok: boolean; children: React.ReactNode }) {
   return (
     <li className={`flex items-start gap-2 ${ok ? 'text-white' : 'text-white/70'}`}>
-      {ok ? <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-teal" aria-hidden /> : <Circle className="mt-0.5 size-5 shrink-0 text-white/40" aria-hidden />}
+      {ok ? <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-teal" aria-hidden /> : <Circle className="mt-0.5 size-5 shrink-0 text-white/55" aria-hidden />}
       <span>
         <span className="sr-only">{ok ? 'Hecho: ' : 'Pendiente: '}</span>
         {children}

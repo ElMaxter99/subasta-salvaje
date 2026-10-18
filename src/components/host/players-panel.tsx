@@ -279,7 +279,7 @@ function PlayerRow({ ctx, player: p, index, total, onMove, onRemove, onRelease }
               <Button size="md" variant="secondary" disabled={busy !== null || !!initialJob} loading={busy === `gen-${p.id}`} onClick={() => run(`gen-${p.id}`, { type: 'image.request_initial', player_id: p.id }, 'Imagen inicial solicitada')}>
                 <Sparkles className="size-4" aria-hidden /> {initialJob ? 'Generando…' : 'Generar imagen inicial'}
               </Button>
-              <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" id={`file-${p.id}`} tabIndex={-1} onChange={(e) => void onFile(e.target.files?.[0])} />
+              <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" id={`file-${p.id}`} aria-label={`Imagen de ${p.name}`} tabIndex={-1} onChange={(e) => void onFile(e.target.files?.[0])} />
               <Button size="md" variant="secondary" disabled={busy !== null} loading={busy === `upload-${p.id}`} onClick={() => fileRef.current?.click()}>
                 <Upload className="size-4" aria-hidden /> Subir imagen
               </Button>

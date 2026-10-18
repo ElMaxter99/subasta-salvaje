@@ -262,7 +262,7 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
       <Sparkles />
       <div className="flex items-center justify-center gap-[1.5rem]">
         <Mascot variant="expr-hype" size={tv ? 'xs' : 'sm'} tile motion="bob" />
-        <p className={`font-display uppercase tracking-wide text-gold ${tv ? 'text-[3.4rem] leading-none' : 'text-4xl sm:text-6xl'}`}>¡Fin de la subasta!</p>
+        <h1 className={`font-display uppercase tracking-wide text-gold ${tv ? 'text-[3.4rem] leading-none' : 'text-4xl sm:text-6xl'}`}>¡Fin de la subasta!</h1>
       </div>
       <p className={`font-semibold text-white/80 ${tv ? 'mt-1 text-[1.4rem]' : 'mt-2 text-base sm:text-xl'}`}>
         {game.name} · {themeLabel(game.theme)}

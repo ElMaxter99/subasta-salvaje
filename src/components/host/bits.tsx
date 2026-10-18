@@ -27,7 +27,7 @@ export function Thumb({ url, alt, className = 'size-16' }: { url?: string | null
     // eslint-disable-next-line @next/next/no-img-element
     <img src={url} alt={alt} className={`${className} shrink-0 rounded-xl bg-night-950 object-cover`} />
   ) : (
-    <span className={`${className} flex shrink-0 items-center justify-center rounded-xl border border-dashed border-white/20 bg-night-950 text-white/40`} role="img" aria-label={`${alt}: sin imagen`}>
+    <span className={`${className} flex shrink-0 items-center justify-center rounded-xl border border-dashed border-white/20 bg-night-950 text-white/55`} role="img" aria-label={`${alt}: sin imagen`}>
       <ImageIcon className="size-1/3" aria-hidden />
     </span>
   );
@@ -49,7 +49,7 @@ export function Notice({ tone = 'info', children }: { tone?: 'info' | 'warn' | '
   return <div className={`rounded-2xl border px-4 py-3 text-sm font-semibold ${tones[tone]}`}>{children}</div>;
 }
 
-export const inputCls = 'min-h-11 w-full rounded-xl border border-white/15 bg-night-950 px-3 py-2 text-base text-white placeholder:text-white/35';
+export const inputCls = 'min-h-11 w-full rounded-xl border border-white/15 bg-night-950 px-3 py-2 text-base text-white placeholder:text-white/55';
 
 export function fmtTime(iso: string): string {
   return new Date(iso).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
