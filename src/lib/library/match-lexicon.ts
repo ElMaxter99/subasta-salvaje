@@ -1,0 +1,381 @@
+/**
+ * Léxico mínimo ES↔EN para casar elementos de plantilla con fotos de la biblioteca (sin IA ni red).
+ * Cada línea: palabras españolas separadas por coma `=` palabra inglesa canónica (la inglesa también se acepta tal cual).
+ * Es un diccionario pequeño y editable: lo que no esté aquí se compara por raíz simple (`stem`), que ya cubre plurales y género.
+ * Ampliarlo = añadir líneas; el motor lo recalcula al cargar. Las fotos se etiquetan en español o inglés indistintamente.
+ */
+const LEXICON = `
+piramide=pyramid
+camello,dromedario=camel
+desierto=desert
+duna=dune
+papiro=papyrus
+jeroglifico=hieroglyph
+faraon=pharaoh
+corona=crown
+gato,gata,felino=cat
+perro=dog
+cachorro=puppy
+caballo=horse
+vaca=cow
+oveja=sheep
+cordero=lamb
+cerdo=pig
+cabra=goat
+gallina=hen
+gallo=rooster
+conejo=rabbit
+raton=mouse
+pajaro,ave=bird
+loro=parrot
+buho=owl
+paloma=dove
+abeja=bee
+arana=spider
+mosquito=mosquito
+serpiente,culebra=snake
+tortuga=turtle
+delfin=dolphin
+ballena=whale
+tiburon=shark
+pulpo=octopus
+calamar=squid
+cangrejo=crab
+langosta=lobster
+gamba,camaron=shrimp
+pez=fish
+flamenco=flamingo
+oso=bear
+dinosaurio=dinosaur
+dragon=dragon
+unicornio=unicorn
+fantasma=ghost
+bruja=witch
+vampiro=vampire
+calabaza=pumpkin
+esqueleto=skeleton
+murcielago=bat
+telarana=cobweb
+pocion=potion
+varita=wand
+mago=wizard
+pirata=pirate
+sirena=mermaid
+tesoro=treasure
+mapa=map
+brujula=compass
+ancla=anchor
+barco,navio=ship
+barca,bote=boat
+velero=sailboat
+coche,carro,auto,automovil=car
+camion=truck
+autobus=bus
+tren=train
+bicicleta,bici=bicycle
+moto,motocicleta=motorcycle
+avion=plane
+cohete=rocket
+nave=spaceship
+planeta=planet
+estrella=star
+luna=moon
+sol=sun
+nube=cloud
+lluvia=rain
+arcoiris=rainbow
+montana=mountain
+volcan=volcano
+playa=beach
+isla=island
+mar,oceano=sea
+lago=lake
+rio=river
+bosque=forest
+arbol=tree
+flor=flower
+planta=plant
+hoja=leaf
+rosa=rose
+girasol=sunflower
+cactus=cactus
+seta,champinon,hongo=mushroom
+manzana=apple
+platano,banana=banana
+naranja=orange
+limon=lemon
+fresa=strawberry
+uva=grape
+sandia=watermelon
+cereza=cherry
+zanahoria=carrot
+tomate=tomato
+patata,papa=potato
+pepino=cucumber
+ajo=garlic
+cebolla=onion
+aceituna,oliva=olive
+pan=bread
+queso=cheese
+jamon=ham
+huevo=egg
+leche=milk
+mantequilla=butter
+tortilla=tortilla
+pizza=pizza
+hamburguesa=burger
+bocadillo,sandwich,montadito=sandwich
+ensalada=salad
+sopa=soup
+guiso,cazuela=stew
+arroz=rice
+fideo=noodle
+taco=taco
+sushi=sushi
+tarta,pastel=cake
+galleta=cookie
+chocolate=chocolate
+caramelo=candy
+helado=icecream
+cafe=coffee
+te=tea
+zumo,jugo=juice
+cerveza,cana=beer
+vino=wine
+copa=glass
+vaso=glass
+taza=cup
+botella=bottle
+plato=plate
+cuenco,bol=bowl
+cuchara=spoon
+tenedor=fork
+cuchillo=knife
+olla,cacerola=pot
+sarten=skillet
+nevera,frigorifico=fridge
+horno=oven
+microondas=microwave
+mesa=table
+silla=chair
+sillon,butaca=armchair
+sofa=sofa
+cama=bed
+cuna=crib
+armario=cabinet
+estanteria=shelf
+puerta=door
+ventana=window
+escalera=ladder
+tejado,techo=roof
+casa=house
+castillo=castle
+torre=tower
+iglesia,capilla=chapel
+tienda=tent
+espejo=mirror
+lampara,bombilla=lamp
+vela=candle
+linterna=flashlight
+reloj=clock
+despertador=alarm
+calendario=calendar
+libro=book
+cuaderno=notebook
+lapiz=pencil
+boligrafo,pluma=pen
+papel=paper
+carta=letter
+postal=postcard
+cartel=poster
+pizarra=blackboard
+regla=ruler
+calculadora=calculator
+telefono=telephone
+movil=phone
+ordenador,portatil=laptop
+pantalla=monitor
+television,tele=tv
+radio=radio
+altavoz=speaker
+auricular=headphones
+microfono=microphone
+camara=camera
+foto,fotografia=photo
+pelicula=movie
+guitarra=guitar
+piano=piano
+violin=violin
+trompeta=trumpet
+tambor=drum
+saxofon=saxophone
+flauta=flute
+banjo=banjo
+sintetizador=synthesizer
+disco=record
+balon,pelota=ball
+futbol=soccer
+baloncesto=basketball
+beisbol,beisbol=baseball
+tenis=tennis
+raqueta=racket
+golf=golf
+patineta,monopatin=skateboard
+tabla=board
+pesas,mancuerna=dumbbell
+trofeo=trophy
+medalla=medal
+casco=helmet
+guante=glove
+bota=boot
+zapato=shoe
+sandalia=sandal
+calcetin=sock
+sombrero=hat
+gorra=cap
+corbata=tie
+bufanda=scarf
+abrigo=coat
+jersey,suéter,sueter=sweater
+vestido=dress
+traje=suit
+mascara,antifaz=mask
+peluca=wig
+gafa=glasses
+paraguas=umbrella
+mochila=backpack
+maleta=suitcase
+bolsa=bag
+cesta,cesto=basket
+caja=box
+cofre=chest
+llave=key
+candado=lock
+moneda=coin
+anillo=ring
+espada=sword
+hacha=axe
+martillo=hammer
+yunque=anvil
+pico=pickaxe
+escudo=shield
+arco=bow
+daga,punal=dagger
+escoba=broom
+cubo=bucket
+manguera=hose
+regadera=watering
+tijera=scissors
+cuerda=rope
+cadena=chain
+pila,bateria=battery
+iman=magnet
+lupa=magnifying
+telescopio=telescope
+microscopio=microscope
+globo=balloon
+regalo=gift
+piñata,pinata=pinata
+confeti=confetti
+bandera=flag
+robot=robot
+extraterrestre,alien=alien
+astronauta=astronaut
+muneco,peluche=doll
+osito=teddy
+rompecabezas=puzzle
+ajedrez=chess
+dado=dice
+naipe=cards
+navidad=christmas
+nieve=snow
+reno=reindeer
+trineo=sled
+boda=wedding
+cumpleanos=birthday
+fiesta=party
+cine=cinema
+teatro=theatre
+escenario=stage
+bano=bath
+ducha=shower
+jabon=soap
+champu=shampoo
+toalla=towel
+manta=blanket
+alfombra=carpet
+cortina=curtain
+cuadro=painting
+estatua,estatuilla=statue
+esfinge=sphinx
+cobra=cobra
+vasija,jarra,jarron,tarro=jar
+amuleto=amulet
+corazon=heart
+cerebro=brain
+ojo=eye
+mano=hand
+huella=paw
+hueso=bone
+diente,colmillo=fang
+sangre=blood
+fuego,hoguera=fire
+rayo=lightning
+agua=water
+hielo=ice
+sal=salt
+pimienta=pepper
+azucar=sugar
+palomita=popcorn
+cacahuete=peanut
+nuez=nut
+miel=honey
+mermelada=jam
+croqueta=croquette
+empanada=pie
+churro=churro
+paella=paella
+flan=flan
+turron=nougat
+mazapan=marzipan
+`;
+
+/** Misma regla que `stem` de match.ts (se duplica aquí para no crear una importación circular). */
+function stemWord(w: string): string {
+  let s = w;
+  if (s.length > 4 && s.endsWith('ies')) s = `${s.slice(0, -3)}y`;
+  else if (s.length > 4 && s.endsWith('ces')) s = `${s.slice(0, -3)}z`;
+  else if (s.length > 3 && s.endsWith('s') && !s.endsWith('ss')) s = s.slice(0, -1);
+  if (s.length > 3 && /[aeo]$/.test(s)) s = s.slice(0, -1);
+  return s;
+}
+const plain = (s: string) => s.normalize('NFD').replace(/\p{M}/gu, '').toLowerCase().trim();
+
+/** raíz española → raíz de la palabra inglesa canónica. */
+export const SYNONYMS: ReadonlyMap<string, string> = (() => {
+  const m = new Map<string, string>();
+  for (const line of LEXICON.split('\n')) {
+    const [es, en] = line.split('=');
+    if (!es || !en) continue;
+    const target = stemWord(plain(en));
+    for (const w of es.split(',')) m.set(stemWord(plain(w)), target);
+  }
+  return m;
+})();
+
+/** Emoji → palabra inglesa canónica (ayuda a casar cuando el elemento no trae etiquetas). Pequeño a propósito. */
+export const EMOJI_CONCEPTS: Readonly<Record<string, string>> = {
+  '🐱': 'cat', '🐈': 'cat', '🐶': 'dog', '🐕': 'dog', '🐴': 'horse', '🐮': 'cow', '🐑': 'sheep', '🐷': 'pig', '🐔': 'hen', '🐰': 'rabbit', '🐭': 'mouse',
+  '🐫': 'camel', '🦜': 'parrot', '🦉': 'owl', '🐝': 'bee', '🕷️': 'spider', '🐢': 'turtle', '🐬': 'dolphin', '🐳': 'whale', '🦈': 'shark', '🐙': 'octopus', '🦀': 'crab',
+  '🍎': 'apple', '🍌': 'banana', '🍋': 'lemon', '🍓': 'strawberry', '🍇': 'grape', '🍉': 'watermelon', '🍒': 'cherry', '🥕': 'carrot', '🍅': 'tomato', '🥔': 'potato',
+  '🍞': 'bread', '🧀': 'cheese', '🥚': 'egg', '🍕': 'pizza', '🍔': 'burger', '🍰': 'cake', '🍪': 'cookie', '🍫': 'chocolate', '🍬': 'candy', '☕': 'coffee', '🍺': 'beer', '🍷': 'wine',
+  '🎃': 'pumpkin', '👻': 'ghost', '🧙': 'wizard', '🏴‍☠️': 'pirate', '🧜': 'mermaid', '🗺️': 'map', '🧭': 'compass', '⚓': 'anchor', '🚢': 'ship', '⛵': 'sailboat',
+  '🚗': 'car', '🚚': 'truck', '🚌': 'bus', '🚂': 'train', '🚲': 'bicycle', '✈️': 'plane', '🚀': 'rocket', '🪐': 'planet', '⭐': 'star', '🌙': 'moon', '☀️': 'sun',
+  '🌋': 'volcano', '🏝️': 'island', '🏖️': 'beach', '🌲': 'tree', '🌳': 'tree', '🌸': 'flower', '🌹': 'rose', '🌻': 'sunflower', '🌵': 'cactus', '🍄': 'mushroom',
+  '🔑': 'key', '🪙': 'coin', '💍': 'ring', '⚔️': 'sword', '🪓': 'axe', '🔨': 'hammer', '🛡️': 'shield', '🏹': 'bow', '🧹': 'broom', '🔦': 'flashlight', '🕯️': 'candle', '⏰': 'alarm',
+  '📖': 'book', '📚': 'book', '✏️': 'pencil', '🖊️': 'pen', '📞': 'telephone', '💻': 'laptop', '📺': 'tv', '📻': 'radio', '🎤': 'microphone', '📷': 'camera', '🎬': 'movie',
+  '🎸': 'guitar', '🎹': 'piano', '🎻': 'violin', '🎺': 'trumpet', '🥁': 'drum', '🎷': 'saxophone', '⚽': 'soccer', '🏀': 'basketball', '⚾': 'baseball', '🎾': 'tennis', '🏆': 'trophy', '🏅': 'medal',
+  '👒': 'hat', '🧢': 'cap', '🧣': 'scarf', '🧥': 'coat', '👗': 'dress', '🎭': 'mask', '☂️': 'umbrella', '🎒': 'backpack', '🧳': 'suitcase', '🧺': 'basket', '📦': 'box', '🎁': 'gift', '🎈': 'balloon',
+  '🛏️': 'bed', '🛋️': 'sofa', '🪑': 'chair', '🚪': 'door', '🪟': 'window', '🪞': 'mirror', '🏰': 'castle', '⛪': 'chapel', '⛺': 'tent', '🏠': 'house', '🤖': 'robot', '👽': 'alien', '🧑‍🚀': 'astronaut',
+  '🧩': 'puzzle', '♟️': 'chess', '🎲': 'dice', '🎄': 'christmas', '⛄': 'snowman', '🦌': 'reindeer', '🦄': 'unicorn', '🐉': 'dragon', '🦖': 'dinosaur', '🔥': 'fire', '⚡': 'lightning',
+};

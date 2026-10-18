@@ -107,3 +107,6 @@ En *Superadmin → Biblioteca → «Cobertura y calidad»* (siempre sobre lo **p
 - Exportar/importar un «pack de colección» (JSON con productos + referencias) para repetir el relleno en otro entorno.
 - Marcar como duplicado en bloque desde *Parecidas por contenido* (hoy se borra el registro de uno en uno).
 - Descripción de productos generada con IA al crear productos desde imágenes.
+
+## Qué fotos faltan para las plantillas del sistema
+`npm run templates:match` (ensayo) escribe `.match-report/huecos.csv` con las palabras de los elementos de plantilla que ninguna foto de producto revisada cubre, de más a menos pedidas. Úsalo para priorizar la subida. Detalle en [CASAR-FOTOS-PLANTILLAS.md](CASAR-FOTOS-PLANTILLAS.md).

@@ -35,6 +35,7 @@
     "library:fetch": "tsx scripts/library/fetch-commons.ts",
     "templates:build": "tsx scripts/templates/build.ts",
     "templates:validate": "tsx scripts/templates/validate.ts",
+    "templates:match": "tsx --env-file-if-exists=.env.local scripts/templates/match.ts",
     "templates:import": "tsx --env-file-if-exists=.env.local scripts/templates/import.ts",
     "loadtest": "tsx scripts/loadtest/snapshots.ts"
   },
