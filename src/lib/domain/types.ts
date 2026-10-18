@@ -106,6 +106,8 @@ export interface Auction {
   yielded?: string[];
   /** Han cedido todos los que podían pujar más: ya no hay quien siga (la adjudicación puede ser inmediata). */
   all_yielded?: boolean;
+  /** Pausa de gracia usada por el anfitrión en esta subasta (solo si se usó): a quién se espera y hasta cuándo (hora del servidor). */
+  grace?: { uses: number; max: number; player_id: string | null; until: string };
   /** Sobre cerrado: jugadores que ya han pujado (sin importes). */
   sealed_bidders?: string[];
   item: Pick<AuctionItem, 'id' | 'name' | 'description' | 'emoji' | 'image_path' | 'image_url'>;
@@ -209,6 +211,14 @@ export interface PlayerStat {
   wins: number;
   spent_cents: number;
   yields_count: number;
+  /** Diferencia mínima (céntimos) entre su puja ganadora y la mejor de otro jugador; null si nunca ganó con rival. */
+  min_win_gap_cents?: number | null;
+  /** Subastas adjudicadas en las que hizo la primera puja. */
+  first_bids?: number;
+  /** Subastas ganadas tras haber sido superado antes. */
+  comebacks?: number;
+  /** Máximo de pujas suyas en una sola subasta. */
+  max_bids_one_auction?: number;
 }
 
 export interface GameStats {

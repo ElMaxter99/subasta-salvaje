@@ -153,6 +153,8 @@ function toRpc(action: GameAction): { fn: string; params: Record<string, unknown
     case 'auction.cancel':
     case 'auction.clear':
       return { fn: 'ss_auction_state', params: { action: type.split('.')[1], ...rest } };
+    case 'auction.grace':
+      return { fn: 'ss_auction_grace', params: rest };
     case 'auction.award':
       return { fn: 'ss_award', params: rest };
     case 'image.request_initial':

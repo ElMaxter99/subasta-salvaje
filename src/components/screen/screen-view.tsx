@@ -88,7 +88,9 @@ export function ScreenView({ roomCode, initial, runtime }: { roomCode: string; i
   const controlsShown = fs.visible || needsSound || keep.state === 'off';
   const padTop = controlsShown ? 'pt-[3.8rem]' : 'pt-[1rem]';
   const controls = (
-    <div className={`absolute right-4 top-[5.9rem] z-30 flex items-center gap-3 transition-opacity duration-500 ${fs.visible || needsSound || keep.state === 'off' ? 'opacity-100' : 'pointer-events-none opacity-0'}`}>
+    // En la pantalla final la barra va abajo y centrada, en una franja que `FinalResults` reserva (no tapa título, premios ni tarjetas);
+    // en el resto, arriba a la derecha como siempre.
+    <div className={`absolute z-30 flex items-center gap-3 transition-opacity ${finished ? 'bottom-[0.5rem] left-1/2 -translate-x-1/2' : 'right-4 top-[5.9rem]'} duration-500 ${fs.visible || needsSound || keep.state === 'off' ? 'opacity-100' : 'pointer-events-none opacity-0'}`}>
       {keep.state === 'off' ? (
         <button type="button" onClick={keep.enable} data-testid="keep-awake-enable" className="flex items-center gap-2 rounded-xl border border-gold/60 bg-night-800/90 px-4 py-2 text-[1.1rem] font-bold text-gold hover:bg-night-700">
           <Sun className="size-5" aria-hidden /> Mantener pantalla encendida

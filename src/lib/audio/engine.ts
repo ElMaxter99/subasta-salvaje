@@ -8,7 +8,7 @@
 
 export type SoundName =
   | 'click' | 'announce' | 'bid' | 'tick' | 'tickUrgent' | 'closed' | 'award' | 'finish'
-  | 'outbid' | 'leading' | 'won' | 'bidSent' | 'event' | 'join' | 'leave' | 'allReady' | 'unsold' | 'draw' | 'reaction';
+  | 'outbid' | 'leading' | 'won' | 'bidSent' | 'event' | 'join' | 'leave' | 'allReady' | 'unsold' | 'draw' | 'reaction' | 'yield' | 'grace';
 export type MusicScene = 'waiting' | 'lobby' | 'auction' | 'tense' | null;
 export type AudioRole = 'tv' | 'host' | 'play';
 
@@ -195,6 +195,8 @@ export function play(name: SoundName, n = 0): void {
       [79, 84].forEach((m, i) => tone(o, midi(m), t + 0.5 + i * 0.1, 0.35, { gain: 0.18 }));
       break;
     case 'reaction': tone(o, midi(88), t, 0.08, { gain: 0.05 }); break; // «pop» muy suave
+    case 'yield': tone(o, midi(72), t, 0.1, { type: 'triangle', gain: 0.1 }); tone(o, midi(65), t + 0.09, 0.22, { type: 'triangle', gain: 0.09 }); break; // «X ha cedido»: dos notas suaves que bajan
+    case 'grace': tone(o, midi(79), t, 0.12, { type: 'sine', gain: 0.1 }); tone(o, midi(79), t + 0.18, 0.2, { type: 'sine', gain: 0.08 }); break; // pausa de gracia: dos «ping» tranquilos
     case 'event': tone(o, midi(60), t, 0.5, { type: 'sawtooth', gain: 0.15, slideTo: midi(84) }); break;
   }
 }

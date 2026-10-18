@@ -37,12 +37,15 @@ describe('estadísticas por jugador al final', () => {
     const stat = (name: string) => fin.player_stats!.find((x) => x.player_id === playerByName(s0, name).id)!;
     expect(stat('Beto')).toMatchObject({ bids_count: 1, max_bid_cents: 300, auctions_bid: 1, wins: 1, spent_cents: 300, yields_count: 0 });
     expect(stat('Ana')).toMatchObject({ bids_count: 1, max_bid_cents: 100, auctions_bid: 1, wins: 0, spent_cents: 0, yields_count: 1 });
+    // Datos para los premios nuevos: Beto ganó por 200 (300 − 100) tras haber sido Ana la primera en pujar; Beto no fue superado.
+    expect(stat('Beto')).toMatchObject({ min_win_gap_cents: 200, first_bids: 0, comebacks: 0, max_bids_one_auction: 1 });
+    expect(stat('Ana')).toMatchObject({ min_win_gap_cents: null, first_bids: 1, comebacks: 0 });
   });
 
   it('premios: exigen un mínimo, comparten empates y no premian el cero', () => {
     const mk = (id: string, balance: number): Player => ({ id, name: id, color: '#fff', balance_cents: balance, purchases: [], sort_order: 0 }) as unknown as Player;
     const [a, b] = [mk('a', 500), mk('b', 500)];
-    const st = (id: string, o: Partial<PlayerStat>): PlayerStat => ({ player_id: id, bids_count: 0, max_bid_cents: 0, auctions_bid: 0, wins: 0, spent_cents: 0, yields_count: 0, ...o });
+    const st = (id: string, o: Partial<PlayerStat>): PlayerStat => ({ player_id: id, bids_count: 0, max_bid_cents: 0, auctions_bid: 0, wins: 0, spent_cents: 0, yields_count: 0, min_win_gap_cents: null, first_bids: 0, comebacks: 0, max_bids_one_auction: 0, ...o });
     expect(computeAwards([a, b], [st('a', {}), st('b', {})]).map((x) => x.id)).toEqual(['saver']); // todo a cero salvo el saldo
     const awards = computeAwards([a, b], [st('a', { wins: 2, spent_cents: 400, bids_count: 5, auctions_bid: 4 }), st('b', { wins: 2, yields_count: 1, auctions_bid: 3 })]);
     const by = (id: string) => awards.find((x) => x.id === id)!;
@@ -51,5 +54,50 @@ describe('estadísticas por jugador al final', () => {
     expect(by('hothead').players.map((p) => p.id)).toEqual(['a']);
     expect(by('peacemaker').players.map((p) => p.id)).toEqual(['b']);
     expect(by('unlucky').players.map((p) => p.id)).toEqual(['a']); // a: 4 subastas con pujas − 2 ganadas = 2 perdidas (b: 1, bajo el mínimo)
+  });
+
+  it('premios nuevos: remate ajustado, rápido, remontador y peleón, con mínimos y empates', () => {
+    const mk = (id: string): Player => ({ id, name: id, color: '#fff', balance_cents: 0, purchases: [], sort_order: 0 }) as unknown as Player;
+    const [a, b, c] = [mk('a'), mk('b'), mk('c')];
+    const st = (id: string, o: Partial<PlayerStat>): PlayerStat => ({ player_id: id, bids_count: 0, max_bid_cents: 0, auctions_bid: 0, wins: 0, spent_cents: 0, yields_count: 0, ...o });
+    const awards = computeAwards([a, b, c], [
+      st('a', { min_win_gap_cents: 100, first_bids: 3, comebacks: 2, max_bids_one_auction: 5 }),
+      st('b', { min_win_gap_cents: 100, first_bids: 3, comebacks: 1, max_bids_one_auction: 3 }),
+      st('c', { min_win_gap_cents: 900, first_bids: 1 }), // 9 Ohros de diferencia: no es «ajustado»
+    ]);
+    const by = (id: string) => awards.find((x) => x.id === id);
+    expect(by('tightest')!.players.map((p) => p.id)).toEqual(['a', 'b']); // empate compartido
+    expect(by('tightest')!.detail).toContain('solo');
+    expect(by('quick')!.players.map((p) => p.id)).toEqual(['a', 'b']);
+    expect(by('comeback')!.players.map((p) => p.id)).toEqual(['a']);
+    expect(by('brawler')!.players.map((p) => p.id)).toEqual(['a']);
+    // Bajo los mínimos no hay premios (datos antiguos sin los campos nuevos tampoco rompen)
+    const none = computeAwards([a, c], [st('a', { min_win_gap_cents: 900, first_bids: 1, max_bids_one_auction: 3 }), st('c', {})]).map((x) => x.id);
+    expect(none).not.toContain('tightest');
+    expect(none).not.toContain('quick');
+    expect(none).not.toContain('brawler');
+    expect(none).not.toContain('comeback');
+  });
+
+  it('SQL: remontador, rápido y peleón salen de los datos reales', async () => {
+    const host = newHost();
+    const { room_code: room } = await createGame(ctx, host, {
+      name: 'Stats2', play_mode: 'host', initial_budget_cents: 5000, players: [{ name: 'Ana' }, { name: 'Beto' }],
+      items: [1, 2].map((n) => ({ name: `Elemento ${n}`, description: '' })),
+    });
+    await act(ctx, room, host, { type: 'game.start' });
+    const s = await getHostState(ctx, room, host);
+    const ana = playerByName(s, 'Ana').id;
+    const beto = playerByName(s, 'Beto').id;
+    const a = await act(ctx, room, host, { type: 'auction.announce', item_id: s.items[0]!.id });
+    const auction = a.snapshot.auction!.id;
+    const bid = (pid: string, cents: number) => act(ctx, room, host, { type: 'auction.bid', auction_id: auction, player_id: pid, amount_cents: cents, idempotency_key: key() });
+    await bid(ana, 100); await bid(beto, 200); await bid(ana, 300); await bid(beto, 400); await bid(ana, 500);
+    await act(ctx, room, host, { type: 'auction.award', auction_id: auction, expected_winner_id: ana, expected_price_cents: 500, idempotency_key: key() });
+    await act(ctx, room, host, { type: 'game.finish' });
+    const fin = await getPublicState(ctx, room);
+    const stat = (id: string) => fin.player_stats!.find((x) => x.player_id === id)!;
+    expect(stat(ana)).toMatchObject({ min_win_gap_cents: 100, first_bids: 1, comebacks: 1, max_bids_one_auction: 3 });
+    expect(stat(beto)).toMatchObject({ min_win_gap_cents: null, first_bids: 0, comebacks: 0, max_bids_one_auction: 2 });
   });
 });

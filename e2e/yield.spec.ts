@@ -45,3 +45,64 @@ test('ceder la puja: el jugador cede desde su móvil y, si ceden todos menos el 
   expect(s.players.find((p: { name: string }) => p.name === 'Ana').balance_cents).toBe(1900);
   expect(s.players.find((p: { name: string }) => p.name === 'Beto').balance_cents).toBe(2000);
 });
+
+test('volver a pujar, pad con «Igualar +1» y «Subir al máximo», y pausa de gracia (panel + TV)', async ({ browser }) => {
+  const hostCtx = await browser.newContext({ viewport: { width: 1280, height: 1400 } });
+  const host = hostCtx.request;
+  expect((await host.post('/api/auth/demo')).ok()).toBeTruthy();
+  const created = await host.post('/api/games', {
+    data: { name: 'Retractar E2E', play_mode: 'mobile', initial_budget_cents: 2000, players: ['Ana', 'Beto', 'Carla'].map((name) => ({ name })) },
+  });
+  const code = (await created.json()).room_code as string;
+  const act = (data: Record<string, unknown>) => host.post(`/api/games/${code}/actions`, { data });
+  const state = async () => (await (await host.get(`/api/games/${code}`)).json()).snapshot;
+
+  const phone = async (name: string) => {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true });
+    const p = await ctx.newPage();
+    await p.goto('/join');
+    await p.getByLabel('Código de sala').fill(code);
+    await p.getByRole('button', { name: /Unirme/ }).click();
+    await p.waitForURL(`**/game/${code}/play`);
+    await p.getByRole('button', { name: new RegExp(name) }).first().click();
+    await p.getByRole('button', { name: /Sí, soy yo/ }).click();
+    return p;
+  };
+  const ana = await phone('Ana');
+  const beto = await phone('Beto');
+  await phone('Carla');
+  await expect.poll(async () => (await state()).players.filter((x: { claimed: boolean }) => x.claimed).length).toBe(3);
+  expect((await act({ type: 'image.set_initial_all', catalog_id: 'house' })).ok()).toBeTruthy();
+  expect((await act({ type: 'game.start' })).ok()).toBeTruthy();
+  expect((await act({ type: 'game.set_auto_award', enabled: true, seconds: 60 })).ok()).toBeTruthy();
+  expect((await act({ type: 'auction.announce', item_id: (await state()).items[0].id })).ok()).toBeTruthy();
+
+  // Pad: «Igualar +1» puja el mínimo siguiente
+  await ana.getByTestId('bid-match').click();
+  await expect.poll(async () => (await state()).auction?.current_bid_cents).toBe(100);
+
+  // Beto cede y se retracta: desaparece de «Han cedido» y vuelve a poder pujar
+  await expect(beto.getByTestId('yield-button')).toBeVisible({ timeout: 30_000 });
+  await beto.getByTestId('yield-button').click();
+  await beto.getByRole('button', { name: /Sí, cedo/ }).click();
+  await expect(beto.getByTestId('yielded-note')).toBeVisible();
+  await expect.poll(async () => (await state()).auction?.yielded?.length).toBe(1);
+  await beto.getByTestId('unyield-button').click();
+  await expect(beto.getByTestId('yielded-note')).toHaveCount(0, { timeout: 20_000 });
+  await expect.poll(async () => (await state()).auction?.yielded?.length).toBe(0);
+
+  // Pausa de gracia desde el panel del anfitrión; la TV avisa
+  const panel = await hostCtx.newPage();
+  await panel.goto(`/game/${code}/host`);
+  const tvPage = await (await browser.newContext({ viewport: { width: 1920, height: 1080 } })).newPage();
+  await tvPage.goto(`/game/${code}/screen`);
+  await panel.getByTestId('grace-button').click({ timeout: 60_000 });
+  await expect.poll(async () => (await state()).auction?.grace?.uses, { timeout: 20_000 }).toBe(1);
+  await expect(tvPage.getByTestId('tv-grace')).toContainText('Unos segundos más', { timeout: 30_000 });
+  // «Subir al máximo» pide confirmación (es la mitad o más del saldo) y puja todo el saldo (20 Ohros): como nadie puede superarlo, se adjudica al instante
+  await beto.getByTestId('bid-max').click();
+  await beto.getByRole('button', { name: /Sí, pujar/ }).click();
+  await expect.poll(async () => (await state()).auction?.current_bid_cents).toBe(2000);
+
+  await expect.poll(async () => (await state()).last_award?.price_cents, { timeout: 30_000 }).toBe(2000);
+});

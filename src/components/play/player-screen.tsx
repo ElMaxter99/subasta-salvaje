@@ -17,6 +17,7 @@ import type { ConnectionState } from '@/lib/client/use-live-game';
 import { useAutoAwardCountdown } from '@/lib/client/auto-award';
 import type { Player, PublicSnapshot, RuntimeInfo } from '@/lib/domain/types';
 import { Ohros } from '@/components/ui/ohros';
+import { YieldNotice } from '@/components/screen/yield-notice';
 import { OutbidAlert } from './outbid-alert';
 import { YieldButton } from './yield-button';
 import { AutoRunClock } from '@/components/screen/auto-run-clock';
@@ -115,6 +116,7 @@ export function PlayerScreen({
       </div>
       <main className="flex-1 space-y-4 px-4 pb-6 pt-4">
         <OutbidAlert snapshot={snapshot} me={me} />
+        <YieldNotice auction={auction ?? null} players={players} exceptId={me.id} className="text-sm" />
         <div className="flex justify-center empty:hidden"><AutoRunClock snapshot={snapshot} compact /></div>
         {game.status === 'paused' ? (
           <p role="status" className="flex items-center justify-center gap-2 rounded-2xl bg-gold px-4 py-3 text-base font-bold text-night-950">

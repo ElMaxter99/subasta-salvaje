@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { Gavel } from 'lucide-react';
+import { ChevronsUp, Gavel, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useToast } from '@/components/ui/toast';
@@ -77,6 +77,13 @@ export function BidPad({
     }
   }
 
+  // Acciones destacadas: «Igualar +1» = el mínimo siguiente (puja actual + 1 Ohro; sin pujas, la mínima) y «Subir al máximo» = todo el saldo
+  // (en Ohros enteros, redondeado hacia abajo). El máximo siempre supera la mitad del saldo, así que pasa por la confirmación.
+  const nextMin = wholeUp(Math.max(baseCents > 0 ? baseCents + 1 : minBidCents, minBidCents), integerBids);
+  const maxAmount = integerBids ? Math.floor(balanceCents / 100) * 100 : balanceCents;
+  const canNext = !locked && !busy && nextMin <= balanceCents;
+  const canMax = !locked && !busy && maxAmount >= nextMin && maxAmount > baseCents;
+
   function request(amount: number) {
     if (amount * 2 >= balanceCents) setConfirm(amount);
     else void send(amount);
@@ -89,6 +96,30 @@ export function BidPad({
           No te queda saldo para pujar
         </p>
       ) : null}
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(9.5rem,1fr))] gap-2">
+        <Button
+          variant="primary"
+          size="lg"
+          className="!px-2 !text-base leading-tight"
+          disabled={!canNext}
+          onClick={() => request(nextMin)}
+          aria-label={`Igualar y subir un Ohro: pujar ${formatOhros(nextMin)}`}
+          data-testid="bid-match"
+        >
+          <Plus className="size-5 shrink-0" aria-hidden /> Igualar +1 · <Ohros cents={nextMin} />
+        </Button>
+        <Button
+          variant="danger"
+          size="lg"
+          className="!px-2 !text-base leading-tight"
+          disabled={!canMax}
+          onClick={() => request(maxAmount)}
+          aria-label={`Subir al máximo: pujar todo tu saldo, ${formatOhros(maxAmount)}`}
+          data-testid="bid-max"
+        >
+          <ChevronsUp className="size-5 shrink-0" aria-hidden /> Subir al máximo · <Ohros cents={maxAmount} />
+        </Button>
+      </div>
       {/* Columnas por rem (no por px): con el texto al 200 % pasan a 2×2 en vez de desbordar */}
       <div className="grid grid-cols-[repeat(auto-fit,minmax(4.5rem,1fr))] gap-2">
         {QUICK.map((d) => {

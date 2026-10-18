@@ -280,7 +280,7 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
 
   if (tv && pod) {
     return (
-      <div className="relative flex h-full flex-col gap-[0.8rem] px-[2rem] py-[1rem]" data-testid="podium-view">
+      <div className="relative flex h-full flex-col gap-[0.8rem] px-[2rem] pb-[3.6rem] pt-[1rem]" data-testid="podium-view">
         <Confetti count={48} />
         <div className="relative z-10">{hero}</div>
         <div className="relative z-10 flex min-h-0 flex-1 items-end justify-center">
@@ -304,7 +304,7 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
 
   if (tv) {
     return (
-      <div className="relative flex h-full flex-col gap-[0.8rem] px-[2rem] py-[1rem]">
+      <div className="relative flex h-full flex-col gap-[0.8rem] px-[2rem] pb-[3.6rem] pt-[1rem]">
         <Confetti count={36} />
         <div className="relative z-10">{hero}</div>
         {teams ? <TeamsTable teams={teams} rule={rule} tv /> : null}
