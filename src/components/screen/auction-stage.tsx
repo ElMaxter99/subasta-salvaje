@@ -6,6 +6,7 @@ import { useAutoAwardCountdown, useCountdownTo } from '@/lib/client/auto-award';
 import { LobbyInvite } from './join-invite';
 import { Mascot } from '@/components/mascot/mascot';
 import './screen.css';
+import { allPlayersBroke } from '@/lib/domain/broke';
 import { Ohros } from '@/components/ui/ohros';
 
 function ItemVisual({ item }: { item: Auction['item'] }) {
@@ -137,6 +138,7 @@ function IdleStage({ snap }: { snap: PublicSnapshot }) {
   const lobby = game.status === 'lobby';
   const winner = award ? players.find((p) => p.id === award.player_id) : null;
   const nextIn = useCountdownTo(game.status === 'active' ? game.auto_run_next_at : null, snap.server_time);
+  const broke = game.status === 'active' && allPlayersBroke(snap);
   const lastRoundDone = game.status === 'active' && game.total_rounds > 0 && game.rounds_completed >= game.total_rounds;
   return (
     <div className="flex h-full flex-col items-center justify-center gap-[1.5rem] text-center" aria-live="polite">
@@ -148,6 +150,9 @@ function IdleStage({ snap }: { snap: PublicSnapshot }) {
             <Hourglass className="mx-auto size-[7rem] text-gold" />
           </div>
           <p className="font-display text-[4.2rem] leading-tight text-white">{lastRoundDone ? '¡Esa era la última ronda!' : 'Preparando la siguiente subasta…'}</p>
+          {broke && !lastRoundDone ? (
+            <p className="rounded-2xl bg-rose px-8 py-3 font-display text-[2.4rem] text-night-950" data-testid="tv-all-broke">💸 ¡Todos os habéis quedado sin saldo! La partida termina</p>
+          ) : null}
           {lastRoundDone ? (
             <p className="rounded-2xl bg-violet px-8 py-3 font-display text-[2.4rem] text-white" data-testid="tv-last-round">Enseguida, los resultados finales</p>
           ) : nextIn !== null ? (

@@ -29,6 +29,8 @@ test('subasta automática: anuncia sola tras la pausa, adjudica y, al agotar las
   await expect(tv.getByTestId('tv-next-auction')).toBeVisible({ timeout: 20_000 });
   // El servidor anuncia el primer elemento por su cuenta (lo dispara la lectura de la TV)
   await expect.poll(async () => (await state()).auction?.status, { timeout: 45_000 }).toBe('open');
+  // Mientras no hay pujas la TV avisa de cuánto queda para que se salte al siguiente elemento
+  await expect(tv.getByTestId('auto-run-skip-clock')).toContainText('se salta en', { timeout: 20_000 });
   const s = await state();
   const ana = s.players.find((p: { name: string }) => p.name === 'Ana').id;
   const bad = await act({ type: 'auction.bid', auction_id: s.auction.id, player_id: ana, amount_cents: 150, idempotency_key: crypto.randomUUID() });

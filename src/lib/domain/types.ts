@@ -148,6 +148,8 @@ export interface GameInfo {
   auto_run_next_at?: string | null;
   /** Subasta automática: elige los elementos al azar en vez de seguir el orden del catálogo. */
   auto_run_random?: boolean;
+  /** Por qué terminó la partida cuando no fue a mano ni por rondas: 'all_broke' = todos se quedaron sin saldo. */
+  finish_reason?: 'all_broke' | null;
   /** Efectos y música de la TV (los controla el anfitrión). */
   sound_enabled?: boolean;
   music_enabled?: boolean;

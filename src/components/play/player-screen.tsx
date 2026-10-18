@@ -16,6 +16,7 @@ import type { ConnectionState } from '@/lib/client/use-live-game';
 import { useAutoAwardCountdown } from '@/lib/client/auto-award';
 import type { Player, PublicSnapshot, RuntimeInfo } from '@/lib/domain/types';
 import { Ohros } from '@/components/ui/ohros';
+import { AutoRunClock } from '@/components/screen/auto-run-clock';
 import { formatAmount, formatOhros } from '@/lib/domain/money';
 
 /** Paso 2: móvil identificado como un jugador. */
@@ -90,6 +91,7 @@ export function PlayerScreen({
         <SoundToggle />
       </div>
       <main className="flex-1 space-y-4 px-4 pb-6 pt-4">
+        <div className="flex justify-center empty:hidden"><AutoRunClock snapshot={snapshot} compact /></div>
         {game.status === 'paused' ? (
           <p role="status" className="flex items-center justify-center gap-2 rounded-2xl bg-gold px-4 py-3 text-base font-bold text-night-950">
             <Pause className="size-5" aria-hidden /> Partida en pausa
@@ -100,6 +102,7 @@ export function PlayerScreen({
           <div className="space-y-3 rounded-3xl border border-white/10 bg-night-800 p-5 text-center">
             <Mascot variant="expr-celebrando" size="sm" tile motion="pop" className="mx-auto" />
             <h2 className="font-display text-2xl">La partida ha terminado</h2>
+            {game.finish_reason === 'all_broke' ? <p role="status" className="text-sm font-semibold text-rose" data-testid="all-broke-phone">💸 Todos os habéis quedado sin saldo, así que la partida termina aquí.</p> : null}
             <Link href={`/game/${roomCode}/results`} className="inline-flex min-h-14 items-center justify-center rounded-2xl bg-gold px-6 text-lg font-bold text-night-950">
               Ver resultados
             </Link>

@@ -216,6 +216,11 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
         {game.name} · {themeLabel(game.theme)}
         {ranking ? <> · Clasificación: <strong className="text-gold-soft">{rankingRuleLabel(rule)}</strong></> : null}
       </p>
+      {game.finish_reason === 'all_broke' ? (
+        <p role="status" data-testid="all-broke-banner" className={`mt-2 rounded-2xl bg-rose/20 px-5 py-2 font-bold text-rose ${tv ? 'text-[1.6rem]' : 'text-base sm:text-lg'}`}>
+          💸 Todos os habéis quedado sin saldo, así que la partida termina aquí aunque quedaran rondas.
+        </p>
+      ) : null}
       <GalleryBanner snapshot={snapshot} tv={tv} />
     </div>
   );

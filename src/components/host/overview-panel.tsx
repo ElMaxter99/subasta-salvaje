@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { CheckCircle2, Circle, Flag, Pause, Play, Rocket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { allPlayersBroke } from '@/lib/domain/broke';
 import { themeLabel } from '@/lib/domain/themes';
 import { Card, Dot, Notice, Pill, STATUS_LABEL } from './bits';
 import type { HostCtx } from './host-context';
@@ -43,6 +44,8 @@ export function OverviewPanel({ ctx, goTo }: { ctx: HostCtx; goTo: (s: 'jugadore
     <div className="space-y-4">
       {snapshot.game.image_mode === 'ai' && !runtime.aiConfigured ? <Notice tone="warn">Esta partida usa IA pero no hay proveedor configurado: las imágenes quedan en cola. Cambia al modo pegatinas en Ajustes (solo en la sala de espera) o configura IMAGE_PROVIDER.</Notice> : null}
       {snapshot.game.image_mode === 'stickers' ? <Notice tone="info">Modo pegatinas: cada compra añade el emoji del elemento a la casa (ilustraciones locales, sin IA, instantáneo y gratis).</Notice> : null}
+      {game.status === 'finished' && game.finish_reason === 'all_broke' ? <Notice tone="warn">💸 Todos los jugadores se quedaron sin saldo para pujar, así que la partida terminó antes de agotar las rondas.</Notice> : null}
+      {game.status === 'active' && allPlayersBroke(snapshot) ? <Notice tone="warn">💸 Ningún jugador tiene saldo para la puja mínima: la partida terminará sola en unos segundos.</Notice> : null}
       {failedJobs > 0 ? (
         <Notice tone="warn">
           Hay {failedJobs} trabajo{failedJobs > 1 ? 's' : ''} de imagen fallido{failedJobs > 1 ? 's' : ''}. La compra y el saldo están a salvo.{' '}
