@@ -60,10 +60,10 @@ export function PlayerScreen({
     <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col">
       <header className="sticky top-0 z-30 border-b border-white/10 bg-night-900/95 px-4 pb-3 pt-3 backdrop-blur">
         <div className="flex items-center justify-between gap-2">
-          <p className="flex min-w-0 items-center gap-2 text-lg font-bold">
+          <h1 className="flex min-w-0 items-center gap-2 text-lg font-bold">
             <span aria-hidden className="size-5 shrink-0 rounded-full border-2 border-white/40" style={{ background: me.color }} />
             <span className="truncate">{me.name}</span>
-          </p>
+          </h1>
           <button
             type="button"
             onClick={() => setConfirmLeave(true)}

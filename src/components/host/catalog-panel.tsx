@@ -141,6 +141,7 @@ export function CatalogPanel({ ctx }: { ctx: HostCtx }) {
                     type="file"
                     accept="image/png,image/jpeg,image/webp"
                     className="sr-only"
+                    aria-label={`Foto de ${it.name}`}
                     tabIndex={-1}
                     onChange={(e) => {
                       const file = e.target.files?.[0];

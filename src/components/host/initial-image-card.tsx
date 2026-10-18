@@ -100,7 +100,7 @@ export function InitialImageCard({ ctx }: { ctx: HostCtx }) {
         </div>
       ) : null}
 
-      <input ref={fileRef} id="initial-all-file" type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" tabIndex={-1} onChange={(e) => onFile(e.target.files?.[0])} />
+      <input ref={fileRef} id="initial-all-file" type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" aria-label="Imagen inicial común" tabIndex={-1} onChange={(e) => onFile(e.target.files?.[0])} />
       <div className="grid gap-2 sm:grid-cols-2">
         <Button size="lg" variant="primary" disabled={disabled} loading={busy === 'initial-all-upload'} onClick={() => fileRef.current?.click()}>
           <Upload className="size-5" aria-hidden /> Subir una foto para todos

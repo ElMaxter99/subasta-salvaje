@@ -121,6 +121,7 @@ test('accesibilidad: portada, acceso, asistente, panel del anfitrión, móvil de
   await p.getByLabel('Código de sala').fill(code);
   await p.getByRole('button', { name: /Unirme/ }).click();
   await p.waitForURL(`**/game/${code}/play`);
+  await expect(p.getByRole('heading', { name: /Quién eres/ })).toBeVisible();
   await expectClean(p, 'móvil: elegir jugador');
   await p.getByRole('button', { name: /Ana/ }).first().click();
   await p.getByRole('button', { name: /Sí, soy yo/ }).click();
@@ -131,7 +132,7 @@ test('accesibilidad: portada, acceso, asistente, panel del anfitrión, móvil de
   await expect(p.getByRole('button', { name: /más 1 Ohro/ }).first()).toBeVisible();
   await expectClean(p, 'móvil: subasta', { skipLink: true });
   const small = await p.evaluate(() => [...document.querySelectorAll('button, a[href], input, select, textarea')]
-    .filter((el) => { const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0 && !el.closest('[aria-hidden=true]'); })
+    .filter((el) => { const r = el.getBoundingClientRect(); return r.width > 1 && r.height > 1 && !el.closest('[aria-hidden=true]'); })
     .map((el) => ({ el: `${el.tagName.toLowerCase()} ${(el.textContent ?? '').trim().slice(0, 30)}`, h: Math.round(el.getBoundingClientRect().height), w: Math.round(el.getBoundingClientRect().width) }))
     .filter((x) => x.h < 44 || x.w < 44));
   expect(small, `objetivos táctiles < 44 px: ${JSON.stringify(small)}`).toEqual([]);

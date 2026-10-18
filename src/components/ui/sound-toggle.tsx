@@ -11,7 +11,7 @@ import { useAudioState } from '@/lib/audio/use-audio';
 export function SoundToggle({ music = false, className = '', big = false, mutedByHost = false }: { music?: boolean; className?: string; big?: boolean; mutedByHost?: boolean }) {
   const a = useAudioState();
   const waiting = a.enabled && !a.armed;
-  const btn = `inline-flex items-center gap-2 rounded-xl border border-white/15 bg-night-800 font-bold hover:border-gold ${big ? 'px-5 py-2.5 text-[1.2rem]' : 'px-3 py-2 text-sm'}`;
+  const btn = `inline-flex items-center gap-2 rounded-xl border border-white/15 bg-night-800 font-bold hover:border-gold ${big ? 'px-5 py-2.5 text-[1.2rem]' : 'min-h-11 px-3 py-2 text-sm'}`;
   return (
     <div className={`flex flex-wrap items-center gap-2 ${className}`} data-testid="sound-toggle">
       {waiting ? (
