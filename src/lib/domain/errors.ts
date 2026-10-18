@@ -63,6 +63,7 @@ export const ERROR_MESSAGES: Record<string, string> = {
   already_joined: 'Este móvil ya está identificado en la partida. Sal primero si quieres cambiar de jugador.',
   player_taken: 'Ese jugador ya está conectado desde otro móvil.',
   not_player: 'Tu móvil no está identificado en esta partida. Vuelve a unirte.',
+  sealed_already_bid: 'Sobre cerrado: solo puedes pujar una vez en esta subasta.',
   already_leading: 'Ya vas ganando esta puja.',
   mobile_disabled: 'Esta partida no admite jugadores desde el móvil.',
   duplicate_name: 'Ya existe un jugador con ese nombre.',

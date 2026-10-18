@@ -9,6 +9,11 @@ const name = z
   .string()
   .transform((s) => s.normalize('NFKC').replace(/[\p{Cc}\p{Cf}]/gu, '').replace(/\s+/g, ' ').trim())
   .pipe(z.string().min(1).max(40));
+/** Etiqueta de equipo: misma normalización que el nombre, pero puede quedar vacía (= sin equipo). */
+const team = z
+  .string()
+  .transform((s) => s.normalize('NFKC').replace(/[\p{Cc}\p{Cf}]/gu, '').replace(/\s+/g, ' ').trim())
+  .pipe(z.string().max(20));
 const idempotencyKey = z.string().min(8).max(100);
 const cents = z.number().int().min(1).max(100_000_000);
 
@@ -58,6 +63,10 @@ export const actionSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('player.add'), name, color: color.optional() }),
   z.object({ type: z.literal('player.update'), player_id: uuid, name: name.optional(), color: color.optional() }),
   z.object({ type: z.literal('player.remove'), player_id: uuid }),
+  /** Saldo inicial de UN jugador (céntimos enteros, 0..100.000.000). Solo en la sala de espera. */
+  z.object({ type: z.literal('player.set_budget'), player_id: uuid, budget_cents: z.number().int().min(0).max(100_000_000) }),
+  /** Etiqueta de equipo (≤ 20 caracteres; vacía = sin equipo). Solo en la sala de espera. */
+  z.object({ type: z.literal('player.set_team'), player_id: uuid, team }),
   z.object({ type: z.literal('player.reorder'), ordered_ids: z.array(uuid).min(1).max(12) }),
   z.object({ type: z.literal('votes.adjust'), player_id: uuid, delta: z.union([z.literal(1), z.literal(-1)]) }),
   // Catálogo
@@ -68,8 +77,8 @@ export const actionSchema = z.discriminatedUnion('type', [
   /** Quita la foto del elemento (subida o generada). Para subir una se usa /item-image (multipart). */
   z.object({ type: z.literal('item.clear_image'), item_id: uuid }),
   // Subasta
-  z.object({ type: z.literal('auction.announce'), item_id: uuid, wild_event: z.enum(['none', 'blind', 'double']).optional() }),
-  z.object({ type: z.literal('auction.announce_random'), wild_event: z.enum(['none', 'blind', 'double']).optional() }),
+  z.object({ type: z.literal('auction.announce'), item_id: uuid, wild_event: z.enum(['none', 'blind', 'double', 'flash', 'sealed']).optional() }),
+  z.object({ type: z.literal('auction.announce_random'), wild_event: z.enum(['none', 'blind', 'double', 'flash', 'sealed']).optional() }),
   z.object({ type: z.literal('auction.bid'), auction_id: uuid, player_id: uuid, amount_cents: cents, idempotency_key: idempotencyKey }),
   z.object({ type: z.literal('auction.undo_bid'), auction_id: uuid, bid_id: uuid }),
   z.object({ type: z.literal('auction.close'), auction_id: uuid }),
