@@ -5,7 +5,7 @@ import { HostSoundControls } from './sound-controls';
 import { useGameAudio } from '@/lib/audio/use-audio';
 import { useRef, useState, type ComponentType } from 'react';
 import Link from 'next/link';
-import { Gavel, History, ImageIcon, LayoutDashboard, Package, Settings, Users } from 'lucide-react';
+import { Clapperboard, Gavel, History, ImageIcon, LayoutDashboard, Package, Settings, Users } from 'lucide-react';
 import { ConnectionBadge, DemoBanner } from '@/components/ui/status';
 import { AiUsageChip } from './ai-usage-chip';
 import { ToastProvider } from '@/components/ui/toast';
@@ -134,6 +134,9 @@ function HostInner({ roomCode, initial, runtime, identity }: Props) {
             })}
             <Link href={`/game/${roomCode}/history`} className="hidden min-h-12 items-center gap-3 rounded-2xl px-4 font-bold text-white/70 hover:bg-white/10 hover:text-white md:flex">
               <History className="size-5" aria-hidden /> Historial
+            </Link>
+            <Link href={`/game/${roomCode}/replay`} className="hidden min-h-12 items-center gap-3 rounded-2xl px-4 font-bold text-white/70 hover:bg-white/10 hover:text-white md:flex">
+              <Clapperboard className="size-5" aria-hidden /> Repetición
             </Link>
           </div>
         </nav>

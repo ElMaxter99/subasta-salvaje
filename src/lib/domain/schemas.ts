@@ -106,6 +106,9 @@ export const playerBidSchema = z.object({
 });
 /** Voto de la galería final desde el móvil del jugador. */
 export const galleryVoteSchema = z.object({ target_id: uuid });
+/** Reacciones del móvil a la TV: lista cerrada (la misma que valida `ss_send_reaction`). */
+export const REACTION_EMOJIS = ['👏', '😱', '😂', '🔥', '😭', '🤑', '🎉', '🤯'] as const;
+export const reactionSchema = z.object({ emoji: z.enum(REACTION_EMOJIS) });
 export const joinSchema = z.union([
   z.object({ player_id: uuid }),
   z.object({ name: name }),

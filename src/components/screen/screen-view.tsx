@@ -12,6 +12,7 @@ import { themeLabel } from '@/lib/domain/themes';
 import { AuctionStage } from './auction-stage';
 import { AwardOverlay } from './award-overlay';
 import { UnsoldOverlay } from './unsold-overlay';
+import { ReactionOverlay } from './reaction-overlay';
 import { KeepAwakeVideo, useKeepAwake } from './use-keep-awake';
 import { PlayerCard } from './player-card';
 import { WildTaxBanner } from './wild-tax-banner';
@@ -193,6 +194,7 @@ export function ScreenView({ roomCode, initial, runtime }: { roomCode: string; i
 
       <AwardOverlay award={snapshot.last_award} players={players} />
       <UnsoldOverlay unsold={snapshot.last_unsold} />
+      <ReactionOverlay reactions={snapshot.reactions} players={players} />
       <WildTaxBanner snapshot={snapshot} />
       <KeepAwakeVideo videoRef={keep.videoRef} onPlay={keep.onPlay} onPause={keep.onPause} />
       {controls}

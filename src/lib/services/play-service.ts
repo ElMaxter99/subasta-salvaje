@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { DomainError } from '@/lib/domain/errors';
-import { galleryVoteSchema, joinSchema, playerBidSchema, PLAYER_COLORS, roomCodeSchema } from '@/lib/domain/schemas';
+import { galleryVoteSchema, joinSchema, playerBidSchema, reactionSchema, PLAYER_COLORS, roomCodeSchema } from '@/lib/domain/schemas';
 import type { PublicSnapshot } from '@/lib/domain/types';
 import type { AppContext } from './context';
 import { getPublicState } from './game-service';
@@ -82,5 +82,15 @@ export async function galleryVote(ctx: Ctx, roomCode: string, token: string | un
   if (!token) throw new DomainError('not_player');
   const code = room(roomCode);
   await ctx.db.rpc('ss_gallery_vote', { target_id: parsed.data.target_id, room_code: code, token_hash: hashToken(token) });
+  return publishAfter(ctx, code);
+}
+
+/** Reacción con emoji desde el móvil (lista cerrada, con límites en SQL). La identidad sale del token, nunca del cuerpo. */
+export async function sendReaction(ctx: Ctx, roomCode: string, token: string | undefined | null, rawBody: unknown): Promise<PublicSnapshot> {
+  const parsed = reactionSchema.safeParse(rawBody);
+  if (!parsed.success) throw new DomainError('invalid_input');
+  if (!token) throw new DomainError('not_player');
+  const code = room(roomCode);
+  await ctx.db.rpc('ss_send_reaction', { emoji: parsed.data.emoji, room_code: code, token_hash: hashToken(token) });
   return publishAfter(ctx, code);
 }

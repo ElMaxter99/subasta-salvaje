@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Crown, LogOut, Pause, Trophy } from 'lucide-react';
 import { BidPad } from './bid-pad';
+import { ReactionBar } from './reaction-bar';
 import { GalleryVote } from './gallery-vote';
 import { ItemIcon, Mascot } from '@/components/mascot/mascot';
 import { PlayerMascot } from './player-mascot';
@@ -103,6 +104,9 @@ export function PlayerScreen({
             <Link href={`/game/${roomCode}/results`} className="inline-flex min-h-14 items-center justify-center rounded-2xl bg-gold px-6 text-lg font-bold text-night-950">
               Ver resultados
             </Link>
+            <a href={`/api/public/games/${roomCode}/podium?download=1`} download={`podio-${roomCode}.png`} className="block text-sm font-bold text-violet-soft underline-offset-4 hover:underline">
+              Descargar imagen del podio
+            </a>
           </div>
         ) : null}
 
@@ -230,6 +234,8 @@ export function PlayerScreen({
             ) : null}
           </>
         ) : null}
+
+        {game.status === 'active' ? <ReactionBar roomCode={roomCode} onNotPlayer={onNotPlayer} /> : null}
       </main>
 
       {open ? (

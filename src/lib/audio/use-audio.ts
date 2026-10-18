@@ -48,6 +48,15 @@ export function useGameAudio(snap: PublicSnapshot, role: Extract<AudioRole, 'tv'
     if (before && unsoldId !== null && unsoldId !== before.id) play('unsold');
   }, [unsoldId]);
 
+  // Reacciones de los móviles: un «pop» suave (solo TV) cuando llega alguna nueva; las que ya estaban al abrir no suenan.
+  const reactionMax = snap.reactions?.length ? Math.max(...snap.reactions.map((r) => r.id)) : 0;
+  const prevReaction = useRef<number | null>(null);
+  useEffect(() => {
+    const before = prevReaction.current;
+    prevReaction.current = reactionMax;
+    if (role === 'tv' && before !== null && reactionMax > before) play('reaction');
+  }, [reactionMax, role]);
+
   const awardId = last_award ? String(last_award.purchase_id) : null;
   useEffect(() => {
     const cur = { id: auction?.id ?? null, bids: auction ? (auction.bids_count ?? auction.bids.length) : 0, status: auction?.status ?? null, award: awardId, game: game.status, tick: countdown };

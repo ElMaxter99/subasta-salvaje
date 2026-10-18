@@ -11,6 +11,7 @@ import { formatOhros } from '@/lib/domain/money';
 import { joinedPlayers } from '@/lib/domain/players';
 import { computeHighlights, computePodium, computeRanking, rankingRuleLabel } from '@/lib/domain/ranking';
 import { Podium } from './podium';
+import { PodiumDownload } from './podium-download';
 import { themeLabel } from '@/lib/domain/themes';
 import { Confetti } from './award-overlay';
 import { ItemIcon, Mascot, Sparkles } from '@/components/mascot/mascot';
@@ -268,6 +269,7 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
     <div className="relative mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-8 sm:px-6">
       <Confetti count={30} />
       <div className="relative z-10">{hero}</div>
+      <div className="relative z-10 flex justify-center"><PodiumDownload roomCode={game.room_code} /></div>
 
       {ranking ? (
         <section aria-labelledby="clasificacion" className="relative z-10 rounded-3xl border border-gold/30 bg-night-800/80 p-4 sm:p-6">
