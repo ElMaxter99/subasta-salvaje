@@ -134,7 +134,7 @@ export function computePodium(players: Player[], votes: Map<string, number>): { 
 }
 
 export interface PlayerAward {
-  id: 'shark' | 'spender' | 'saver' | 'hothead' | 'peacemaker' | 'unlucky';
+  id: 'shark' | 'spender' | 'saver' | 'hothead' | 'peacemaker' | 'unlucky' | 'tightest' | 'quick' | 'comeback' | 'brawler';
   emoji: string;
   title: string;
   /** Qué se ha medido, para mostrarlo junto al título («5 elementos»). */
@@ -166,5 +166,11 @@ export function computeAwards(players: Player[], stats: PlayerStat[] | undefined
   pick('hothead', '🔥', 'El pujón', (r) => r.st.bids_count, 3, (v) => `${v} pujas`);
   pick('peacemaker', '🕊️', 'El pacifista', (r) => r.st.yields_count, 1, (v) => `cedió ${v} ${v === 1 ? 'vez' : 'veces'}`);
   pick('unlucky', '😅', 'El gafe', (r) => r.st.auctions_bid - r.st.wins, 2, (v) => `${v} subastas perdidas`);
+  // «El remate más ajustado»: la victoria con menos diferencia sobre la mejor puja rival (solo si fue de verdad por poco: ≤ 3 Ohros).
+  // Se mide en negativo para reutilizar `pick` (gana el menor); los jugadores sin victoria con rival no cuentan.
+  pick('tightest', '⚖️', 'El remate más ajustado', (r) => (r.st.min_win_gap_cents != null && r.st.min_win_gap_cents <= 300 ? -r.st.min_win_gap_cents : -Infinity), -300, (v) => `ganó por solo ${formatOhros(-v)}`);
+  pick('quick', '⚡', 'El rápido', (r) => r.st.first_bids ?? 0, 2, (v) => `primera puja en ${v} subastas`);
+  pick('comeback', '🔄', 'El remontador', (r) => r.st.comebacks ?? 0, 1, (v) => `ganó tras ser superado ${v} ${v === 1 ? 'vez' : 'veces'}`);
+  pick('brawler', '🥊', 'El peleón', (r) => r.st.max_bids_one_auction ?? 0, 4, (v) => `${v} pujas en una sola subasta`);
   return out;
 }

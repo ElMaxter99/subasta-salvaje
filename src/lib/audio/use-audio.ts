@@ -57,6 +57,18 @@ export function useGameAudio(snap: PublicSnapshot, role: Extract<AudioRole, 'tv'
     if (role === 'tv' && before !== null && reactionMax > before) play('reaction');
   }, [reactionMax, role]);
 
+  // «X ha cedido» y pausa de gracia: un sonido discreto cuando aparece una cesión nueva / se usa una gracia más (no al abrir la pantalla)
+  const yieldedN = auction?.status === 'open' ? (auction.yielded?.length ?? 0) : 0;
+  const graceN = auction?.status === 'open' ? (auction.grace?.uses ?? 0) : 0;
+  const prevYG = useRef<{ id: string | null; y: number; g: number } | null>(null);
+  useEffect(() => {
+    const before = prevYG.current;
+    prevYG.current = { id: auction?.id ?? null, y: yieldedN, g: graceN };
+    if (!before || before.id !== (auction?.id ?? null)) return;
+    if (yieldedN > before.y) play('yield');
+    else if (graceN > before.g) play('grace');
+  }, [auction?.id, yieldedN, graceN]);
+
   const awardId = last_award ? String(last_award.purchase_id) : null;
   useEffect(() => {
     const cur = { id: auction?.id ?? null, bids: auction ? (auction.bids_count ?? auction.bids.length) : 0, status: auction?.status ?? null, award: awardId, game: game.status, tick: countdown };
@@ -91,8 +103,16 @@ export function usePlayerSounds(snap: PublicSnapshot, me: Player): void {
   const open = auction?.status === 'open' && game.status === 'active';
   const leading = Boolean(open && !auction!.hidden && auction!.current_bidder_id === me.id);
   const won = last_award?.player_id === me.id ? String(last_award.purchase_id) : null;
+  const iYielded = Boolean(open && auction!.yielded?.includes(me.id));
+  const prevY = useRef<boolean | null>(null);
   const prev = useRef<{ leading: boolean; won: string | null; id: string | null } | null>(null);
   useEffect(() => { initAudio('play'); setGate({ effects: true, music: false }); }, []);
+  // Confirmación discreta al ceder (y nada al retractarte): solo cuando pasa de «no cedí» a «cedí» en esta sesión.
+  useEffect(() => {
+    const before = prevY.current;
+    prevY.current = iYielded;
+    if (before === false && iYielded) play('yield');
+  }, [iYielded]);
   useEffect(() => {
     const p = prev.current;
     prev.current = { leading, won, id: auction?.id ?? null };

@@ -175,6 +175,7 @@ function LiveAuction({ ctx, auction, onAward, onUndo, onCancel }: { ctx: HostCtx
             ⚡ {countdown > 0 ? `Se adjudicará en ${countdown} s` : 'Adjudicando…'}
           </p>
         ) : null}
+        {open && playing && hasBids && countdown !== null ? <GraceControl ctx={ctx} auction={auction} /> : null}
       </Card>
 
       {open && playing ? (
@@ -230,6 +231,37 @@ function LiveAuction({ ctx, auction, onAward, onUndo, onCancel }: { ctx: HostCtx
         </Button>
       </div>
     </>
+  );
+}
+
+/** Pausa de gracia: aplaza unos segundos la adjudicación por tiempo (p. ej. a alguien se le ha ido el móvil). Máximo 3 por subasta; nunca toca saldos. */
+function GraceControl({ ctx, auction }: { ctx: HostCtx; auction: Auction }) {
+  const { snapshot, busy, run } = ctx;
+  const [who, setWho] = useState('');
+  const uses = auction.grace?.uses ?? 0;
+  const max = auction.grace?.max ?? 3;
+  const left = max - uses;
+  return (
+    <div className="mt-3 flex flex-wrap items-center gap-2 rounded-xl bg-night-900 px-3 py-2" data-testid="host-grace">
+      <label className="flex items-center gap-2 text-sm font-semibold text-white/80">
+        Esperar a
+        <select value={who} onChange={(e) => setWho(e.target.value)} className="min-h-11 rounded-lg bg-night-950 px-2 py-1" aria-label="Jugador al que se espera">
+          <option value="">cualquiera</option>
+          {snapshot.players.filter((p) => p.joined !== false).map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
+        </select>
+      </label>
+      <Button
+        size="md"
+        variant="secondary"
+        disabled={busy !== null || left <= 0}
+        loading={busy === 'grace'}
+        onClick={() => run('grace', { type: 'auction.grace', auction_id: auction.id, seconds: 10, ...(who ? { player_id: who } : {}) }, '+10 s de gracia')}
+        data-testid="grace-button"
+      >
+        ⏳ +10 s de gracia
+      </Button>
+      <span className="text-xs text-white/60">{left > 0 ? `Quedan ${left} de ${max} en esta subasta.` : 'Ya has usado las pausas de gracia de esta subasta.'}</span>
+    </div>
   );
 }
 

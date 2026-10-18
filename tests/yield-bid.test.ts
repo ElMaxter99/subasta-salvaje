@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { getHostState, getPublicState } from '@/lib/services/game-service';
-import { joinGame, playerBid, yieldBid } from '@/lib/services/play-service';
+import { joinGame, playerBid, unyieldBid, yieldBid } from '@/lib/services/play-service';
 import { act, ensureInitialImages, key, makeCtx, newHost, playerByName, type TestCtx } from './helpers';
 
 let ctx: TestCtx;
@@ -26,7 +26,8 @@ async function setup(extra: Record<string, unknown> = {}) {
   const auction = a.snapshot.auction!.id;
   const bid = (who: string, cents: number) => playerBid(ctx, room, tokens[who], { auction_id: auction, amount_cents: cents, idempotency_key: key() });
   const yld = (who: string) => yieldBid(ctx, room, tokens[who], { auction_id: auction });
-  return { host, room, auction, s0, bid, yld };
+  const unyld = (who: string) => unyieldBid(ctx, room, tokens[who], { auction_id: auction });
+  return { host, room, auction, s0, bid, yld, unyld };
 }
 
 describe('ceder la puja', () => {
@@ -84,5 +85,66 @@ describe('ceder la puja', () => {
     await t.bid('Beto', 100);
     await act(ctx, t.room, t.host, { type: 'auction.cancel', auction_id: t.auction });
     await expect(t.yld('Carla')).rejects.toMatchObject({ code: 'auction_closed' });
+  });
+});
+
+describe('volver a pujar (retractarse de ceder)', () => {
+  it('quita la cesión, vuelve a poder pujar y es idempotente', async () => {
+    const t = await setup();
+    await t.bid('Ana', 100);
+    await t.yld('Beto');
+    expect((await getPublicState(ctx, t.room)).auction?.yielded).toEqual([playerByName(t.s0, 'Beto').id]);
+    await t.unyld('Beto');
+    expect((await getPublicState(ctx, t.room)).auction?.yielded).toEqual([]);
+    await t.unyld('Beto'); // no había cedido: no falla
+    await t.bid('Beto', 300); // ya puede pujar
+    const ev = await ctx.db.pg.query("select 1 from game_events where event_type = 'bid_unyielded'");
+    expect(ev.rows).toHaveLength(1);
+  });
+
+  it('nunca tras provocar la adjudicación inmediata (cobro único) ni el elemento perdido', async () => {
+    const t = await setup({ auto_award: true });
+    await t.bid('Ana', 300);
+    await t.yld('Beto');
+    await t.yld('Carla'); // adjudica al instante
+    await expect(t.unyld('Carla')).rejects.toMatchObject({ code: 'unyield_closed' });
+    const s = await getHostState(ctx, t.room, t.host);
+    expect(playerByName(s, 'Ana').balance_cents).toBe(1700);
+    expect(playerByName(s, 'Carla').balance_cents).toBe(2000);
+
+    const u = await setup();
+    await act(ctx, u.room, u.host, { type: 'game.set_auto_run', enabled: true, gap_seconds: 4, idle_seconds: 60, auto_award_seconds: 4 });
+    await u.yld('Ana'); await u.yld('Beto'); await u.yld('Carla'); // elemento perdido
+    await expect(u.unyld('Carla')).rejects.toMatchObject({ code: 'unyield_closed' });
+    expect((await getHostState(ctx, u.room, u.host)).items.filter((i) => i.status === 'lost')).toHaveLength(1);
+  });
+
+  it('si otros cedieron después, solo en los primeros 8 s; si nadie cedió después, siempre mientras siga abierta', async () => {
+    const t = await setup();
+    await t.bid('Ana', 100);
+    await t.yld('Beto');
+    await t.yld('Carla');
+    await ctx.db.pg.query("update auction_yields set created_at = now() - interval '30 seconds' where auction_id = $1 and player_id = $2", [t.auction, playerByName(t.s0, 'Beto').id]);
+    await expect(t.unyld('Beto')).rejects.toMatchObject({ code: 'unyield_too_late' }); // Carla cedió después y han pasado > 8 s
+    await t.unyld('Carla'); // la última en ceder sí puede (nadie cedió después)
+    const u = await setup();
+    await u.bid('Ana', 100);
+    await u.yld('Beto');
+    await u.yld('Carla');
+    await u.unyld('Beto'); // < 8 s: se permite
+  });
+
+  it('errores: sin identificar, subasta cancelada y partida en pausa', async () => {
+    const t = await setup();
+    await expect(unyieldBid(ctx, t.room, null, { auction_id: t.auction })).rejects.toMatchObject({ code: 'not_player' });
+    await expect(unyieldBid(ctx, t.room, 'x'.repeat(30), { auction_id: t.auction })).rejects.toMatchObject({ code: 'not_player' });
+    await expect(unyieldBid(ctx, t.room, 'x', { auction_id: 'no-uuid' })).rejects.toMatchObject({ code: 'invalid_input' });
+    await t.yld('Ana');
+    await act(ctx, t.room, t.host, { type: 'game.pause' });
+    await expect(t.unyld('Ana')).rejects.toMatchObject({ code: 'game_paused' });
+    await act(ctx, t.room, t.host, { type: 'game.resume' });
+    await t.bid('Beto', 100);
+    await act(ctx, t.room, t.host, { type: 'auction.cancel', auction_id: t.auction });
+    await expect(t.unyld('Ana')).rejects.toMatchObject({ code: 'unyield_closed' });
   });
 });

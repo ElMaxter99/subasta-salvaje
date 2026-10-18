@@ -86,6 +86,8 @@ export const actionSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('auction.close'), auction_id: uuid }),
   z.object({ type: z.literal('auction.reopen'), auction_id: uuid }),
   z.object({ type: z.literal('auction.cancel'), auction_id: uuid }),
+  /** Pausa de gracia: aplaza 1..30 s (10 por defecto) la adjudicación por tiempo; `player_id` = a quién se espera (opcional, solo informativo). */
+  z.object({ type: z.literal('auction.grace'), auction_id: uuid, seconds: z.number().int().min(1).max(30).default(10), player_id: uuid.optional() }),
   z.object({ type: z.literal('auction.clear') }),
   z.object({ type: z.literal('auction.award'), auction_id: uuid, expected_winner_id: uuid, expected_price_cents: z.number().int().min(0).max(100_000_000), idempotency_key: idempotencyKey }),
   z.object({ type: z.literal('auction.undo_award'), purchase_id: uuid, reason: z.string().trim().max(200).optional(), idempotency_key: idempotencyKey }),
@@ -117,6 +119,8 @@ export const playerBidSchema = z.object({
 });
 /** «Ceder la puja»: el jugador deja de pujar por la subasta en curso. */
 export const yieldBidSchema = z.object({ auction_id: uuid });
+/** «Volver a pujar»: retractarse de ceder. */
+export const unyieldBidSchema = yieldBidSchema;
 /** Voto de la galería final desde el móvil del jugador. */
 export const galleryVoteSchema = z.object({ target_id: uuid });
 /** Reacciones del móvil a la TV: lista cerrada (la misma que valida `ss_send_reaction`). */

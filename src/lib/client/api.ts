@@ -132,6 +132,10 @@ export async function yieldBidRequest(roomCode: string, auctionId: string): Prom
   return parse(await fetch(`/api/play/${roomCode}/yield`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ auction_id: auctionId }) }));
 }
 
+export async function unyieldBidRequest(roomCode: string, auctionId: string): Promise<{ snapshot: import('@/lib/domain/types').PublicSnapshot }> {
+  return parse(await fetch(`/api/play/${roomCode}/unyield`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ auction_id: auctionId }) }));
+}
+
 export async function leaveGameRequest(roomCode: string): Promise<void> {
   await parse(await fetch(`/api/play/${roomCode}/leave`, { method: 'POST' }));
 }

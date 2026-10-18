@@ -9,6 +9,7 @@ import './screen.css';
 import { allPlayersBroke } from '@/lib/domain/broke';
 import { Ohros } from '@/components/ui/ohros';
 import { AutoRunClock } from './auto-run-clock';
+import { YieldNotice } from './yield-notice';
 
 function ItemVisual({ item }: { item: Auction['item'] }) {
   return (
@@ -30,6 +31,8 @@ function ItemVisual({ item }: { item: Auction['item'] }) {
 /** Centro de la subasta en curso (abierta o cerrada): título y puja arriba, la imagen en medio y quién gana abajo. Los jugadores la rodean. */
 export function AuctionCenter({ snap, auction, players, compact }: { snap: PublicSnapshot; auction: Auction; players: Player[]; compact: boolean }) {
   const countdown = useAutoAwardCountdown(snap);
+  const graceLeft = useCountdownTo(auction.grace?.until ?? null, snap.server_time);
+  const graceName = auction.grace?.player_id ? players.find((p) => p.id === auction.grace?.player_id)?.name : undefined;
   const closed = auction.status === 'closed';
   const price = auction.current_bid_cents;
   const leader = players.find((p) => p.id === auction.current_bidder_id);
@@ -121,6 +124,12 @@ export function AuctionCenter({ snap, auction, players, compact }: { snap: Publi
         {(auction.yielded?.length ?? 0) > 0 ? (
           <p className="text-[1.3rem] font-semibold text-white/70" data-testid="tv-yielded">
             🏳️ Han cedido: {(auction.yielded ?? []).map((id) => players.find((p) => p.id === id)?.name ?? '?').join(', ')}
+          </p>
+        ) : null}
+        <YieldNotice auction={auction} players={players} className="mx-auto w-fit text-[1.3rem]" />
+        {auction.status === 'open' && graceLeft !== null && graceLeft > 0 ? (
+          <p role="status" className="mx-auto w-fit rounded-xl bg-gold/20 px-4 py-1 text-[1.4rem] font-bold text-gold-soft" data-testid="tv-grace">
+            ⏳ Unos segundos más{graceName ? ` para ${graceName}` : ''}
           </p>
         ) : null}
         {recent.length > 0 ? (

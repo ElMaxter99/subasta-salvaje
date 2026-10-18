@@ -1,14 +1,14 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Flag } from 'lucide-react';
+import { Flag, Undo2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useToast } from '@/components/ui/toast';
-import { ApiError, yieldBidRequest } from '@/lib/client/api';
+import { ApiError, unyieldBidRequest, yieldBidRequest } from '@/lib/client/api';
 import type { PublicSnapshot } from '@/lib/domain/types';
 
-/** «Ceder la puja»: el jugador avisa de que NO va a seguir pujando por este elemento (irrevocable) y así la subasta se agiliza. */
+/** «Ceder la puja»: el jugador avisa de que NO va a seguir pujando por este elemento y así la subasta se agiliza. */
 export function YieldButton({
   roomCode,
   auctionId,
@@ -32,11 +32,36 @@ export function YieldButton({
     if (yielded && justYielded.current) noteRef.current?.focus();
   }, [yielded]);
 
+  async function onUnyield() {
+    if (busy) return;
+    setBusy(true);
+    try {
+      const r = await unyieldBidRequest(roomCode, auctionId);
+      navigator.vibrate?.(30);
+      toast.success('Vuelves a pujar', { announce: false });
+      onSnapshot(r.snapshot);
+    } catch (e) {
+      if (e instanceof ApiError) {
+        toast.error(e.message);
+        if (e.code === 'not_player') onNotPlayer();
+      } else {
+        toast.error('Sin conexión: no se pudo retractar. Vuelve a intentarlo.');
+      }
+    } finally {
+      setBusy(false);
+    }
+  }
+
   if (yielded) {
     return (
-      <p ref={noteRef} tabIndex={-1} role="status" data-testid="yielded-note" className="rounded-2xl bg-night-700 px-4 py-2 text-center text-sm font-bold text-white/80 outline-offset-2">
-        🏳️ Has cedido esta puja: no pujas más por este elemento.
-      </p>
+      <div className="space-y-2 rounded-2xl bg-night-700 px-4 py-2 text-center">
+        <p ref={noteRef} tabIndex={-1} role="status" data-testid="yielded-note" className="text-sm font-bold text-white/80 outline-offset-2">
+          🏳️ Has cedido esta puja: no pujas más por este elemento.
+        </p>
+        <Button variant="secondary" size="md" className="w-full" loading={busy} onClick={() => void onUnyield()} data-testid="unyield-button">
+          <Undo2 className="size-4" aria-hidden /> Volver a pujar
+        </Button>
+      </div>
     );
   }
 
@@ -77,7 +102,7 @@ export function YieldButton({
         onConfirm={() => void onYield()}
         onCancel={() => setConfirm(false)}
       >
-        Dejas de pujar por este elemento y no podrás volver a hacerlo en esta subasta. Si todos cedéis, se adjudica antes.
+        Dejas de pujar por este elemento. Podrás retractarte con «Volver a pujar» mientras la subasta siga abierta (salvo que cedáis todos y se adjudique al instante). Si todos cedéis, se adjudica antes.
       </ConfirmDialog>
     </>
   );
