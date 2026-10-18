@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-test('modo espectador: /watch sin sesión muestra subasta, saldos y casas, sin controles; a ciegas no revela el importe; el anfitrión puede desactivarlo', async ({ browser }) => {
+test('modo espectador: /watch con clave y sin sesión muestra subasta, saldos y casas, sin controles; a ciegas no revela el importe; el anfitrión puede desactivarlo', async ({ browser }) => {
   const hostCtx = await browser.newContext();
   const host = hostCtx.request;
   expect((await host.post('/api/auth/demo')).ok()).toBeTruthy();
@@ -18,7 +18,21 @@ test('modo espectador: /watch sin sesión muestra subasta, saldos y casas, sin c
   // Espectador: contexto nuevo, sin cookies, móvil
   const viewer = await browser.newContext({ viewport: { width: 390, height: 844 } });
   const page = await viewer.newPage();
+  const spectatorKey = s.spectator_token as string;
+  expect(spectatorKey).toMatch(/^[a-f0-9]{64}$/);
+
+  // Control de acceso: sin clave, con una clave falsa o sin la cabecera NO se ve nada de la partida
   await page.goto(`/game/${code}/watch`);
+  await expect(page.getByTestId('spectator-denied')).toBeVisible({ timeout: 60_000 });
+  await expect(page.locator('body')).not.toContainText('Mirones E2E');
+  await page.goto(`/game/${code}/watch?k=${'0'.repeat(64)}`);
+  await expect(page.getByTestId('spectator-denied')).toBeVisible();
+  expect((await viewer.request.get(`/api/watch/${code}`)).status()).toBe(403);
+  expect((await viewer.request.get(`/api/watch/${code}`, { headers: { 'x-spectator-key': 'f'.repeat(64) } })).status()).toBe(403);
+  // La clave nunca sale en la instantánea pública
+  expect(await (await viewer.request.get(`/api/public/games/${code}`)).text()).not.toContain(spectatorKey);
+
+  await page.goto(`/game/${code}/watch?k=${spectatorKey}`);
   expect(await page.locator('meta[name="robots"]').getAttribute('content')).toContain('noindex');
   await expect(page.getByTestId('watch-view')).toBeVisible({ timeout: 60_000 });
   await expect(page.getByTestId('watch-players').getByTestId('watch-player')).toHaveCount(2);
@@ -61,8 +75,9 @@ test('modo espectador: /watch sin sesión muestra subasta, saldos y casas, sin c
 
   // El anfitrión desactiva el modo espectador: aviso y nada más
   expect((await act({ type: 'game.set_spectator', spectator_enabled: false })).ok()).toBeTruthy();
-  await expect(page.getByText('ha desactivado el modo espectador')).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByTestId('spectator-denied')).toBeVisible({ timeout: 30_000 });
   await expect(page.getByTestId('watch-auction')).toHaveCount(0);
+  expect((await viewer.request.get(`/api/watch/${code}`, { headers: { 'x-spectator-key': spectatorKey } })).status()).toBe(403);
 
   // El panel del anfitrión ofrece el enlace
   expect((await act({ type: 'game.set_spectator', spectator_enabled: true })).ok()).toBeTruthy();
@@ -70,7 +85,17 @@ test('modo espectador: /watch sin sesión muestra subasta, saldos y casas, sin c
   await hostPage.goto(`/game/${code}/host`);
   await hostPage.getByTestId('spectator-card').locator('summary').click();
   await expect(hostPage.getByTestId('spectator-copy')).toBeVisible({ timeout: 60_000 });
-  await expect(hostPage.getByTestId('spectator-card')).toContainText(`/game/${code}/watch`);
+  await expect(hostPage.getByTestId('spectator-card')).toContainText(`/game/${code}/watch?k=${spectatorKey}`);
+
+  // Cambiar el enlace: el anterior deja de funcionar y el nuevo sí
+  await hostPage.getByTestId('spectator-regenerate').click();
+  await hostPage.getByRole('button', { name: 'Sí, cambiar enlace' }).click();
+  await expect.poll(async () => (await state()).spectator_token, { timeout: 30_000 }).not.toBe(spectatorKey);
+  const newKey = (await state()).spectator_token as string;
+  expect((await viewer.request.get(`/api/watch/${code}`, { headers: { 'x-spectator-key': spectatorKey } })).status()).toBe(403);
+  expect((await viewer.request.get(`/api/watch/${code}`, { headers: { 'x-spectator-key': newKey } })).status()).toBe(200);
+  await page.goto(`/game/${code}/watch?k=${newKey}`);
+  await expect(page.getByTestId('watch-view')).toBeVisible({ timeout: 60_000 });
 
   // Final: resultados con estadísticas, también en /watch
   expect((await act({ type: 'auction.cancel', auction_id: s.auction.id })).ok()).toBeTruthy();

@@ -265,7 +265,8 @@ async function main() {
       if (wanted('espectador')) {
         const sc = await mk({ width: 390, height: 844 }, { isMobile: true, deviceScaleFactor: 2, hasTouch: true });
         const sp = await sc.newPage();
-        await sp.goto(`/game/${code}/watch`);
+        const watchKey = (await state()).spectator_token;
+        await sp.goto(`/game/${code}/watch?k=${watchKey}`);
         await sp.waitForTimeout(2500);
         await shot(sp, 'espectador-movil', { width: 780, ms: 1500 });
         await sc.close();

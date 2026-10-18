@@ -9,8 +9,10 @@ interface Options<T extends PublicSnapshot> {
   roomCode: string;
   initial: T;
   runtime: RuntimeInfo;
-  /** 'host' consulta /api/games/[code] (requiere sesión); 'public' consulta la vista pública. */
-  view: 'host' | 'public';
+  /** 'host' consulta /api/games/[code] (requiere sesión); 'public' consulta la vista pública; 'watch' la de espectador (requiere `accessKey`). */
+  view: 'host' | 'public' | 'watch';
+  /** Clave del enlace de espectador (solo con view 'watch'); viaja en una cabecera, no en la URL de la API. */
+  accessKey?: string;
 }
 
 const SAFETY_POLL_MS = 8000; // red de seguridad aunque Realtime esté conectado
@@ -25,10 +27,11 @@ const FALLBACK_POLL_MS = 3000;
  *     o atrasados nunca pisan datos más recientes (p. ej. una imagen nueva).
  *  4. Al reconectar o volver a la pestaña se recupera el estado completo.
  */
-export function useLiveGame<T extends PublicSnapshot = PublicSnapshot>({ roomCode, initial, runtime, view }: Options<T>) {
+export function useLiveGame<T extends PublicSnapshot = PublicSnapshot>({ roomCode, initial, runtime, view, accessKey }: Options<T>) {
   const [snapshot, setSnapshot] = useState<T>(initial);
   const [connection, setConnection] = useState<ConnectionState>(runtime.mode === 'supabase' ? 'polling' : 'polling');
   const [gone, setGone] = useState(false);
+  const [denied, setDenied] = useState(false); // espectador: la clave ya no vale (regenerada) o el modo está desactivado
   const [lastSync, setLastSync] = useState<number>(() => Date.now());
   const versionRef = useRef(initial.version);
   const inflight = useRef<Promise<void> | null>(null);
@@ -44,10 +47,14 @@ export function useLiveGame<T extends PublicSnapshot = PublicSnapshot>({ roomCod
 
   const refresh = useCallback(async () => {
     if (inflight.current) return inflight.current;
-    const url = view === 'host' ? `/api/games/${roomCode}` : `/api/public/games/${roomCode}`;
+    const url = view === 'host' ? `/api/games/${roomCode}` : view === 'watch' ? `/api/watch/${roomCode}` : `/api/public/games/${roomCode}`;
     inflight.current = (async () => {
       try {
-        const res = await fetch(url, { cache: 'no-store' });
+        const res = await fetch(url, { cache: 'no-store', headers: view === 'watch' && accessKey ? { 'x-spectator-key': accessKey } : undefined });
+        if (res.status === 403 && view === 'watch') {
+          setDenied(true);
+          return;
+        }
         if (res.status === 404) {
           setGone(true); // la partida ya no existe (borrada por el anfitrión o por inactividad)
           return;
@@ -63,7 +70,7 @@ export function useLiveGame<T extends PublicSnapshot = PublicSnapshot>({ roomCod
       }
     })();
     return inflight.current;
-  }, [apply, roomCode, view]);
+  }, [apply, roomCode, view, accessKey]);
 
   // Adjudicación automática: al vencer la cuenta atrás se relee el estado (el servidor adjudica en esa lectura).
   const autoAt = snapshot.auction?.auto_award_at ?? null;
@@ -138,7 +145,7 @@ export function useLiveGame<T extends PublicSnapshot = PublicSnapshot>({ roomCod
     };
   }, [refresh, runtime.mode, view]);
 
-  return { snapshot, connection, lastSync, gone, refresh, apply: apply as (s: T) => void };
+  return { snapshot, connection, lastSync, gone, denied, refresh, apply: apply as (s: T) => void };
 }
 
 export type LiveHost = ReturnType<typeof useLiveGame<HostSnapshot>>;

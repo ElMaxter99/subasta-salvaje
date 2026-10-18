@@ -14,7 +14,7 @@ Una página pública, pensada para el móvil, que muestra la partida en directo 
 - Partida terminada: reutiliza `FinalResults` (podio/clasificación, estadísticas, premios, antes/después, botón de la imagen del podio).
 
 ### Qué datos usa (y cuáles NO)
-Solo `GET /api/public/games/[code]` → `getPublicState` (`view: 'public'`), a través de `useLiveGame` (Realtime + sondeo). Es **exactamente** la
+Solo `GET /api/watch/[code]` (clave en la cabecera `x-spectator-key`) → `getSpectatorState` → `getPublicState` (`view: 'watch'`), a través de `useLiveGame` (Realtime + sondeo). Es **exactamente** la
 instantánea que ya usan la TV y los resultados: sin `host_id`, trabajos, versiones, prompts ni eventos (lo comprueba `tests/spectator.test.ts`).
 - **Pujas a ciegas / sobre cerrado:** el servidor ya vacía importe, líder y pujas (`auction.hidden`). La vista además NO los pinta ni los calcula
   (`blind ? undefined / []`): muestra «¿¿ ??», cuántas pujas hay y, en sobre cerrado, quién ya ha pujado (sin importes). Al adjudicar se revela como
@@ -35,8 +35,7 @@ instantánea que ya usan la TV y los resultados: sin `host_id`, trabajos, versio
 ### Compartirlo
 - **Panel del anfitrión** (`components/host/spectator-card.tsx`, bajo los controles de sonido): sección plegable «Modo espectador», con QR,
   «Copiar enlace de espectador» y el interruptor «Desactivar/Activar».
-- **TV** (`SpectatorBadge` en `screen/join-invite.tsx`): QR pequeño y discreto («Mirar desde casa · escanea · solo lectura») en la sala de espera y
-  en la pantalla final. Se oculta si el anfitrión lo desactiva.
+- **TV:** ya NO muestra el QR de espectador (desde la migración `…010100`): la TV es pública por código de sala y cualquiera que la abra vería la clave.
 
 ### Desactivarlo por partida
 - Columna `games.spectator_enabled boolean not null default true` (migración `20260101009800_spectator.sql`; permisos en `…009801_security_spectator.sql`).
@@ -103,3 +102,19 @@ contenedores de ancho fijo. En `landscape` hay sitio para 3 premios; en `square`
 La imagen usa `computeAwards(players, player_stats)` y los campos `id`, `title`, `detail`, `players`. Los premios nuevos que añada esa rama salen solos
 (con el icono de reserva «brillo»); para darles un icono propio, añadir su `id` a `AWARD_ICON` en `podium-image.tsx`. El `emoji` del premio NO se
 dibuja (satori descargaría el emoji de la red).
+
+### Control de acceso por clave (migración `20260101010100_spectator_access.sql`)
+- **Qué hace:** `/game/<código>/watch?k=<clave>` exige una clave secreta por partida (`games.spectator_token`, 64 hex = dos UUID v4 sin guiones; distinta en
+  cada partida, también en las ya existentes). Sin clave, con clave falsa, con el modo desactivado, tras regenerarla o con una sala inexistente la página
+  muestra «Este enlace de espectador no está disponible» (misma respuesta en todos los casos, no distingue si la sala existe) y `GET /api/watch/<código>`
+  responde 403 `spectator_denied`. La clave viaja en la cabecera `x-spectator-key` (no en la URL de la API); el HTML lleva `noindex` y `referrer: no-referrer`
+  y el título de la página es genérico (la vista previa del enlace no filtra el nombre de la partida).
+- **Dónde se ve la clave:** solo en el panel del anfitrión (`ss_spectator_token`, exige ser el anfitrión; entra en `HostSnapshot.spectator_token`) y nunca en la
+  instantánea pública (lo comprueba `tests/spectator.test.ts`). «Cambiar enlace» (`game.regenerate_spectator` → `ss_spectator_regenerate`) la regenera: el enlace
+  anterior deja de valer al instante, también para espectadores ya conectados (su siguiente sondeo recibe 403).
+- **Validación:** `ss_spectator_check` compara SHA-256 de ambas claves y exige `spectator_enabled`; el formato (`^[a-f0-9]{64}$`) se valida en TypeScript antes de
+  tocar la BD. Los intentos fallidos tienen un límite aparte (20/min por IP) además del de lectura (240/min por IP y sala).
+- **Límites honestos:** la clave es una *capacidad*: quien tenga el enlace puede verlo y reenviarlo (regenerarlo es el remedio). Se guarda en claro en `games`
+  (para poder mostrarla de nuevo al anfitrión) con RLS deny-all y solo se expone al anfitrión. **La TV (`/game/<código>/screen`), los resultados y
+  `GET /api/public/games/<código>` siguen siendo públicos por código de sala** (la TV no puede llevar clave); este control gobierna el enlace de espectador, no la
+  privacidad global de la partida. Los códigos de sala (6 caracteres) no son secretos fuertes: ver `docs/SEGURIDAD.md`.

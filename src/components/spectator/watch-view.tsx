@@ -15,25 +15,27 @@ import { themeLabel } from '@/lib/domain/themes';
 import type { Auction, Player, PublicSnapshot, RuntimeInfo } from '@/lib/domain/types';
 import '@/components/screen/screen.css';
 
+/** Pantalla cuando la clave no es válida, se regeneró o el anfitrión desactivó el modo espectador (no revela si la sala existe). */
+export function SpectatorDenied() {
+  return (
+    <main className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-night-950 px-4 text-center text-white" data-testid="spectator-denied">
+      <Mascot variant="expr-triste" size="md" tile motion="none" />
+      <h1 className="font-display text-2xl">Este enlace de espectador no está disponible</h1>
+      <p className="max-w-md text-white/75">El enlace no es válido, el anfitrión lo ha cambiado o ha desactivado el modo espectador. Pídele el enlace actual.</p>
+    </main>
+  );
+}
+
 /**
  * Vista de ESPECTADOR (`/game/[code]/watch`): solo lectura, pensada para el móvil. Sin sesión, sin token de jugador y sin controles.
- * Solo pinta la instantánea pública (`view: 'public'`); respeta `auction.hidden` (puja a ciegas / sobre cerrado: el importe y el líder
+ * Exige la clave secreta del enlace (`?k=`) y solo pinta la instantánea pública (`view: 'watch'`); respeta `auction.hidden` (puja a ciegas / sobre cerrado: el importe y el líder
  * no se muestran ni se calculan aquí). Sin sonido. Las únicas regiones vivas son el resumen de la puja y el aviso de estado.
  */
-export function WatchView({ roomCode, initial, runtime }: { roomCode: string; initial: PublicSnapshot; runtime: RuntimeInfo }) {
-  const { snapshot, connection, gone } = useLiveGame({ roomCode, initial, runtime, view: 'public' });
+export function WatchView({ roomCode, initial, runtime, accessKey }: { roomCode: string; initial: PublicSnapshot; runtime: RuntimeInfo; accessKey: string }) {
+  const { snapshot, connection, gone, denied } = useLiveGame({ roomCode, initial, runtime, view: 'watch', accessKey });
   if (gone) return <GameGone roomCode={roomCode} />;
+  if (denied) return <SpectatorDenied />;
   const { game } = snapshot;
-
-  if (game.spectator_enabled === false) {
-    return (
-      <main className="flex min-h-dvh flex-col items-center justify-center gap-4 bg-night-950 px-4 text-center text-white">
-        <Mascot variant="expr-triste" size="md" tile motion="none" />
-        <h1 className="font-display text-2xl">El anfitrión ha desactivado el modo espectador</h1>
-        <p className="max-w-md text-white/75">Esta partida ya no se puede seguir desde este enlace. Pídele al anfitrión que lo vuelva a activar.</p>
-      </main>
-    );
-  }
 
   return (
     <main className="min-h-dvh bg-night-950 text-white" data-testid="watch-view">

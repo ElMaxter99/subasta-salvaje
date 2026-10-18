@@ -3,6 +3,7 @@ import { redactSecrets } from '@/lib/security/redact';
 /** Códigos de error de dominio (coinciden con `RAISE EXCEPTION 'ERR:<codigo>'` en SQL). */
 export const ERROR_MESSAGES: Record<string, string> = {
   game_not_found: 'No existe ninguna partida con ese código.',
+  spectator_denied: 'Este enlace de espectador no es válido o ha dejado de estar activo. Pide al anfitrión el enlace actual.',
   not_host: 'No tienes permisos para controlar esta partida.',
   unauthenticated: 'Debes iniciar sesión como anfitrión.',
   rate_limited: 'Demasiadas solicitudes. Espera unos segundos.',
@@ -105,6 +106,7 @@ function statusFor(code: string): number {
     case 'unauthenticated':
       return 401;
     case 'not_host':
+    case 'spectator_denied':
       return 403;
     case 'game_not_found':
     case 'auction_not_found':

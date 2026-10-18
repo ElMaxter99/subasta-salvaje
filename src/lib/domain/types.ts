@@ -331,6 +331,8 @@ export interface ImageUsage {
 
 export interface HostSnapshot extends PublicSnapshot {
   usage?: ImageUsage;
+  /** Clave secreta del enlace de espectador (solo anfitrión; se regenera con `game.regenerate_spectator`). */
+  spectator_token?: string;
   /** Momento en que la partida se borrará sola si no hay más actividad. */
   expires_at?: string | null;
   host_id: string;

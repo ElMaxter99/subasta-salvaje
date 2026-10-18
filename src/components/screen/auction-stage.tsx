@@ -3,7 +3,7 @@
 import { Gavel, Hourglass } from 'lucide-react';
 import type { Auction, GameInfo, Player, PublicSnapshot } from '@/lib/domain/types';
 import { useAutoAwardCountdown, useCountdownTo } from '@/lib/client/auto-award';
-import { LobbyInvite, SpectatorBadge } from './join-invite';
+import { LobbyInvite } from './join-invite';
 import { Mascot } from '@/components/mascot/mascot';
 import './screen.css';
 import { allPlayersBroke } from '@/lib/domain/broke';
@@ -158,7 +158,6 @@ function IdleStage({ snap }: { snap: PublicSnapshot }) {
       {game.play_mode === 'mobile' ? (
         <LobbyInvite roomCode={game.room_code} connected={players.filter((p) => p.claimed).length} total={players.length} />
       ) : <LobbyMessage game={game} count={players.length} />}
-      <SpectatorBadge roomCode={game.room_code} enabled={game.spectator_enabled !== false} />
     </div>
   );
 }

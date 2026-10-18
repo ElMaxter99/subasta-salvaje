@@ -147,5 +147,5 @@ La colección con alfa real (`public/assets/mascot-vector/`) es vectorial. Para 
 - [ ] Probar en Supabase real: migraciones `…9500`–`…9901`, `ss_obs_*`, huella `phash` (`bit_count`), `ss_unyield_bid`, `ss_auction_grace`, `ss_set_spectator`; y Resend/`onRequestError` en Vercel para la observabilidad.
 - [ ] Escuchar y afinar los sonidos nuevos (ceder, gracia); probar la gracia y retractarse con móviles reales.
 - [ ] Verificar cómo se ven los PNG del podio (vertical y cuadrado) en WhatsApp/Instagram; valorar una fuente TTF propia (la de `next/og` no tiene negrita real).
-- [ ] Decidir si hace falta un control de acceso real para ocultar partidas del espectador y revisar el tope de 240/min por IP y sala con muchos espectadores tras la misma IP.
+- [ ] Aplicar la migración `…010100`/`…010101` (clave del espectador): los enlaces de espectador antiguos (sin `?k=`) dejan de funcionar; cada anfitrión debe copiar el nuevo desde su panel. Decidir si además se quiere ocultar la TV/resultados por código (hoy públicos) y revisar el tope de 240/min por IP y sala con muchos espectadores tras la misma IP.
 - [ ] Corregir `e2e/a11y.spec.ts` si sigue fallando (cabecera `sticky` en lugar de `static` a 360 px con texto al 200 %): comprobar tras la integración.

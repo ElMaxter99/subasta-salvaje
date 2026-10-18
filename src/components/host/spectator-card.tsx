@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useSyncExternalStore } from 'react';
-import { Check, Copy, Eye, EyeOff } from 'lucide-react';
+import { Check, Copy, Eye, EyeOff, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { QrCode } from '@/components/ui/qr-code';
 import { useToast } from '@/components/ui/toast';
 import type { HostCtx } from './host-context';
@@ -14,10 +15,11 @@ export function SpectatorCard({ ctx }: { ctx: HostCtx }) {
   const on = snapshot.game.spectator_enabled !== false;
   const url = useSyncExternalStore(
     () => () => {},
-    () => `${window.location.origin}/game/${roomCode}/watch`,
+    () => (snapshot.spectator_token ? `${window.location.origin}/game/${roomCode}/watch?k=${snapshot.spectator_token}` : ''),
     () => '',
   );
   const [copied, setCopied] = useState(false);
+  const [confirmRegen, setConfirmRegen] = useState(false);
 
   async function copy() {
     try {
@@ -45,7 +47,7 @@ export function SpectatorCard({ ctx }: { ctx: HostCtx }) {
         {on && url ? <QrCode value={url} size={132} label="Código QR del enlace de espectador" /> : null}
         <div className="min-w-0 flex-1 space-y-2 text-center sm:text-left">
           <p className="text-sm text-white/75">
-            {on ? 'Cualquiera con este enlace puede seguir la subasta en directo desde su móvil. Solo lectura: no puede pujar ni ver nada privado.' : 'El enlace de espectador está desactivado: quien lo abra verá un aviso.'}
+            {on ? 'Solo quien tenga este enlace (incluye una clave secreta) puede seguir la subasta en directo desde su móvil. Solo lectura: no puede pujar ni ver nada privado. Compártelo solo con quien quieras: si se filtra, regénéralo y el anterior deja de funcionar.' : 'El enlace de espectador está desactivado: quien lo abra verá un aviso.'}
           </p>
           {on ? <p className="break-all text-xs text-white/70">{url}</p> : null}
           <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
@@ -65,9 +67,28 @@ export function SpectatorCard({ ctx }: { ctx: HostCtx }) {
             >
               {on ? 'Desactivar' : 'Activar'}
             </Button>
+            {on ? (
+              <Button size="md" variant="secondary" disabled={busy !== null} onClick={() => setConfirmRegen(true)} data-testid="spectator-regenerate">
+                <RefreshCw className="size-4" aria-hidden /> Cambiar enlace
+              </Button>
+            ) : null}
           </div>
         </div>
       </div>
+      <ConfirmDialog
+        open={confirmRegen}
+        title="¿Cambiar el enlace de espectador?"
+        confirmLabel="Sí, cambiar enlace"
+        variant="danger"
+        loading={busy === 'spectator-regen'}
+        onCancel={() => setConfirmRegen(false)}
+        onConfirm={async () => {
+          await run('spectator-regen', { type: 'game.regenerate_spectator' }, 'Enlace de espectador cambiado');
+          setConfirmRegen(false);
+        }}
+      >
+        El enlace y el QR actuales dejarán de funcionar al instante para quien ya los tenga (incluidos los espectadores conectados). Tendrás que compartir el nuevo.
+      </ConfirmDialog>
     </details>
   );
 }

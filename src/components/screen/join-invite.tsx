@@ -71,19 +71,3 @@ export function CompactInvite({ roomCode }: { roomCode: string }) {
     </div>
   );
 }
-
-/** Discreto: QR pequeño al enlace de espectador (solo lectura) para seguir la partida desde casa. Se oculta si el anfitrión lo desactiva. */
-export function SpectatorBadge({ roomCode, enabled = true, className = '' }: { roomCode: string; enabled?: boolean; className?: string }) {
-  const origin = useOrigin();
-  const qr = useRem(5);
-  if (!enabled) return null;
-  return (
-    <div className={`flex items-center gap-3 rounded-xl border border-white/10 bg-night-900/80 py-1 pl-3 pr-1 ${className}`} data-testid="tv-spectator" aria-label="Seguir la partida como espectador, solo lectura">
-      <div className="leading-tight">
-        <p className="text-[0.85rem] font-bold uppercase tracking-[0.2em] text-white/70">Mirar desde casa</p>
-        <p className="text-[0.95rem] font-semibold text-white/70">Escanea · solo lectura</p>
-      </div>
-      {origin ? <QrCode value={`${origin}/game/${roomCode}/watch`} size={qr} label="Código QR para seguir la partida como espectador" className="!rounded-lg !p-1" /> : <div style={{ width: qr, height: qr }} />}
-    </div>
-  );
-}

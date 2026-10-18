@@ -75,7 +75,9 @@ export async function getHostState(ctx: Ctx, roomCode: string, hostId: string): 
   };
   const activity = await ctx.db.rpc<{ updated_at: string | null }>('ss_game_activity', { room_code: room(roomCode) });
   const expires_at = activity.updated_at ? new Date(Date.parse(activity.updated_at) + effectiveTtlHours(settings) * 3600_000).toISOString() : null;
-  return { ...attachUrls(snap, ctx.storage), usage, expires_at };
+  // Clave secreta del enlace de espectador: solo la ve el anfitrión (nunca va en la instantánea pública).
+  const spectator = await ctx.db.rpc<{ token: string }>('ss_spectator_token', { room_code: room(roomCode), host_id: hostId });
+  return { ...attachUrls(snap, ctx.storage), usage, expires_at, spectator_token: spectator.token };
 }
 
 export async function listGames(ctx: Ctx, hostId: string): Promise<GameSummary[]> {
@@ -111,6 +113,8 @@ function toRpc(action: GameAction): { fn: string; params: Record<string, unknown
       return { fn: 'ss_set_sound', params: rest };
     case 'game.set_spectator':
       return { fn: 'ss_set_spectator', params: rest };
+    case 'game.regenerate_spectator':
+      return { fn: 'ss_spectator_regenerate', params: rest };
     case 'game.set_auto_run':
       return { fn: 'ss_set_auto_run', params: rest };
     case 'game.set_join_policy':
