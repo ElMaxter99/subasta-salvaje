@@ -1,4 +1,6 @@
-import type { ReactNode } from 'react';
+'use client';
+
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import type { Player } from '@/lib/domain/types';
 
 /**
@@ -66,16 +68,34 @@ export function RingLayout({ players, center, renderCard }: { players: Player[];
   );
 }
 
-/** Jugadores en primer plano (entre subastas): tarjetas grandes y casi cuadradas que llenan el espacio disponible. */
-export function SpotlightGrid({ players, renderCard, reservedRem = 8 }: { players: Player[]; renderCard: (p: Player, dense: boolean) => ReactNode; reservedRem?: number }) {
+/**
+ * Jugadores en primer plano (entre subastas): tarjetas grandes y casi cuadradas que llenan EXACTAMENTE el espacio disponible.
+ * El lado de cada tarjeta se calcula midiendo el contenedor real (ResizeObserver), no con estimaciones de pantalla: así nunca se
+ * sale ni tapa el banner, sea cual sea el tamaño de la ventana, la cabecera o los controles.
+ */
+export function SpotlightGrid({ players, renderCard }: { players: Player[]; renderCard: (p: Player, dense: boolean) => ReactNode }) {
   const { cols, rows } = spotlightGrid(players.length);
-  // Lado de cada tarjeta: lo que quepa en ancho y en alto de pantalla (menos cabecera, banner y márgenes).
-  const side = `min(calc((100vw - 4rem - ${(cols - 1) * 1.2}rem) / ${cols}), calc((100vh - ${reservedRem + 6}rem - ${(rows - 1) * 1.2}rem) / ${rows}))`;
+  const ref = useRef<HTMLDivElement>(null);
+  const [box, setBox] = useState<{ w: number; h: number } | null>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([e]) => {
+      const r = e?.contentRect;
+      if (r) setBox({ w: Math.floor(r.width), h: Math.floor(r.height) });
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+  const gap = 16;
+  const side = box ? Math.max(0, Math.floor(Math.min((box.w - gap * (cols - 1)) / cols, (box.h - gap * (rows - 1)) / rows))) : 0;
   return (
-    <div className="flex h-full min-h-0 flex-wrap content-center items-center justify-center gap-[1.2rem]" data-testid="spotlight-grid">
-      {players.map((p) => (
-        <div key={p.id} style={{ width: side, height: side }} className="min-h-0 min-w-0">{renderCard(p, cols >= 4)}</div>
-      ))}
+    <div ref={ref} className="flex h-full min-h-0 w-full flex-wrap content-center items-center justify-center overflow-hidden" style={{ gap }} data-testid="spotlight-grid">
+      {box && side > 0
+        ? players.map((p) => (
+            <div key={p.id} style={{ width: side, height: side }} className="min-h-0 min-w-0">{renderCard(p, cols >= 4)}</div>
+          ))
+        : null}
     </div>
   );
 }
