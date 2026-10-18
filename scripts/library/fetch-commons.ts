@@ -9,6 +9,7 @@
  *   npm run library:fetch -- --all --out mi-carpeta --allow-by --min-width 1000
  *   npm run library:fetch -- --index-only      # tras borrar a mano las fotos malas: regenera manifest.csv, index.html y FUENTES.md
  *
+ * Etiquetado: --roles start,product · --category "Halloween" · --tags terror,otoño (también se leen `# Rol:` y `# Categoría:` del pack).
  * Opciones: --open (abre index.html al terminar; `npm run library` ya lo hace) · --out (por defecto biblioteca-pendiente) · --per-product 1 · --allow-by (acepta también CC BY / CC BY-SA, con atribución)
  *           · --min-width 800 · --delay 1500 (ms entre peticiones; sé amable con Wikimedia) · --contact "tu@correo" (va en el User-Agent).
  * Cada pack (docs/catalogo-semilla/*.txt) lista los productos con su búsqueda en inglés. Se puede repetir: salta lo ya descargado.
@@ -17,6 +18,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 
 import { execFile } from 'node:child_process';
 import { join, resolve } from 'node:path';
 import { manifestToCsv, parsePack, searchCommons, type ManifestRow } from '../../src/lib/library/commons';
+import { defaultRolesForKind, parseRoles } from '../../src/lib/library/taxonomy';
 
 const argv = process.argv.slice(2);
 const flag = (n: string) => argv.includes(`--${n}`);
@@ -29,6 +31,10 @@ const minWidth = Number(opt('min-width') ?? 800);
 const allowBy = flag('allow-by');
 const contact = opt('contact') ?? process.env.LIBRARY_CONTACT ?? 'contacto-no-indicado';
 const userAgent = `SubastaSalvajeLibrary/1.0 (${contact}; relleno manual de una biblioteca de fotos) node`;
+// Etiquetado (opcional; si no se indica, rol según el tipo del pack y categoría = colección): --roles start,product · --category "Halloween" · --tags terror,otoño
+const forcedRoles = opt('roles') ? parseRoles(opt('roles')) : undefined;
+const forcedCategory = opt('category');
+const extraTags = (opt('tags') ?? '').split(',').map((t) => t.trim().toLowerCase()).filter(Boolean);
 const STATE = join(out, 'fuentes.json');
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -91,7 +97,7 @@ async function runPack(file: string): Promise<void> {
         const archivo = `${safeName(p.name)}${perProduct > 1 || have + i > 0 ? ` ${have + i + 1}` : ''}.${ext(c.mime)}`;
         writeFileSync(join(dir, archivo), await download(c.url));
         used.add(c.pageUrl);
-        rows.push({ coleccion: safeName(pack.collection), archivo, titulo: p.name, autor: c.author, licencia: c.license, fuente: c.pageUrl, tipo: pack.kind });
+        rows.push({ coleccion: safeName(pack.collection), archivo, titulo: p.name, autor: c.author, licencia: c.license, fuente: c.pageUrl, tipo: pack.kind, roles: forcedRoles ?? pack.roles ?? defaultRolesForKind(pack.kind), categoria: forcedCategory ?? pack.category ?? safeName(pack.collection), etiquetas: extraTags });
         writeFileSync(STATE, JSON.stringify(rows, null, 2));
         console.log(`  ✔ ${p.name} ← ${c.title} (${c.license}, ${c.author})`);
         await sleep(delay);

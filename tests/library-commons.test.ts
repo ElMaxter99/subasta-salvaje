@@ -60,6 +60,21 @@ describe('packs de productos y manifiesto', () => {
     expect(parseManifestCsv('otra,cosa\n1,2')).toEqual([]);
     expect(creditOf(rows[0]!)).toBe('Ana, B. · CC0 · https://commons.wikimedia.org/wiki/File:X.jpg');
   });
+
+  it('el manifiesto con columnas de etiquetado (roles, categoria, etiquetas) va y vuelve, y uno antiguo de 7 columnas sigue valiendo', () => {
+    const rows = [{ coleccion: 'Playa', archivo: 'isla.jpg', titulo: 'Isla', autor: '', licencia: 'CC0', fuente: '', tipo: 'scene' as const, roles: ['start' as const, 'product' as const], categoria: 'Playa y verano', etiquetas: ['mar', 'sol'] }];
+    expect(parseManifestCsv(manifestToCsv(rows))).toEqual(rows);
+    const antiguo = 'coleccion,archivo,titulo,autor,licencia,fuente,tipo\nHalloween,a.jpg,Calabaza,Ana,CC0,https://x,item\n';
+    expect(parseManifestCsv(antiguo)).toEqual([{ coleccion: 'Halloween', archivo: 'a.jpg', titulo: 'Calabaza', autor: 'Ana', licencia: 'CC0', fuente: 'https://x', tipo: 'item' }]);
+    // el orden de las columnas lo da la cabecera; roles con cualquier separador y valores desconocidos descartados
+    const otro = 'coleccion,tipo,archivo,roles,etiquetas\nX,item,b.jpg,"product;start;raro","a|b"\n';
+    expect(parseManifestCsv(otro)[0]).toMatchObject({ archivo: 'b.jpg', roles: ['start', 'product'], etiquetas: ['a', 'b'] });
+  });
+
+  it('un pack puede declarar su rol y su categoría (`# Rol:` y `# Categoría:`)', () => {
+    expect(parsePack('# Colección: Paisajes\n# Tipo: escena\n# Rol: inicio, producto\n# Categoría: Paisajes bonitos\nMontaña; Nevada; 🏔️; mountain', 'x')).toMatchObject({ roles: ['start', 'product'], category: 'Paisajes bonitos', kind: 'scene' });
+    expect(parsePack('# Colección: A\nCosa', 'x')).not.toHaveProperty('roles');
+  });
 });
 
 describe('packs de productos de docs/catalogo-semilla', () => {

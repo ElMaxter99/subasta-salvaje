@@ -3,6 +3,8 @@
  * `fetch` simulado); la descarga a disco está en scripts/library/fetch-commons.ts. Por defecto SOLO acepta CC0 / dominio público.
  * Sin probar contra la API real desde el entorno de desarrollo (sin red): los campos siguen la documentación de MediaWiki.
  */
+import { parseRoles, type LibraryRole } from './taxonomy';
+
 export interface CommonsCandidate {
   title: string;
   /** Miniatura grande (ancho pedido) lista para descargar. */
@@ -84,18 +86,30 @@ export async function searchCommons(query: string, o: CommonsOptions): Promise<C
 /* ---------- Packs de productos («Nombre; Descripción; Emoji; búsqueda en inglés») ---------- */
 
 export interface PackProduct { name: string; description: string; emoji: string; query: string }
-export interface Pack { collection: string; kind: 'item' | 'scene'; products: PackProduct[] }
+export interface Pack {
+  collection: string;
+  kind: 'item' | 'scene';
+  /** `# Rol: start, product` (opcional; por defecto sale del tipo: escena → start, objeto → product). */
+  roles?: LibraryRole[];
+  /** `# Categoría: Halloween` (opcional; por defecto, la colección). */
+  category?: string;
+  products: PackProduct[];
+}
 
 export function parsePack(text: string, fallbackCollection: string): Pack {
   let collection = fallbackCollection;
   let kind: 'item' | 'scene' = 'item';
+  let roles: LibraryRole[] | undefined;
+  let category: string | undefined;
   const products: PackProduct[] = [];
   for (const raw of text.split(/\r?\n/)) {
     const line = raw.trim();
     if (!line) continue;
-    const head = /^#\s*(colecci[oó]n|tipo)\s*:\s*(.+)$/i.exec(line);
+    const head = /^#\s*(colecci[oó]n|tipo|rol(?:es)?|categor[ií]a)\s*:\s*(.+)$/i.exec(line);
     if (head) {
       if (/^colecci/i.test(head[1]!)) collection = head[2]!.trim();
+      else if (/^rol/i.test(head[1]!)) roles = parseRoles(head[2]!.replace(/inicio/gi, 'start').replace(/producto/gi, 'product'));
+      else if (/^categor/i.test(head[1]!)) category = head[2]!.trim();
       else kind = /escena|scene/i.test(head[2]!) ? 'scene' : 'item';
       continue;
     }
@@ -104,24 +118,30 @@ export function parsePack(text: string, fallbackCollection: string): Pack {
     if (!name || name.length > 80) continue;
     products.push({ name, description, emoji, query: query || name });
   }
-  return { collection, kind, products };
+  return { collection, kind, ...(roles && roles.length ? { roles } : {}), ...(category ? { category } : {}), products };
 }
 
 /* ---------- Manifiesto (CSV) que lee también la pantalla de subida ---------- */
 
-export interface ManifestRow { coleccion: string; archivo: string; titulo: string; autor: string; licencia: string; fuente: string; tipo: 'item' | 'scene' }
-export const MANIFEST_HEADER = 'coleccion,archivo,titulo,autor,licencia,fuente,tipo';
+export interface ManifestRow {
+  coleccion: string; archivo: string; titulo: string; autor: string; licencia: string; fuente: string; tipo: 'item' | 'scene';
+  /** Opcionales (columnas nuevas; un manifiesto antiguo sin ellas sigue valiendo). `roles`: «start|product». `etiquetas`: «a|b|c». */
+  roles?: LibraryRole[]; categoria?: string; etiquetas?: string[];
+}
+export const MANIFEST_HEADER = 'coleccion,archivo,titulo,autor,licencia,fuente,tipo,roles,categoria,etiquetas';
 
 const csvCell = (s: string) => (/[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s);
+const splitList = (s: string): string[] => s.split(/[|;]/).map((x) => x.trim()).filter(Boolean);
 
 export function manifestToCsv(rows: ManifestRow[]): string {
-  return [MANIFEST_HEADER, ...rows.map((r) => [r.coleccion, r.archivo, r.titulo, r.autor, r.licencia, r.fuente, r.tipo].map(csvCell).join(','))].join('\n') + '\n';
+  return [MANIFEST_HEADER, ...rows.map((r) => [r.coleccion, r.archivo, r.titulo, r.autor, r.licencia, r.fuente, r.tipo, (r.roles ?? []).join('|'), r.categoria ?? '', (r.etiquetas ?? []).join('|')].map(csvCell).join(','))].join('\n') + '\n';
 }
 
+/** Lee un manifest.csv. Las columnas se identifican por el NOMBRE de la cabecera (el orden no importa) y las nuevas son opcionales. */
 export function parseManifestCsv(text: string): ManifestRow[] {
   const rows: string[][] = [];
   let cell = '', row: string[] = [], quoted = false;
-  const src = text.replace(/^﻿/, '');
+  const src = text.replace(/^\uFEFF/, '');
   for (let i = 0; i < src.length; i++) {
     const c = src[i]!;
     if (quoted) {
@@ -134,7 +154,19 @@ export function parseManifestCsv(text: string): ManifestRow[] {
   if (cell !== '' || row.length) { row.push(cell); if (row.some((x) => x !== '')) rows.push(row); }
   const [head, ...body] = rows;
   if (!head || head[0] !== 'coleccion') return [];
-  return body.map(([coleccion = '', archivo = '', titulo = '', autor = '', licencia = '', fuente = '', tipo = 'item']) => ({ coleccion, archivo, titulo, autor, licencia, fuente, tipo: tipo === 'scene' ? 'scene' : 'item' }));
+  const col = (name: string) => head.indexOf(name);
+  const idx = { coleccion: 0, archivo: col('archivo'), titulo: col('titulo'), autor: col('autor'), licencia: col('licencia'), fuente: col('fuente'), tipo: col('tipo'), roles: col('roles'), categoria: col('categoria'), etiquetas: col('etiquetas') };
+  return body.map((r) => {
+    const get = (k: keyof typeof idx) => (idx[k] >= 0 ? (r[idx[k]] ?? '') : '');
+    const roles = parseRoles(get('roles'));
+    const etiquetas = splitList(get('etiquetas'));
+    const categoria = get('categoria').trim();
+    return {
+      coleccion: get('coleccion'), archivo: get('archivo'), titulo: get('titulo'), autor: get('autor'), licencia: get('licencia'), fuente: get('fuente'),
+      tipo: get('tipo') === 'scene' ? 'scene' : 'item',
+      ...(roles.length ? { roles } : {}), ...(categoria ? { categoria } : {}), ...(etiquetas.length ? { etiquetas } : {}),
+    } satisfies ManifestRow;
+  });
 }
 
 /** Crédito que se guarda con la imagen en la biblioteca (máx. 200 caracteres). */

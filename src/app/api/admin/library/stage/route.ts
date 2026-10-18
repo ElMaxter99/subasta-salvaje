@@ -24,6 +24,9 @@ export const POST = handle(async (req: Request) => {
     credit: String(form?.get('credit') ?? ''),
     title: String(form?.get('title') ?? ''),
     kind: String(form?.get('kind') ?? 'item'),
+    category: String(form?.get('category') ?? ''),
+    // Sin campo «roles» → por defecto según el tipo; con el campo vacío → sin rol.
+    ...(form?.has('roles') ? { roles: String(form.get('roles')).split(',').map((t) => t.trim()).filter(Boolean) } : {}),
     tags,
   });
   if (!meta.success) throw new DomainError('invalid_input', meta.error.issues[0]?.message ?? 'Datos no válidos');
