@@ -8,6 +8,7 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { adminPost } from '@/lib/client/admin-api';
 import type { ImageCheck, SystemTemplateSummary } from '@/lib/services/system-template-service';
 import { Section, Table, fmtDate } from './widgets';
+import { SystemTemplateFromCollection } from './system-template-from-collection';
 
 export function SystemTemplatesPanel({ templates, cdnHosts }: { templates: SystemTemplateSummary[]; cdnHosts: string[] }) {
   const router = useRouter();
@@ -15,6 +16,7 @@ export function SystemTemplatesPanel({ templates, cdnHosts }: { templates: Syste
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [checks, setChecks] = useState<{ title: string; list: ImageCheck[] } | null>(null);
   const [del, setDel] = useState<SystemTemplateSummary | null>(null);
+  const [fromCollection, setFromCollection] = useState(false);
 
   async function run<T>(key: string, body: unknown, ok: string | ((r: T) => string)): Promise<T | null> {
     setBusy(key);
@@ -44,7 +46,12 @@ export function SystemTemplatesPanel({ templates, cdnHosts }: { templates: Syste
             {cdnHosts.length ? <>Servidores de fotos permitidos: <code>{cdnHosts.join(', ')}</code>.</> : <b className="text-gold-soft">ASSET_CDN_HOSTS no está definida: se acepta cualquier servidor https. Defínela en Vercel para restringirlo.</b>}
           </>
         }
-        action={<Link href="/admin/plantillas/editor" className="inline-flex min-h-11 items-center rounded-xl bg-gold px-4 py-2 text-sm font-bold text-night-950 hover:bg-gold-soft">Nueva plantilla</Link>}
+        action={
+          <div className="flex flex-wrap gap-2">
+            <Button variant="secondary" onClick={() => setFromCollection(true)} data-testid="template-from-collection">Crear desde una colección de la biblioteca</Button>
+            <Link href="/admin/plantillas/editor" className="inline-flex min-h-11 items-center rounded-xl bg-gold px-4 py-2 text-sm font-bold text-night-950 hover:bg-gold-soft">Nueva plantilla</Link>
+          </div>
+        }
       >
         <Table head={['Plantilla', 'Estado', 'Contenido', 'Actualizada', 'Acciones']} empty={templates.length === 0 ? 'Todavía no hay plantillas del sistema.' : undefined}>
           {templates.map((t) => (
@@ -89,6 +96,8 @@ export function SystemTemplatesPanel({ templates, cdnHosts }: { templates: Syste
           </Table>
         </Section>
       ) : null}
+
+      <SystemTemplateFromCollection open={fromCollection} onClose={() => setFromCollection(false)} />
 
       <ConfirmDialog
         open={!!del}

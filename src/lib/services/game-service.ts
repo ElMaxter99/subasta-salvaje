@@ -45,6 +45,8 @@ export async function createGame(ctx: Ctx, hostId: string, rawInput: unknown): P
   const items = input.items ?? (getThemePreset(input.theme) ?? getThemePreset('free'))!.items;
   const players = input.players.map((p, i) => ({ ...p, color: p.color ?? PLAYER_COLORS[i % PLAYER_COLORS.length] }));
   const res = await ctx.db.rpc<{ room_code: string }>('ss_create_game', { ...input, players, items, host_id: hostId });
+  // Estadísticas: de qué partida del sistema sale (informativo; un fallo aquí nunca impide crear la partida).
+  if (input.template_slug) await ctx.db.rpc('ss_set_game_template', { room_code: res.room_code, host_id: hostId, template_slug: input.template_slug }).catch(() => undefined);
   // Reglas: máximo de rondas (por defecto, el tamaño del catálogo) y pujas enteras.
   await ctx.db.rpc('ss_set_game_rules', { room_code: res.room_code, host_id: hostId, max_rounds: input.max_rounds ?? items.length, integer_bids: input.integer_bids });
   return res;

@@ -1,9 +1,9 @@
 import { ApiError } from './api';
 import { adminPost } from './admin-api';
 import { shrinkForUpload } from './image-shrink';
-import type { CollectionCount, LibraryImage, LibraryItem, LibraryItemInput } from '@/lib/services/library-service';
+import type { CollectionCount, DuplicateGroup, ItemBulkChange, LibraryImage, LibraryItem, LibraryItemInput } from '@/lib/services/library-service';
 
-export type { CollectionCount, LibraryImage, LibraryItem, LibraryItemInput };
+export type { CollectionCount, DuplicateGroup, ItemBulkChange, LibraryImage, LibraryItem, LibraryItemInput };
 
 export interface UploadMeta { collection: string; tags: string; credit: string; kind: 'item' | 'scene'; /** Si se indica, sustituye al título sacado del nombre del archivo. */ title?: string }
 
@@ -34,18 +34,20 @@ export interface GeneratedItemImage { item: LibraryItem; image: LibraryImage; pr
 /** Genera con IA la imagen de un producto del catálogo general (consume cuota diaria) y la deja asociada. */
 export const generateItemImageRequest = (item: Pick<LibraryItem, 'id' | 'name' | 'description' | 'emoji' | 'collection'>) => adminPost<GeneratedItemImage>('library/generate', item);
 
-export interface ImageList { total: number; images: LibraryImage[]; collections: CollectionCount[]; uploadsEnabled: boolean }
+export interface ImageList { total: number; images: LibraryImage[]; collections: CollectionCount[]; uploadsEnabled: boolean; counts: { no_credit: number; unreviewed: number } }
 export interface ItemList { total: number; items: LibraryItem[]; collections: CollectionCount[] }
 
 const post = <T>(body: unknown) => adminPost<T>('library', body);
 
 export const libraryApi = {
-  images: (q: { q?: string; collection?: string | null; limit?: number; offset?: number }) => post<ImageList>({ op: 'images.list', ...q }),
-  updateImages: (ids: string[], patch: Partial<{ title: string; collection: string; tags: string[]; credit: string }>) => post<{ updated: number }>({ op: 'images.update', ids, patch }),
+  images: (q: { q?: string; collection?: string | null; limit?: number; offset?: number; noCredit?: boolean; unreviewed?: boolean }) => post<ImageList>({ op: 'images.list', ...q }),
+  updateImages: (ids: string[], patch: Partial<{ title: string; collection: string; tags: string[]; credit: string; reviewed: boolean }>) => post<{ updated: number }>({ op: 'images.update', ids, patch }),
+  duplicates: () => post<{ groups: DuplicateGroup[] }>({ op: 'images.duplicates' }),
   deleteImages: (ids: string[]) => post<{ deleted: number }>({ op: 'images.delete', ids }),
   items: (q: { q?: string; collection?: string | null; limit?: number; offset?: number }) => post<ItemList>({ op: 'items.list', ...q }),
   addItems: (items: LibraryItemInput[]) => post<{ added: number; skipped: number; ids: string[] }>({ op: 'items.add', items }),
   updateItem: (id: string, patch: Partial<{ name: string; description: string; emoji: string | null; collection: string; image_id: string | null; credit: string }>) => post<LibraryItem>({ op: 'items.update', id, patch }),
+  updateItems: (ids: string[], change: ItemBulkChange) => post<{ changed: number; skipped: number }>({ op: 'items.update_many', ids, change }),
   deleteItems: (ids: string[]) => post<{ deleted: number }>({ op: 'items.delete', ids }),
 };
 

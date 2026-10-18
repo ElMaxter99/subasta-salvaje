@@ -6,7 +6,7 @@ import { Section } from './widgets';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import {
-  commitLibraryRequest, generateItemImageRequest, libraryApi, stageLibraryImageRequest, type CollectionCount, type LibraryImage, type LibraryItem, type LibraryItemInput,
+  commitLibraryRequest, generateItemImageRequest, libraryApi, stageLibraryImageRequest, type CollectionCount, type ItemBulkChange, type LibraryImage, type LibraryItem, type LibraryItemInput,
 } from '@/lib/client/library-api';
 import { parseItemLines } from '@/lib/services/library-parse';
 import { EmojiInput } from '@/components/ui/emoji-input';
@@ -106,6 +106,10 @@ export function LibraryItems({ aiConfigured = false, uploadsEnabled = true }: { 
   const [pageSize, setPageSize] = useState(PAGE_SIZES[0]!);
   const [removing, setRemoving] = useState<LibraryItem | null>(null);
   const [picking, setPicking] = useState<LibraryItem | null>(null);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkCollection, setBulkCollection] = useState('');
+  const [bulkEmoji, setBulkEmoji] = useState('');
+  const [bulkDelete, setBulkDelete] = useState(false);
   const [version, setVersion] = useState(0);
   const [busy, setBusy] = useState<string | null>(null);
   const files = useRef<Record<string, HTMLInputElement | null>>({});
@@ -128,6 +132,11 @@ export function LibraryItems({ aiConfigured = false, uploadsEnabled = true }: { 
   }, [q, collection, version, page, pageSize]);
 
   const pages = Math.max(1, Math.ceil(total / pageSize));
+  const ids = [...selected];
+  const toggle = (id: string) => setSelected((cur) => { const n = new Set(cur); if (n.has(id)) n.delete(id); else n.add(id); return n; });
+  /** Edición en bloque (una transacción SQL con auditoría): al terminar se limpia la selección. */
+  const bulk = (key: string, change: ItemBulkChange, text: (r: { changed: number; skipped: number }) => string) =>
+    run(key, async () => { if (ids.length > 200) throw new Error('Máximo 200 productos a la vez: quita algunos de la selección.'); const r = await libraryApi.updateItems(ids, change); setSelected(new Set()); return text(r); });
   async function run(key: string, fn: () => Promise<string>): Promise<boolean> {
     setBusy(key);
     setMsg(null);
@@ -187,11 +196,33 @@ export function LibraryItems({ aiConfigured = false, uploadsEnabled = true }: { 
             {PAGE_SIZES.map((n) => <option key={n} value={n}>{n} por página</option>)}
           </select>
         </div>
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          <Button size="sm" variant="ghost" disabled={items.length === 0} onClick={() => setSelected(new Set(items.map((i) => i.id)))} data-testid="items-select-visible">Seleccionar lo visible</Button>
+          <Button size="sm" variant="ghost" disabled={selected.size === 0} onClick={() => setSelected(new Set())}>Quitar selección</Button>
+        </div>
+        {selected.size > 0 ? (
+          <div className="sticky top-2 z-10 mb-3 flex flex-wrap items-end gap-2 rounded-2xl border border-gold/40 bg-night-900/95 p-3 backdrop-blur" data-testid="items-bulk">
+            <span className="font-bold" aria-live="polite">{selected.size} seleccionados</span>
+            <label className="text-xs font-semibold">Mover a colección
+              <input list="items-bulk-collections" aria-label="Colección de destino" value={bulkCollection} maxLength={60} onChange={(e) => setBulkCollection(e.target.value)} className={`${input} mt-1 w-44`} />
+              <datalist id="items-bulk-collections">{names.map((c) => <option key={c} value={c} />)}</datalist>
+            </label>
+            <Button size="sm" variant="secondary" disabled={busy !== null} loading={busy === 'bulk-move'} onClick={() => void bulk('bulk-move', { collection: bulkCollection.trim() }, (r) => `${r.changed} productos movidos a «${bulkCollection.trim() || 'sin colección'}»${r.skipped ? `; ${r.skipped} omitidos porque ya hay uno con el mismo nombre allí` : ''}`)}>Mover</Button>
+            <label className="text-xs font-semibold">Emoji
+              <EmojiInput ariaLabel="Emoji para los seleccionados" className={`${input} mt-1 w-20 text-center text-xl`} value={bulkEmoji} onChange={setBulkEmoji} />
+            </label>
+            <Button size="sm" variant="secondary" disabled={busy !== null || !bulkEmoji.trim()} loading={busy === 'bulk-emoji'} onClick={() => void bulk('bulk-emoji', { emoji: bulkEmoji.trim() }, (r) => `Emoji fijado en ${r.changed} productos`)}>Fijar emoji</Button>
+            <Button size="sm" variant="ghost" disabled={busy !== null} loading={busy === 'bulk-emoji-clear'} onClick={() => void bulk('bulk-emoji-clear', { emoji: null }, (r) => `Emoji quitado a ${r.changed} productos`)}>Quitar emoji</Button>
+            <Button size="sm" variant="ghost" disabled={busy !== null} loading={busy === 'bulk-photo'} onClick={() => void bulk('bulk-photo', { image_id: null }, (r) => `Foto quitada a ${r.changed} productos`)}><ImageOff className="size-4" aria-hidden /> Quitar foto</Button>
+            <Button size="sm" variant="danger" disabled={busy !== null} onClick={() => setBulkDelete(true)}><Trash2 className="size-4" aria-hidden /> Eliminar</Button>
+          </div>
+        ) : null}
         {items.length === 0 ? <p className="text-sm text-white/70">Todavía no hay productos{q || collection ? ' con ese filtro' : ''}.</p> : (
           <ul className="space-y-3" data-testid="library-items">
             {items.map((it) => (
-              <li key={it.id} data-testid="library-item" className="rounded-3xl border border-white/10 bg-night-800/80 p-4">
+              <li key={it.id} data-testid="library-item" className={`rounded-3xl border bg-night-800/80 p-4 ${selected.has(it.id) ? 'border-gold' : 'border-white/10'}`}>
                 <div className="flex items-start gap-3">
+                  <input type="checkbox" checked={selected.has(it.id)} onChange={() => toggle(it.id)} aria-label={`Seleccionar ${it.name}`} className="mt-1 size-5 shrink-0 accent-[#fbbf24]" />
                   {it.photo_url ? (
                     // eslint-disable-next-line @next/next/no-img-element -- alojada en el CDN del propietario
                     <img src={it.photo_url} alt={it.name} loading="lazy" referrerPolicy="no-referrer" className="size-16 shrink-0 rounded-xl object-cover" />
@@ -289,6 +320,18 @@ export function LibraryItems({ aiConfigured = false, uploadsEnabled = true }: { 
         onClose={() => setPicking(null)}
         onPick={(image) => { const it = picking; setPicking(null); if (it) void run(`pick-${it.id}`, async () => { await libraryApi.updateItem(it.id, { image_id: image.id }); return `Foto de «${it.name}» actualizada`; }); }}
       />
+
+      <ConfirmDialog
+        open={bulkDelete}
+        title="Eliminar productos"
+        confirmLabel="Sí, eliminar"
+        variant="danger"
+        loading={busy === 'bulk-delete'}
+        onCancel={() => setBulkDelete(false)}
+        onConfirm={async () => { await bulk('bulk-delete', { delete: true }, (r) => `${r.changed} productos eliminados`); setBulkDelete(false); }}
+      >
+        <p>Se eliminarán <b>{selected.size} productos</b> del catálogo general. Las partidas que ya los importaron no cambian. Las imágenes siguen en Imágenes.</p>
+      </ConfirmDialog>
 
       <ConfirmDialog
         open={!!removing}

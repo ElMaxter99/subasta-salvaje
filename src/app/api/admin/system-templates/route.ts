@@ -4,7 +4,7 @@ import { requireSuperadmin } from '@/lib/auth/host';
 import { assetCdnHosts } from '@/lib/config/env';
 import { DomainError } from '@/lib/domain/errors';
 import { getContext } from '@/lib/services/context';
-import { checkTemplateImages, deleteSystemTemplate, getSystemTemplate, listSystemTemplates, saveSystemTemplate, setSystemTemplateStatus, validateSystemTemplateData } from '@/lib/services/system-template-service';
+import { checkTemplateImages, createTemplateFromCollection, deleteSystemTemplate, getSystemTemplate, listSystemTemplates, saveSystemTemplate, setSystemTemplateStatus, validateSystemTemplateData } from '@/lib/services/system-template-service';
 
 export const maxDuration = 60;
 
@@ -20,6 +20,7 @@ const opSchema = z.discriminatedUnion('op', [
   z.object({ op: z.literal('delete'), id: z.string().uuid() }),
   z.object({ op: z.literal('get'), id: z.string().uuid() }),
   z.object({ op: z.literal('check'), id: z.string().uuid() }),
+  z.object({ op: z.literal('from_collection'), collection: z.string(), house_image_id: z.string().uuid().nullish(), cover_item_id: z.string().uuid().nullish() }),
 ]);
 
 /** Guardar (borrador), publicar/retirar, borrar, leer completa o comprobar las imágenes. Solo superadmin. */
@@ -45,6 +46,11 @@ export const POST = handle(async (req: Request) => {
       return json({ ok: true });
     case 'get':
       return json(await getSystemTemplate(ctx, body.data.id, { admin: true }));
+    case 'from_collection': {
+      const { op: _o, ...rest } = body.data;
+      void _o;
+      return json(await createTemplateFromCollection(ctx, actor, rest));
+    }
     case 'check': {
       const t = await getSystemTemplate(ctx, body.data.id, { admin: true });
       return json({ checks: await checkTemplateImages(validateSystemTemplateData(t.data)) });

@@ -29,6 +29,8 @@ export const createGameSchema = z.object({
   players: z.array(z.object({ name, color: color.optional() })).max(MAX_PLAYERS).default([]),
   /** Máximo de jugadores de la partida (1..MAX_PLAYERS; por defecto MAX_PLAYERS). Lo vuelve a comprobar SQL. */
   max_players: z.number().int().min(1).max(MAX_PLAYERS).optional(),
+  /** Slug de la partida del sistema de la que sale (solo estadísticas; si no existe o no está publicada se ignora). */
+  template_slug: z.string().trim().toLowerCase().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/).max(60).optional(),
   /** Si se omite, se usa el catálogo de la plantilla de temática (o vacío si es temática libre). */
   items: z
     .array(z.object({ name: z.string().trim().min(1).max(80), description: z.string().trim().max(500).default(''), emoji: z.string().max(8).nullable().optional() }))

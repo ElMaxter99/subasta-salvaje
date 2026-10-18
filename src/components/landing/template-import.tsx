@@ -19,7 +19,7 @@ export type LoadedCatalog = NonNullable<ZipFormValues['items']>;
  * Todo se valida en el navegador antes de usarlo y el servidor vuelve a validar al crear la partida. Nada se crea hasta pulsar
  * «Crear partida». Un CSV solo trae el catálogo: el resto del asistente se queda como está.
  */
-export function TemplateImport({ onTemplate, onCatalog }: { onTemplate: (values: LoadedTemplate) => void; onCatalog: (items: LoadedCatalog) => void }) {
+export function TemplateImport({ onTemplate, onCatalog }: { onTemplate: (values: LoadedTemplate, systemSlug?: string) => void; onCatalog: (items: LoadedCatalog) => void }) {
   const input = useRef<HTMLInputElement>(null);
   const [errors, setErrors] = useState<string[]>([]);
   const [warnings, setWarnings] = useState<string[]>([]);
@@ -76,7 +76,7 @@ export function TemplateImport({ onTemplate, onCatalog }: { onTemplate: (values:
       setLoaded(`Partida del sistema «${t.title}» cargada: ${templateSummary(r.template)}.`);
       const v = templateToForm(r.template);
       setOpen(false);
-      onTemplate({ ...v, items: v.items ? v.items.map((i) => ({ ...i, photoFile: null })) : null });
+      onTemplate({ ...v, items: v.items ? v.items.map((i) => ({ ...i, photoFile: null })) : null }, t.slug);
     } catch (e) {
       setErrors([e instanceof ApiError ? e.message : 'No se pudo cargar la partida del sistema.']);
     }
