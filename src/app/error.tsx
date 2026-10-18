@@ -6,7 +6,7 @@ import { Loader } from '@/components/ui/loader';
 export default function ErrorPage({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   return (
     <main className="flex min-h-screen items-center justify-center px-5">
-      <Loader failed label="¡Vaya, se ha caído el martillo!" detail={<>No se ha podido mostrar esta pantalla. Tu partida no se ha perdido: reintenta o vuelve al inicio.{error.digest ? <span className="mt-1 block text-xs text-white/40">Ref. {error.digest}</span> : null}</>} onRetry={reset} />
+      <Loader failed label="¡Vaya, se ha caído el martillo!" detail={<>No se ha podido mostrar esta pantalla. Tu partida no se ha perdido: reintenta o vuelve al inicio.{error.digest ? <span className="mt-1 block text-xs text-white/55">Ref. {error.digest}</span> : null}</>} onRetry={reset} />
     </main>
   );
 }

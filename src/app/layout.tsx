@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { SiteAnalytics } from '@/components/analytics';
+import { SkipLink } from '@/components/ui/skip-link';
 import { analyticsDisabled } from '@/lib/analytics';
 import { siteUrl } from '@/lib/seo/site';
 import './globals.css';
@@ -38,6 +39,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preload" href="/assets/fonts/baloo2.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
       </head>
       <body>
+        <SkipLink />
         {children}
         {analyticsDisabled() ? null : <SiteAnalytics />}
       </body>

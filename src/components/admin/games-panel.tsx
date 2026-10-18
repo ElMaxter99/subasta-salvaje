@@ -55,7 +55,7 @@ export function GamesPanel({ games, ttlHours }: { games: AdminGame[]; ttlHours: 
               <td className="px-2 py-2">{STATUS[g.status] ?? g.status}</td>
               <td className="px-2 py-2 tabular-nums">{g.players}</td>
               <td className="px-2 py-2 tabular-nums">{g.ai_used}</td>
-              <td className="px-2 py-2 tabular-nums">{formatBytes(g.bytes)} <span className="text-white/45">({g.versions})</span></td>
+              <td className="px-2 py-2 tabular-nums">{formatBytes(g.bytes)} <span className="text-white/55">({g.versions})</span></td>
               <td className="px-2 py-2">{fmtDate(g.updated_at)}</td>
               <td className="px-2 py-2 text-right"><Button size="sm" variant="danger" disabled={busy !== null} onClick={() => setDel(g)}>Borrar</Button></td>
             </tr>

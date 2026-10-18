@@ -48,7 +48,7 @@ export function Stepper({ steps, current, reached = current, onGo }: { steps: St
                 >
                   {done ? <Check className="size-5" aria-hidden /> : i + 1}
                 </span>
-                <span className={`text-sm font-bold 2xl:text-base ${active ? 'text-white' : done ? 'text-white/80 group-hover:text-white' : 'text-white/45'}`}>{s.label}</span>
+                <span className={`text-sm font-bold 2xl:text-base ${active ? 'text-white' : done ? 'text-white/80 group-hover:text-white' : 'text-white/55'}`}>{s.label}</span>
               </button>
               {i < steps.length - 1 ? <span aria-hidden className={`mx-1 h-0.5 flex-1 rounded-full ${done ? 'bg-teal' : 'bg-white/15'}`} /> : null}
             </li>

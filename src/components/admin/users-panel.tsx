@@ -77,7 +77,7 @@ export function UsersPanel({ users, invites, signupsOpen, meId, mailReady = fals
               <tr key={u.user_id} className="align-top">
                 <td className="px-2 py-2">
                   <p className="font-semibold">{u.email ?? 'sin correo conocido'}{me ? ' (tú)' : ''}</p>
-                  <p className="font-mono text-xs text-white/45">{u.user_id.slice(0, 8)}{u.profile ? '' : ' · sin perfil aún'}</p>
+                  <p className="font-mono text-xs text-white/55">{u.user_id.slice(0, 8)}{u.profile ? '' : ' · sin perfil aún'}</p>
                 </td>
                 <td className="px-2 py-2">
                   <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${u.status === 'blocked' ? 'bg-rose/20 text-rose' : 'bg-teal/20 text-teal'}`}>{u.status === 'blocked' ? 'Bloqueado' : 'Activo'}</span>
@@ -88,7 +88,7 @@ export function UsersPanel({ users, invites, signupsOpen, meId, mailReady = fals
                 <td className="px-2 py-2 tabular-nums">{formatBytes(u.bytes)}</td>
                 <td className="px-2 py-2">{fmtDate(u.last_sign_in_at ?? u.last_seen_at)}</td>
                 <td className="px-2 py-2">
-                  {me ? <span className="text-xs text-white/45">—</span> : (
+                  {me ? <span className="text-xs text-white/55">—</span> : (
                     <div className="flex flex-wrap gap-1">
                       <Button size="sm" variant="secondary" disabled={busy !== null} onClick={() => run(`b-${u.user_id}`, 'users', { op: 'set', user_id: u.user_id, email: u.email, status: u.status === 'blocked' ? 'active' : 'blocked' }, u.status === 'blocked' ? 'Usuario desbloqueado' : 'Usuario bloqueado')}>
                         {u.status === 'blocked' ? 'Desbloquear' : 'Bloquear'}

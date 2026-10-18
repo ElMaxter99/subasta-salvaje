@@ -34,3 +34,9 @@ Los créditos que no son npm (Baloo 2, Nunito, recursos gráficos) están a mano
 
 ## Regla de mantenimiento
 Al añadir **una dependencia** → `node scripts/legal/build-credits.mjs`. Una **cookie o clave de localStorage/sessionStorage** → `STORAGE_INVENTORY` en `site.ts` (el test lo comprueba) y, si no es técnica, banner de consentimiento. Un **proveedor o dato nuevo** (analítica, IA, correo…) → `SERVICE_PROVIDERS` y `/privacidad`. Actualiza `LEGAL_UPDATED` al cambiar los textos.
+
+## Derecho de acceso y portabilidad de los datos de una partida
+- El anfitrión propietario puede descargar **una copia completa de su partida** en un ZIP desde *Ajustes → Exportar partida (ZIP)* (ruta `GET /api/games/[code]/export`, autenticada y limitada en tasa). Contiene `partida.json` (ajustes, jugadores con nombre, color y saldo final, catálogo, subastas, pujas, compras con precio en céntimos y en Ohros, eventos y resultados), una carpeta por jugador con las imágenes de su historial guardadas en nuestro almacenamiento y un `LEEME.txt`.
+- Las imágenes alojadas en el repositorio público de fotos (enlaces https) no se copian: se listan en el JSON. No se incluyen identificadores de sesión de los jugadores ni datos de la cuenta del anfitrión.
+- Es formato abierto (ZIP + JSON), por lo que sirve también para la **portabilidad**. Los jugadores no tienen cuenta: sus datos son el nombre que elige el anfitrión o ellos mismos y el saldo/compras de la partida, y quedan dentro de esta exportación.
+- La exportación **no sustituye** a la política de privacidad ni a la revisión jurídica pendiente (ver «Qué NO está resuelto»). No añade cookies, almacenamiento local ni proveedores externos.

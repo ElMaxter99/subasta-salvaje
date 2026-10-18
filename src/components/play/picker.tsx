@@ -122,7 +122,7 @@ export function Picker({
               autoFocus
               autoComplete="nickname"
               onChange={(e) => setName(e.target.value)}
-              className="min-h-14 w-full rounded-xl border border-white/20 bg-night-950 px-4 text-lg text-white placeholder:text-white/40"
+              className="min-h-14 w-full rounded-xl border border-white/20 bg-night-950 px-4 text-lg text-white placeholder:text-white/55"
               placeholder="Escribe tu nombre"
             />
             <Button type="submit" variant="primary" size="lg" className="w-full" loading={busy} disabled={!name.trim()}>

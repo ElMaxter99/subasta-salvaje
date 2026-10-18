@@ -128,7 +128,7 @@ export function BidPad({
             onFocus={(e) => window.setTimeout(() => e.target.scrollIntoView({ block: 'center', behavior: 'smooth' }), 300)}
             aria-invalid={manualBad || undefined}
             placeholder={`Otro importe (Ohros) · mín. ${formatOhros(wholeUp(baseCents > 0 ? baseCents + 1 : minBidCents, integerBids))}`}
-            className="min-h-14 w-full rounded-2xl border border-white/20 bg-night-950 px-4 text-lg text-white placeholder:text-sm placeholder:text-white/40 disabled:opacity-45"
+            className="min-h-14 w-full rounded-2xl border border-white/20 bg-night-950 px-4 text-lg text-white placeholder:text-sm placeholder:text-white/55 disabled:opacity-45"
           />
         </div>
         <Button type="submit" variant="success" size="lg" loading={busy} disabled={locked || manual === null || manual <= 0 || manualFraction} className="shrink-0">
