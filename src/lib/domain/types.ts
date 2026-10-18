@@ -191,6 +191,8 @@ export interface GameInfo {
   /** Efectos y música de la TV (los controla el anfitrión). */
   sound_enabled?: boolean;
   music_enabled?: boolean;
+  /** Enlace público de espectador (/game/CODE/watch) activo; false = el anfitrión lo desactivó. Ausente = activo. */
+  spectator_enabled?: boolean;
   /** Probabilidad (0-100) de que una subasta salga con evento sorpresa si el anfitrión no elige uno. */
   wild_chance_pct?: number;
   current_auction_id: string | null;

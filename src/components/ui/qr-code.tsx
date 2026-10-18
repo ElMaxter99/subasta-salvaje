@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 
 /** QR generado en el navegador (sin servicios externos). `value` suele ser la URL de unión de los jugadores. */
-export function QrCode({ value, size = 192, className = '' }: { value: string; size?: number; className?: string }) {
+export function QrCode({ value, size = 192, className = '', label = 'Código QR para unirse' }: { value: string; size?: number; className?: string; label?: string }) {
   const [src, setSrc] = useState<string | null>(null);
   useEffect(() => {
     let cancelled = false;
@@ -17,7 +17,7 @@ export function QrCode({ value, size = 192, className = '' }: { value: string; s
   return (
     <div className={`overflow-hidden rounded-2xl bg-white p-2 ${className}`} style={{ width: size, height: size }}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      {src ? <img src={src} alt={`Código QR para unirse: ${value}`} width={size} height={size} className="size-full" /> : null}
+      {src ? <img src={src} alt={`${label}: ${value}`} width={size} height={size} className="size-full" /> : null}
     </div>
   );
 }

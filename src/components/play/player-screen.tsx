@@ -130,7 +130,7 @@ export function PlayerScreen({
             <Link href={`/game/${roomCode}/results`} className="inline-flex min-h-14 items-center justify-center rounded-2xl bg-gold px-6 text-lg font-bold text-night-950">
               Ver resultados
             </Link>
-            <a href={`/api/public/games/${roomCode}/podium?download=1`} download={`podio-${roomCode}.png`} className="flex min-h-11 items-center justify-center text-sm font-bold text-violet-soft underline-offset-4 hover:underline">
+            <a href={`/api/public/games/${roomCode}/podium?format=story&download=1`} download={`podio-${roomCode}.png`} className="flex min-h-11 items-center justify-center text-sm font-bold text-violet-soft underline-offset-4 hover:underline">
               Descargar imagen del podio
             </a>
           </div>

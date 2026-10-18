@@ -34,9 +34,9 @@ export async function renderOg(kind: GameLinkKind | 'generic', game: GameCard | 
   const [logoSrc, headSrc] = await Promise.all([logo(), head()]);
   const headline = !game
     ? 'Puja. Construye. Alucina.'
-    : kind === 'invite' ? 'Te han invitado a jugar' : kind === 'tv' ? 'Pantalla de TV' : game.winner ? `Gana ${game.winner}` : 'Fin de la subasta';
+    : kind === 'invite' ? 'Te han invitado a jugar' : kind === 'tv' ? 'Pantalla de TV' : kind === 'watch' ? 'Sigue la subasta en directo' : game.winner ? `Gana ${game.winner}` : 'Fin de la subasta';
   const sub = !game ? 'Subastas creativas para noches de juegos' : game.name;
-  const note = !game ? '' : kind === 'invite' ? 'Entra desde tu móvil con este código' : kind === 'tv' ? 'Abre este enlace en la tele' : `${game.players.length} jugadores`;
+  const note = !game ? '' : kind === 'invite' ? 'Entra desde tu móvil con este código' : kind === 'tv' ? 'Abre este enlace en la tele' : kind === 'watch' ? 'Solo lectura · sin cuenta ni código' : `${game.players.length} jugadores`;
   return new ImageResponse(
     (
       <div style={{ width: '100%', height: '100%', display: 'flex', background: `radial-gradient(circle at 20% 0%, #2a3a6e 0%, ${NIGHT} 70%)`, color: '#ffffff', padding: 48, fontFamily: 'sans-serif' }}>
@@ -50,7 +50,7 @@ export async function renderOg(kind: GameLinkKind | 'generic', game: GameCard | 
         </div>
         <div style={{ display: 'flex', width: 380, flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
           <img src={headSrc} width={170} height={Math.round(170 * (356 / 312))} alt="" />
-          {game && kind !== 'results' ? (
+          {game && kind !== 'results' && kind !== 'watch' ? (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 20, background: CARD, border: `4px solid ${GOLD}`, borderRadius: 28, padding: '14px 28px' }}>
               <div style={{ fontSize: 26, color: '#aab4d6' }}>CÓDIGO DE SALA</div>
               <div style={{ fontSize: 84, fontWeight: 800, letterSpacing: 8, color: GOLD }}>{game.code}</div>
