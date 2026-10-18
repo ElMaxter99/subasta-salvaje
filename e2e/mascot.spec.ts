@@ -106,5 +106,5 @@ test('mascota en títulos y en el móvil: reacciona a ir ganando y a que te supe
   await expect(p.getByText('¡Vas ganando!').first()).toBeVisible({ timeout: 20_000 });
   await p.screenshot({ path: info.outputPath('mobile-leading.png') });
   await act({ type: 'auction.bid', auction_id: s.auction.id, player_id: beto, amount_cents: 500, idempotency_key: crypto.randomUUID() });
-  await expect(p.getByText('¡Te han superado!')).toBeVisible({ timeout: 20_000 });
+  await expect(p.getByText('¡Te han superado!', { exact: true })).toBeVisible({ timeout: 20_000 });
 });

@@ -25,7 +25,7 @@ test('superadmin: panel con estadísticas, ajustes y auditoría; los demás ven 
   await expect(page.getByText('Registro abierto')).toBeVisible();
 
   // Plazo de borrado a 3 días
-  await page.getByLabel('Días').fill('3');
+  await page.getByLabel('Días', { exact: true }).fill('3');
   await page.getByRole('button', { name: 'Guardar' }).first().click();
   await expect(page.getByText('Plazo de borrado actualizado')).toBeVisible();
 
@@ -43,6 +43,6 @@ test('superadmin: panel con estadísticas, ajustes y auditoría; los demás ven 
   await expect(page.getByText('Ajuste cambiado').first()).toBeVisible();
   await expect(page.getByText('Invitación creada').first()).toBeVisible();
   await page.goto('/admin/ajustes');
-  await page.getByLabel('Días').fill('');
+  await page.getByLabel('Días', { exact: true }).fill('');
   await page.getByRole('button', { name: 'Guardar' }).first().click();
 });
