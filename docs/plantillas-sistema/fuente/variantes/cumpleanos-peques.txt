@@ -1,0 +1,21 @@
+# nombre: Cumpleaños de peques
+# descripcion: Tartas, globos y sorpresas para una fiesta de 6 a 10 años, con reglas sencillas.
+# tono: familiar
+# tematica: Cumpleaños
+# base: cumpleanos-epico
+# edad: infantil
+# presupuesto: 14
+# rondas: 8
+---
+🎂 | Tarta de fresa | Rosa, con nata y una vela encima. | strawberry cake
+🎈 | Globo gigante | Vuela hasta el techo si lo sueltas. | big balloon
+🎁 | Regalo con lazo | Nadie sabe qué hay dentro todavía. | wrapped gift
+🥳 | Gorro de fiesta | Puntiagudo y de mil colores. | party hat
+🧁 | Magdalena con bolitas | Dulce, pequeñita y con sprinkles. | cupcake sprinkles
+🪅 | Piñata de estrella | Hay que darle muy fuerte para que suelte caramelos. | pinata
+🎶 | Canción de cumpleaños | Se canta todos juntos, aunque desafinen. | birthday song
+📸 | Foto con todos los amigos | Todos sonriendo apretaditos. | group photo
+🍭 | Piruleta de colores | Dura mucho y mancha la lengua. | lollipop
+🤹 | Mago de la fiesta | Saca un conejo de su sombrero. | magician rabbit hat
+🧃 | Zumo con pajita | Fresquito, para brindar sin burbujas. | juice straw
+🎠 | Tiovivo de juguete | Da vueltas y vueltas con música. | toy carousel

@@ -1,0 +1,88 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Mi primer festival",
+  "tematica": "Música",
+  "reglas": {
+    "presupuesto": 20,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Entrada de abono",
+      "descripcion": "Se guarda como un tesoro en la cartera.",
+      "emoji": "🎟️",
+      "foto": null
+    },
+    {
+      "titulo": "Pulsera de colores",
+      "descripcion": "No te la quitas hasta que se rompe.",
+      "emoji": "📿",
+      "foto": null
+    },
+    {
+      "titulo": "Micrófono del escenario pequeño",
+      "descripcion": "Allí empiezan los grupos del futuro.",
+      "emoji": "🎤",
+      "foto": null
+    },
+    {
+      "titulo": "Batería con baquetas rotas",
+      "descripcion": "Resiste el ritmo hasta el final.",
+      "emoji": "🥁",
+      "foto": null
+    },
+    {
+      "titulo": "Gorra de la edición",
+      "descripcion": "Es la prueba de que estuviste allí.",
+      "emoji": "🧢",
+      "foto": null
+    },
+    {
+      "titulo": "Chubasquero improvisado",
+      "descripcion": "Hecho de bolsa de basura y buen humor.",
+      "emoji": "🌧️",
+      "foto": null
+    },
+    {
+      "titulo": "Cargador portátil",
+      "descripcion": "Vale más que la entrada.",
+      "emoji": "🔋",
+      "foto": null
+    },
+    {
+      "titulo": "Hamburguesa de la carpa",
+      "descripcion": "Larga cola y mucha salsa.",
+      "emoji": "🍔",
+      "foto": null
+    },
+    {
+      "titulo": "Zapatillas para saltar",
+      "descripcion": "Aguantan tres días de baile.",
+      "emoji": "🕺",
+      "foto": null
+    },
+    {
+      "titulo": "Guitarra eléctrica de la banda del barrio",
+      "descripcion": "Suena mejor de lo que parece.",
+      "emoji": "🎸",
+      "foto": null
+    },
+    {
+      "titulo": "Cámara desechable",
+      "descripcion": "Sale la mitad de las fotos movidas.",
+      "emoji": "📷",
+      "foto": null
+    },
+    {
+      "titulo": "Tienda de campaña del grupo",
+      "descripcion": "Duermen seis donde caben tres.",
+      "emoji": "🏕️",
+      "foto": null
+    }
+  ]
+}

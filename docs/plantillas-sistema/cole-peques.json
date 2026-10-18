@@ -1,0 +1,88 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Mi primer cole",
+  "tematica": "Colegio",
+  "reglas": {
+    "presupuesto": 14,
+    "puja_minima": 1,
+    "rondas_maximas": 8,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Lápiz con goma",
+      "descripcion": "Sirve para dibujar y para corregir.",
+      "emoji": "✏️",
+      "foto": null
+    },
+    {
+      "titulo": "Estuche de ceras blandas",
+      "descripcion": "Doce colores, aunque falta el verde.",
+      "emoji": "🖍️",
+      "foto": null
+    },
+    {
+      "titulo": "Libro de cuentos",
+      "descripcion": "Tiene dragones en cada página.",
+      "emoji": "📚",
+      "foto": null
+    },
+    {
+      "titulo": "Regletas de colores",
+      "descripcion": "Cuenta con bolitas hasta diez.",
+      "emoji": "🧮",
+      "foto": null
+    },
+    {
+      "titulo": "Mochila con dibujos",
+      "descripcion": "Pesa menos cuando rueda.",
+      "emoji": "🎒",
+      "foto": null
+    },
+    {
+      "titulo": "Manzana de la merienda",
+      "descripcion": "Se come en el recreo.",
+      "emoji": "🍎",
+      "foto": null
+    },
+    {
+      "titulo": "Pincel y acuarelas",
+      "descripcion": "Para pintar un arcoíris.",
+      "emoji": "🖌️",
+      "foto": null
+    },
+    {
+      "titulo": "Campana del patio",
+      "descripcion": "Todos corren al patio al oírlo.",
+      "emoji": "🔔",
+      "foto": null
+    },
+    {
+      "titulo": "Mapamundi de pared",
+      "descripcion": "Gira para encontrar cualquier país.",
+      "emoji": "🌍",
+      "foto": null
+    },
+    {
+      "titulo": "Regla de madera",
+      "descripcion": "Mide casi todo, menos la imaginación.",
+      "emoji": "📏",
+      "foto": null
+    },
+    {
+      "titulo": "Puzle de la clase",
+      "descripcion": "Faltaba una pieza y apareció debajo de la mesa.",
+      "emoji": "🧩",
+      "foto": null
+    },
+    {
+      "titulo": "Tobogán del patio",
+      "descripcion": "Tiene cola desde la primera hora.",
+      "emoji": "🛝",
+      "foto": null
+    }
+  ]
+}

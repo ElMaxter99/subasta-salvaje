@@ -1,0 +1,88 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Mercado medieval exprés",
+  "tematica": "Edad Media",
+  "reglas": {
+    "presupuesto": 16,
+    "puja_minima": 1,
+    "rondas_maximas": 8,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Queso de cueva",
+      "descripcion": "Curado entre piedras durante meses.",
+      "emoji": "🧀",
+      "foto": null
+    },
+    {
+      "titulo": "Hogaza de pan negro",
+      "descripcion": "Dura y sabrosa, para el camino.",
+      "emoji": "🍞",
+      "foto": null
+    },
+    {
+      "titulo": "Ganso del corral",
+      "descripcion": "Valiosa por sus huevos diarios.",
+      "emoji": "🐓",
+      "foto": null
+    },
+    {
+      "titulo": "Rollo de lana teñida",
+      "descripcion": "Colores vivos para el sastre.",
+      "emoji": "🧵",
+      "foto": null
+    },
+    {
+      "titulo": "Balanza del mercader",
+      "descripcion": "Pesa especias, sal y monedas.",
+      "emoji": "⚖️",
+      "foto": null
+    },
+    {
+      "titulo": "Velas de sebo",
+      "descripcion": "Alumbran con humo y olor fuerte.",
+      "emoji": "🕯️",
+      "foto": null
+    },
+    {
+      "titulo": "Jarra de barro",
+      "descripcion": "Guarda agua fresca en verano.",
+      "emoji": "🏺",
+      "foto": null
+    },
+    {
+      "titulo": "Barril de hidromiel",
+      "descripcion": "Dulce, con aroma de miel.",
+      "emoji": "🍺",
+      "foto": null
+    },
+    {
+      "titulo": "Llave de hierro forjado",
+      "descripcion": "Abre el arcón del tesoro.",
+      "emoji": "🗝️",
+      "foto": null
+    },
+    {
+      "titulo": "Hacha del leñador",
+      "descripcion": "Afilada para cortar la leña del invierno.",
+      "emoji": "🪓",
+      "foto": null
+    },
+    {
+      "titulo": "Pergamino del heraldo",
+      "descripcion": "Anuncia las noticias del reino.",
+      "emoji": "📜",
+      "foto": null
+    },
+    {
+      "titulo": "Escudo de torneo",
+      "descripcion": "Pintado con un león rampante.",
+      "emoji": "🛡️",
+      "foto": null
+    }
+  ]
+}

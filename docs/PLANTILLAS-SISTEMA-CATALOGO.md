@@ -1,11 +1,11 @@
 # Catálogo de partidas del sistema
 
-Conjunto de **36 plantillas originales** (587 elementos, cada una con 12–25 elementos con título, descripción y emoji) para cargarlas como *partidas del sistema* (ver `PLANTILLAS-SISTEMA.md`). Todo el texto es original, en español, sin marcas, datos personales ni contenido ofensivo; los tonos son `familiar`, `adultos` (fiestas y celebraciones, sin contenido explícito), `humor`, `humor negro suave` y `educativo`.
+Conjunto de **69 plantillas originales** (36 base + 33 variantes; 1023 elementos, cada plantilla con 12–25 elementos con título, descripción y emoji) para cargarlas como *partidas del sistema* (ver `PLANTILLAS-SISTEMA.md`). Todo el texto es original, en español, sin marcas, datos personales ni contenido ofensivo; los tonos son `familiar`, `adultos` (fiestas y celebraciones, sin contenido explícito), `humor`, `humor negro suave` y `educativo`.
 
 ## Archivos (`docs/plantillas-sistema/`)
 | Archivo | Qué es |
 |---|---|
-| `fuente/<slug>.txt` | **Fuente editable**: cabecera `# clave: valor`, línea `---` y un elemento por línea `emoji \| Título \| descripción \| etiquetas`. |
+| `fuente/<slug>.txt` y `fuente/variantes/<slug>.txt` | **Fuente editable**: cabecera `# clave: valor`, línea `---` y un elemento por línea `emoji \| Título \| descripción \| etiquetas`. |
 | `<slug>.json` | Plantilla en el formato `subasta-salvaje/plantilla@1`; sirve tal cual en «Nueva partida → ¿Tienes una plantilla?». Generado. |
 | `lote.json` | Todas juntas en el formato `subasta-salvaje/lote-plantillas@1` (con slug, título de tarjeta, descripción, orden y **etiquetas**). Es lo que importan el script y el panel. Generado. |
 | `indice.json` | Índice mínimo (slug, título, tono, nº de elementos). Generado. |
@@ -26,7 +26,24 @@ Idempotente por slug: repetir actualiza lo que cambió y no duplica; nunca borra
 `/admin/plantillas → «Importar varias (.json)»` acepta un `lote.json` (o una lista de entradas). Cada plantilla se valida con el esquema real y se guarda como **borrador** (nueva o actualizada por slug); el mensaje resume creadas, actualizadas, sin cambios y errores. Máx. 100 plantillas y 2 MB por lote. Usa `POST /api/admin/system-templates` con `op: "import_many"` (solo superadmin, mismo origen).
 
 ## Reglas que comprueba el validador (`src/lib/domain/system-template-pack.ts`)
-Esquema real de plantilla (`parseTemplate`); 12–25 elementos; título ≤ 50 y descripción de 10–140 caracteres; emoji obligatorio y válido; sin foto, crédito, portada, casa inicial ni jugadores; sin enlaces, correos ni teléfonos; sin una lista de marcas conocidas; identificadores y nombres únicos; **ningún título de elemento repetido en todo el catálogo**; ninguna pareja de plantillas con más de un 25 % de elementos iguales; rondas ≤ elementos; una lista de etiquetas por elemento. La ortografía y el tono no se pueden automatizar: se revisaron a mano al escribirlas.
+Esquema real de plantilla (`parseTemplate`); 12–25 elementos; título ≤ 50 y descripción de 10–140 caracteres; emoji obligatorio y válido; sin foto, crédito, portada, casa inicial ni jugadores; sin enlaces, correos ni teléfonos; sin una lista de marcas conocidas; identificadores y nombres únicos; **ningún título de elemento repetido en todo el catálogo**; ninguna pareja de plantillas con más de un 25 % de elementos iguales; rondas ≤ elementos; una lista de etiquetas por elemento. Las **variantes** añaden las reglas de la sección siguiente. La ortografía y el tono no se pueden automatizar: se revisaron a mano al escribirlas.
+
+## Variantes por edad, duración y número de jugadores
+Además de las 36 plantillas base hay **33 variantes** (`fuente/variantes/*.txt`) con nombre, reglas y elementos propios: cada una parte de una temática popular y la adapta. **No reutilizan elementos** de la base ni de otras variantes (el validador prohíbe repetir títulos en todo el catálogo), así que cada variante trae sus elementos nuevos con sus etiquetas en inglés.
+
+| Dimensión | Valores | Qué cambia |
+|---|---|---|
+| `edad` | `infantil` (6–10 años) · `familiar` · `adolescentes` · `adultos` | Tono, vocabulario y reglas: infantil = descripciones sencillas (≤ 100 caracteres), tono `familiar`/`educativo`, sin alcohol, violencia ni apuestas, 8 rondas y 14 Ohros; familiar = 10 rondas y 20 Ohros; adolescentes = 10 rondas y 20 Ohros, tono `humor`/`familiar`; adultos = 12 rondas y 30 Ohros |
+| `duracion` | `corta` (8 rondas, 16 Ohros) · `media` (9–15 rondas) · `larga` (20 rondas, 40 Ohros, ≥ 20 elementos) | Rondas y presupuesto proporcionados al número de rondas |
+| `jugadores` | `2-3` (8 rondas, 14 Ohros) · `4-6` (8–12 rondas) · `7-10` (≥ 12 rondas, 30 Ohros) | Con pocos jugadores, partida más corta y presupuesto ajustado; con muchos, más rondas y más presupuesto para que todos ganen algo |
+
+**Formato (compatible hacia atrás).** La plantilla sigue siendo `subasta-salvaje/plantilla@1`, sin cambios. El lote (`lote-plantillas@1`) admite un campo **opcional** por entrada, `variante`: `{ "base": "<slug de la plantilla base>", "edad"?, "duracion"?, "jugadores"? }` (al menos uno de los tres). Es informativo (no se guarda en la base de datos, igual que `tono` y `etiquetas`); un lote sin él sigue valiendo. En la fuente `.txt` se escribe con las cabeceras `# base:`, `# edad:`, `# duracion:` y `# jugadores:`.
+
+**Reglas extra del validador para las variantes:** presupuesto entre 1,5 y 3,5 Ohros por ronda; rondas según la duración y los jugadores (tabla); la temática debe coincidir con la de su base (si viaja en el lote) y la base no puede ser otra variante; tono compatible con la edad; en infantil, palabras no aptas rechazadas (comprobación mínima: la revisión humana sigue siendo necesaria).
+
+**Solapamiento y títulos únicos: no se relajan.** Como los títulos son únicos en todo el catálogo, el solapamiento entre dos plantillas (también entre variantes de la misma base) es siempre 0 %; el límite del 25 % no estorba y no se tocó. Lo cubre `tests/system-templates-catalogo.test.ts`.
+
+**Cómo añadir otra variante:** crea `fuente/variantes/<slug>.txt` (copia una existente), cambia las cabeceras y escribe elementos **nuevos**; `npm run templates:build` valida, regenera los JSON y esta tabla. El lote admite como máximo 100 plantillas (hoy 69).
 
 ## Fotos y casamiento con la biblioteca de medios (propuesta, no implementado)
 El formato de plantilla **no admite precios por elemento ni etiquetas** (los precios de salida/mínimo son reglas de toda la partida: `presupuesto`, `puja_minima`), así que las etiquetas viajan en `lote.json` (`etiquetas[i]` = palabras clave **en inglés**, 1–4 por elemento, en el orden del catálogo; no se guardan en la base). Todos los elementos llevan `foto: null` y se ven con su emoji. Para añadir fotos después:
@@ -37,44 +54,77 @@ No se ha automatizado para no tocar la biblioteca ni inventar URL.
 
 ## Catálogo
 <!-- inicio-tabla (generada por npm run templates:build) -->
-| Slug | Título | Tono | Elementos | Presupuesto (Ohros) | Rondas |
-|---|---|---|---|---|---|
-| `antiguo-egipto` | Tesoros del antiguo Egipto | educativo | 16 | 30 | 10 |
-| `apocalipsis-zombi-light` | Apocalipsis zombi (muy light) | humor negro suave | 16 | 30 | 10 |
-| `bar-de-tapas` | Bar de tapas | adultos | 16 | 25 | 10 |
-| `bazar-de-trastos` | Bazar de trastos | humor | 16 | 20 | 10 |
-| `boda-por-todo-lo-alto` | Boda por todo lo alto | adultos | 16 | 30 | 10 |
-| `camping-aventura` | Camping y aventura | familiar | 16 | 20 | 10 |
-| `cena-de-empresa` | Cena de empresa legendaria | humor | 16 | 30 | 10 |
-| `cocina-del-mundo` | Cocina del mundo | familiar | 17 | 25 | 10 |
-| `cole-y-mochila` | Vuelta al cole | familiar | 16 | 20 | 10 |
-| `cumpleanos-epico` | Cumpleaños épico | familiar | 16 | 20 | 10 |
-| `despedida-de-soltero` | Despedida por todo lo alto | adultos | 16 | 30 | 10 |
-| `espacio-exterior` | Misión al espacio | educativo | 16 | 25 | 10 |
-| `festival-de-musica` | Festival de música | familiar | 16 | 25 | 10 |
-| `fiesta-de-disfraces` | Fiesta de disfraces | adultos | 17 | 30 | 10 |
-| `fondo-del-mar` | Fondo del mar | educativo | 17 | 25 | 10 |
-| `granja-feliz` | Granja feliz | familiar | 16 | 20 | 10 |
-| `jardin-botanico` | Jardín botánico | educativo | 17 | 20 | 10 |
-| `laboratorio-loco` | Laboratorio loco | educativo | 17 | 25 | 10 |
-| `mansion-encantada` | Mansión encantada | humor negro suave | 16 | 25 | 10 |
-| `mascotas-locas` | Mascotas locas | familiar | 16 | 20 | 10 |
-| `mercado-medieval` | Mercado medieval | educativo | 16 | 25 | 10 |
-| `mudanza-imposible` | Mudanza imposible | humor | 16 | 25 | 10 |
-| `navidad-desastre` | Navidad desastre | familiar | 17 | 25 | 10 |
-| `noche-de-cine` | Noche de cine en casa | familiar | 16 | 20 | 10 |
-| `noche-de-juegos-de-mesa` | Noche de juegos de mesa | familiar | 16 | 20 | 10 |
-| `oficina-caotica` | Oficina caótica | humor | 17 | 25 | 10 |
-| `olimpiadas-del-sofa` | Olimpiadas del sofá | humor | 16 | 20 | 10 |
-| `reunion-familiar` | Reunión familiar | familiar | 16 | 20 | 10 |
-| `salvaje-oeste` | Salvaje Oeste | familiar | 16 | 25 | 10 |
-| `spa-y-bienestar` | Spa y bienestar | adultos | 16 | 25 | 10 |
-| `superheroes-de-barrio` | Superhéroes de barrio | familiar | 17 | 25 | 10 |
-| `verano-eterno` | Verano eterno | familiar | 16 | 20 | 10 |
-| `viaje-en-el-tiempo` | Viaje en el tiempo | educativo | 18 | 25 | 10 |
-| `viaje-por-europa` | Gran viaje por Europa | familiar | 17 | 25 | 10 |
-| `vida-universitaria` | Vida universitaria | humor | 16 | 25 | 10 |
-| `videojuegos-retro` | Salón recreativo retro | familiar | 16 | 25 | 10 |
+| Slug | Título | Tono | Elementos | Presupuesto (Ohros) | Rondas | Base | Variante |
+|---|---|---|---|---|---|---|---|
+| `antiguo-egipto` | Tesoros del antiguo Egipto | educativo | 16 | 30 | 10 |  |  |
+| `apocalipsis-zombi-light` | Apocalipsis zombi (muy light) | humor negro suave | 16 | 30 | 10 |  |  |
+| `bar-de-tapas` | Bar de tapas | adultos | 16 | 25 | 10 |  |  |
+| `bazar-de-trastos` | Bazar de trastos | humor | 16 | 20 | 10 |  |  |
+| `boda-por-todo-lo-alto` | Boda por todo lo alto | adultos | 16 | 30 | 10 |  |  |
+| `camping-aventura` | Camping y aventura | familiar | 16 | 20 | 10 |  |  |
+| `cena-de-empresa` | Cena de empresa legendaria | humor | 16 | 30 | 10 |  |  |
+| `cocina-del-mundo` | Cocina del mundo | familiar | 17 | 25 | 10 |  |  |
+| `cole-y-mochila` | Vuelta al cole | familiar | 16 | 20 | 10 |  |  |
+| `cumpleanos-epico` | Cumpleaños épico | familiar | 16 | 20 | 10 |  |  |
+| `despedida-de-soltero` | Despedida por todo lo alto | adultos | 16 | 30 | 10 |  |  |
+| `espacio-exterior` | Misión al espacio | educativo | 16 | 25 | 10 |  |  |
+| `festival-de-musica` | Festival de música | familiar | 16 | 25 | 10 |  |  |
+| `fiesta-de-disfraces` | Fiesta de disfraces | adultos | 17 | 30 | 10 |  |  |
+| `fondo-del-mar` | Fondo del mar | educativo | 17 | 25 | 10 |  |  |
+| `granja-feliz` | Granja feliz | familiar | 16 | 20 | 10 |  |  |
+| `jardin-botanico` | Jardín botánico | educativo | 17 | 20 | 10 |  |  |
+| `laboratorio-loco` | Laboratorio loco | educativo | 17 | 25 | 10 |  |  |
+| `mansion-encantada` | Mansión encantada | humor negro suave | 16 | 25 | 10 |  |  |
+| `mascotas-locas` | Mascotas locas | familiar | 16 | 20 | 10 |  |  |
+| `mercado-medieval` | Mercado medieval | educativo | 16 | 25 | 10 |  |  |
+| `mudanza-imposible` | Mudanza imposible | humor | 16 | 25 | 10 |  |  |
+| `navidad-desastre` | Navidad desastre | familiar | 17 | 25 | 10 |  |  |
+| `noche-de-cine` | Noche de cine en casa | familiar | 16 | 20 | 10 |  |  |
+| `noche-de-juegos-de-mesa` | Noche de juegos de mesa | familiar | 16 | 20 | 10 |  |  |
+| `oficina-caotica` | Oficina caótica | humor | 17 | 25 | 10 |  |  |
+| `olimpiadas-del-sofa` | Olimpiadas del sofá | humor | 16 | 20 | 10 |  |  |
+| `reunion-familiar` | Reunión familiar | familiar | 16 | 20 | 10 |  |  |
+| `salvaje-oeste` | Salvaje Oeste | familiar | 16 | 25 | 10 |  |  |
+| `spa-y-bienestar` | Spa y bienestar | adultos | 16 | 25 | 10 |  |  |
+| `superheroes-de-barrio` | Superhéroes de barrio | familiar | 17 | 25 | 10 |  |  |
+| `verano-eterno` | Verano eterno | familiar | 16 | 20 | 10 |  |  |
+| `viaje-en-el-tiempo` | Viaje en el tiempo | educativo | 18 | 25 | 10 |  |  |
+| `viaje-por-europa` | Gran viaje por Europa | familiar | 17 | 25 | 10 |  |  |
+| `vida-universitaria` | Vida universitaria | humor | 16 | 25 | 10 |  |  |
+| `videojuegos-retro` | Salón recreativo retro | familiar | 16 | 25 | 10 |  |  |
+| `boda-7-10` | Boda con muchos invitados | adultos | 12 | 30 | 12 | `boda-por-todo-lo-alto` | jugadores: 7-10 |
+| `camping-adultos` | Glamping de lujo | adultos | 12 | 30 | 12 | `camping-aventura` | edad: adultos |
+| `cocina-adultos` | Cena gourmet | adultos | 12 | 30 | 12 | `cocina-del-mundo` | edad: adultos |
+| `cocina-larga` | Maratón gastronómica | familiar | 20 | 40 | 20 | `cocina-del-mundo` | duración: larga |
+| `cole-peques` | Mi primer cole | familiar | 12 | 14 | 8 | `cole-y-mochila` | edad: infantil |
+| `cumpleanos-peques` | Cumpleaños de peques | familiar | 12 | 14 | 8 | `cumpleanos-epico` | edad: infantil |
+| `disfraces-familiar` | Disfraces en familia | familiar | 12 | 20 | 10 | `fiesta-de-disfraces` | edad: familiar |
+| `egipto-larga` | Egipto: la gran expedición | educativo | 20 | 40 | 20 | `antiguo-egipto` | duración: larga |
+| `escapada-adultos` | Escapada de adultos | adultos | 12 | 30 | 12 | `viaje-por-europa` | edad: adultos |
+| `espacio-larga` | Gran expedición espacial | educativo | 20 | 40 | 20 | `espacio-exterior` | duración: larga |
+| `espacio-peques` | Astronautas en miniatura | educativo | 12 | 14 | 8 | `espacio-exterior` | edad: infantil |
+| `festival-adolescentes` | Mi primer festival | familiar | 12 | 20 | 10 | `festival-de-musica` | edad: adolescentes |
+| `fondo-del-mar-peques` | Fondo del mar para peques | educativo | 12 | 14 | 8 | `fondo-del-mar` | edad: infantil |
+| `granja-peques` | Granja para peques | familiar | 12 | 14 | 8 | `granja-feliz` | edad: infantil |
+| `instituto-adolescentes` | Vida de instituto | humor | 12 | 20 | 10 | `cole-y-mochila` | edad: adolescentes |
+| `jardin-peques` | Jardín de bichitos | educativo | 12 | 14 | 8 | `jardin-botanico` | edad: infantil |
+| `juegos-2-3` | Duelo de mesa | familiar | 12 | 14 | 8 | `noche-de-juegos-de-mesa` | jugadores: 2-3 |
+| `laboratorio-corta` | Laboratorio exprés | educativo | 12 | 16 | 8 | `laboratorio-loco` | duración: corta |
+| `mansion-adolescentes` | Noche de miedo en el instituto | humor | 12 | 20 | 10 | `mansion-encantada` | edad: adolescentes |
+| `mansion-familiar` | Castillo de fantasmas simpáticos | familiar | 12 | 20 | 10 | `mansion-encantada` | edad: familiar |
+| `mascotas-peques` | Mascotas para peques | familiar | 12 | 14 | 8 | `mascotas-locas` | edad: infantil |
+| `medieval-corta` | Mercado medieval exprés | educativo | 12 | 16 | 8 | `mercado-medieval` | duración: corta |
+| `mudanza-4-6` | Mudanza en equipo | humor | 12 | 20 | 10 | `mudanza-imposible` | jugadores: 4-6 |
+| `navidad-larga` | Navidad: la gran subasta | familiar | 20 | 40 | 20 | `navidad-desastre` | duración: larga |
+| `noche-de-cine-adultos` | Cinéfilos de sofá | adultos | 12 | 30 | 12 | `noche-de-cine` | edad: adultos |
+| `oeste-corta` | Salvaje Oeste exprés | familiar | 12 | 16 | 8 | `salvaje-oeste` | duración: corta |
+| `olimpiadas-7-10` | Olimpiadas de sofá a lo grande | humor | 12 | 30 | 12 | `olimpiadas-del-sofa` | jugadores: 7-10 |
+| `reunion-7-10` | Reunión de clan | familiar | 12 | 30 | 12 | `reunion-familiar` | jugadores: 7-10 |
+| `spa-2-3` | Spa para dos o tres | adultos | 12 | 14 | 8 | `spa-y-bienestar` | jugadores: 2-3 |
+| `superheroes-peques` | Superhéroes pequeñitos | familiar | 12 | 14 | 8 | `superheroes-de-barrio` | edad: infantil |
+| `tiempo-larga` | Viaje en el tiempo: gran travesía | educativo | 20 | 40 | 20 | `viaje-en-el-tiempo` | duración: larga |
+| `verano-adolescentes` | Viaje de fin de curso | humor | 12 | 20 | 10 | `verano-eterno` | edad: adolescentes |
+| `videojuegos-adolescentes` | Sala gamer | humor | 12 | 20 | 10 | `videojuegos-retro` | edad: adolescentes |
 <!-- fin-tabla -->
 
 ## Lo no probado

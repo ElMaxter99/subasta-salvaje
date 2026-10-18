@@ -1,0 +1,21 @@
+# nombre: Duelo de mesa
+# descripcion: Una partida corta y tensa para dos o tres jugadores con juegos de mesa de siempre.
+# tono: familiar
+# tematica: Juegos de mesa
+# base: noche-de-juegos-de-mesa
+# jugadores: 2-3
+# presupuesto: 14
+# rondas: 8
+---
+♟️ | Tablero de ajedrez de madera | Treinta y dos piezas, dos reyes y mucho silencio. | wooden chess set
+🎲 | Dado de veinte caras | Decide el destino de un héroe. | twenty sided die
+🃏 | Baraja de póquer | Suena distinto cuando se baraja bien. | poker deck
+🧩 | Rompecabezas de doscientas piezas | La última nunca aparece. | jigsaw puzzle
+⏳ | Cronómetro de turno | Mide el turno de cada jugador. | hourglass
+🎯 | Dardos de salón | Pinchan más la pared que la diana. | darts board
+🪙 | Peones de madera | Hay que guardarlas por si faltan. | game tokens
+📜 | Libro de reglas | Tiene letra pequeña y poca paciencia. | rule book
+🏁 | Línea de llegada | El último paso suele ser el más largo. | board game finish
+🥇 | Copa de campeón doméstico | Cambia de dueño cada semana. | small trophy
+🍿 | Bol de palomitas | Se agota antes de empezar la segunda partida. | popcorn bowl
+🕹️ | Ficha de comodín | Se guarda hasta el último momento. | wild card chip

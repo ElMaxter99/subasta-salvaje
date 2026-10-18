@@ -33,6 +33,7 @@
     "ai:lab": "tsx --env-file-if-exists=.env.local scripts/ai/prompt-lab.ts",
     "library": "tsx scripts/library/fetch-commons.ts --all --open",
     "library:fetch": "tsx scripts/library/fetch-commons.ts",
+    "library:openverse": "tsx scripts/library/fetch-openverse.ts",
     "templates:build": "tsx scripts/templates/build.ts",
     "templates:validate": "tsx scripts/templates/validate.ts",
     "templates:match": "tsx --env-file-if-exists=.env.local scripts/templates/match.ts",

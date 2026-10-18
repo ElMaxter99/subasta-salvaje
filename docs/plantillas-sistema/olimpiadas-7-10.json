@@ -1,0 +1,88 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Olimpiadas de sofá a lo grande",
+  "tematica": "Deportes",
+  "reglas": {
+    "presupuesto": 30,
+    "puja_minima": 1,
+    "rondas_maximas": 12,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Medalla de cartón",
+      "descripcion": "Se entrega con un aplauso moderado.",
+      "emoji": "🏅",
+      "foto": null
+    },
+    {
+      "titulo": "Podio de cajas",
+      "descripcion": "Tres cajas de zapatos unidas.",
+      "emoji": "🥇",
+      "foto": null
+    },
+    {
+      "titulo": "Carrera de calcetines",
+      "descripcion": "Se resbala por el pasillo.",
+      "emoji": "🏃",
+      "foto": null
+    },
+    {
+      "titulo": "Globo de voleibol",
+      "descripcion": "Se queda en el aire más que la pelota.",
+      "emoji": "🏐",
+      "foto": null
+    },
+    {
+      "titulo": "Carrera de huevo y cuchara",
+      "descripcion": "El huevo cae, la risa permanece.",
+      "emoji": "🥄",
+      "foto": null
+    },
+    {
+      "titulo": "Diana de platos de plástico",
+      "descripcion": "Con cuatro puntos y una buena excusa.",
+      "emoji": "🎯",
+      "foto": null
+    },
+    {
+      "titulo": "Cuerda para el pulso",
+      "descripcion": "Tira de un lado y de otro.",
+      "emoji": "🪢",
+      "foto": null
+    },
+    {
+      "titulo": "Prueba de equilibrio sobre un cojín",
+      "descripcion": "Gana quien tarda más en caerse.",
+      "emoji": "🧘",
+      "foto": null
+    },
+    {
+      "titulo": "Dorsal con el nombre mal escrito",
+      "descripcion": "Sirve para la foto.",
+      "emoji": "🎽",
+      "foto": null
+    },
+    {
+      "titulo": "Megáfono del árbitro",
+      "descripcion": "Anuncia las normas inventadas.",
+      "emoji": "📣",
+      "foto": null
+    },
+    {
+      "titulo": "Cronómetro del cocinero",
+      "descripcion": "Cuenta los segundos de cada prueba.",
+      "emoji": "⏱️",
+      "foto": null
+    },
+    {
+      "titulo": "Antorcha de papel",
+      "descripcion": "Se enciende con un rotulador naranja.",
+      "emoji": "🔥",
+      "foto": null
+    }
+  ]
+}

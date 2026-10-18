@@ -1,0 +1,88 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Boda con muchos invitados",
+  "tematica": "Boda",
+  "reglas": {
+    "presupuesto": 30,
+    "puja_minima": 1,
+    "rondas_maximas": 12,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Ramo de peonías",
+      "descripcion": "Vuela por encima de las cabezas.",
+      "emoji": "💐",
+      "foto": null
+    },
+    {
+      "titulo": "Cajita de alianzas",
+      "descripcion": "Pequeños y brillantes.",
+      "emoji": "💍",
+      "foto": null
+    },
+    {
+      "titulo": "Tarta nupcial de tres pisos",
+      "descripcion": "Hay que cortarla con mucho cuidado.",
+      "emoji": "🎂",
+      "foto": null
+    },
+    {
+      "titulo": "Torre de copas",
+      "descripcion": "Se llena de cava desde arriba.",
+      "emoji": "🥂",
+      "foto": null
+    },
+    {
+      "titulo": "Mesa imperial",
+      "descripcion": "Capaz de sentar a cien invitados.",
+      "emoji": "🍽️",
+      "foto": null
+    },
+    {
+      "titulo": "Plano de mesas",
+      "descripcion": "Se cambia diez veces antes del convite.",
+      "emoji": "📋",
+      "foto": null
+    },
+    {
+      "titulo": "Orquesta de baile",
+      "descripcion": "Toca desde el aperitivo hasta el amanecer.",
+      "emoji": "🎶",
+      "foto": null
+    },
+    {
+      "titulo": "Chistera del padrino",
+      "descripcion": "Guarda el discurso y un pañuelo.",
+      "emoji": "🎩",
+      "foto": null
+    },
+    {
+      "titulo": "Fotógrafo de la boda",
+      "descripcion": "Siempre tiene una última foto más.",
+      "emoji": "📸",
+      "foto": null
+    },
+    {
+      "titulo": "Botella de recuerdo",
+      "descripcion": "Lleva etiqueta con la fecha.",
+      "emoji": "🍾",
+      "foto": null
+    },
+    {
+      "titulo": "Arco de flores",
+      "descripcion": "Enmarca el sí quiero.",
+      "emoji": "🌸",
+      "foto": null
+    },
+    {
+      "titulo": "Limusina con lazo",
+      "descripcion": "Brilla con lazo en el capó.",
+      "emoji": "🚗",
+      "foto": null
+    }
+  ]
+}

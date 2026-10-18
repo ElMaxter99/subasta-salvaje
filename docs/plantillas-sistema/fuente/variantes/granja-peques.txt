@@ -1,0 +1,21 @@
+# nombre: Granja para peques
+# descripcion: Un paseo por la granja con animales simpáticos y tractores, pensado para 6–10 años.
+# tono: familiar
+# tematica: Granja
+# base: granja-feliz
+# edad: infantil
+# presupuesto: 14
+# rondas: 8
+---
+🐄 | Vaca Margarita | Da leche y mira con ojos grandes. | cow
+🐖 | Cerdito Rosita | Le encanta revolcarse en el barro. | piglet
+🐑 | Corderito blanco | Tiene lana suave como una nube. | lamb
+🐓 | Gallo cantarín | Despierta a todos con su quiquiriquí. | rooster
+🥚 | Huevos de gallina | Recién puestos por las gallinas. | basket eggs
+🚜 | Tractor de pueblo | Grande, ruidoso y muy divertido. | red tractor
+🐴 | Poni peludo | Se deja cepillar con paciencia. | pony
+🌽 | Mazorca dorada | Crece muy alta en el campo. | corn cob
+🐇 | Conejo saltarín | Se escapa de la conejera cada día. | rabbit
+🦆 | Patito curioso | Sigue a su mamá en fila. | duckling
+🍎 | Manzana del huerto | Crujiente y recién cogida del árbol. | apple tree
+🧑‍🌾 | Espantapájaros alegre | Cuida los cultivos con su sombrero de paja. | scarecrow

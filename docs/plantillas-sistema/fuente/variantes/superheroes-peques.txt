@@ -1,0 +1,21 @@
+# nombre: Superhéroes pequeñitos
+# descripcion: Capas, poderes y buenas acciones para pequeños héroes de 6 a 10 años.
+# tono: familiar
+# tematica: Superhéroes
+# base: superheroes-de-barrio
+# edad: infantil
+# presupuesto: 14
+# rondas: 8
+---
+🦸 | Capa voladora | Ondea al viento como una bandera. | red cape
+🎭 | Antifaz secreto | Nadie reconoce a quien lo lleva. | hero mask
+💪 | Súper fuerza de bocadillo | Se activa después de merendar. | strong kid
+⚡ | Rayo de energía | Ilumina toda la habitación. | lightning bolt
+🛡️ | Escudo de cartón | Para parar balones y abrazos. | cardboard shield
+🐶 | Perro ayudante | Acompaña al héroe a todas partes. | dog sidekick
+🏙️ | Ciudad de juguete | Hay que salvarla de los monstruos de peluche. | toy city
+🧪 | Poción de colores | Da poderes durante cinco minutos. | colorful potion
+🚲 | Bici veloz | Corre más que un coche de juguete. | kids bicycle
+📣 | Megáfono del héroe | Sirve para avisar a los vecinos. | megaphone
+🧤 | Guantes mágicos | Brillan cuando hay que ayudar. | magic gloves
+🏅 | Medalla de valiente | Se da a quien ayuda sin que se lo pidan. | gold medal

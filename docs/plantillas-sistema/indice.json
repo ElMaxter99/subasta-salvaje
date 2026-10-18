@@ -288,6 +288,270 @@
       "orden": 550,
       "elementos": 16,
       "archivo": "videojuegos-retro.json"
+    },
+    {
+      "slug": "boda-7-10",
+      "titulo": "Boda con muchos invitados",
+      "tono": "adultos",
+      "orden": 560,
+      "elementos": 12,
+      "archivo": "boda-7-10.json"
+    },
+    {
+      "slug": "camping-adultos",
+      "titulo": "Glamping de lujo",
+      "tono": "adultos",
+      "orden": 570,
+      "elementos": 12,
+      "archivo": "camping-adultos.json"
+    },
+    {
+      "slug": "cocina-adultos",
+      "titulo": "Cena gourmet",
+      "tono": "adultos",
+      "orden": 580,
+      "elementos": 12,
+      "archivo": "cocina-adultos.json"
+    },
+    {
+      "slug": "cocina-larga",
+      "titulo": "Maratón gastronómica",
+      "tono": "familiar",
+      "orden": 590,
+      "elementos": 20,
+      "archivo": "cocina-larga.json"
+    },
+    {
+      "slug": "cole-peques",
+      "titulo": "Mi primer cole",
+      "tono": "familiar",
+      "orden": 600,
+      "elementos": 12,
+      "archivo": "cole-peques.json"
+    },
+    {
+      "slug": "cumpleanos-peques",
+      "titulo": "Cumpleaños de peques",
+      "tono": "familiar",
+      "orden": 610,
+      "elementos": 12,
+      "archivo": "cumpleanos-peques.json"
+    },
+    {
+      "slug": "disfraces-familiar",
+      "titulo": "Disfraces en familia",
+      "tono": "familiar",
+      "orden": 620,
+      "elementos": 12,
+      "archivo": "disfraces-familiar.json"
+    },
+    {
+      "slug": "egipto-larga",
+      "titulo": "Egipto: la gran expedición",
+      "tono": "educativo",
+      "orden": 630,
+      "elementos": 20,
+      "archivo": "egipto-larga.json"
+    },
+    {
+      "slug": "escapada-adultos",
+      "titulo": "Escapada de adultos",
+      "tono": "adultos",
+      "orden": 640,
+      "elementos": 12,
+      "archivo": "escapada-adultos.json"
+    },
+    {
+      "slug": "espacio-larga",
+      "titulo": "Gran expedición espacial",
+      "tono": "educativo",
+      "orden": 650,
+      "elementos": 20,
+      "archivo": "espacio-larga.json"
+    },
+    {
+      "slug": "espacio-peques",
+      "titulo": "Astronautas en miniatura",
+      "tono": "educativo",
+      "orden": 660,
+      "elementos": 12,
+      "archivo": "espacio-peques.json"
+    },
+    {
+      "slug": "festival-adolescentes",
+      "titulo": "Mi primer festival",
+      "tono": "familiar",
+      "orden": 670,
+      "elementos": 12,
+      "archivo": "festival-adolescentes.json"
+    },
+    {
+      "slug": "fondo-del-mar-peques",
+      "titulo": "Fondo del mar para peques",
+      "tono": "educativo",
+      "orden": 680,
+      "elementos": 12,
+      "archivo": "fondo-del-mar-peques.json"
+    },
+    {
+      "slug": "granja-peques",
+      "titulo": "Granja para peques",
+      "tono": "familiar",
+      "orden": 690,
+      "elementos": 12,
+      "archivo": "granja-peques.json"
+    },
+    {
+      "slug": "instituto-adolescentes",
+      "titulo": "Vida de instituto",
+      "tono": "humor",
+      "orden": 700,
+      "elementos": 12,
+      "archivo": "instituto-adolescentes.json"
+    },
+    {
+      "slug": "jardin-peques",
+      "titulo": "Jardín de bichitos",
+      "tono": "educativo",
+      "orden": 710,
+      "elementos": 12,
+      "archivo": "jardin-peques.json"
+    },
+    {
+      "slug": "juegos-2-3",
+      "titulo": "Duelo de mesa",
+      "tono": "familiar",
+      "orden": 720,
+      "elementos": 12,
+      "archivo": "juegos-2-3.json"
+    },
+    {
+      "slug": "laboratorio-corta",
+      "titulo": "Laboratorio exprés",
+      "tono": "educativo",
+      "orden": 730,
+      "elementos": 12,
+      "archivo": "laboratorio-corta.json"
+    },
+    {
+      "slug": "mansion-adolescentes",
+      "titulo": "Noche de miedo en el instituto",
+      "tono": "humor",
+      "orden": 740,
+      "elementos": 12,
+      "archivo": "mansion-adolescentes.json"
+    },
+    {
+      "slug": "mansion-familiar",
+      "titulo": "Castillo de fantasmas simpáticos",
+      "tono": "familiar",
+      "orden": 750,
+      "elementos": 12,
+      "archivo": "mansion-familiar.json"
+    },
+    {
+      "slug": "mascotas-peques",
+      "titulo": "Mascotas para peques",
+      "tono": "familiar",
+      "orden": 760,
+      "elementos": 12,
+      "archivo": "mascotas-peques.json"
+    },
+    {
+      "slug": "medieval-corta",
+      "titulo": "Mercado medieval exprés",
+      "tono": "educativo",
+      "orden": 770,
+      "elementos": 12,
+      "archivo": "medieval-corta.json"
+    },
+    {
+      "slug": "mudanza-4-6",
+      "titulo": "Mudanza en equipo",
+      "tono": "humor",
+      "orden": 780,
+      "elementos": 12,
+      "archivo": "mudanza-4-6.json"
+    },
+    {
+      "slug": "navidad-larga",
+      "titulo": "Navidad: la gran subasta",
+      "tono": "familiar",
+      "orden": 790,
+      "elementos": 20,
+      "archivo": "navidad-larga.json"
+    },
+    {
+      "slug": "noche-de-cine-adultos",
+      "titulo": "Cinéfilos de sofá",
+      "tono": "adultos",
+      "orden": 800,
+      "elementos": 12,
+      "archivo": "noche-de-cine-adultos.json"
+    },
+    {
+      "slug": "oeste-corta",
+      "titulo": "Salvaje Oeste exprés",
+      "tono": "familiar",
+      "orden": 810,
+      "elementos": 12,
+      "archivo": "oeste-corta.json"
+    },
+    {
+      "slug": "olimpiadas-7-10",
+      "titulo": "Olimpiadas de sofá a lo grande",
+      "tono": "humor",
+      "orden": 820,
+      "elementos": 12,
+      "archivo": "olimpiadas-7-10.json"
+    },
+    {
+      "slug": "reunion-7-10",
+      "titulo": "Reunión de clan",
+      "tono": "familiar",
+      "orden": 830,
+      "elementos": 12,
+      "archivo": "reunion-7-10.json"
+    },
+    {
+      "slug": "spa-2-3",
+      "titulo": "Spa para dos o tres",
+      "tono": "adultos",
+      "orden": 840,
+      "elementos": 12,
+      "archivo": "spa-2-3.json"
+    },
+    {
+      "slug": "superheroes-peques",
+      "titulo": "Superhéroes pequeñitos",
+      "tono": "familiar",
+      "orden": 850,
+      "elementos": 12,
+      "archivo": "superheroes-peques.json"
+    },
+    {
+      "slug": "tiempo-larga",
+      "titulo": "Viaje en el tiempo: gran travesía",
+      "tono": "educativo",
+      "orden": 860,
+      "elementos": 20,
+      "archivo": "tiempo-larga.json"
+    },
+    {
+      "slug": "verano-adolescentes",
+      "titulo": "Viaje de fin de curso",
+      "tono": "humor",
+      "orden": 870,
+      "elementos": 12,
+      "archivo": "verano-adolescentes.json"
+    },
+    {
+      "slug": "videojuegos-adolescentes",
+      "titulo": "Sala gamer",
+      "tono": "humor",
+      "orden": 880,
+      "elementos": 12,
+      "archivo": "videojuegos-adolescentes.json"
     }
   ]
 }

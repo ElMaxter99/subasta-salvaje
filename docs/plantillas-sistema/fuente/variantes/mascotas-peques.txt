@@ -1,0 +1,21 @@
+# nombre: Mascotas para peques
+# descripcion: Animales de compañía y sus cosas favoritas, con descripciones cortas para 6–10 años.
+# tono: familiar
+# tematica: Mascotas
+# base: mascotas-locas
+# edad: infantil
+# presupuesto: 14
+# rondas: 8
+---
+🐕 | Perrito saltarín | Mueve la cola cuando te ve llegar. | happy puppy
+🐈 | Gatito dormilón | Duerme quince horas al día. | sleeping kitten
+🐠 | Pez de colores | Nada en círculos en su pecera. | goldfish
+🐰 | Conejito blanco | Tiene el hocico siempre en movimiento. | white rabbit
+🦎 | Lagartija verde | Toma el sol sobre una piedra. | green lizard
+🐾 | Cuenco de comida | Siempre está vacío a la hora de cenar. | pet bowl
+🎾 | Pelota de tenis | La favorita para jugar en el parque. | tennis ball dog
+🧸 | Peluche mordido | Ya no tiene una oreja, pero se lo quiere. | chewed plush
+🏠 | Casita de perro | De madera, con tejado rojo. | dog house
+🐦 | Canario cantor | Silba melodías por la mañana. | canary
+🛁 | Baño de espuma | Hay burbujas hasta en el techo. | dog bath bubbles
+🪢 | Cuerda de juego | Tira de un lado y del otro. | rope toy

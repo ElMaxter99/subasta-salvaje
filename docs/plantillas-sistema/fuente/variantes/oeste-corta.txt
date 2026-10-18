@@ -1,0 +1,21 @@
+# nombre: Salvaje Oeste exprés
+# descripcion: Ocho rondas rápidas en un pueblo del Oeste: ideal cuando solo hay media hora.
+# tono: familiar
+# tematica: Oeste
+# base: salvaje-oeste
+# duracion: corta
+# presupuesto: 16
+# rondas: 8
+---
+🌵 | Cactus gigante | Pincha, pero da buena sombra al mediodía. | giant cactus
+🏜️ | Mapa del desfiladero | Marca un atajo que no existe. | canyon map
+🐎 | Potro salvaje | Llega primero al abrevadero. | galloping horse
+🥁 | Tambor del jefe de tribu | Marca el ritmo de la danza. | native drum
+🔔 | Campana de la diligencia | Avisa de que llega el correo. | stagecoach bell
+🧂 | Barril de sal | Guarda las provisiones del invierno. | salt barrel
+🏚️ | Cabaña abandonada | Con puertas que chirrían y ventanas rotas. | abandoned cabin
+🪕 | Banjo del salón | Suena alegre aunque nadie sepa tocarlo. | banjo
+🧣 | Pañuelo del cuello | Protege del polvo del camino. | bandana
+🪙 | Filón de oro | Brilla más que la luna. | gold nugget
+🥾 | Espuelas de plata | Tintinean al andar. | cowboy boots spurs
+🔥 | Fogata de la pradera | Calienta las judías de la cena. | campfire beans

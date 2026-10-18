@@ -24,14 +24,14 @@ Primera tanda: **≈ 700 imágenes publicadas**. Los objetivos viven en `LIBRARY
 
 - Una imagen puede tener ambos roles (p. ej. una isla): se cuenta en los dos.
 - Ritmo sugerido: **una categoría por sesión** (30–60 imágenes), publicar y medir antes de pasar a la siguiente.
-- Hoy hay 13 packs de texto (`docs/catalogo-semilla/*.txt`, ≈ 380 productos). **Faltan** packs para *Mascotas disfrazadas*, *Juguetes* y *Plantas y flores*, y más escenas para *Playa y verano*, *Halloween* y *Navidad* (`# Tipo: escena`).
+- Hay 16 packs de texto (`docs/catalogo-semilla/*.txt`, ≈ 500 productos), incluidos *Mascotas disfrazadas*, *Juguetes* y *Plantas y flores*. **Faltan** más escenas para *Playa y verano*, *Halloween* y *Navidad* (`# Tipo: escena`).
 
 ## 2. Fuentes (de menos a más riesgo)
 | Prioridad | Fuente | Licencia | Cómo |
 |---|---|---|---|
 | 1 | **Wikimedia Commons** (API sin clave) | Mezcla; el script **solo acepta CC0 / dominio público** (con `--allow-by`, también CC BY / CC BY-SA y entonces la atribución es obligatoria) | `npm run library` (§3) |
-| 2 | **Museos con acceso abierto** (Met Museum, Rijksmuseum, Smithsonian Open Access) | CC0 en lo marcado como tal | Descarga manual de la web/API del museo → carpeta + `manifest.csv` (§4). Objetos curiosos: cerámica, sombreros, juguetes antiguos |
-| 3 | **Openverse** (clave gratuita; agrega Commons, Flickr, museos) | Filtrar `cc0` y `pdm` | Manual (§4); no hay script todavía |
+| 2 | **Museos con acceso abierto** (Met Museum y Art Institute of Chicago con script; Rijksmuseum, Smithsonian… manual) | CC0 en lo marcado como tal | `npm run library:openverse -- --source met\|artic` (§3b); el resto, a mano (§4). Objetos curiosos: cerámica, sombreros, juguetes antiguos |
+| 3 | **Openverse** (agrega Commons, Flickr, museos; clave gratuita opcional) | El script **solo** acepta `cc0` y `pdm` | `npm run library:openverse` (§3b) |
 | 4 | **Fotos propias** del propietario | Propiedad del titular | La vía más limpia para productos «de casa». Anota «Foto propia · <año>» como crédito |
 | 5 | **Generadas con IA** (botón «Generar imagen» del catálogo, cadena gratuita) | Del propietario (revisa los términos del proveedor) | Solo para productos sin foto; cuenta en el tope diario; crédito automático «Generada con IA (proveedor · modelo)» |
 
@@ -49,6 +49,18 @@ npm run library:fetch -- --index-only                                    # tras 
 - **Etiquetado:** por defecto `roles` sale del tipo del pack (escena → `start`, objeto → `product`) y `categoria` es la colección. Un pack puede declarar `# Rol: inicio, producto` y `# Categoría: …`; en línea de órdenes mandan `--roles`, `--category`, `--tags`.
 - Es **repetible**: salta lo ya descargado. Si Commons devuelve pocos resultados, cambia la búsqueda (4.ª columna del pack).
 - Salida: `biblioteca-pendiente/<Colección>/<Producto>.jpg`, `manifest.csv`, `FUENTES.md`, `index.html` (galería local con autor, licencia y origen) y `<Colección>/productos.txt`. La carpeta está en `.gitignore`.
+
+## 3b. Openverse y museos (CC0 / dominio público)
+```bash
+npm run library:openverse -- --pack docs/catalogo-semilla/juguetes.txt --contact tu@correo               # Openverse
+npm run library:openverse -- --pack docs/catalogo-semilla/juguetes.txt --source met --contact tu@correo  # Met Museum (también: artic, o all)
+npm run library:openverse -- --pack docs/catalogo-semilla/juguetes.txt --dry-run --contact tu@correo     # solo lista candidatos
+```
+- **Licencias aceptadas: solo CC0 y Public Domain Mark** (los museos, solo lo que ellos marcan como dominio público/CC0). Nada con atribución ni «no comercial».
+- Misma carpeta, mismo `manifest.csv` y mismo estado que `npm run library`: se pueden combinar. Cada imagen se **normaliza** (WebP interno) y se descartan las casi idénticas por **huella perceptual**.
+- Cabecera de contacto con `--contact`; pausas (`--delay`), reintentos con espera ante 429/5xx. Clave opcional y gratuita de Openverse por variables de entorno `OPENVERSE_CLIENT_ID` / `OPENVERSE_CLIENT_SECRET` (nunca se guardan).
+- Los packs admiten búsquedas alternativas `inglés || español` en la 4.ª columna.
+- **No probado contra los servicios reales** (solo con respuestas simuladas). Detalle, límites y qué esperar de cada fuente: [FUENTES-OPENVERSE-MUSEOS.md](FUENTES-OPENVERSE-MUSEOS.md).
 
 ## 4. Preparar una carpeta propia (fotos propias, museos, Openverse)
 Estructura: `mi-carpeta/<Colección>/<archivo>.jpg|png|webp` + `mi-carpeta/manifest.csv`.
@@ -91,7 +103,7 @@ En *Superadmin → Biblioteca → «Cobertura y calidad»* (siempre sobre lo **p
 | Fase | Qué | Quién | Salida |
 |---|---|---|---|
 | A | Decidir fuentes y reparto (§1–2); registrar claves gratuitas solo si se usa Openverse | Propietario | Lista aprobada |
-| B | Packs de texto: completar *Mascotas disfrazadas*, *Juguetes*, *Plantas y flores* y más escenas | Claude / propietario | `docs/catalogo-semilla/*.txt` |
+| B | Packs de texto: *Mascotas disfrazadas*, *Juguetes* y *Plantas y flores* (hechos); faltan más escenas | Claude / propietario | `docs/catalogo-semilla/*.txt` |
 | C | **Piloto:** 3 categorías × ~40 (p. ej. Halloween, Paisajes, Objetos del hogar): descargar → checklist → subir → revisar → publicar → probar en partida | Propietario | Primeras ~120 publicadas |
 | D | Ajustar packs/búsquedas según el piloto y escalar categoría a categoría vigilando la cobertura | Ambos | ≈ 700 publicadas |
 | E | Huecos: productos sin foto con IA (tandas pequeñas, cuota diaria) y fotos propias | Propietario | Sin huecos en el panel |
@@ -100,10 +112,10 @@ En *Superadmin → Biblioteca → «Cobertura y calidad»* (siempre sobre lo **p
 1. ¿Solo CC0 / dominio público (recomendado) o también CC BY (con atribución visible) o Pexels/Pixabay tras revisar sus términos?
 2. ¿Ajustas los objetivos de `LIBRARY_CATEGORIES` (categorías y cifras)?
 3. ¿Quién revisa (marca «Revisada») y con qué criterio mínimo (§5)?
-4. ¿Se añade un script para Openverse / museos? Hoy esas fuentes son manuales.
+4. ¿Registras una clave gratuita de Openverse para tener más cupo? (opcional; el script funciona sin ella con un tope bajo).
 
 ## 10. Mejoras de herramientas posibles (no hechas)
-- Script de descarga para Openverse y museos CC0 (mismo `manifest.csv`).
+- Más museos con API abierta (Rijksmuseum, Cleveland, Smithsonian) en `src/lib/library/free-sources.ts`.
 - Exportar/importar un «pack de colección» (JSON con productos + referencias) para repetir el relleno en otro entorno.
 - Marcar como duplicado en bloque desde *Parecidas por contenido* (hoy se borra el registro de uno en uno).
 - Descripción de productos generada con IA al crear productos desde imágenes.

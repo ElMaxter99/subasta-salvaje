@@ -1,0 +1,21 @@
+# nombre: Disfraces en familia
+# descripcion: Un baúl de disfraces para todas las edades, con risas y mucha imaginación.
+# tono: familiar
+# tematica: Fiesta
+# base: fiesta-de-disfraces
+# edad: familiar
+# presupuesto: 20
+# rondas: 10
+---
+🦖 | Traje de dinosaurio hinchable | Cuesta caminar y sentarse. | inflatable dinosaur costume
+🧚 | Alas de hada | Brillan con la luz del sol. | fairy wings
+🏴‍☠️ | Garfio de pirata | Se pone en el ojo que no ves. | pirate eyepatch
+🤡 | Nariz roja de payaso | Suena cuando se aprieta. | clown nose
+🥷 | Disfraz de ninja | Silencioso salvo por el crujido de los pies. | ninja costume
+👸 | Corona de princesa | Con joyas de plástico. | toy tiara
+🧛 | Capa de vampiro | Tiene cuello alto y forro rojo. | vampire cape
+🐻 | Pijama de oso | Calentito y de pelo suave. | bear onesie
+🎩 | Chistera de mago | Guarda un pañuelo infinito. | top hat
+🦸 | Antifaz de héroe | Hace falta una buena voz de héroe. | hero eye mask
+🌈 | Peluca arcoíris | Se ve desde la otra acera. | rainbow wig
+🧸 | Maleta de maquillaje | Con pintura facial de todos los colores. | face paint

@@ -1,0 +1,21 @@
+# nombre: Mudanza en equipo
+# descripcion: Cajas, muebles y objetos varios, a medida de un grupo de cuatro a seis personas.
+# tono: humor
+# tematica: Hogar
+# base: mudanza-imposible
+# jugadores: 4-6
+# presupuesto: 20
+# rondas: 10
+---
+📦 | Caja que pesa media tonelada | Pone «libros» pero suena a piedras. | heavy moving box
+🛋️ | Sofá que no pasa por la puerta | Hay que girarlo tres veces. | sofa stuck doorway
+🧻 | Rollo de cinta americana | Sirve para sujetar casi todo. | duct tape roll
+🧰 | Carro de mudanza | Llega a la tercera planta con dificultad. | hand truck
+📏 | Cinta métrica | Dice que no cabe, pero cabe. | tape measure
+🪴 | Planta trepadora | Se queda atrapada en la cortina. | houseplant moving
+🛏️ | Somier desmontado | Faltan cuatro tornillos. | disassembled bed frame
+🍕 | Cena de cajas | Se come sentados en el suelo. | pizza floor
+🔑 | Llaves del piso nuevo | Brillan cuando abren la puerta. | new house keys
+🥤 | Nevera de bebidas | Las bebidas llegan antes que el sofá. | drinks cooler
+🏷️ | Etiquetas de colores | Cada habitación tiene su color. | colored labels
+🚐 | Furgoneta alquilada | Huele a café y tiene el asiento corrido. | rental van

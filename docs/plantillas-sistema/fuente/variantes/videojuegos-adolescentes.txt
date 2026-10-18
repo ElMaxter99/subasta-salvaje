@@ -1,0 +1,21 @@
+# nombre: Sala gamer
+# descripcion: La habitación perfecta para jugar con amigos: mandos, partidas y snacks.
+# tono: humor
+# tematica: Videojuegos
+# base: videojuegos-retro
+# edad: adolescentes
+# presupuesto: 20
+# rondas: 10
+---
+🎮 | Mando con stick suelto | Gira solo hacia la izquierda, pero se usa igual. | game controller
+🎧 | Auriculares con micro | Se oye de fondo la tele de los vecinos. | gaming headset
+🖥️ | Pantalla curva | Ocupa media mesa y toda la atención. | curved monitor
+⌨️ | Teclado con luces | Brilla en siete colores según la partida. | rgb keyboard
+🍕 | Pizza de madrugada | Se enfría mientras sube el nivel. | late night pizza
+🥤 | Bebida energética sin azúcar | Promete energía y solo da hipo. | energy drink can
+🏆 | Trofeo del torneo | Ganado en el salón de un amigo. | tournament trophy
+🪑 | Silla gamer | Reclinable, giratoria y con cojín lumbar. | gaming chair
+📶 | Router del pasillo | Se cae justo en la final. | wifi router
+🧠 | Estrategia infalible | Funciona hasta que entra el rival. | chess strategy
+💾 | Partida guardada | Cien horas de progreso que nadie borra. | save file memory card
+🕹️ | Palanca arcade | Aguanta golpes de rabia sin rendirse. | arcade joystick

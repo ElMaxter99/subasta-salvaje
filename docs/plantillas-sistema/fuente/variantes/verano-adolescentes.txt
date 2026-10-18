@@ -1,0 +1,21 @@
+# nombre: Viaje de fin de curso
+# descripcion: Maletas, playa y planes con la pandilla tras acabar el curso.
+# tono: humor
+# tematica: Verano
+# base: verano-eterno
+# edad: adolescentes
+# presupuesto: 20
+# rondas: 10
+---
+🧳 | Maleta desbordada | Alguien se sienta encima para lograrlo. | suitcase overstuffed
+🚌 | Autobús del viaje | Tiene música a todo volumen y el aire roto. | coach bus
+🏖️ | Toalla de rayas | Reserva sitio en la arena desde primera hora. | striped beach towel
+🍦 | Helado triple | Se derrite antes de llegar a la orilla. | triple ice cream
+📸 | Palo para selfis | Aparece en todas las fotos de grupo. | selfie stick
+🕶️ | Gafas de espejo | Siempre se pierden el último día. | mirrored sunglasses
+🎧 | Lista de reproducción del viaje | Doscientas canciones y ninguna se repite. | travel playlist
+🏄 | Tabla de surf alquilada | Se usa más para sentarse que para surfear. | rented surfboard
+🌅 | Atardecer en la playa | Todos callan por un momento. | beach sunset
+🍉 | Sandía compartida | Se parte con las manos entre risas. | watermelon slice
+🎲 | Baraja de cartas gastadas | Falta el cuatro de bastos. | worn playing cards
+📔 | Diario de viaje | Lleva garabatos y entradas de museo. | travel journal

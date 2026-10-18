@@ -1,0 +1,88 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Sala gamer",
+  "tematica": "Videojuegos",
+  "reglas": {
+    "presupuesto": 20,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Mando con stick suelto",
+      "descripcion": "Gira solo hacia la izquierda, pero se usa igual.",
+      "emoji": "🎮",
+      "foto": null
+    },
+    {
+      "titulo": "Auriculares con micro",
+      "descripcion": "Se oye de fondo la tele de los vecinos.",
+      "emoji": "🎧",
+      "foto": null
+    },
+    {
+      "titulo": "Pantalla curva",
+      "descripcion": "Ocupa media mesa y toda la atención.",
+      "emoji": "🖥️",
+      "foto": null
+    },
+    {
+      "titulo": "Teclado con luces",
+      "descripcion": "Brilla en siete colores según la partida.",
+      "emoji": "⌨️",
+      "foto": null
+    },
+    {
+      "titulo": "Pizza de madrugada",
+      "descripcion": "Se enfría mientras sube el nivel.",
+      "emoji": "🍕",
+      "foto": null
+    },
+    {
+      "titulo": "Bebida energética sin azúcar",
+      "descripcion": "Promete energía y solo da hipo.",
+      "emoji": "🥤",
+      "foto": null
+    },
+    {
+      "titulo": "Trofeo del torneo",
+      "descripcion": "Ganado en el salón de un amigo.",
+      "emoji": "🏆",
+      "foto": null
+    },
+    {
+      "titulo": "Silla gamer",
+      "descripcion": "Reclinable, giratoria y con cojín lumbar.",
+      "emoji": "🪑",
+      "foto": null
+    },
+    {
+      "titulo": "Router del pasillo",
+      "descripcion": "Se cae justo en la final.",
+      "emoji": "📶",
+      "foto": null
+    },
+    {
+      "titulo": "Estrategia infalible",
+      "descripcion": "Funciona hasta que entra el rival.",
+      "emoji": "🧠",
+      "foto": null
+    },
+    {
+      "titulo": "Partida guardada",
+      "descripcion": "Cien horas de progreso que nadie borra.",
+      "emoji": "💾",
+      "foto": null
+    },
+    {
+      "titulo": "Palanca arcade",
+      "descripcion": "Aguanta golpes de rabia sin rendirse.",
+      "emoji": "🕹️",
+      "foto": null
+    }
+  ]
+}

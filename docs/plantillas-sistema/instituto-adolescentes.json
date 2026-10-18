@@ -1,0 +1,88 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Vida de instituto",
+  "tematica": "Colegio",
+  "reglas": {
+    "presupuesto": 20,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Taquilla atascada",
+      "descripcion": "Se abre a la quinta patada.",
+      "emoji": "🔐",
+      "foto": null
+    },
+    {
+      "titulo": "Chuleta microscópica",
+      "descripcion": "Más pequeña que un grano de arroz.",
+      "emoji": "📝",
+      "foto": null
+    },
+    {
+      "titulo": "Bocadillo del recreo",
+      "descripcion": "Aplastado en el fondo de la mochila.",
+      "emoji": "🥪",
+      "foto": null
+    },
+    {
+      "titulo": "Móvil confiscado",
+      "descripcion": "Vuelve a su dueño al final del trimestre.",
+      "emoji": "📵",
+      "foto": null
+    },
+    {
+      "titulo": "Profe de mates",
+      "descripcion": "Es capaz de explicar con tres colores de tiza.",
+      "emoji": "🧑‍🏫",
+      "foto": null
+    },
+    {
+      "titulo": "Gráfica de notas",
+      "descripcion": "Sube mucho justo antes de la evaluación.",
+      "emoji": "📈",
+      "foto": null
+    },
+    {
+      "titulo": "Pista del patio",
+      "descripcion": "Allí se decide todo con un tres contra tres.",
+      "emoji": "🏀",
+      "foto": null
+    },
+    {
+      "titulo": "Excursión al museo",
+      "descripcion": "El mejor momento es la vuelta en autobús.",
+      "emoji": "🚌",
+      "foto": null
+    },
+    {
+      "titulo": "Libro de texto subrayado",
+      "descripcion": "Todo en amarillo, nada entendido.",
+      "emoji": "📚",
+      "foto": null
+    },
+    {
+      "titulo": "Calendario de exámenes",
+      "descripcion": "Los tres coinciden el mismo viernes.",
+      "emoji": "🗓️",
+      "foto": null
+    },
+    {
+      "titulo": "Festival de fin de curso",
+      "descripcion": "Se ensaya poco y se aplaude mucho.",
+      "emoji": "🎤",
+      "foto": null
+    },
+    {
+      "titulo": "Gorro de fin de ciclo",
+      "descripcion": "Vuela por los aires al final del acto.",
+      "emoji": "🎓",
+      "foto": null
+    }
+  ]
+}

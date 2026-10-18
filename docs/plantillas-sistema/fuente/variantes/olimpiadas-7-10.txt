@@ -1,0 +1,21 @@
+# nombre: Olimpiadas de sofá a lo grande
+# descripcion: Un torneo de pruebas absurdas para grupos grandes de siete a diez jugadores.
+# tono: humor
+# tematica: Deportes
+# base: olimpiadas-del-sofa
+# jugadores: 7-10
+# presupuesto: 30
+# rondas: 12
+---
+🏅 | Medalla de cartón | Se entrega con un aplauso moderado. | cardboard medal
+🥇 | Podio de cajas | Tres cajas de zapatos unidas. | cardboard podium
+🏃 | Carrera de calcetines | Se resbala por el pasillo. | sock race
+🏐 | Globo de voleibol | Se queda en el aire más que la pelota. | balloon volleyball
+🥄 | Carrera de huevo y cuchara | El huevo cae, la risa permanece. | egg and spoon
+🎯 | Diana de platos de plástico | Con cuatro puntos y una buena excusa. | paper plate target
+🪢 | Cuerda para el pulso | Tira de un lado y de otro. | tug of war rope
+🧘 | Prueba de equilibrio sobre un cojín | Gana quien tarda más en caerse. | cushion balance
+🎽 | Dorsal con el nombre mal escrito | Sirve para la foto. | race bib
+📣 | Megáfono del árbitro | Anuncia las normas inventadas. | referee megaphone
+⏱️ | Cronómetro del cocinero | Cuenta los segundos de cada prueba. | kitchen timer
+🔥 | Antorcha de papel | Se enciende con un rotulador naranja. | paper torch

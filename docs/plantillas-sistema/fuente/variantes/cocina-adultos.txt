@@ -1,0 +1,21 @@
+# nombre: Cena gourmet
+# descripcion: Productos de despensa selecta, vinos y utensilios para una cena entre adultos.
+# tono: adultos
+# tematica: Gastronomía
+# base: cocina-del-mundo
+# edad: adultos
+# presupuesto: 30
+# rondas: 12
+---
+🍾 | Cava de celebración | Se abre con un chasquido y un brindis. | sparkling wine
+🧈 | Mantequilla artesana | Untada generosamente en el pan tibio. | artisan butter
+🦞 | Bogavante del día | Llega vivo y sale en su punto. | lobster
+🍄 | Trufa negra rallada | Un gramo cuesta lo que un menú. | black truffle
+🧄 | Ajo negro envejecido | Dulce, oscuro y algo misterioso. | black garlic
+🍫 | Tableta de cacao puro | Amarga, intensa y sin remordimientos. | dark chocolate bar
+🥩 | Chuletón madurado | Cuarenta días de espera en cámara. | aged steak
+🫒 | Aceite de primera prensada | Se sirve a gotas sobre una tostada. | extra virgin olive oil
+🍮 | Flan de la abuela | El único postre que nadie discute. | caramel flan
+🔪 | Cuchillo de chef | Corta con solo mirarlo. | chef knife
+🧂 | Sal en escamas | Se esparce desde bien alto. | flaky sea salt
+🥂 | Copas de cristal fino | Se friegan a mano y con miedo. | crystal glasses

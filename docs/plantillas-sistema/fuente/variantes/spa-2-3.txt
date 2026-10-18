@@ -1,0 +1,21 @@
+# nombre: Spa para dos o tres
+# descripcion: Una tarde de relax íntima para pocos jugadores, con menos rondas y presupuesto ajustado.
+# tono: adultos
+# tematica: Relax
+# base: spa-y-bienestar
+# jugadores: 2-3
+# presupuesto: 14
+# rondas: 8
+---
+🕯️ | Vela de lavanda | Perfuma la sala de relajación. | lavender candle
+🧖 | Rodajas de pepino | Fresca y silenciosa. | cucumber mask
+🪨 | Cantos rodados tibios | Deshacen las contracturas de la semana. | hot stones
+🛁 | Bañera de hidromasaje | Burbujea con música suave. | jacuzzi
+🌿 | Infusión de menta | Se sirve en taza grande. | mint infusion
+🧴 | Aceite de masaje | Huele a almendra y a descanso. | massage oil
+🎶 | Murmullo de cascada | Se repite sin parar. | ocean sounds speaker
+🧼 | Jabón artesano | Se deshace despacio. | artisan soap
+🩴 | Zapatillas de felpa | Silenciosas y suaves. | spa slippers
+🧘 | Colchoneta de estiramientos | Aprieta el estrés en tres respiraciones. | yoga mat
+🍵 | Té verde en tetera | Sale con vapor y aroma. | green tea teapot
+💆 | Sillón de masaje | Vibra con ritmo suave. | massage chair

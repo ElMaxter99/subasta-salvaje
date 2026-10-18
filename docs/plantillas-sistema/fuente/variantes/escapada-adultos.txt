@@ -1,0 +1,21 @@
+# nombre: Escapada de adultos
+# descripcion: Un fin de semana de hotel con encanto, buena mesa y paseos sin prisa.
+# tono: adultos
+# tematica: Viajes
+# base: viaje-por-europa
+# edad: adultos
+# presupuesto: 30
+# rondas: 12
+---
+🏨 | Habitación con vistas | Se ve el campanario desde la cama. | hotel room view
+🧖 | Albornoz del hotel | Es tan cómodo que casi se lo llevan. | hotel bathrobe
+🍽️ | Menú degustación | Siete platos pequeños y una factura grande. | tasting menu
+🚆 | Billete de tren panorámico | Con ventana grande y sin prisa. | scenic train ticket
+🗺️ | Plano de calles estrechas | Se pierde uno encantado. | old town map
+🍷 | Cata en la bodega | Termina con tres botellas compradas. | winery tasting
+🛶 | Paseo en barca por el canal | Tranquilo, lento y fotogénico. | canal boat
+🛍️ | Bolsas de la tienda de delicatessen | Pesan más que el equipaje. | delicatessen bags
+🎻 | Concierto en la catedral | Un cuarteto de cuerda y piedra antigua. | cathedral concert
+☕ | Café en la terraza | Lo mejor del día, sin mirar el reloj. | terrace cafe
+📖 | Libro sin abrir | Se llevó para leer y vuelve intacto. | unread paperback
+🧳 | Maleta de cabina | Todo cabe si uno es disciplinado. | cabin suitcase

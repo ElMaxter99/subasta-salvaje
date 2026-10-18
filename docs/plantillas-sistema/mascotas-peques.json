@@ -1,0 +1,88 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Mascotas para peques",
+  "tematica": "Mascotas",
+  "reglas": {
+    "presupuesto": 14,
+    "puja_minima": 1,
+    "rondas_maximas": 8,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Perrito saltarín",
+      "descripcion": "Mueve la cola cuando te ve llegar.",
+      "emoji": "🐕",
+      "foto": null
+    },
+    {
+      "titulo": "Gatito dormilón",
+      "descripcion": "Duerme quince horas al día.",
+      "emoji": "🐈",
+      "foto": null
+    },
+    {
+      "titulo": "Pez de colores",
+      "descripcion": "Nada en círculos en su pecera.",
+      "emoji": "🐠",
+      "foto": null
+    },
+    {
+      "titulo": "Conejito blanco",
+      "descripcion": "Tiene el hocico siempre en movimiento.",
+      "emoji": "🐰",
+      "foto": null
+    },
+    {
+      "titulo": "Lagartija verde",
+      "descripcion": "Toma el sol sobre una piedra.",
+      "emoji": "🦎",
+      "foto": null
+    },
+    {
+      "titulo": "Cuenco de comida",
+      "descripcion": "Siempre está vacío a la hora de cenar.",
+      "emoji": "🐾",
+      "foto": null
+    },
+    {
+      "titulo": "Pelota de tenis",
+      "descripcion": "La favorita para jugar en el parque.",
+      "emoji": "🎾",
+      "foto": null
+    },
+    {
+      "titulo": "Peluche mordido",
+      "descripcion": "Ya no tiene una oreja, pero se lo quiere.",
+      "emoji": "🧸",
+      "foto": null
+    },
+    {
+      "titulo": "Casita de perro",
+      "descripcion": "De madera, con tejado rojo.",
+      "emoji": "🏠",
+      "foto": null
+    },
+    {
+      "titulo": "Canario cantor",
+      "descripcion": "Silba melodías por la mañana.",
+      "emoji": "🐦",
+      "foto": null
+    },
+    {
+      "titulo": "Baño de espuma",
+      "descripcion": "Hay burbujas hasta en el techo.",
+      "emoji": "🛁",
+      "foto": null
+    },
+    {
+      "titulo": "Cuerda de juego",
+      "descripcion": "Tira de un lado y del otro.",
+      "emoji": "🪢",
+      "foto": null
+    }
+  ]
+}

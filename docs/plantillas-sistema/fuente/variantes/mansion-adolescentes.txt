@@ -1,0 +1,21 @@
+# nombre: Noche de miedo en el instituto
+# descripcion: Una noche de fantasmas y sustos de pasillo pensada para adolescentes con humor.
+# tono: humor
+# tematica: Casa encantada
+# base: mansion-encantada
+# edad: adolescentes
+# presupuesto: 20
+# rondas: 10
+---
+👻 | Fantasma del laboratorio | Aparece siempre justo antes del examen de química. | lab ghost
+🔦 | Linterna del móvil | Alumbra poco y gasta toda la batería. | phone flashlight
+📱 | Grupo de clase fantasma | Tiene 200 mensajes y nadie escribe. | group chat phone
+🚪 | Puerta del gimnasio | Se cierra sola cuando más prisa tienes. | gym door
+🎒 | Mochila misteriosa | Alguien dejó dentro un bocadillo del curso pasado. | abandoned backpack
+🪞 | Espejo de los vestuarios | Refleja cosas que preferirías no ver. | locker room mirror
+🕸️ | Telaraña de la biblioteca | Nadie ha pedido ese libro desde 1998. | library cobweb
+🧛 | Delegado vampiro | Solo aparece cuando se pone el sol. | vampire student
+🎃 | Calabaza de taquilla | Alguien la dejó ahí y huele raro. | pumpkin locker
+🕯️ | Vela de la sesión de espiritismo | Se apagó justo cuando preguntaron por la nota. | candle ouija
+📼 | Cinta de vídeo del viaje de fin de curso | Dicen que sale un fantasma al fondo. | old videotape
+🔔 | Timbre a medianoche | Suena sin que nadie lo toque. | school bell night

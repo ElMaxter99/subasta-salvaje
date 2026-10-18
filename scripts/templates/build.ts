@@ -15,9 +15,11 @@ writeGenerated(entries);
 
 const rows = entries.map((e) => {
   const t = e.plantilla as { nombre: string; reglas: { presupuesto: number; rondas_maximas: number }; catalogo: unknown[] };
-  return `| \`${e.slug}\` | ${t.nombre} | ${e.tono ?? ''} | ${t.catalogo.length} | ${t.reglas.presupuesto} | ${t.reglas.rondas_maximas} |`;
+  const v = e.variante;
+  const variante = v ? [v.edad && `edad: ${v.edad}`, v.duracion && `duración: ${v.duracion}`, v.jugadores && `jugadores: ${v.jugadores}`].filter(Boolean).join(' · ') : '';
+  return `| \`${e.slug}\` | ${t.nombre} | ${e.tono ?? ''} | ${t.catalogo.length} | ${t.reglas.presupuesto} | ${t.reglas.rondas_maximas} | ${v ? `\`${v.base ?? ''}\`` : ''} | ${variante} |`;
 });
-const table = ['<!-- inicio-tabla (generada por npm run templates:build) -->', '| Slug | Título | Tono | Elementos | Presupuesto (Ohros) | Rondas |', '|---|---|---|---|---|---|', ...rows, '<!-- fin-tabla -->'].join('\n');
+const table = ['<!-- inicio-tabla (generada por npm run templates:build) -->', '| Slug | Título | Tono | Elementos | Presupuesto (Ohros) | Rondas | Base | Variante |', '|---|---|---|---|---|---|---|---|', ...rows, '<!-- fin-tabla -->'].join('\n');
 const doc = path.join(process.cwd(), 'docs', 'PLANTILLAS-SISTEMA-CATALOGO.md');
 let md = readFileSync(doc, 'utf8');
 md = md.replace(/<!-- inicio-tabla[\s\S]*?<!-- fin-tabla -->/, table);

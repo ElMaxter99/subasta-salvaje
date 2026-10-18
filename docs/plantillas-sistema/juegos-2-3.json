@@ -1,0 +1,88 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Duelo de mesa",
+  "tematica": "Juegos de mesa",
+  "reglas": {
+    "presupuesto": 14,
+    "puja_minima": 1,
+    "rondas_maximas": 8,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Tablero de ajedrez de madera",
+      "descripcion": "Treinta y dos piezas, dos reyes y mucho silencio.",
+      "emoji": "♟️",
+      "foto": null
+    },
+    {
+      "titulo": "Dado de veinte caras",
+      "descripcion": "Decide el destino de un héroe.",
+      "emoji": "🎲",
+      "foto": null
+    },
+    {
+      "titulo": "Baraja de póquer",
+      "descripcion": "Suena distinto cuando se baraja bien.",
+      "emoji": "🃏",
+      "foto": null
+    },
+    {
+      "titulo": "Rompecabezas de doscientas piezas",
+      "descripcion": "La última nunca aparece.",
+      "emoji": "🧩",
+      "foto": null
+    },
+    {
+      "titulo": "Cronómetro de turno",
+      "descripcion": "Mide el turno de cada jugador.",
+      "emoji": "⏳",
+      "foto": null
+    },
+    {
+      "titulo": "Dardos de salón",
+      "descripcion": "Pinchan más la pared que la diana.",
+      "emoji": "🎯",
+      "foto": null
+    },
+    {
+      "titulo": "Peones de madera",
+      "descripcion": "Hay que guardarlas por si faltan.",
+      "emoji": "🪙",
+      "foto": null
+    },
+    {
+      "titulo": "Libro de reglas",
+      "descripcion": "Tiene letra pequeña y poca paciencia.",
+      "emoji": "📜",
+      "foto": null
+    },
+    {
+      "titulo": "Línea de llegada",
+      "descripcion": "El último paso suele ser el más largo.",
+      "emoji": "🏁",
+      "foto": null
+    },
+    {
+      "titulo": "Copa de campeón doméstico",
+      "descripcion": "Cambia de dueño cada semana.",
+      "emoji": "🥇",
+      "foto": null
+    },
+    {
+      "titulo": "Bol de palomitas",
+      "descripcion": "Se agota antes de empezar la segunda partida.",
+      "emoji": "🍿",
+      "foto": null
+    },
+    {
+      "titulo": "Ficha de comodín",
+      "descripcion": "Se guarda hasta el último momento.",
+      "emoji": "🕹️",
+      "foto": null
+    }
+  ]
+}

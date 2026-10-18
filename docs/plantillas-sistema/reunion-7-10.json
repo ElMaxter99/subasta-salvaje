@@ -1,0 +1,88 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Reunión de clan",
+  "tematica": "Familia",
+  "reglas": {
+    "presupuesto": 30,
+    "puja_minima": 1,
+    "rondas_maximas": 12,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Pollo asado para veinte",
+      "descripcion": "Aún quedan tres alitas.",
+      "emoji": "🍗",
+      "foto": null
+    },
+    {
+      "titulo": "Olla familiar",
+      "descripcion": "Alimenta a medio barrio.",
+      "emoji": "🥘",
+      "foto": null
+    },
+    {
+      "titulo": "Silla plegable extra",
+      "descripcion": "Siempre falta una para el último que llega.",
+      "emoji": "🪑",
+      "foto": null
+    },
+    {
+      "titulo": "Abuela cuentacuentos",
+      "descripcion": "Nadie interrumpe sus historias.",
+      "emoji": "🧓",
+      "foto": null
+    },
+    {
+      "titulo": "Cochecito del benjamín",
+      "descripcion": "Tiene el sueño más ligero del mundo.",
+      "emoji": "👶",
+      "foto": null
+    },
+    {
+      "titulo": "Foto de familia",
+      "descripcion": "Siempre sale alguien con los ojos cerrados.",
+      "emoji": "📷",
+      "foto": null
+    },
+    {
+      "titulo": "Parchís gigante",
+      "descripcion": "Termina en discusión y en abrazos.",
+      "emoji": "🎲",
+      "foto": null
+    },
+    {
+      "titulo": "Tarta de los primos",
+      "descripcion": "Hecha por tres personas en secreto.",
+      "emoji": "🍰",
+      "foto": null
+    },
+    {
+      "titulo": "Brindis del tío",
+      "descripcion": "Empieza sencillo y acaba largo.",
+      "emoji": "🗣️",
+      "foto": null
+    },
+    {
+      "titulo": "Cesta de postres",
+      "descripcion": "Hay tarta, flan, fruta y galletas.",
+      "emoji": "🧺",
+      "foto": null
+    },
+    {
+      "titulo": "Guitarra de sobremesa",
+      "descripcion": "Suena cuando se van los niños.",
+      "emoji": "🎼",
+      "foto": null
+    },
+    {
+      "titulo": "Mesa de pueblo",
+      "descripcion": "Larga, de madera y llena de manteles.",
+      "emoji": "🏡",
+      "foto": null
+    }
+  ]
+}
