@@ -1,4 +1,5 @@
-import type { Player, PublicSnapshot, RankingRule } from './types';
+import type { Player, PlayerStat, PublicSnapshot, RankingRule } from './types';
+import { formatOhros } from './money';
 
 export interface RankingEntry {
   player: Player;
@@ -130,4 +131,40 @@ export function computePodium(players: Player[], votes: Map<string, number>): { 
   const podium = groups.slice(0, 3);
   const onPodium = new Set(podium.flatMap((g) => g.players.map((p) => p.id)));
   return { podium, rest: withVotes.filter((e) => !onPodium.has(e.player.id)) };
+}
+
+export interface PlayerAward {
+  id: 'shark' | 'spender' | 'saver' | 'hothead' | 'peacemaker' | 'unlucky';
+  emoji: string;
+  title: string;
+  /** Qué se ha medido, para mostrarlo junto al título («5 elementos»). */
+  detail: string;
+  /** Jugadores que lo comparten (empate = todos). */
+  players: Player[];
+}
+
+/**
+ * «Premios» divertidos a partir de las estadísticas finales. Solo describen lo ocurrido (no afectan a la clasificación ni a nada).
+ * Cada premio exige un mínimo para no premiar el cero, y los empates lo comparten.
+ */
+export function computeAwards(players: Player[], stats: PlayerStat[] | undefined): PlayerAward[] {
+  if (!stats || stats.length === 0) return [];
+  const rows = players.flatMap((player) => {
+    const st = stats.find((x) => x.player_id === player.id);
+    return st ? [{ player, st }] : [];
+  });
+  const out: PlayerAward[] = [];
+  const pick = (id: PlayerAward['id'], emoji: string, title: string, value: (r: (typeof rows)[number]) => number, min: number, detail: (v: number) => string) => {
+    let best = -Infinity;
+    for (const r of rows) best = Math.max(best, value(r));
+    if (!(best >= min)) return;
+    out.push({ id, emoji, title, detail: detail(best), players: rows.filter((r) => value(r) === best).map((r) => r.player) });
+  };
+  pick('shark', '🦈', 'El tiburón', (r) => r.st.wins, 1, (v) => `${v} ${v === 1 ? 'elemento' : 'elementos'}`);
+  pick('spender', '💸', 'El derrochador', (r) => r.st.spent_cents, 1, (v) => formatOhros(v));
+  pick('saver', '🐜', 'El ahorrador', (r) => r.player.balance_cents, 1, (v) => `${formatOhros(v)} sin gastar`);
+  pick('hothead', '🔥', 'El pujón', (r) => r.st.bids_count, 3, (v) => `${v} pujas`);
+  pick('peacemaker', '🕊️', 'El pacifista', (r) => r.st.yields_count, 1, (v) => `cedió ${v} ${v === 1 ? 'vez' : 'veces'}`);
+  pick('unlucky', '😅', 'El gafe', (r) => r.st.auctions_bid - r.st.wins, 2, (v) => `${v} subastas perdidas`);
+  return out;
 }

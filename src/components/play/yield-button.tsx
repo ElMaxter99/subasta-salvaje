@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Flag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
@@ -25,10 +25,16 @@ export function YieldButton({
   const toast = useToast();
   const [confirm, setConfirm] = useState(false);
   const [busy, setBusy] = useState(false);
+  const noteRef = useRef<HTMLParagraphElement>(null);
+  const justYielded = useRef(false);
+  // El botón desaparece al ceder: el foco pasa a la nota para no perderse en <body> (solo si cedió en esta sesión, no al recargar).
+  useEffect(() => {
+    if (yielded && justYielded.current) noteRef.current?.focus();
+  }, [yielded]);
 
   if (yielded) {
     return (
-      <p role="status" data-testid="yielded-note" className="rounded-2xl bg-night-700 px-4 py-2 text-center text-sm font-bold text-white/80">
+      <p ref={noteRef} tabIndex={-1} role="status" data-testid="yielded-note" className="rounded-2xl bg-night-700 px-4 py-2 text-center text-sm font-bold text-white/80 outline-offset-2">
         🏳️ Has cedido esta puja: no pujas más por este elemento.
       </p>
     );
@@ -40,7 +46,8 @@ export function YieldButton({
     try {
       const r = await yieldBidRequest(roomCode, auctionId);
       navigator.vibrate?.(30);
-      toast.success('Has cedido la puja');
+      justYielded.current = true;
+      toast.success('Has cedido la puja', { announce: false }); // la nota «yielded-note» (role=status) ya lo anuncia
       setConfirm(false);
       onSnapshot(r.snapshot);
     } catch (e) {

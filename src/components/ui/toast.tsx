@@ -8,29 +8,33 @@ interface Toast {
   id: number;
   kind: 'success' | 'error';
   message: string;
+  /** false: solo visual (aria-hidden). Para confirmaciones que otra región viva ya anuncia (p. ej. la puja actual). */
+  announce: boolean;
 }
-const Ctx = createContext<{ success(m: string): void; error(m: string): void } | null>(null);
+export interface ToastOptions { announce?: boolean }
+const Ctx = createContext<{ success(m: string, o?: ToastOptions): void; error(m: string, o?: ToastOptions): void } | null>(null);
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
-  const push = useCallback((kind: Toast['kind'], message: string) => {
+  const push = useCallback((kind: Toast['kind'], message: string, o?: ToastOptions) => {
     const id = Date.now() + Math.random();
-    setToasts((t) => [...t.slice(-3), { id, kind, message }]);
+    setToasts((t) => [...t.slice(-3), { id, kind, message, announce: o?.announce !== false }]);
     setTimeout(() => setToasts((t) => t.filter((x) => x.id !== id)), kind === 'error' ? 7000 : 3500);
   }, []);
-  const api = useMemo(() => ({ success: (m: string) => push('success', m), error: (m: string) => push('error', m) }), [push]);
+  const api = useMemo(() => ({ success: (m: string, o?: ToastOptions) => push('success', m, o), error: (m: string, o?: ToastOptions) => push('error', m, o) }), [push]);
   return (
     <Ctx.Provider value={api}>
       {children}
-      <div className="pointer-events-none fixed inset-x-0 bottom-[calc(5.25rem+env(safe-area-inset-bottom))] z-50 md:bottom-4 flex flex-col items-center gap-2 px-4" role="status" aria-live="polite">
+      <div className="pointer-events-none fixed inset-x-0 bottom-[calc(5.25rem+env(safe-area-inset-bottom))] z-50 md:bottom-4 flex flex-col items-center gap-2 px-4" role="status" aria-live="polite" aria-atomic="false">
         {toasts.map((t) => (
           <div
             key={t.id}
+            aria-hidden={t.announce ? undefined : true}
             className={`pointer-events-auto flex max-w-lg animate-float-in items-center gap-3 rounded-2xl px-4 py-3 text-base font-semibold shadow-2xl ${
               t.kind === 'success' ? 'bg-teal text-night-950' : 'bg-rose text-night-950'
             }`}
           >
-            {t.kind === 'success' ? <ItemIcon variant="item-brillo" motion="spin" className="!h-5" /> : <XCircle className="size-5 shrink-0" />}
+            {t.kind === 'success' ? <ItemIcon variant="item-brillo" motion="spin" className="!h-5" /> : <XCircle className="size-5 shrink-0" aria-hidden />}
             {t.message}
           </div>
         ))}

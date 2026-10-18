@@ -136,6 +136,23 @@ test('accesibilidad: portada, acceso, asistente, panel del anfitrión, móvil de
     .map((el) => ({ el: `${el.tagName.toLowerCase()} ${(el.textContent ?? '').trim().slice(0, 30)}`, h: Math.round(el.getBoundingClientRect().height), w: Math.round(el.getBoundingClientRect().width) }))
     .filter((x) => x.h < 44 || x.w < 44));
   expect(small, `objetivos táctiles < 44 px: ${JSON.stringify(small)}`).toEqual([]);
+
+  // Zoom y texto grande: el viewport no bloquea el zoom y a 360 px con el texto al 200 % no hay desbordamiento horizontal
+  const vp = await p.locator('meta[name=viewport]').getAttribute('content');
+  expect(vp ?? '').not.toMatch(/maximum-scale|user-scalable\s*=\s*(no|0)/);
+  await p.setViewportSize({ width: 360, height: 740 });
+  await p.addStyleTag({ content: 'html{font-size:200% !important}' });
+  const overflow = await p.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  const culprits = overflow <= 1 ? [] : await p.evaluate(() => [`iw=${innerWidth} cw=${document.documentElement.clientWidth} sw=${document.documentElement.scrollWidth}`, ...[...document.querySelectorAll('body *')].filter((el) => el.scrollWidth > el.clientWidth + 1 && el.clientWidth > 0 && !el.matches('a, main, main > div, .mx-auto')).slice(0, 12).map((el) => `SCROLL ${el.tagName}.${String(el.getAttribute('class') ?? '').slice(0, 40)} ${el.scrollWidth}/${el.clientWidth}`)].concat([...document.querySelectorAll('body *')].filter((el) => el.getBoundingClientRect().right > 361 && !el.closest(".pointer-events-none")).slice(0, 6).map((el) => `${el.tagName.toLowerCase()}.${String(el.getAttribute('class') ?? '').slice(0, 50)} «${(el.textContent ?? '').trim().slice(0, 25)}»`)));
+  expect(overflow, `desbordamiento horizontal a 360 px con texto al 200 %: ${JSON.stringify(culprits)}`).toBeLessThanOrEqual(1);
+  // Con tanto texto las barras fijas dejarían poco hueco: pasan a ser normales (no sticky) en viewports bajos
+  expect(await p.evaluate(() => getComputedStyle(document.querySelector('header')!).position)).toBe('static');
+  // La cuenta atrás no es región viva (cambiaría cada segundo) y los avisos puntuales sí
+  expect(await p.locator('[data-testid="auto-award-countdown"][role], [data-testid^="auto-run-"][role]').count()).toBe(0);
+  // prefers-reduced-motion: ninguna animación en la mascota ni en la moneda
+  await p.emulateMedia({ reducedMotion: 'reduce' });
+  const animated = await p.evaluate(() => [...document.querySelectorAll('.ss-mascot, [data-mascot]')].filter((el) => getComputedStyle(el).animationName !== 'none').length);
+  expect(animated, 'elementos animados con reduced-motion').toBe(0);
   await phone.close();
 
   // TV: sin enlace de saltar (pantalla pública sin teclado) pero con nombres accesibles e imágenes con alt

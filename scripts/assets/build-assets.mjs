@@ -141,7 +141,7 @@ async function main() {
     padding: '10 % por lado (contenido ≤ 80 % del lienzo); mismo encuadre dentro de cada grupo (expresiones, poses, vistas base)',
     export: { mascot_resolution: `${MASCOT_SIZE}x${MASCOT_SIZE}`, other_resolution: `${OTHER_SIZE}x${OTHER_SIZE}`, color_profile: 'sRGB', transparent_background: true },
     quality_checks: { failed: report },
-    assets: manifest.map(({ size, ...m }) => ({ ...m, dimensions: `${m.width}x${m.height}` })),
+    assets: manifest.map((entry) => ({ ...Object.fromEntries(Object.entries(entry).filter(([k]) => k !== 'size')), dimensions: `${entry.width}x${entry.height}` })),
   }, null, 2));
 
   // 4) hojas de contacto (SOLO para revisión visual; no son assets finales)

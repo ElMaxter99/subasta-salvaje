@@ -60,7 +60,8 @@ export function BidPad({
       const r = await playerBidRequest(roomCode, auctionId, amount, key);
       keyRef.current = null;
       navigator.vibrate?.(40);
-      toast.success(`Puja de ${formatOhros(amount)} enviada`);
+      // Solo visual: la tarjeta «Puja actual» (aria-live) ya anuncia la puja y quién lidera; así no se dice dos veces.
+      toast.success(`Puja de ${formatOhros(amount)} enviada`, { announce: false });
       setText('');
       onSnapshot(r.snapshot);
     } catch (e) {
@@ -88,7 +89,8 @@ export function BidPad({
           No te queda saldo para pujar
         </p>
       ) : null}
-      <div className="grid grid-cols-4 gap-2">
+      {/* Columnas por rem (no por px): con el texto al 200 % pasan a 2×2 en vez de desbordar */}
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(4.5rem,1fr))] gap-2">
         {QUICK.map((d) => {
           const amount = wholeUp(Math.max(baseCents + d, minBidCents), integerBids);
           return (
@@ -128,7 +130,7 @@ export function BidPad({
             onFocus={(e) => window.setTimeout(() => e.target.scrollIntoView({ block: 'center', behavior: 'smooth' }), 300)}
             aria-invalid={manualBad || undefined}
             placeholder={`Otro importe (Ohros) · mín. ${formatOhros(wholeUp(baseCents > 0 ? baseCents + 1 : minBidCents, integerBids))}`}
-            className="min-h-14 w-full rounded-2xl border border-white/20 bg-night-950 px-4 text-lg text-white placeholder:text-sm placeholder:text-white/55 disabled:opacity-45"
+            className="min-h-14 w-full rounded-2xl border border-white/45 bg-night-950 px-4 text-lg text-white placeholder:text-sm placeholder:text-white/55 disabled:opacity-45"
           />
         </div>
         <Button type="submit" variant="success" size="lg" loading={busy} disabled={locked || manual === null || manual <= 0 || manualFraction} className="shrink-0">

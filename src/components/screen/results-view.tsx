@@ -11,6 +11,7 @@ import { formatOhros } from '@/lib/domain/money';
 import { joinedPlayers } from '@/lib/domain/players';
 import { computeHighlights, computePodium, computeRanking, computeTeams, rankingRuleLabel, type TeamEntry } from '@/lib/domain/ranking';
 import { Podium } from './podium';
+import { AwardsList, PlayerStatsSection } from './player-stats';
 import { PodiumDownload } from './podium-download';
 import { themeLabel } from '@/lib/domain/themes';
 import { Confetti } from './award-overlay';
@@ -295,6 +296,7 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
           </ul>
         ) : null}
         {teams ? <TeamsTable teams={teams} rule={rule} tv /> : null}
+        <AwardsList players={players} stats={snapshot.player_stats} tv />
         <div className="relative z-10 grid shrink-0 grid-cols-4 gap-[0.6rem]">{tiles}</div>
       </div>
     );
@@ -306,6 +308,7 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
         <Confetti count={36} />
         <div className="relative z-10">{hero}</div>
         {teams ? <TeamsTable teams={teams} rule={rule} tv /> : null}
+        <AwardsList players={players} stats={snapshot.player_stats} tv />
         <div className="relative z-10 grid shrink-0 grid-cols-7 gap-[0.6rem]">{tiles}</div>
         <div className="relative z-10 mx-auto flex min-h-0 w-full flex-1 flex-col gap-[0.9rem]">
           {Array.from({ length: rows }, (_, r) => ordered.slice(r * cols, (r + 1) * cols)).map((row, r) => (
@@ -366,6 +369,8 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
       ) : null}
 
       <section aria-label="Estadísticas" className="relative z-10 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">{tiles}</section>
+
+      <PlayerStatsSection players={players} stats={snapshot.player_stats} />
 
       <section aria-label="Casas finales" className="relative z-10 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
         {ordered.map(({ player, rank }) => (

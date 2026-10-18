@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test';
 import { createGameViaWizard } from './new-game-helper';
 
 test('modo móviles: unirse con el código, pujar desde el móvil, adjudicar y seguridad', async ({ page, context, browser }) => {
+  test.setTimeout(180_000); // cinco contextos de navegador: en una pasada completa fría el valor por defecto (90 s) se queda corto
   // Anfitrión crea la partida en modo móviles desde la UI
   await page.goto('/login');
   await page.getByRole('button', { name: /Entrar como anfitrión/ }).click();
@@ -60,6 +61,8 @@ test('modo móviles: unirse con el código, pujar desde el móvil, adjudicar y s
   await beto.p.getByRole('textbox').first().fill('4');
   await beto.p.getByRole('button', { name: 'Pujar', exact: true }).click();
   await expect.poll(async () => (await state()).auction?.current_bid_cents).toBe(400);
+  // Ana (que iba ganando) recibe el aviso «te han superado» con el nombre de quien la superó
+  await expect(ana.p.getByTestId('outbid-alert')).toContainText('Beto', { timeout: 20_000 });
 
   // Sin cookie de jugador no se puede pujar
   const anon = await browser.newContext();

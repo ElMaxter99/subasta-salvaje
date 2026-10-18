@@ -32,6 +32,24 @@ export function limit(_req: Request, bucket: string, id: string, max: number, wi
   if (!rateLimit(`${bucket}:${id}`, max, windowMs)) throw new DomainError('rate_limited');
 }
 
+/** Clave de sala normalizada (mayúsculas, sin espacios) para límites y cookies: «abcd», «ABCD» y «ABCD%20» son la misma sala. */
+export function roomKey(code: string): string {
+  return code.trim().toUpperCase();
+}
+
+/** Lee un cuerpo JSON pequeño con tope de tamaño (las rutas de jugador solo reciben unos pocos campos). Devuelve null si no es JSON. */
+export async function readJson(req: Request, maxBytes = 2048): Promise<unknown> {
+  const declared = Number(req.headers.get('content-length') ?? 0);
+  if (declared > maxBytes) throw new DomainError('invalid_input', undefined, 413);
+  const text = await req.text().catch(() => '');
+  if (text.length > maxBytes) throw new DomainError('invalid_input', undefined, 413);
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
+}
+
 /** Envuelve un handler: traduce errores de dominio a JSON con el código HTTP adecuado. */
 export function handle<A extends unknown[]>(fn: (...args: A) => Promise<Response>) {
   return async (...args: A): Promise<Response> => {

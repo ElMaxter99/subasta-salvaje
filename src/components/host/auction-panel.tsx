@@ -11,6 +11,7 @@ import { formatOhros } from '@/lib/domain/money';
 import type { Auction, WildEvent } from '@/lib/domain/types';
 import { BidPad } from './bid-pad';
 import { WildCard } from './wild-card';
+import { ShortcutsHint, useHostShortcuts, type ShortcutHandlers, type ShortcutKey } from './shortcuts';
 import { Card, Dot, Notice, Pill, Thumb, fmtTime } from './bits';
 import { playerById, type HostCtx } from './host-context';
 import { Ohros } from '@/components/ui/ohros';
@@ -29,13 +30,31 @@ export function AuctionPanel({ ctx }: { ctx: HostCtx }) {
   const [undoOpen, setUndoOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
 
+  const live = auction && (auction.status === 'open' || auction.status === 'closed') ? auction : null;
+
+  // Atajos de teclado: solo los que aplican al estado actual (y nunca con la partida en pausa o un diálogo abierto).
+  const playing = game.status === 'active';
+  const idle = ctx.busy === null && playing && !award && !undoOpen && !cancelOpen;
+  const nextItem = snapshot.items.filter((i) => i.status === 'available').sort((a, b) => a.sort_order - b.sort_order)[0];
+  const shortcuts: ShortcutHandlers = {};
+  if (idle && !live && nextItem) {
+    shortcuts.a = () => void ctx.run(`announce-${nextItem.id}`, { type: 'auction.announce', item_id: nextItem.id }, `«${nextItem.name}» anunciado en la TV`);
+    shortcuts.r = () => void ctx.run('announce-random', { type: 'auction.announce_random' }, 'Elemento al azar anunciado en la TV');
+  }
+  if (idle && live) {
+    if (live.status === 'open') shortcuts.c = () => void ctx.run('close', { type: 'auction.close', auction_id: live.id }, 'Puja cerrada');
+    if (live.current_bidder_id) shortcuts.d = () => setAward({ key: newIdempotencyKey(), auctionId: live.id, winnerId: live.current_bidder_id!, price: live.current_bid_cents });
+    shortcuts.x = () => setCancelOpen(true);
+  }
+  useHostShortcuts(shortcuts);
+
   if (game.status === 'finished') {
     return <Notice tone="ok">La partida ha finalizado. El panel está en modo solo lectura: consulta Resumen y Resultados.</Notice>;
   }
-  const live = auction && (auction.status === 'open' || auction.status === 'closed') ? auction : null;
 
   return (
     <div className="space-y-4">
+      <ShortcutsHint active={Object.keys(shortcuts) as ShortcutKey[]} />
       {game.status === 'lobby' ? <Notice tone="warn">La partida aún no ha empezado. Ve a «Resumen» y pulsa «Empezar partida» para poder subastar.</Notice> : null}
       {game.status === 'paused' ? <Notice tone="warn">Partida en pausa: no se puede pujar ni anunciar. Reanúdala desde «Resumen».</Notice> : null}
 

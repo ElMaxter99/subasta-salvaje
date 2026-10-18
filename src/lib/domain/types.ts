@@ -200,6 +200,17 @@ export interface GameInfo {
   rounds_completed: number;
 }
 
+/** Estadísticas de un jugador al terminar la partida (`player_stats` de la instantánea, solo con la partida terminada). */
+export interface PlayerStat {
+  player_id: string;
+  bids_count: number;
+  max_bid_cents: number;
+  auctions_bid: number;
+  wins: number;
+  spent_cents: number;
+  yields_count: number;
+}
+
 export interface GameStats {
   purchases_count: number;
   total_spent_cents: number;
@@ -269,6 +280,8 @@ export interface PublicSnapshot {
   /** Reacciones de los últimos 10 s (la TV anima solo las nuevas). */
   reactions?: Reaction[];
   stats: GameStats;
+  /** Estadísticas por jugador (solo con la partida terminada). */
+  player_stats?: PlayerStat[];
   gallery?: Gallery;
   /** Último impuesto al más rico (para avisar en la pantalla). */
   wild_tax?: { id: number; created_at: string; payload: WildTaxPayload } | null;

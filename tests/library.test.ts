@@ -33,7 +33,6 @@ async function uploadBatch(files: { name: string; color: [number, number, number
   }
   return commitLibraryImages(ctx, 'admin@test', staged, assets);
 }
-const up = async (name: string, color: [number, number, number], extra: Record<string, unknown> = {}) => (await uploadBatch([{ name, color, extra }])).images[0]!;
 
 describe('biblioteca de medios: imágenes', () => {
   it('un lote entero entra en UN solo commit; la misma foto no se duplica ni llega a GitHub', async () => {

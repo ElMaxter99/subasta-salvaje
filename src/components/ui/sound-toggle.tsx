@@ -35,7 +35,7 @@ export function SoundToggle({ music = false, className = '', big = false, mutedB
         </button>
       ) : null}
       {a.enabled ? (
-        <input type="range" min={0} max={100} value={Math.round(a.volume * 100)} onChange={(e) => setPrefs({ volume: Number(e.target.value) / 100 })} aria-label="Volumen" className="w-24 accent-[var(--color-gold)]" />
+        <input type="range" min={0} max={100} value={Math.round(a.volume * 100)} onChange={(e) => setPrefs({ volume: Number(e.target.value) / 100 })} aria-label="Volumen" className="h-11 w-24 accent-[var(--color-gold)]" />
       ) : null}
     </div>
   );

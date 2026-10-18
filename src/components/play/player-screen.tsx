@@ -17,6 +17,7 @@ import type { ConnectionState } from '@/lib/client/use-live-game';
 import { useAutoAwardCountdown } from '@/lib/client/auto-award';
 import type { Player, PublicSnapshot, RuntimeInfo } from '@/lib/domain/types';
 import { Ohros } from '@/components/ui/ohros';
+import { OutbidAlert } from './outbid-alert';
 import { YieldButton } from './yield-button';
 import { AutoRunClock } from '@/components/screen/auto-run-clock';
 import { formatAmount, formatOhros } from '@/lib/domain/money';
@@ -66,8 +67,8 @@ export function PlayerScreen({
 
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col">
-      <header className="sticky top-0 z-30 border-b border-white/10 bg-night-900/95 px-4 pb-3 pt-3 backdrop-blur">
-        <div className="flex items-center justify-between gap-2">
+      <header className="z-30 border-b border-white/10 bg-night-900/95 px-4 pb-3 pt-3 backdrop-blur [@media(min-height:32rem)]:sticky [@media(min-height:32rem)]:top-0">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <h1 className="flex min-w-0 items-center gap-2 text-lg font-bold">
             <span aria-hidden className="size-5 shrink-0 rounded-full border-2 border-white/40" style={{ background: me.color }} />
             <span className="truncate">{me.name}</span>
@@ -80,8 +81,8 @@ export function PlayerScreen({
             <LogOut className="size-4" aria-hidden /> No soy yo / Salir
           </button>
         </div>
-        <div className="mt-1 flex items-end justify-between gap-2">
-          <div aria-live="polite">
+        <div className="mt-1 flex flex-wrap items-end justify-between gap-2">
+          <div role="status">
             <p className="text-xs font-bold uppercase tracking-wider text-white/60">Tu saldo</p>
             <p className="flex items-center gap-2 font-display text-4xl leading-none text-gold" data-testid="balance">
               {/* La moneda gira cuando cambia el saldo (key = importe) */}
@@ -98,6 +99,7 @@ export function PlayerScreen({
         <SoundToggle />
       </div>
       <main className="flex-1 space-y-4 px-4 pb-6 pt-4">
+        <OutbidAlert snapshot={snapshot} me={me} />
         <div className="flex justify-center empty:hidden"><AutoRunClock snapshot={snapshot} compact /></div>
         {game.status === 'paused' ? (
           <p role="status" className="flex items-center justify-center gap-2 rounded-2xl bg-gold px-4 py-3 text-base font-bold text-night-950">
@@ -113,7 +115,7 @@ export function PlayerScreen({
             <Link href={`/game/${roomCode}/results`} className="inline-flex min-h-14 items-center justify-center rounded-2xl bg-gold px-6 text-lg font-bold text-night-950">
               Ver resultados
             </Link>
-            <a href={`/api/public/games/${roomCode}/podium?download=1`} download={`podio-${roomCode}.png`} className="block text-sm font-bold text-violet-soft underline-offset-4 hover:underline">
+            <a href={`/api/public/games/${roomCode}/podium?download=1`} download={`podio-${roomCode}.png`} className="flex min-h-11 items-center justify-center text-sm font-bold text-violet-soft underline-offset-4 hover:underline">
               Descargar imagen del podio
             </a>
           </div>
@@ -146,6 +148,7 @@ export function PlayerScreen({
 
             <div
               aria-live="polite"
+              aria-atomic="true"
               className={`rounded-3xl border-2 p-4 text-center ${leading ? 'border-teal bg-teal/15' : 'border-gold/40 bg-night-800'}`}
             >
               <p className="text-xs font-bold uppercase tracking-wider text-white/60">{sealed && blind ? '✉️ Sobre cerrado' : blind ? '🙈 Puja a ciegas' : 'Puja actual'}</p>
@@ -181,7 +184,7 @@ export function PlayerScreen({
             {blind && !sealed ? <p role="status" className="rounded-2xl bg-violet/25 px-4 py-2 text-center text-sm font-bold text-violet-soft">Nadie ve el importe ni quién lidera. Si tu puja es demasiado baja se rechazará.</p> : null}
 
             {countdown !== null ? (
-              <p role="status" className={`rounded-2xl px-4 py-2 text-center text-base font-bold tabular-nums ${countdown <= 5 ? 'bg-rose text-night-950' : 'bg-night-700 text-gold-soft'}`} data-testid="auto-award-countdown">
+              <p className={`rounded-2xl px-4 py-2 text-center text-base font-bold tabular-nums ${countdown <= 5 ? 'bg-rose text-night-950' : 'bg-night-700 text-gold-soft'}`} data-testid="auto-award-countdown">
                 {countdown > 0 ? `${flash ? '⚡ ' : ''}Se adjudica en ${countdown} s si nadie puja más` : 'Adjudicando…'}
               </p>
             ) : null}
@@ -256,7 +259,7 @@ export function PlayerScreen({
       </main>
 
       {open ? (
-        <div className="sticky bottom-0 z-20 space-y-2 border-t border-white/10 bg-night-900/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur">
+        <div className="z-20 space-y-2 [@media(min-height:32rem)]:sticky [@media(min-height:32rem)]:bottom-0 border-t border-white/10 bg-night-900/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur">
           {!sealed && !leading ? <YieldButton roomCode={roomCode} auctionId={auction.id} yielded={yielded} onSnapshot={onSnapshot} onNotPlayer={onNotPlayer} /> : null}
           <BidPad
             roomCode={roomCode}

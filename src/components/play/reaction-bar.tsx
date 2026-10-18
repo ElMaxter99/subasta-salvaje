@@ -9,6 +9,7 @@ import { REACTION_EMOJIS } from '@/lib/domain/schemas';
 export function ReactionBar({ roomCode, onNotPlayer }: { roomCode: string; onNotPlayer: () => void }) {
   const toast = useToast();
   const [cool, setCool] = useState(false);
+  const [said, setSaid] = useState('');
 
   async function send(emoji: string) {
     if (cool) return;
@@ -16,6 +17,8 @@ export function ReactionBar({ roomCode, onNotPlayer }: { roomCode: string; onNot
     setTimeout(() => setCool(false), 1600);
     try {
       await sendReactionRequest(roomCode, emoji);
+      setSaid(`Reacción ${emoji} enviada`);
+      setTimeout(() => setSaid(''), 2500);
     } catch (e) {
       if (e instanceof ApiError && e.code === 'not_player') return onNotPlayer();
       if (e instanceof ApiError && e.code === 'reaction_too_fast') return; // el enfriamiento local ya avisa
@@ -31,15 +34,16 @@ export function ReactionBar({ roomCode, onNotPlayer }: { roomCode: string; onNot
           <button
             key={e}
             type="button"
-            disabled={cool}
+            aria-disabled={cool || undefined} // no `disabled`: si no, el botón con el foco lo pierde durante el enfriamiento
             onClick={() => send(e)}
             aria-label={`Reaccionar ${e}`}
-            className="inline-flex size-12 items-center justify-center rounded-2xl bg-night-700 text-2xl transition active:scale-90 enabled:hover:bg-night-600 disabled:opacity-50"
+            className="inline-flex size-12 items-center justify-center rounded-2xl bg-night-700 text-2xl transition active:scale-90 hover:bg-night-600 aria-disabled:opacity-50 aria-disabled:hover:bg-night-700"
           >
             <span aria-hidden>{e}</span>
           </button>
         ))}
       </div>
+      <p role="status" className="sr-only">{said}</p>
     </section>
   );
 }

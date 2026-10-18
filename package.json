@@ -32,7 +32,8 @@
     "ai:measure": "node scripts/ai/measure-cloudflare.mjs",
     "ai:lab": "tsx --env-file-if-exists=.env.local scripts/ai/prompt-lab.ts",
     "library": "tsx scripts/library/fetch-commons.ts --all --open",
-    "library:fetch": "tsx scripts/library/fetch-commons.ts"
+    "library:fetch": "tsx scripts/library/fetch-commons.ts",
+    "loadtest": "tsx scripts/loadtest/snapshots.ts"
   },
   "engines": {
     "node": ">=20"

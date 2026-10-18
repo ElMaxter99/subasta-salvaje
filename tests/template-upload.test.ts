@@ -1,11 +1,11 @@
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import sharp from 'sharp';
 import { applyAsset, matchTarget, slugify } from '@/lib/domain/template-assets';
 import { githubAssetsConfig } from '@/lib/config/env';
 import { redactSecrets } from '@/lib/security/redact';
 import { AssetUploadError, createGithubAssets, type GithubBatchAssets } from '@/lib/storage/github-assets';
 import { commitTemplateImages, saveSystemTemplate, stageTemplateImage } from '@/lib/services/system-template-service';
-import { makeCtx, type TestCtx } from './helpers';
+import { makeCtx } from './helpers';
 
 const TOKEN = ['github', 'pat', 'A1b2C3d4E5f6G7h8I9j0K1l2M3n4'].join('_'); // FALSO, partido para el escáner
 const CFG = { repo: 'yo/fotos', token: TOKEN, branch: 'main' };

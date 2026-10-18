@@ -137,7 +137,7 @@ export function head({ expr = 'neutral', view = 'front', crownRot = -7, showCrow
 export const groundShadow = (cx, cy, rx, ry = 26, o = 0.45) => `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="#000" opacity="${o}" filter="url(#fSoft)"/>`;
 
 /** Sudadera (torso + capucha) en coordenadas absolutas del lienzo de 1000. */
-export function torso({ view = 'front', lean = 0 } = {}) {
+export function torso({ view = 'front' } = {}) {
   const hood = `<path d="M330 478 Q500 560 670 478 Q690 430 610 428 Q500 470 390 428 Q310 430 330 478Z" fill="#0F1242" stroke="#080B2B" stroke-width="3"/>`;
   const body = `<path d="M346 486 Q334 620 358 748 Q500 782 642 748 Q666 620 654 486 Q500 540 346 486Z" fill="url(#gNavy)" stroke="#0A0D33" stroke-width="4"/>`;
   const hem = `<path d="M360 726 Q500 764 640 726 L642 750 Q500 790 358 750Z" fill="#0F1242"/>`;
