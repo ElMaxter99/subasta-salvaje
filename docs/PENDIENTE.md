@@ -111,6 +111,11 @@ La colección con alfa real (`public/assets/mascot-vector/`) es vectorial. Para 
 - [ ] En Vercel: `CLOUDFLARE_EDIT_MODEL=@cf/black-forest-labs/flux-2-klein-9b` y `IMAGE_PROVIDERS=cloudflare,pollinations`; compara con `npm run ai:lab` la misma batería (persona en una puerta + Pikachu + barca). Mide neurons/imagen con `npm run ai:measure -- --yes --edit` y ajusta `IMAGE_QUOTA_PER_DAY`. Si queda corto, prueba `flux-2-dev`.
 - [ ] Si la guardia `cores` restaura un trozo que queda feo, prueba `IMAGE_EDIT_GUARD=off`.
 
+## 5m. Hugging Face: revisar el modelo (anotado el 18-10-2026)
+- [ ] **Revisar qué modelo sirve hoy `hf-inference`.** Hugging Face devolvió `410 … deprecated and no longer supported by provider hf-inference` para el modelo por defecto. Ya no tumba la generación (se salta al siguiente modelo/proveedor, DECISIONES #100), pero los dos modelos por defecto (`black-forest-labs/FLUX.1-schnell`, `stabilityai/stable-diffusion-xl-base-1.0`) **no están verificados**.
+- [ ] Elegir uno vigente en https://huggingface.co/models?inference_provider=hf-inference&pipeline_tag=text-to-image, ponerlo en `HF_IMAGE_MODEL` en Vercel (varios separados por comas) y probar «Reintentar» la imagen base; mirar en el historial «Por qué este proveedor» que responde `huggingface`.
+- [ ] Comprobar que el crédito gratuito de Hugging Face (token con permiso de Inference Providers) sigue cubriendo ese modelo; si no, quitar `huggingface` de `IMAGE_PROVIDERS`.
+
 ## 6. Cron externo (opcional pero recomendado en producción)
 - [ ] El cron de `vercel.json` es diario (límite del plan *Hobby*). Para que los trabajos de imagen y el borrado se procesen con más frecuencia, programa en GitHub Actions o cron-job.org una llamada cada minuto a `/api/jobs/process` con la cabecera `Authorization: Bearer <CRON_SECRET>`.
 
