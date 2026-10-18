@@ -124,6 +124,10 @@ export async function playerBidRequest(roomCode: string, auctionId: string, amou
   return parse(res);
 }
 
+export async function sendReactionRequest(roomCode: string, emoji: string): Promise<void> {
+  await parse(await fetch(`/api/play/${roomCode}/react`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ emoji }) }));
+}
+
 export async function leaveGameRequest(roomCode: string): Promise<void> {
   await parse(await fetch(`/api/play/${roomCode}/leave`, { method: 'POST' }));
 }

@@ -108,6 +108,32 @@ export interface Auction {
   bids: Bid[];
 }
 
+/** Reacción de un jugador (emoji) que flota por la TV. */
+export interface Reaction {
+  id: number;
+  player_id: string;
+  emoji: string;
+  at: string;
+}
+
+/** Ronda de la repetición (solo anfitrión). */
+export interface ReplayRound {
+  auction_id: string;
+  round_number: number;
+  status: AuctionStatus;
+  item_id: string;
+  item_name: string;
+  emoji: string | null;
+  item_status: ItemStatus;
+  winner_id: string | null;
+  price_cents: number | null;
+  bids_count: number;
+  purchase_id: string | null;
+  wild_event: WildEvent | null;
+  opened_at: string;
+  closed_at: string | null;
+}
+
 /** Elemento que nadie quiso (subasta sin pujas). */
 export interface LastUnsold {
   event_id: number;
@@ -236,6 +262,8 @@ export interface PublicSnapshot {
   last_award: LastAward | null;
   /** Última subasta que terminó sin pujas (la TV muestra una animación una sola vez). */
   last_unsold?: LastUnsold | null;
+  /** Reacciones de los últimos 10 s (la TV anima solo las nuevas). */
+  reactions?: Reaction[];
   stats: GameStats;
   gallery?: Gallery;
   /** Último impuesto al más rico (para avisar en la pantalla). */

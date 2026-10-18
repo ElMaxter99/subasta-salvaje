@@ -65,6 +65,8 @@ export const ERROR_MESSAGES: Record<string, string> = {
   not_player: 'Tu móvil no está identificado en esta partida. Vuelve a unirte.',
   sealed_already_bid: 'Sobre cerrado: solo puedes pujar una vez en esta subasta.',
   already_leading: 'Ya vas ganando esta puja.',
+  reaction_too_fast: 'Vas muy rápido: espera un segundo antes de reaccionar otra vez.',
+  reactions_busy: 'Hay muchas reacciones a la vez: prueba de nuevo en unos segundos.',
   mobile_disabled: 'Esta partida no admite jugadores desde el móvil.',
   duplicate_name: 'Ya existe un jugador con ese nombre.',
   idempotency_conflict: 'La clave de operación ya se usó para otra acción.',
@@ -108,6 +110,8 @@ function statusFor(code: string): number {
     case 'library_not_found':
       return 404;
     case 'rate_limited':
+    case 'reaction_too_fast':
+    case 'reactions_busy':
       return 429;
     case 'invalid_input':
     case 'invalid_amount':

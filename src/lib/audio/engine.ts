@@ -8,7 +8,7 @@
 
 export type SoundName =
   | 'click' | 'announce' | 'bid' | 'tick' | 'tickUrgent' | 'closed' | 'award' | 'finish'
-  | 'outbid' | 'leading' | 'won' | 'bidSent' | 'event' | 'join' | 'leave' | 'allReady' | 'unsold' | 'draw';
+  | 'outbid' | 'leading' | 'won' | 'bidSent' | 'event' | 'join' | 'leave' | 'allReady' | 'unsold' | 'draw' | 'reaction';
 export type MusicScene = 'waiting' | 'lobby' | 'auction' | 'tense' | null;
 export type AudioRole = 'tv' | 'host' | 'play';
 
@@ -194,6 +194,7 @@ export function play(name: SoundName, n = 0): void {
       [0, 1, 2, 3, 4, 5].forEach((i) => tone(o, midi(72 + ((i * 5) % 9)), t + i * 0.07, 0.05, { type: 'square', gain: 0.08 }));
       [79, 84].forEach((m, i) => tone(o, midi(m), t + 0.5 + i * 0.1, 0.35, { gain: 0.18 }));
       break;
+    case 'reaction': tone(o, midi(88), t, 0.08, { gain: 0.05 }); break; // «pop» muy suave
     case 'event': tone(o, midi(60), t, 0.5, { type: 'sawtooth', gain: 0.15, slideTo: midi(84) }); break;
   }
 }

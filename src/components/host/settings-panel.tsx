@@ -3,7 +3,7 @@
 import { MAX_PLAYERS } from '@/lib/domain/limits';
 import { useState } from 'react';
 import Link from 'next/link';
-import { Flag, History, RotateCcw, Minus, Plus, Smartphone, Trophy, Tv } from 'lucide-react';
+import { Clapperboard, Flag, History, RotateCcw, Minus, Plus, Smartphone, Trophy, Tv } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { parseOhrosToCents } from '@/lib/domain/money';
 import type { ImageMode, JoinPolicy, PlayMode, RankingRule } from '@/lib/domain/types';
@@ -266,6 +266,9 @@ export function SettingsPanel({ ctx }: { ctx: HostCtx }) {
           </LinkBtn>
           <LinkBtn href={`/game/${roomCode}/history`} icon={<History className="size-4" aria-hidden />}>
             Historial de imágenes
+          </LinkBtn>
+          <LinkBtn href={`/game/${roomCode}/replay`} icon={<Clapperboard className="size-4" aria-hidden />}>
+            Repetición de la partida
           </LinkBtn>
           <LinkBtn href={`/game/${roomCode}/screen`} icon={<Tv className="size-4" aria-hidden />} newTab>
             Pantalla de TV
