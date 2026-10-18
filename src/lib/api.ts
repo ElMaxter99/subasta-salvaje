@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { DomainError, isDomainError, toDomainError } from '@/lib/domain/errors';
 import { redactSecrets } from '@/lib/security/redact';
 import { rateLimit } from '@/lib/auth/rate-limit';
+import { observeRequest } from '@/lib/observability/record';
 
 export const noStore = { 'Cache-Control': 'no-store, max-age=0' };
 
@@ -53,11 +54,18 @@ export async function readJson(req: Request, maxBytes = 2048): Promise<unknown> 
 /** Envuelve un handler: traduce errores de dominio a JSON con el código HTTP adecuado. */
 export function handle<A extends unknown[]>(fn: (...args: A) => Promise<Response>) {
   return async (...args: A): Promise<Response> => {
+    const startedAt = Date.now();
+    const req = args[0] instanceof Request ? args[0] : undefined;
     try {
-      return await fn(...args);
+      const res = await fn(...args);
+      observeRequest(req, res.status, startedAt); // métricas agregadas: síncrono, barato y a prueba de fallos
+      return res;
     } catch (err) {
       if (!isDomainError(err)) console.error('[api]', redactSecrets(err instanceof Error ? `${err.name}: ${err.message}` : String(err)));
-      return errorResponse(err);
+      const res = errorResponse(err);
+      // Los errores de dominio esperados (400/409/429…) solo se cuentan; los 5xx se guardan agrupados en app_errors.
+      observeRequest(req, res.status, startedAt, err);
+      return res;
     }
   };
 }
