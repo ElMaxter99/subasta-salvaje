@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { SiteAnalytics } from '@/components/analytics';
+import { ErrorReporter } from '@/components/error-reporter';
 import { SkipLink } from '@/components/ui/skip-link';
 import { analyticsDisabled } from '@/lib/analytics';
 import { siteUrl } from '@/lib/seo/site';
@@ -41,6 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <SkipLink />
         {children}
+        <ErrorReporter />
         {analyticsDisabled() ? null : <SiteAnalytics />}
       </body>
     </html>

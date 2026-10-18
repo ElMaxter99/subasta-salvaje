@@ -18,6 +18,8 @@ const LABEL: Record<string, string> = {
   system_template_published: 'Plantilla del sistema publicada',
   system_template_unpublished: 'Plantilla del sistema retirada',
   system_template_deleted: 'Plantilla del sistema borrada',
+  error_status: 'Error marcado (visto/resuelto)',
+  observability_purged: 'Purga de la observabilidad',
 };
 
 export default async function AuditPage() {

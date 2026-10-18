@@ -1,7 +1,11 @@
 'use client';
 
+import { useEffect } from 'react';
+import { reportClientError } from '@/lib/observability/client';
+
 /** Último recurso si falla el layout raíz: sin dependencias de componentes ni de fuentes. */
-export default function GlobalError({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
+export default function GlobalError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
+  useEffect(() => reportClientError('boundary', error, { digest: error.digest }), [error]);
   return (
     <html lang="es">
       <body style={{ margin: 0, background: '#050816', color: '#fff', fontFamily: 'system-ui, sans-serif', display: 'grid', placeItems: 'center', minHeight: '100vh', textAlign: 'center', padding: 20 }}>

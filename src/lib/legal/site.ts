@@ -12,8 +12,8 @@ export const AUTHOR_NAME = 'ElMaxter99';
 export const AUTHOR_URL = 'https://github.com/ElMaxter99';
 
 /** Fecha (ISO) de la última revisión de los textos legales. Actualízala cuando cambies cualquiera de ellos. */
-export const LEGAL_UPDATED = '2026-10-17';
-export const LEGAL_UPDATED_LABEL = '17 de octubre de 2026';
+export const LEGAL_UPDATED = '2026-10-18';
+export const LEGAL_UPDATED_LABEL = '18 de octubre de 2026';
 
 /**
  * Licencia del CÓDIGO: MIT (archivo LICENSE y campo `license` de package.json; un test comprueba que coinciden).

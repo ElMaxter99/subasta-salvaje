@@ -15,6 +15,7 @@ const NAV = [
   { href: '/admin/plantillas', label: 'Plantillas' },
   { href: '/admin/biblioteca', label: 'Biblioteca' },
   { href: '/admin/estadisticas', label: 'Estadísticas' },
+  { href: '/admin/observabilidad', label: 'Observabilidad' },
   { href: '/admin/ia', label: 'IA' },
   { href: '/admin/ajustes', label: 'Ajustes' },
   { href: '/admin/auditoria', label: 'Auditoría' },

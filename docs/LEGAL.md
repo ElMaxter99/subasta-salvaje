@@ -40,3 +40,9 @@ Al añadir **una dependencia** → `node scripts/legal/build-credits.mjs`. Una *
 - Las imágenes alojadas en el repositorio público de fotos (enlaces https) no se copian: se listan en el JSON. No se incluyen identificadores de sesión de los jugadores ni datos de la cuenta del anfitrión.
 - Es formato abierto (ZIP + JSON), por lo que sirve también para la **portabilidad**. Los jugadores no tienen cuenta: sus datos son el nombre que elige el anfitrión o ellos mismos y el saldo/compras de la partida, y quedan dentro de esta exportación.
 - La exportación **no sustituye** a la política de privacidad ni a la revisión jurídica pendiente (ver «Qué NO está resuelto»). No añade cookies, almacenamiento local ni proveedores externos.
+
+## Observabilidad propia (errores y métricas de uso)
+- Desde la rama de observabilidad la app guarda **errores técnicos** (`app_errors`) y **contadores diarios agregados** (`usage_metrics`) en su propia base de datos, sin proveedor externo. Detalle, retención y límites en `OBSERVABILIDAD.md`.
+- **Dato nuevo tratado:** mensaje y traza de errores, ruta normalizada (sin consulta ni identificadores) y, si procede, el código de sala. Antes de guardarlos se eliminan credenciales, correos, IPv4, cookies/tokens `nombre=valor` y consultas de URL. **No** se guardan IP (ni hash), cookies, tokens, cuerpos de petición ni nombres de jugador. El reporter del navegador limita la tasa con la IP **solo en memoria** (hash, no persistente).
+- **Sin cookies ni almacenamiento local nuevos** (`STORAGE_INVENTORY` no cambia): el reporter del navegador solo usa memoria de la pestaña. Se actualizaron `/privacidad` y `LEGAL_UPDATED`.
+- Retención por defecto 30 días (ajustable 1–365), tope duro de 500 grupos de error, métricas diarias 400 días.
