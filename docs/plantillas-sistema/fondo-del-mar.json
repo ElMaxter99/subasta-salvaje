@@ -1,0 +1,118 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Fondo del mar",
+  "tematica": "Océano",
+  "reglas": {
+    "presupuesto": 25,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Pulpo ilusionista",
+      "descripcion": "Ocho brazos y cero ganas de que lo vean.",
+      "emoji": "🐙",
+      "foto": null
+    },
+    {
+      "titulo": "Delfín saltarín",
+      "descripcion": "Sonríe, silba y juega con las olas.",
+      "emoji": "🐬",
+      "foto": null
+    },
+    {
+      "titulo": "Tiburón curioso",
+      "descripcion": "Su fama es peor que su carácter.",
+      "emoji": "🦈",
+      "foto": null
+    },
+    {
+      "titulo": "Tortuga marina",
+      "descripcion": "Viaja miles de kilómetros para volver a casa.",
+      "emoji": "🐢",
+      "foto": null
+    },
+    {
+      "titulo": "Cangrejo gruñón",
+      "descripcion": "Camina de lado y sin mirar atrás.",
+      "emoji": "🦀",
+      "foto": null
+    },
+    {
+      "titulo": "Ballena gigante",
+      "descripcion": "El animal más grande de todos los tiempos.",
+      "emoji": "🐋",
+      "foto": null
+    },
+    {
+      "titulo": "Arrecife de coral",
+      "descripcion": "Una ciudad bajo el agua llena de colores.",
+      "emoji": "🪸",
+      "foto": null
+    },
+    {
+      "titulo": "Ancla hundida",
+      "descripcion": "Sostuvo un barco que ya nadie recuerda.",
+      "emoji": "⚓",
+      "foto": null
+    },
+    {
+      "titulo": "Cofre del tesoro",
+      "descripcion": "Doblones, perlas y una llave oxidada.",
+      "emoji": "💎",
+      "foto": null
+    },
+    {
+      "titulo": "Calamar misterioso",
+      "descripcion": "Vive tan profundo que casi nadie lo ha visto.",
+      "emoji": "🦑",
+      "foto": null
+    },
+    {
+      "titulo": "Pez globo",
+      "descripcion": "Se infla cuando se siente amenazado.",
+      "emoji": "🐡",
+      "foto": null
+    },
+    {
+      "titulo": "Caracola gigante",
+      "descripcion": "Guarda el sonido del mar.",
+      "emoji": "🐚",
+      "foto": null
+    },
+    {
+      "titulo": "Burbujas de buceador",
+      "descripcion": "Suben despacio hasta la superficie.",
+      "emoji": "🫧",
+      "foto": null
+    },
+    {
+      "titulo": "Máscara de buceo",
+      "descripcion": "Abre una ventana a otro planeta.",
+      "emoji": "🤿",
+      "foto": null
+    },
+    {
+      "titulo": "Ola perfecta",
+      "descripcion": "Atrae a surfistas de todo el planeta.",
+      "emoji": "🌊",
+      "foto": null
+    },
+    {
+      "titulo": "Langosta de roca",
+      "descripcion": "Esconde su casa entre las piedras.",
+      "emoji": "🦞",
+      "foto": null
+    },
+    {
+      "titulo": "Sirena del arrecife",
+      "descripcion": "Canta cuando la marea baja.",
+      "emoji": "🧜",
+      "foto": null
+    }
+  ]
+}

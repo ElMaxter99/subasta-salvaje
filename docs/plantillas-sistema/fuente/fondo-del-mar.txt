@@ -1,0 +1,25 @@
+# nombre: Fondo del mar
+# descripcion: Criaturas y tesoros que se esconden bajo las olas.
+# tono: educativo
+# tematica: Océano
+# presupuesto: 25
+# rondas: 10
+# clasificacion: elementos
+---
+🐙 | Pulpo ilusionista | Ocho brazos y cero ganas de que lo vean. | octopus
+🐬 | Delfín saltarín | Sonríe, silba y juega con las olas. | dolphin
+🦈 | Tiburón curioso | Su fama es peor que su carácter. | shark
+🐢 | Tortuga marina | Viaja miles de kilómetros para volver a casa. | sea turtle
+🦀 | Cangrejo gruñón | Camina de lado y sin mirar atrás. | crab
+🐋 | Ballena gigante | El animal más grande de todos los tiempos. | whale
+🪸 | Arrecife de coral | Una ciudad bajo el agua llena de colores. | coral reef
+⚓ | Ancla hundida | Sostuvo un barco que ya nadie recuerda. | sunken anchor
+💎 | Cofre del tesoro | Doblones, perlas y una llave oxidada. | treasure chest
+🦑 | Calamar misterioso | Vive tan profundo que casi nadie lo ha visto. | squid
+🐡 | Pez globo | Se infla cuando se siente amenazado. | pufferfish
+🐚 | Caracola gigante | Guarda el sonido del mar. | conch shell
+🫧 | Burbujas de buceador | Suben despacio hasta la superficie. | bubbles diver
+🤿 | Máscara de buceo | Abre una ventana a otro planeta. | diving mask
+🌊 | Ola perfecta | Atrae a surfistas de todo el planeta. | perfect wave
+🦞 | Langosta de roca | Esconde su casa entre las piedras. | lobster
+🧜 | Sirena del arrecife | Canta cuando la marea baja. | mermaid

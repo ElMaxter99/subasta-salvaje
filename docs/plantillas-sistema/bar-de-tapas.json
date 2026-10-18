@@ -1,0 +1,112 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Bar de tapas",
+  "tematica": "Tapas",
+  "reglas": {
+    "presupuesto": 25,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Pincho de tortilla",
+      "descripcion": "Jugosa por dentro y dorada por fuera.",
+      "emoji": "🍢",
+      "foto": null
+    },
+    {
+      "titulo": "Plato de aceitunas",
+      "descripcion": "Con hueso, sin hueso y con anchoa.",
+      "emoji": "🫒",
+      "foto": null
+    },
+    {
+      "titulo": "Gambas al ajillo",
+      "descripcion": "Aceite, ajo y pan para mojar.",
+      "emoji": "🍤",
+      "foto": null
+    },
+    {
+      "titulo": "Patatas bravas",
+      "descripcion": "Con una salsa que pica de verdad.",
+      "emoji": "🥔",
+      "foto": null
+    },
+    {
+      "titulo": "Tabla de quesos",
+      "descripcion": "Curado, semicurado y muy oloroso.",
+      "emoji": "🧀",
+      "foto": null
+    },
+    {
+      "titulo": "Caña bien tirada",
+      "descripcion": "Espuma justa y mucha sed.",
+      "emoji": "🍺",
+      "foto": null
+    },
+    {
+      "titulo": "Copa de tinto",
+      "descripcion": "Se sirve con pincho de cortesía.",
+      "emoji": "🍷",
+      "foto": null
+    },
+    {
+      "titulo": "Montadito de lomo",
+      "descripcion": "Pan crujiente y lomo tierno.",
+      "emoji": "🥖",
+      "foto": null
+    },
+    {
+      "titulo": "Pan con tomate",
+      "descripcion": "Sencillo y perfecto.",
+      "emoji": "🍞",
+      "foto": null
+    },
+    {
+      "titulo": "Pulpo a la gallega",
+      "descripcion": "Cortado con tijera y pimentón.",
+      "emoji": "🐙",
+      "foto": null
+    },
+    {
+      "titulo": "Cazuela de callos",
+      "descripcion": "Humeante y contundente.",
+      "emoji": "🥘",
+      "foto": null
+    },
+    {
+      "titulo": "Croquetas caseras",
+      "descripcion": "Cremosas y calientes de verdad.",
+      "emoji": "🍤",
+      "foto": null
+    },
+    {
+      "titulo": "Plato de jamón",
+      "descripcion": "Cortado a cuchillo, fino y brillante.",
+      "emoji": "🥓",
+      "foto": null
+    },
+    {
+      "titulo": "Cuenco de cacahuetes",
+      "descripcion": "Cáscaras por todo el suelo.",
+      "emoji": "🥜",
+      "foto": null
+    },
+    {
+      "titulo": "Cuenta en la pizarra",
+      "descripcion": "Escrita con tiza y una buena letra.",
+      "emoji": "🧾",
+      "foto": null
+    },
+    {
+      "titulo": "Rodaja de limón",
+      "descripcion": "Acompaña a todo y arregla poco.",
+      "emoji": "🍋",
+      "foto": null
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+# nombre: Superhéroes de barrio
+# descripcion: Capas, poderes y trastos para héroes que salvan la manzana.
+# tono: familiar
+# tematica: Superhéroes
+# presupuesto: 25
+# rondas: 10
+# clasificacion: elementos
+---
+🦸 | Capa de tela de cortina | Ondea con orgullo, aunque huela a suavizante. | superhero cape
+🎭 | Antifaz misterioso | Nadie reconoce al vecino del tercero. | hero mask
+💥 | Puñetazo de cómic | Con letras enormes y mucho humo. | comic punch
+🦹 | Guarida secreta | Detrás de la estantería del salón. | secret lair
+⚡ | Rayo portátil | Carga el móvil y también a los villanos. | lightning bolt
+🛡️ | Escudo de tapa de olla | Resiste salpicaduras y también golpes. | pot lid shield
+🚀 | Cohete de cartón | Vuela hasta el final del pasillo. | cardboard rocket
+🔍 | Lupa de detective | Descubre quién se comió la última galleta. | magnifying glass
+🕸️ | Telaraña elástica | Pega tanto que no se puede quitar. | spider web
+🧪 | Poción de energía | Sabe a naranja y da poderes por una hora. | energy potion
+🏙️ | Ciudad nocturna | Tejados perfectos para vigilar. | city night skyline
+📡 | Radio de emergencias | Avisa de un gato atrapado en un árbol. | emergency radio
+🦇 | Señal en el cielo | Un foco, una silueta y la ciudad a salvo. | bat signal sky
+🧤 | Guantes de acero | Abren frascos imposibles. | metal gloves
+🪂 | Paracaídas de bolsa | Aterriza siempre de pie, con suerte. | parachute
+💪 | Superfuerza de lunes | Se activa solo con café doble. | muscle flex
+🌈 | Rayo arcoíris | Pinta de colores el día más gris. | rainbow beam

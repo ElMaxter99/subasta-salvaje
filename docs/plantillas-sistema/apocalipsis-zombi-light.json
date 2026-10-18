@@ -1,0 +1,112 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Apocalipsis zombi (muy light)",
+  "tematica": "Supervivencia",
+  "reglas": {
+    "presupuesto": 30,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Zombi despistado",
+      "descripcion": "Camina sin rumbo y se queda mirando el escaparate.",
+      "emoji": "🧟",
+      "foto": null
+    },
+    {
+      "titulo": "Bate de béisbol",
+      "descripcion": "Resuelve cualquier problema de forma educada.",
+      "emoji": "🏏",
+      "foto": null
+    },
+    {
+      "titulo": "Lata de conservas",
+      "descripcion": "Fecha de caducidad ilegible, valor inestimable.",
+      "emoji": "🥫",
+      "foto": null
+    },
+    {
+      "titulo": "Linterna con pilas",
+      "descripcion": "Se apaga justo en la escena más tensa.",
+      "emoji": "🔦",
+      "foto": null
+    },
+    {
+      "titulo": "Rollo de papel higiénico",
+      "descripcion": "Moneda oficial del fin del mundo.",
+      "emoji": "🧻",
+      "foto": null
+    },
+    {
+      "titulo": "Puerta atrancada",
+      "descripcion": "Aguanta un rato con una silla.",
+      "emoji": "🚪",
+      "foto": null
+    },
+    {
+      "titulo": "Radio de emergencia",
+      "descripcion": "Solo se escucha una canción.",
+      "emoji": "🔊",
+      "foto": null
+    },
+    {
+      "titulo": "Mochila de supervivencia",
+      "descripcion": "Lleva todo menos lo que de verdad necesitas.",
+      "emoji": "🎒",
+      "foto": null
+    },
+    {
+      "titulo": "Supermercado abandonado",
+      "descripcion": "Estantes vacíos y una oferta olvidada.",
+      "emoji": "🏪",
+      "foto": null
+    },
+    {
+      "titulo": "Carrito de la compra",
+      "descripcion": "Vehículo oficial de la fuga.",
+      "emoji": "🛒",
+      "foto": null
+    },
+    {
+      "titulo": "Mapa del refugio",
+      "descripcion": "Con una cruz y muchos garabatos.",
+      "emoji": "🗺️",
+      "foto": null
+    },
+    {
+      "titulo": "Extintor",
+      "descripcion": "Útil para todo, incluso para presumir.",
+      "emoji": "🧯",
+      "foto": null
+    },
+    {
+      "titulo": "Bicicleta silenciosa",
+      "descripcion": "No hace ruido y nunca se queda sin gasolina.",
+      "emoji": "🚲",
+      "foto": null
+    },
+    {
+      "titulo": "Hacha de leña",
+      "descripcion": "Corta madera para la hoguera.",
+      "emoji": "🪓",
+      "foto": null
+    },
+    {
+      "titulo": "Walkie-talkie",
+      "descripcion": "«¿Me recibes?» Y nadie responde.",
+      "emoji": "📻",
+      "foto": null
+    },
+    {
+      "titulo": "Chocolate escondido",
+      "descripcion": "El mejor botín del apocalipsis.",
+      "emoji": "🍫",
+      "foto": null
+    }
+  ]
+}

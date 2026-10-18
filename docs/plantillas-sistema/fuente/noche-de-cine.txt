@@ -1,0 +1,24 @@
+# nombre: Noche de cine en casa
+# descripcion: Sofá, manta y todo lo que hace falta para una maratón de películas.
+# tono: familiar
+# tematica: Cine
+# presupuesto: 20
+# rondas: 10
+# clasificacion: elementos
+---
+🍿 | Cubo de palomitas | Infinito al principio y vacío antes del primer tráiler. | popcorn bucket
+🎬 | Claqueta dorada | Para gritar «¡acción!» al empezar la sesión. | movie clapperboard
+🛋️ | Sofá reclinable | El mejor asiento del salón por derecho propio. | recliner sofa
+📽️ | Proyector de pared | Convierte el salón en una sala de estreno. | movie projector
+🧸 | Manta de peluche | Pesa poco, abriga mucho y nadie quiere compartirla. | fluffy blanket
+🥤 | Refresco gigante | Con hielo, pajita y fugas inesperadas. | large soda cup
+🎟️ | Entrada de estreno | Fila uno, butaca central y cero spoilers. | cinema ticket
+🌟 | Alfombra de las estrellas | Para recibir al invitado más famoso. | red carpet star
+🕶️ | Gafas de sol de director | Nadie sabe para qué, pero dan mucha autoridad. | director sunglasses
+📺 | Mando a distancia | Quien lo tiene manda sobre toda la noche. | tv remote control
+🎞️ | Rollo de película antigua | Una joya en blanco y negro. | vintage film reel
+🎭 | Máscara de drama y comedia | Una llora, la otra ríe, las dos opinan. | theatre masks
+💤 | Cabezada a mitad de peli | Todos juran que no se quedaron dormidos. | sleeping on couch
+🧂 | Palomitas saladas | Para los que no se pasan al lado dulce. | salty popcorn
+🔦 | Linterna del acomodador | Te guía hasta la butaca equivocada. | usher flashlight
+📣 | Megáfono del director | Cada orden suena mucho más importante. | megaphone

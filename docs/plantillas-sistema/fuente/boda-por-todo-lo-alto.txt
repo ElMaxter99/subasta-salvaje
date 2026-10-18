@@ -1,0 +1,24 @@
+# nombre: Boda por todo lo alto
+# descripcion: Todos los detalles de una boda feliz, de la ceremonia al baile.
+# tono: adultos
+# tematica: Boda
+# presupuesto: 30
+# rondas: 10
+# clasificacion: elementos
+---
+💍 | Anillos de oro | Pequeños, brillantes y siempre a punto de caerse. | wedding rings
+💐 | Ramo de la novia | Vuela por los aires y lo atrapa la más ágil. | bridal bouquet
+🎂 | Tarta nupcial | Cuatro pisos, figuras y un cuchillo largo. | wedding cake
+👰 | Velo de encaje | Ligero, largo y difícil de pisar. | bridal veil
+🤵 | Pajarita elegante | Perfectamente anudada hasta el primer baile. | bow tie
+⛪ | Ermita del pueblo | Campanas, pétalos y flashes. | chapel
+🚗 | Coche de época | Brillante y decorado con lazos. | vintage wedding car
+🥂 | Brindis de los novios | Con discurso emocionante y alguna lágrima. | newlyweds toast
+💃 | Primer vals | Pasos medidos y mucho nervio. | first dance
+📸 | Fotografía de grupo | Cien invitados sin parpadear. | wedding group photo
+🕊️ | Palomas blancas | Vuelan al terminar la ceremonia. | white doves
+🎶 | Banda de música | Hace bailar a los abuelos y a los niños. | wedding band
+🍽️ | Banquete de siete platos | Nadie se levanta sin ayuda. | wedding banquet
+🎁 | Lista de regalos | Una tostadora, tres cafeteras y un viaje. | gift registry
+🌹 | Pétalos de rosa | Alfombran el pasillo. | rose petals
+💌 | Invitación de papel | Letra dorada y sobre perfumado. | wedding invitation

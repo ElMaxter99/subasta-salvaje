@@ -1,0 +1,24 @@
+# nombre: Bar de tapas
+# descripcion: Una ruta de tapas con raciones, cañas y charlas de barra.
+# tono: adultos
+# tematica: Tapas
+# presupuesto: 25
+# rondas: 10
+# clasificacion: elementos
+---
+🍢 | Pincho de tortilla | Jugosa por dentro y dorada por fuera. | tortilla pincho
+🫒 | Plato de aceitunas | Con hueso, sin hueso y con anchoa. | olives plate
+🍤 | Gambas al ajillo | Aceite, ajo y pan para mojar. | garlic shrimp
+🥔 | Patatas bravas | Con una salsa que pica de verdad. | patatas bravas
+🧀 | Tabla de quesos | Curado, semicurado y muy oloroso. | cheese board
+🍺 | Caña bien tirada | Espuma justa y mucha sed. | draft beer
+🍷 | Copa de tinto | Se sirve con pincho de cortesía. | red wine glass
+🥖 | Montadito de lomo | Pan crujiente y lomo tierno. | pork sandwich
+🍞 | Pan con tomate | Sencillo y perfecto. | bread tomato
+🐙 | Pulpo a la gallega | Cortado con tijera y pimentón. | octopus galician
+🥘 | Cazuela de callos | Humeante y contundente. | tripe stew
+🍤 | Croquetas caseras | Cremosas y calientes de verdad. | croquettes
+🥓 | Plato de jamón | Cortado a cuchillo, fino y brillante. | iberian ham plate
+🥜 | Cuenco de cacahuetes | Cáscaras por todo el suelo. | peanuts bowl
+🧾 | Cuenta en la pizarra | Escrita con tiza y una buena letra. | bar chalkboard bill
+🍋 | Rodaja de limón | Acompaña a todo y arregla poco. | lemon slice

@@ -1,0 +1,24 @@
+# nombre: Noche de juegos de mesa
+# descripcion: Dados, fichas y tableros para una velada de amigos y rivalidad sana.
+# tono: familiar
+# tematica: Juegos de mesa
+# presupuesto: 20
+# rondas: 10
+# clasificacion: elementos
+---
+🎲 | Dado trampa | Siempre cae en el número que no quieres. | dice
+♟️ | Ajedrez de madera | Treinta y dos piezas y mucha estrategia. | chess pieces
+🃏 | Baraja de cartas | Con un as perdido debajo del sofá. | deck of cards
+🧩 | Puzle de mil piezas | Falta una, siempre falta una. | jigsaw puzzle
+🏰 | Tablero de aventuras | Mapas, mazmorras y un dragón de plástico. | adventure board game
+🪙 | Fichas de colores | Representan dinero, tesoros o simplemente adornos. | game tokens
+⏳ | Reloj de arena | Un minuto para pensar y treinta segundos para entrar en pánico. | hourglass
+📝 | Bloc de puntuaciones | Con cuentas que nadie logra cuadrar. | score pad
+🔠 | Fichas de palabras | Con una «Z» que vale una fortuna. | letter tiles
+🎯 | Diana de dardos | Pincha en la pared más que en el centro. | dartboard
+🥇 | Copa del campeón | Pasa de mano en mano cada semana. | champion cup
+🍿 | Bol de snacks | Se vacía mientras se decide un movimiento. | snack bowl
+🎭 | Cartas de misterio | Alguien miente y nadie sabe quién. | mystery cards
+😤 | Racha de mala suerte | Tres turnos sin poder salir de la cárcel. | bad luck streak
+🏁 | Casilla de meta | A solo dos pasos... y sale un uno. | finish square
+🤝 | Apretón de manos final | Se perdona todo hasta la próxima partida. | handshake

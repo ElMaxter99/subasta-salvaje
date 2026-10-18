@@ -1,0 +1,293 @@
+{
+  "formato": "subasta-salvaje/indice-plantillas@1",
+  "plantillas": [
+    {
+      "slug": "antiguo-egipto",
+      "titulo": "Tesoros del antiguo Egipto",
+      "tono": "educativo",
+      "orden": 200,
+      "elementos": 16,
+      "archivo": "antiguo-egipto.json"
+    },
+    {
+      "slug": "apocalipsis-zombi-light",
+      "titulo": "Apocalipsis zombi (muy light)",
+      "tono": "humor negro suave",
+      "orden": 210,
+      "elementos": 16,
+      "archivo": "apocalipsis-zombi-light.json"
+    },
+    {
+      "slug": "bar-de-tapas",
+      "titulo": "Bar de tapas",
+      "tono": "adultos",
+      "orden": 220,
+      "elementos": 16,
+      "archivo": "bar-de-tapas.json"
+    },
+    {
+      "slug": "bazar-de-trastos",
+      "titulo": "Bazar de trastos",
+      "tono": "humor",
+      "orden": 230,
+      "elementos": 16,
+      "archivo": "bazar-de-trastos.json"
+    },
+    {
+      "slug": "boda-por-todo-lo-alto",
+      "titulo": "Boda por todo lo alto",
+      "tono": "adultos",
+      "orden": 240,
+      "elementos": 16,
+      "archivo": "boda-por-todo-lo-alto.json"
+    },
+    {
+      "slug": "camping-aventura",
+      "titulo": "Camping y aventura",
+      "tono": "familiar",
+      "orden": 250,
+      "elementos": 16,
+      "archivo": "camping-aventura.json"
+    },
+    {
+      "slug": "cena-de-empresa",
+      "titulo": "Cena de empresa legendaria",
+      "tono": "humor",
+      "orden": 260,
+      "elementos": 16,
+      "archivo": "cena-de-empresa.json"
+    },
+    {
+      "slug": "cocina-del-mundo",
+      "titulo": "Cocina del mundo",
+      "tono": "familiar",
+      "orden": 270,
+      "elementos": 17,
+      "archivo": "cocina-del-mundo.json"
+    },
+    {
+      "slug": "cole-y-mochila",
+      "titulo": "Vuelta al cole",
+      "tono": "familiar",
+      "orden": 280,
+      "elementos": 16,
+      "archivo": "cole-y-mochila.json"
+    },
+    {
+      "slug": "cumpleanos-epico",
+      "titulo": "Cumpleaños épico",
+      "tono": "familiar",
+      "orden": 290,
+      "elementos": 16,
+      "archivo": "cumpleanos-epico.json"
+    },
+    {
+      "slug": "despedida-de-soltero",
+      "titulo": "Despedida por todo lo alto",
+      "tono": "adultos",
+      "orden": 300,
+      "elementos": 16,
+      "archivo": "despedida-de-soltero.json"
+    },
+    {
+      "slug": "espacio-exterior",
+      "titulo": "Misión al espacio",
+      "tono": "educativo",
+      "orden": 310,
+      "elementos": 16,
+      "archivo": "espacio-exterior.json"
+    },
+    {
+      "slug": "festival-de-musica",
+      "titulo": "Festival de música",
+      "tono": "familiar",
+      "orden": 320,
+      "elementos": 16,
+      "archivo": "festival-de-musica.json"
+    },
+    {
+      "slug": "fiesta-de-disfraces",
+      "titulo": "Fiesta de disfraces",
+      "tono": "adultos",
+      "orden": 330,
+      "elementos": 17,
+      "archivo": "fiesta-de-disfraces.json"
+    },
+    {
+      "slug": "fondo-del-mar",
+      "titulo": "Fondo del mar",
+      "tono": "educativo",
+      "orden": 340,
+      "elementos": 17,
+      "archivo": "fondo-del-mar.json"
+    },
+    {
+      "slug": "granja-feliz",
+      "titulo": "Granja feliz",
+      "tono": "familiar",
+      "orden": 350,
+      "elementos": 16,
+      "archivo": "granja-feliz.json"
+    },
+    {
+      "slug": "jardin-botanico",
+      "titulo": "Jardín botánico",
+      "tono": "educativo",
+      "orden": 360,
+      "elementos": 17,
+      "archivo": "jardin-botanico.json"
+    },
+    {
+      "slug": "laboratorio-loco",
+      "titulo": "Laboratorio loco",
+      "tono": "educativo",
+      "orden": 370,
+      "elementos": 17,
+      "archivo": "laboratorio-loco.json"
+    },
+    {
+      "slug": "mansion-encantada",
+      "titulo": "Mansión encantada",
+      "tono": "humor negro suave",
+      "orden": 380,
+      "elementos": 16,
+      "archivo": "mansion-encantada.json"
+    },
+    {
+      "slug": "mascotas-locas",
+      "titulo": "Mascotas locas",
+      "tono": "familiar",
+      "orden": 390,
+      "elementos": 16,
+      "archivo": "mascotas-locas.json"
+    },
+    {
+      "slug": "mercado-medieval",
+      "titulo": "Mercado medieval",
+      "tono": "educativo",
+      "orden": 400,
+      "elementos": 16,
+      "archivo": "mercado-medieval.json"
+    },
+    {
+      "slug": "mudanza-imposible",
+      "titulo": "Mudanza imposible",
+      "tono": "humor",
+      "orden": 410,
+      "elementos": 16,
+      "archivo": "mudanza-imposible.json"
+    },
+    {
+      "slug": "navidad-desastre",
+      "titulo": "Navidad desastre",
+      "tono": "familiar",
+      "orden": 420,
+      "elementos": 17,
+      "archivo": "navidad-desastre.json"
+    },
+    {
+      "slug": "noche-de-cine",
+      "titulo": "Noche de cine en casa",
+      "tono": "familiar",
+      "orden": 430,
+      "elementos": 16,
+      "archivo": "noche-de-cine.json"
+    },
+    {
+      "slug": "noche-de-juegos-de-mesa",
+      "titulo": "Noche de juegos de mesa",
+      "tono": "familiar",
+      "orden": 440,
+      "elementos": 16,
+      "archivo": "noche-de-juegos-de-mesa.json"
+    },
+    {
+      "slug": "oficina-caotica",
+      "titulo": "Oficina caótica",
+      "tono": "humor",
+      "orden": 450,
+      "elementos": 17,
+      "archivo": "oficina-caotica.json"
+    },
+    {
+      "slug": "olimpiadas-del-sofa",
+      "titulo": "Olimpiadas del sofá",
+      "tono": "humor",
+      "orden": 460,
+      "elementos": 16,
+      "archivo": "olimpiadas-del-sofa.json"
+    },
+    {
+      "slug": "reunion-familiar",
+      "titulo": "Reunión familiar",
+      "tono": "familiar",
+      "orden": 470,
+      "elementos": 16,
+      "archivo": "reunion-familiar.json"
+    },
+    {
+      "slug": "salvaje-oeste",
+      "titulo": "Salvaje Oeste",
+      "tono": "familiar",
+      "orden": 480,
+      "elementos": 16,
+      "archivo": "salvaje-oeste.json"
+    },
+    {
+      "slug": "spa-y-bienestar",
+      "titulo": "Spa y bienestar",
+      "tono": "adultos",
+      "orden": 490,
+      "elementos": 16,
+      "archivo": "spa-y-bienestar.json"
+    },
+    {
+      "slug": "superheroes-de-barrio",
+      "titulo": "Superhéroes de barrio",
+      "tono": "familiar",
+      "orden": 500,
+      "elementos": 17,
+      "archivo": "superheroes-de-barrio.json"
+    },
+    {
+      "slug": "verano-eterno",
+      "titulo": "Verano eterno",
+      "tono": "familiar",
+      "orden": 510,
+      "elementos": 16,
+      "archivo": "verano-eterno.json"
+    },
+    {
+      "slug": "viaje-en-el-tiempo",
+      "titulo": "Viaje en el tiempo",
+      "tono": "educativo",
+      "orden": 520,
+      "elementos": 18,
+      "archivo": "viaje-en-el-tiempo.json"
+    },
+    {
+      "slug": "viaje-por-europa",
+      "titulo": "Gran viaje por Europa",
+      "tono": "familiar",
+      "orden": 530,
+      "elementos": 17,
+      "archivo": "viaje-por-europa.json"
+    },
+    {
+      "slug": "vida-universitaria",
+      "titulo": "Vida universitaria",
+      "tono": "humor",
+      "orden": 540,
+      "elementos": 16,
+      "archivo": "vida-universitaria.json"
+    },
+    {
+      "slug": "videojuegos-retro",
+      "titulo": "Salón recreativo retro",
+      "tono": "familiar",
+      "orden": 550,
+      "elementos": 16,
+      "archivo": "videojuegos-retro.json"
+    }
+  ]
+}

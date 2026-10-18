@@ -1,0 +1,112 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Reunión familiar",
+  "tematica": "Familia",
+  "reglas": {
+    "presupuesto": 20,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Cocido de la abuela",
+      "descripcion": "Tarda toda la mañana y no sobra ni una cucharada.",
+      "emoji": "🍲",
+      "foto": null
+    },
+    {
+      "titulo": "Sillón de la abuela",
+      "descripcion": "Intocable, sagrado y con ganchillo.",
+      "emoji": "👵",
+      "foto": null
+    },
+    {
+      "titulo": "Álbum de fotos",
+      "descripcion": "Con peinados que ya nadie recuerda.",
+      "emoji": "📸",
+      "foto": null
+    },
+    {
+      "titulo": "Parchís de la sobremesa",
+      "descripcion": "Una ficha comida y todos gritan a la vez.",
+      "emoji": "🎲",
+      "foto": null
+    },
+    {
+      "titulo": "Tarta de manzana",
+      "descripcion": "Receta secreta que nadie ha logrado copiar.",
+      "emoji": "🍰",
+      "foto": null
+    },
+    {
+      "titulo": "Jersey con renos",
+      "descripcion": "Un regalo tejido con mucho cariño.",
+      "emoji": "🧶",
+      "foto": null
+    },
+    {
+      "titulo": "Videollamada con los tíos",
+      "descripcion": "La imagen se congela con una sonrisa.",
+      "emoji": "📞",
+      "foto": null
+    },
+    {
+      "titulo": "Historias del abuelo",
+      "descripcion": "Siempre empiezan igual y acaban diferente.",
+      "emoji": "🧓",
+      "foto": null
+    },
+    {
+      "titulo": "Casa del pueblo",
+      "descripcion": "Con patio, gallinas y siestas largas.",
+      "emoji": "🏡",
+      "foto": null
+    },
+    {
+      "titulo": "Cumpleaños de los primos",
+      "descripcion": "Cuatro velas, cuarenta voces.",
+      "emoji": "🎂",
+      "foto": null
+    },
+    {
+      "titulo": "Sobremesa interminable",
+      "descripcion": "Café, anécdotas y nadie se levanta.",
+      "emoji": "🍷",
+      "foto": null
+    },
+    {
+      "titulo": "Cesta de picnic",
+      "descripcion": "Tortilla, bocadillos y un mantel a cuadros.",
+      "emoji": "🧺",
+      "foto": null
+    },
+    {
+      "titulo": "Coche con todos dentro",
+      "descripcion": "Siete personas para cinco plazas.",
+      "emoji": "🚗",
+      "foto": null
+    },
+    {
+      "titulo": "Cantar en la cocina",
+      "descripcion": "La radio de fondo y las voces fuera de tono.",
+      "emoji": "🎶",
+      "foto": null
+    },
+    {
+      "titulo": "Retrato familiar",
+      "descripcion": "Todos serios, menos uno que sonríe.",
+      "emoji": "🪞",
+      "foto": null
+    },
+    {
+      "titulo": "Cuna de la familia",
+      "descripcion": "Pasó por tres generaciones.",
+      "emoji": "👶",
+      "foto": null
+    }
+  ]
+}

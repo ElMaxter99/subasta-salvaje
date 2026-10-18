@@ -1,0 +1,112 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Bazar de trastos",
+  "tematica": "Mercadillo",
+  "reglas": {
+    "presupuesto": 20,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Muñeca rusa sin una pieza",
+      "descripcion": "Faltan las dos más pequeñas.",
+      "emoji": "🪆",
+      "foto": null
+    },
+    {
+      "titulo": "Radio que solo coge una emisora",
+      "descripcion": "Siempre suena la misma canción.",
+      "emoji": "📻",
+      "foto": null
+    },
+    {
+      "titulo": "Butaca de flores",
+      "descripcion": "Con muelles que cantan al sentarse.",
+      "emoji": "🛋️",
+      "foto": null
+    },
+    {
+      "titulo": "Reloj de cuco parado",
+      "descripcion": "Siempre da la hora de ayer.",
+      "emoji": "🕰️",
+      "foto": null
+    },
+    {
+      "titulo": "Peluche con un ojo",
+      "descripcion": "Mira con simpatía a quien lo compra.",
+      "emoji": "🧸",
+      "foto": null
+    },
+    {
+      "titulo": "Violín sin cuerdas",
+      "descripcion": "Perfecto para decorar la pared.",
+      "emoji": "🎻",
+      "foto": null
+    },
+    {
+      "titulo": "Cuadro de un paisaje desconocido",
+      "descripcion": "Nadie sabe qué lugar es.",
+      "emoji": "🖼️",
+      "foto": null
+    },
+    {
+      "titulo": "Maleta de cuero",
+      "descripcion": "Huele a viajes lejanos.",
+      "emoji": "🧳",
+      "foto": null
+    },
+    {
+      "titulo": "Televisor con antena",
+      "descripcion": "Solo se ve en blanco y negro.",
+      "emoji": "📺",
+      "foto": null
+    },
+    {
+      "titulo": "Espejo con marco dorado",
+      "descripcion": "Refleja una época mejor.",
+      "emoji": "🪞",
+      "foto": null
+    },
+    {
+      "titulo": "Vajilla de lunares",
+      "descripcion": "Faltan platos y sobran tazas.",
+      "emoji": "🍽️",
+      "foto": null
+    },
+    {
+      "titulo": "Campana de bronce",
+      "descripcion": "Suena demasiado fuerte para cualquier habitación.",
+      "emoji": "🔔",
+      "foto": null
+    },
+    {
+      "titulo": "Cámara de fuelle",
+      "descripcion": "Todavía conserva un carrete dentro.",
+      "emoji": "📷",
+      "foto": null
+    },
+    {
+      "titulo": "Lámpara de lava",
+      "descripcion": "Burbujea con una hipnosis muy setentera.",
+      "emoji": "🧯",
+      "foto": null
+    },
+    {
+      "titulo": "Llave que no abre nada",
+      "descripcion": "Pero tiene un aspecto importantísimo.",
+      "emoji": "🗝️",
+      "foto": null
+    },
+    {
+      "titulo": "Taburete cojo",
+      "descripcion": "Se balancea con elegancia.",
+      "emoji": "🪑",
+      "foto": null
+    }
+  ]
+}

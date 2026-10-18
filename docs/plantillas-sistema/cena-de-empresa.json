@@ -1,0 +1,112 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Cena de empresa legendaria",
+  "tematica": "Cena de empresa",
+  "reglas": {
+    "presupuesto": 30,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Botella de cava sin abrir",
+      "descripcion": "Se guarda para el brindis que nadie recuerda.",
+      "emoji": "🍾",
+      "foto": null
+    },
+    {
+      "titulo": "Micrófono del karaoke",
+      "descripcion": "Quien lo toma ya no lo suelta hasta la madrugada.",
+      "emoji": "🎤",
+      "foto": null
+    },
+    {
+      "titulo": "Cuenta dividida a partes iguales",
+      "descripcion": "Pagas lo mismo aunque solo pidieras agua.",
+      "emoji": "🧾",
+      "foto": null
+    },
+    {
+      "titulo": "Tarta sorpresa",
+      "descripcion": "Llega con una vela y mucha expectación.",
+      "emoji": "🍰",
+      "foto": null
+    },
+    {
+      "titulo": "Silla junto al jefe",
+      "descripcion": "El asiento más codiciado o más temido de la mesa.",
+      "emoji": "🪑",
+      "foto": null
+    },
+    {
+      "titulo": "Brindis improvisado",
+      "descripcion": "Un discurso breve que se alarga siempre.",
+      "emoji": "🥂",
+      "foto": null
+    },
+    {
+      "titulo": "Foto de grupo",
+      "descripcion": "Cuarenta intentos hasta que todos salen con los ojos abiertos.",
+      "emoji": "📸",
+      "foto": null
+    },
+    {
+      "titulo": "Vino de la casa",
+      "descripcion": "Misterioso, barato y sorprendentemente valiente.",
+      "emoji": "🍷",
+      "foto": null
+    },
+    {
+      "titulo": "Amigo invisible",
+      "descripcion": "Un regalo envuelto con más cariño que acierto.",
+      "emoji": "🎁",
+      "foto": null
+    },
+    {
+      "titulo": "Pista de baile",
+      "descripcion": "Aquí se descubren talentos ocultos del departamento.",
+      "emoji": "🕺",
+      "foto": null
+    },
+    {
+      "titulo": "Salero compartido",
+      "descripcion": "Viaja de mano en mano durante toda la cena.",
+      "emoji": "🧂",
+      "foto": null
+    },
+    {
+      "titulo": "Menú del día",
+      "descripcion": "Tres platos y un café con leche fría.",
+      "emoji": "📋",
+      "foto": null
+    },
+    {
+      "titulo": "Entrante para compartir",
+      "descripcion": "Cuatro croquetas para diez personas.",
+      "emoji": "🍢",
+      "foto": null
+    },
+    {
+      "titulo": "Taxi de vuelta",
+      "descripcion": "El mejor invento de la noche.",
+      "emoji": "🚕",
+      "foto": null
+    },
+    {
+      "titulo": "Bostezo disimulado",
+      "descripcion": "Un clásico de la sobremesa eterna.",
+      "emoji": "🥱",
+      "foto": null
+    },
+    {
+      "titulo": "Bola de discoteca",
+      "descripcion": "Convierte cualquier comedor en una sala de fiesta.",
+      "emoji": "🪩",
+      "foto": null
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+# nombre: Tesoros del antiguo Egipto
+# descripcion: Una expedición por pirámides, faraones y misterios del Nilo.
+# tono: educativo
+# tematica: Egipto
+# presupuesto: 30
+# rondas: 10
+# clasificacion: elementos
+---
+🔺 | Pirámide dorada | Resiste desde hace más de cuatro mil años. | pyramid
+🐫 | Camello de caravana | Cruza el desierto sin quejarse. | camel desert
+🏜️ | Dunas del desierto | Arena infinita y un sol de justicia. | desert dunes
+📜 | Papiro con jeroglíficos | Un mensaje escrito con dibujos. | papyrus hieroglyphs
+👑 | Corona del faraón | Doble corona de oro y lapislázuli. | pharaoh crown
+🐈 | Estatuilla de gato | Los felinos eran sagrados. | cat statue egypt
+🏺 | Vasija de alabastro | Guardaba ungüentos y perfumes. | alabaster jar
+🌾 | Cosecha del Nilo | Cada año el río regalaba tierra fértil. | nile harvest
+⛵ | Barca de papiro | Navega tranquila por el río. | papyrus boat
+🗿 | Esfinge vigilante | Guarda un acertijo sin respuesta. | sphinx
+☀️ | Disco solar | Un símbolo de poder y de vida. | sun disk
+🔑 | Llave de la vida | Un amuleto con forma de cruz con lazo. | ankh
+🪔 | Lámpara de aceite | Ilumina túneles y tumbas. | oil lamp tomb
+🧭 | Mapa del explorador | Marca el camino hacia el tesoro. | treasure map
+🐍 | Cobra real | Protegía la frente de los faraones. | cobra
+🥁 | Tambor ceremonial | Sonaba en las fiestas del río. | ceremonial drum

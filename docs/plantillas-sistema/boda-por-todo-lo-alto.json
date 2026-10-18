@@ -1,0 +1,112 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Boda por todo lo alto",
+  "tematica": "Boda",
+  "reglas": {
+    "presupuesto": 30,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Anillos de oro",
+      "descripcion": "Pequeños, brillantes y siempre a punto de caerse.",
+      "emoji": "💍",
+      "foto": null
+    },
+    {
+      "titulo": "Ramo de la novia",
+      "descripcion": "Vuela por los aires y lo atrapa la más ágil.",
+      "emoji": "💐",
+      "foto": null
+    },
+    {
+      "titulo": "Tarta nupcial",
+      "descripcion": "Cuatro pisos, figuras y un cuchillo largo.",
+      "emoji": "🎂",
+      "foto": null
+    },
+    {
+      "titulo": "Velo de encaje",
+      "descripcion": "Ligero, largo y difícil de pisar.",
+      "emoji": "👰",
+      "foto": null
+    },
+    {
+      "titulo": "Pajarita elegante",
+      "descripcion": "Perfectamente anudada hasta el primer baile.",
+      "emoji": "🤵",
+      "foto": null
+    },
+    {
+      "titulo": "Ermita del pueblo",
+      "descripcion": "Campanas, pétalos y flashes.",
+      "emoji": "⛪",
+      "foto": null
+    },
+    {
+      "titulo": "Coche de época",
+      "descripcion": "Brillante y decorado con lazos.",
+      "emoji": "🚗",
+      "foto": null
+    },
+    {
+      "titulo": "Brindis de los novios",
+      "descripcion": "Con discurso emocionante y alguna lágrima.",
+      "emoji": "🥂",
+      "foto": null
+    },
+    {
+      "titulo": "Primer vals",
+      "descripcion": "Pasos medidos y mucho nervio.",
+      "emoji": "💃",
+      "foto": null
+    },
+    {
+      "titulo": "Fotografía de grupo",
+      "descripcion": "Cien invitados sin parpadear.",
+      "emoji": "📸",
+      "foto": null
+    },
+    {
+      "titulo": "Palomas blancas",
+      "descripcion": "Vuelan al terminar la ceremonia.",
+      "emoji": "🕊️",
+      "foto": null
+    },
+    {
+      "titulo": "Banda de música",
+      "descripcion": "Hace bailar a los abuelos y a los niños.",
+      "emoji": "🎶",
+      "foto": null
+    },
+    {
+      "titulo": "Banquete de siete platos",
+      "descripcion": "Nadie se levanta sin ayuda.",
+      "emoji": "🍽️",
+      "foto": null
+    },
+    {
+      "titulo": "Lista de regalos",
+      "descripcion": "Una tostadora, tres cafeteras y un viaje.",
+      "emoji": "🎁",
+      "foto": null
+    },
+    {
+      "titulo": "Pétalos de rosa",
+      "descripcion": "Alfombran el pasillo.",
+      "emoji": "🌹",
+      "foto": null
+    },
+    {
+      "titulo": "Invitación de papel",
+      "descripcion": "Letra dorada y sobre perfumado.",
+      "emoji": "💌",
+      "foto": null
+    }
+  ]
+}

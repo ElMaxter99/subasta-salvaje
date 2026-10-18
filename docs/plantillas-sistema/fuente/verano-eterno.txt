@@ -1,0 +1,24 @@
+# nombre: Verano eterno
+# descripcion: Sol, playa y helados: lo imprescindible para unas vacaciones perfectas.
+# tono: familiar
+# tematica: Verano
+# presupuesto: 20
+# rondas: 10
+# clasificacion: elementos
+---
+🏖️ | Parcela de arena | Un sitio perfecto, justo donde llega el mar. | beach sand spot
+⛱️ | Sombrilla gigante | Se la lleva el viento en el mejor momento. | beach umbrella
+🍦 | Helado de tres bolas | Se derrite antes de llegar al último lametón. | ice cream cone
+🩴 | Chancla de playa | La otra se perdió en la arena. | flip flop sandals
+🕶️ | Gafas de sol grandes | Esconden la siesta y las ojeras. | sunglasses
+🏄 | Tabla de surf | Equilibrio, olas y mucha sal. | surfboard
+🍉 | Sandía fresquita | Rodajas enormes y pepitas a distancia. | watermelon slice
+🧴 | Crema solar | Nunca basta para la espalda. | sunscreen bottle
+🛟 | Flotador de flamenco | El rey de la piscina. | flamingo pool float
+🐚 | Concha de mar | Si la acercas al oído, suena el océano. | seashell
+🏰 | Castillo de arena | Con torres, foso y una ola traicionera. | sand castle
+🌴 | Palmera solitaria | Da sombra a un solo bañista. | palm tree
+🌅 | Atardecer naranja | Dura apenas cinco minutos y todos lo graban. | sunset beach
+🥤 | Granizado de limón | Cierra los ojos y pica en la cabeza. | slush lemon
+🚤 | Lancha motora | Salpica a todos los que pasan. | motorboat
+🏝️ | Isla con hamaca | Dos palmeras y ninguna prisa. | island hammock

@@ -1,0 +1,112 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Olimpiadas del sofá",
+  "tematica": "Deportes",
+  "reglas": {
+    "presupuesto": 20,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Medalla de participación",
+      "descripcion": "La más fácil de conseguir y la más querida.",
+      "emoji": "🏅",
+      "foto": null
+    },
+    {
+      "titulo": "Maratón hasta la nevera",
+      "descripcion": "Ida, vuelta y diploma de picoteo.",
+      "emoji": "🏃",
+      "foto": null
+    },
+    {
+      "titulo": "Balón de fútbol",
+      "descripcion": "Rueda hasta debajo del sofá.",
+      "emoji": "⚽",
+      "foto": null
+    },
+    {
+      "titulo": "Canasta de papelera",
+      "descripcion": "Triple desde el sillón y aplausos sin fin.",
+      "emoji": "🏀",
+      "foto": null
+    },
+    {
+      "titulo": "Raqueta de tenis",
+      "descripcion": "Cuerdas tensas y revés dudoso.",
+      "emoji": "🎾",
+      "foto": null
+    },
+    {
+      "titulo": "Piscina olímpica",
+      "descripcion": "Carriles perfectos y una chancla flotando.",
+      "emoji": "🏊",
+      "foto": null
+    },
+    {
+      "titulo": "Bicicleta estática",
+      "descripcion": "Recorre mil kilómetros sin salir del salón.",
+      "emoji": "🚴",
+      "foto": null
+    },
+    {
+      "titulo": "Podio de cartón",
+      "descripcion": "Tres cajas de distinta altura.",
+      "emoji": "🥇",
+      "foto": null
+    },
+    {
+      "titulo": "Pesas de cinco kilos",
+      "descripcion": "Se levantan una vez y se exhiben para siempre.",
+      "emoji": "🏋️",
+      "foto": null
+    },
+    {
+      "titulo": "Guantes de boxeo",
+      "descripcion": "Golpean al aire con muchísima convicción.",
+      "emoji": "🥊",
+      "foto": null
+    },
+    {
+      "titulo": "Esterilla de yoga",
+      "descripcion": "Aguanta posturas imposibles y siestas.",
+      "emoji": "🧘",
+      "foto": null
+    },
+    {
+      "titulo": "Hoyo en uno",
+      "descripcion": "Ocurrió una vez y se cuenta cada año.",
+      "emoji": "⛳",
+      "foto": null
+    },
+    {
+      "titulo": "Monopatín curioso",
+      "descripcion": "Una caída y mil historias de rodillas.",
+      "emoji": "🛹",
+      "foto": null
+    },
+    {
+      "titulo": "Mesa de ping pong",
+      "descripcion": "Partidas eternas de oficina.",
+      "emoji": "🏓",
+      "foto": null
+    },
+    {
+      "titulo": "Meta de la carrera",
+      "descripcion": "Una cinta y mucha dignidad.",
+      "emoji": "🏁",
+      "foto": null
+    },
+    {
+      "titulo": "Gorra de entrenador",
+      "descripcion": "Da órdenes sin mover un dedo.",
+      "emoji": "🧢",
+      "foto": null
+    }
+  ]
+}

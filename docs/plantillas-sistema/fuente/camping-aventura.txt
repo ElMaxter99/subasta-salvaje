@@ -1,0 +1,24 @@
+# nombre: Camping y aventura
+# descripcion: Tiendas, hogueras y estrellas para una escapada a la naturaleza.
+# tono: familiar
+# tematica: Naturaleza
+# presupuesto: 20
+# rondas: 10
+# clasificacion: elementos
+---
+⛺ | Tienda de campaña | Se monta en una hora y se cae en un minuto. | camping tent
+🔥 | Hoguera crepitante | Asa nubes y cuenta historias. | campfire
+🔦 | Linterna de cabeza | Ilumina todo menos lo que buscas. | headlamp
+🥾 | Botas de montaña | Resisten barro, piedras y arroyos. | hiking boots
+🎒 | Mochila de senderismo | Pesa el doble al final del día. | hiking backpack
+🧭 | Brújula de bolsillo | Siempre marca el norte, aunque nadie sepa cuál es. | compass
+🌲 | Bosque de pinos | Huele a resina y a verano. | pine forest
+🍡 | Nubes en el palo | Doradas por fuera, líquidas por dentro. | roasted marshmallows
+🏞️ | Lago de montaña | Agua cristalina y helada. | mountain lake
+🦉 | Búho curioso | Observa el campamento desde una rama. | owl
+🪵 | Leña apilada | Un buen montón para la noche entera. | firewood stack
+🛏️ | Saco de dormir | Cálido por dentro, helado por fuera. | sleeping bag
+🎣 | Caña de pescar | Más paciencia que peces. | fishing rod
+⭐ | Cielo estrellado | Más estrellas de las que puedes contar. | starry sky
+🦟 | Mosquito pesado | Zumba cerca de la oreja toda la noche. | mosquito
+🍳 | Sartén de campo | Cocina huevos con sabor a humo. | camp pan

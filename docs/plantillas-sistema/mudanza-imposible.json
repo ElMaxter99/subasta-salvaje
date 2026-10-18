@@ -1,0 +1,112 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Mudanza imposible",
+  "tematica": "Hogar",
+  "reglas": {
+    "presupuesto": 25,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Caja marcada «varios»",
+      "descripcion": "Dentro hay de todo, menos lo que buscas.",
+      "emoji": "📦",
+      "foto": null
+    },
+    {
+      "titulo": "Sofá que no gira",
+      "descripcion": "Atascado en la escalera desde el martes.",
+      "emoji": "🛋️",
+      "foto": null
+    },
+    {
+      "titulo": "Camión de mudanzas",
+      "descripcion": "Hace doce viajes por una distancia de tres calles.",
+      "emoji": "🚚",
+      "foto": null
+    },
+    {
+      "titulo": "Escalera plegable",
+      "descripcion": "Sirve para todo menos para llegar arriba.",
+      "emoji": "🪜",
+      "foto": null
+    },
+    {
+      "titulo": "Caja de herramientas",
+      "descripcion": "Tiene tornillos de más después de montarlo todo.",
+      "emoji": "🧰",
+      "foto": null
+    },
+    {
+      "titulo": "Espejo envuelto",
+      "descripcion": "Siete años de mala suerte con solo mirarlo.",
+      "emoji": "🪞",
+      "foto": null
+    },
+    {
+      "titulo": "Metro de carpintero",
+      "descripcion": "Mide y siempre falta un centímetro.",
+      "emoji": "📏",
+      "foto": null
+    },
+    {
+      "titulo": "Cama desmontada",
+      "descripcion": "Quedan piezas sueltas por todo el piso.",
+      "emoji": "🛏️",
+      "foto": null
+    },
+    {
+      "titulo": "Escoba olvidada",
+      "descripcion": "La última cosa que se guarda.",
+      "emoji": "🧹",
+      "foto": null
+    },
+    {
+      "titulo": "Pizza de la primera noche",
+      "descripcion": "Se cena en el suelo entre cajas.",
+      "emoji": "🍕",
+      "foto": null
+    },
+    {
+      "titulo": "Llaves nuevas",
+      "descripcion": "Una abre la puerta, las demás ya veremos.",
+      "emoji": "🔑",
+      "foto": null
+    },
+    {
+      "titulo": "Planta mareada",
+      "descripcion": "Ha viajado en el asiento delantero.",
+      "emoji": "🪴",
+      "foto": null
+    },
+    {
+      "titulo": "Televisor sin soporte",
+      "descripcion": "Se apoya en dos cajas de zapatos.",
+      "emoji": "📺",
+      "foto": null
+    },
+    {
+      "titulo": "Calcetín sin pareja",
+      "descripcion": "Aparece en la última caja.",
+      "emoji": "🧦",
+      "foto": null
+    },
+    {
+      "titulo": "Rollo de etiquetas",
+      "descripcion": "Siempre se acaba antes de la última caja.",
+      "emoji": "🏷️",
+      "foto": null
+    },
+    {
+      "titulo": "Llave de repuesto",
+      "descripcion": "Escondida bajo la maceta de siempre.",
+      "emoji": "🗝️",
+      "foto": null
+    }
+  ]
+}

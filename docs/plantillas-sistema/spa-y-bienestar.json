@@ -1,0 +1,112 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Spa y bienestar",
+  "tematica": "Relax",
+  "reglas": {
+    "presupuesto": 25,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Sauna de cedro",
+      "descripcion": "Calor suave y charlas en voz baja.",
+      "emoji": "🧖",
+      "foto": null
+    },
+    {
+      "titulo": "Bañera de espuma",
+      "descripcion": "Burbujas hasta las orejas.",
+      "emoji": "🛁",
+      "foto": null
+    },
+    {
+      "titulo": "Velas aromáticas",
+      "descripcion": "Huelen a lavanda y a vacaciones.",
+      "emoji": "🕯️",
+      "foto": null
+    },
+    {
+      "titulo": "Masaje de espalda",
+      "descripcion": "Quita nudos de toda una semana.",
+      "emoji": "💆",
+      "foto": null
+    },
+    {
+      "titulo": "Crema de rosas",
+      "descripcion": "Suave, perfumada y carísima.",
+      "emoji": "🧴",
+      "foto": null
+    },
+    {
+      "titulo": "Infusión de manzanilla",
+      "descripcion": "Calma y abriga las tardes de frío.",
+      "emoji": "🫖",
+      "foto": null
+    },
+    {
+      "titulo": "Clase de respiración",
+      "descripcion": "Inspira, espira y suelta el estrés.",
+      "emoji": "🧘",
+      "foto": null
+    },
+    {
+      "titulo": "Mascarilla de pepino",
+      "descripcion": "Fresca y poco favorecedora.",
+      "emoji": "🌿",
+      "foto": null
+    },
+    {
+      "titulo": "Pastilla de jabón artesano",
+      "descripcion": "Con aroma a miel y avena.",
+      "emoji": "🧼",
+      "foto": null
+    },
+    {
+      "titulo": "Piedras calientes",
+      "descripcion": "Relajan hasta el último músculo.",
+      "emoji": "🪨",
+      "foto": null
+    },
+    {
+      "titulo": "Cascada de ducha",
+      "descripcion": "Cae como lluvia tropical.",
+      "emoji": "💧",
+      "foto": null
+    },
+    {
+      "titulo": "Albornoz mullido",
+      "descripcion": "Abriga como un abrazo.",
+      "emoji": "🦢",
+      "foto": null
+    },
+    {
+      "titulo": "Música de olas",
+      "descripcion": "Un mar suave en el altavoz.",
+      "emoji": "🎶",
+      "foto": null
+    },
+    {
+      "titulo": "Camilla de masaje",
+      "descripcion": "Mejor que cualquier cama.",
+      "emoji": "🛌",
+      "foto": null
+    },
+    {
+      "titulo": "Agua con limón",
+      "descripcion": "Se bebe en vasos de cristal.",
+      "emoji": "🍋",
+      "foto": null
+    },
+    {
+      "titulo": "Flores en el agua",
+      "descripcion": "Flotan en el cuenco y perfuman la sala.",
+      "emoji": "🌸",
+      "foto": null
+    }
+  ]
+}

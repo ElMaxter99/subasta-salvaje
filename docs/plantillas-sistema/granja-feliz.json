@@ -1,0 +1,112 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Granja feliz",
+  "tematica": "Granja",
+  "reglas": {
+    "presupuesto": 20,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Vaca remolona",
+      "descripcion": "Da leche fresca y mira el horizonte.",
+      "emoji": "🐄",
+      "foto": null
+    },
+    {
+      "titulo": "Gallina ponedora",
+      "descripcion": "Presume de cada huevo que pone.",
+      "emoji": "🐔",
+      "foto": null
+    },
+    {
+      "titulo": "Cerdito juguetón",
+      "descripcion": "Rosado, curioso y muy amigo del barro.",
+      "emoji": "🐖",
+      "foto": null
+    },
+    {
+      "titulo": "Oveja de lana esponjosa",
+      "descripcion": "Cuenta ovejas y te dormirás.",
+      "emoji": "🐑",
+      "foto": null
+    },
+    {
+      "titulo": "Tractor rojo",
+      "descripcion": "Cruza el campo con orgullo y ruido.",
+      "emoji": "🚜",
+      "foto": null
+    },
+    {
+      "titulo": "Maíz dorado",
+      "descripcion": "Mazorcas altas bajo el sol.",
+      "emoji": "🌽",
+      "foto": null
+    },
+    {
+      "titulo": "Cesta de huevos",
+      "descripcion": "Recogidos esta mañana, todavía calientes.",
+      "emoji": "🥚",
+      "foto": null
+    },
+    {
+      "titulo": "Caballo de paseo",
+      "descripcion": "Trota por el sendero sin prisa.",
+      "emoji": "🐴",
+      "foto": null
+    },
+    {
+      "titulo": "Espantapájaros",
+      "descripcion": "Los cuervos ya no le hacen caso.",
+      "emoji": "🧑‍🌾",
+      "foto": null
+    },
+    {
+      "titulo": "Gallo madrugador",
+      "descripcion": "Despierta a todos antes del amanecer.",
+      "emoji": "🐓",
+      "foto": null
+    },
+    {
+      "titulo": "Cesto de manzanas",
+      "descripcion": "Dulces, crujientes y recién cogidas.",
+      "emoji": "🍎",
+      "foto": null
+    },
+    {
+      "titulo": "Campo de girasoles",
+      "descripcion": "Todos miran al sol a la vez.",
+      "emoji": "🌻",
+      "foto": null
+    },
+    {
+      "titulo": "Cabra trepadora",
+      "descripcion": "Se sube a cualquier sitio, incluso al tejado.",
+      "emoji": "🐐",
+      "foto": null
+    },
+    {
+      "titulo": "Granero rojo",
+      "descripcion": "Guarda heno, herramientas y gatos.",
+      "emoji": "🛖",
+      "foto": null
+    },
+    {
+      "titulo": "Cubo de leche",
+      "descripcion": "Lleno hasta el borde.",
+      "emoji": "🪣",
+      "foto": null
+    },
+    {
+      "titulo": "Conejo de corral",
+      "descripcion": "Mordisquea lechuga a todas horas.",
+      "emoji": "🐇",
+      "foto": null
+    }
+  ]
+}

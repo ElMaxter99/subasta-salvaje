@@ -1,0 +1,24 @@
+# nombre: Salvaje Oeste
+# descripcion: Un pueblo del oeste lleno de diligencias, sombreros y cactus.
+# tono: familiar
+# tematica: Oeste
+# presupuesto: 25
+# rondas: 10
+# clasificacion: elementos
+---
+🤠 | Sombrero del sheriff | Da autoridad hasta al más bajito. | sheriff hat
+🐎 | Caballo veloz | Galopa por el desierto con la crin al viento. | galloping horse
+🌵 | Cactus en maceta | Pincha, florece y no necesita agua. | cactus
+⭐ | Placa de estrella | Indica quién manda en el pueblo. | sheriff badge
+🥾 | Botas con espuelas | Suenan a cada paso por la taberna. | cowboy boots spurs
+🍻 | Barra de la taberna | Una puerta batiente y mucho polvo. | saloon bar
+🎻 | Pianola desafinada | Suena siempre la misma melodía. | saloon piano
+🚂 | Tren del oeste | Cruza el cañón soltando humo. | western train
+🪙 | Pepita de oro | Brilla más que cualquier sueño. | gold nugget
+⛏️ | Pico de minero | Cava y cava hasta encontrar piedra. | miner pickaxe
+🏜️ | Cañón colorado | Rocas rojas y silencio. | red canyon
+🐂 | Toro mecánico | Dura tres segundos antes de desmontar. | mechanical bull
+🔥 | Hoguera del campamento | Judías en lata y canciones de guitarra. | campfire cowboys
+🧣 | Pañuelo del forajido | Se sube sobre la nariz para el polvo. | bandana
+🐴 | Diligencia | Cruza el desierto con equipaje y pasajeros. | stagecoach
+📜 | Cartel de se busca | Con una cara muy poco fiable. | wanted poster

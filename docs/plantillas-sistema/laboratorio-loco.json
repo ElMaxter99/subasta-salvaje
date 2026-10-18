@@ -1,0 +1,118 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Laboratorio loco",
+  "tematica": "Ciencia",
+  "reglas": {
+    "presupuesto": 25,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Microscopio de precisión",
+      "descripcion": "Hace gigantes a las cosas más pequeñas.",
+      "emoji": "🔬",
+      "foto": null
+    },
+    {
+      "titulo": "Tubo de ensayo burbujeante",
+      "descripcion": "Cambia de color cuando nadie mira.",
+      "emoji": "🧪",
+      "foto": null
+    },
+    {
+      "titulo": "Matraz de destilación",
+      "descripcion": "Gotea muy despacio y con mucha solemnidad.",
+      "emoji": "⚗️",
+      "foto": null
+    },
+    {
+      "titulo": "Modelo de ADN",
+      "descripcion": "Una escalera retorcida con las instrucciones de la vida.",
+      "emoji": "🧬",
+      "foto": null
+    },
+    {
+      "titulo": "Telescopio de jardín",
+      "descripcion": "Ve planetas y también a los vecinos.",
+      "emoji": "🔭",
+      "foto": null
+    },
+    {
+      "titulo": "Termómetro de laboratorio",
+      "descripcion": "Mide desde el hielo hasta el vapor.",
+      "emoji": "🌡️",
+      "foto": null
+    },
+    {
+      "titulo": "Imán gigante",
+      "descripcion": "Atrae todo lo que no deberías perder.",
+      "emoji": "🧲",
+      "foto": null
+    },
+    {
+      "titulo": "Átomo de juguete",
+      "descripcion": "Pequeñísimo en la realidad, enorme en el escritorio.",
+      "emoji": "⚛️",
+      "foto": null
+    },
+    {
+      "titulo": "Gafas de protección",
+      "descripcion": "Obligatorias aunque solo mires.",
+      "emoji": "🥽",
+      "foto": null
+    },
+    {
+      "titulo": "Bata blanca",
+      "descripcion": "Con manchas de experimentos que salieron raro.",
+      "emoji": "🥼",
+      "foto": null
+    },
+    {
+      "titulo": "Regla milimetrada",
+      "descripcion": "Todo se mide al milímetro.",
+      "emoji": "📏",
+      "foto": null
+    },
+    {
+      "titulo": "Pila de patata",
+      "descripcion": "Da energía para encender una bombilla pequeña.",
+      "emoji": "🔋",
+      "foto": null
+    },
+    {
+      "titulo": "Volcán de bicarbonato",
+      "descripcion": "Una erupción espuma y vinagre garantizada.",
+      "emoji": "🌋",
+      "foto": null
+    },
+    {
+      "titulo": "Cultivo curioso",
+      "descripcion": "Mejor no abrir la placa hasta el lunes.",
+      "emoji": "🦠",
+      "foto": null
+    },
+    {
+      "titulo": "Globo terráqueo",
+      "descripcion": "Gira sin fin sobre su eje.",
+      "emoji": "🌍",
+      "foto": null
+    },
+    {
+      "titulo": "Maqueta del sistema solar",
+      "descripcion": "Los planetas cuelgan de hilos de pescar.",
+      "emoji": "🪐",
+      "foto": null
+    },
+    {
+      "titulo": "Gráfica de resultados",
+      "descripcion": "Sube, baja y confirma la hipótesis.",
+      "emoji": "📊",
+      "foto": null
+    }
+  ]
+}

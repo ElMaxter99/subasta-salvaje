@@ -1,0 +1,112 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Mascotas locas",
+  "tematica": "Mascotas",
+  "reglas": {
+    "presupuesto": 20,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Cachorro con calcetín",
+      "descripcion": "No sabe cuál es suyo, pero se lo lleva igual.",
+      "emoji": "🐶",
+      "foto": null
+    },
+    {
+      "titulo": "Gato en la caja",
+      "descripcion": "Si cabe, se sienta. Aunque no quepa, también.",
+      "emoji": "🐱",
+      "foto": null
+    },
+    {
+      "titulo": "Hueso gigante",
+      "descripcion": "Enterrado en el jardín desde hace una semana.",
+      "emoji": "🦴",
+      "foto": null
+    },
+    {
+      "titulo": "Rueda de hámster",
+      "descripcion": "Kilómetros de carrera sin salir de la jaula.",
+      "emoji": "🐹",
+      "foto": null
+    },
+    {
+      "titulo": "Pecera con castillo",
+      "descripcion": "Vivienda de lujo con vistas a la cocina.",
+      "emoji": "🐟",
+      "foto": null
+    },
+    {
+      "titulo": "Loro bocazas",
+      "descripcion": "Repite lo que dijiste en el peor momento.",
+      "emoji": "🐦",
+      "foto": null
+    },
+    {
+      "titulo": "Ovillo de lana",
+      "descripcion": "Rueda por el pasillo perseguido por un gato.",
+      "emoji": "🧶",
+      "foto": null
+    },
+    {
+      "titulo": "Pelota babeada",
+      "descripcion": "Se lanza cien veces y siempre vuelve.",
+      "emoji": "🥎",
+      "foto": null
+    },
+    {
+      "titulo": "Cama redonda",
+      "descripcion": "Cuesta una fortuna y el perro duerme en el sofá.",
+      "emoji": "🛏️",
+      "foto": null
+    },
+    {
+      "titulo": "Tortuga veloz",
+      "descripcion": "Gana todas las carreras en su propia opinión.",
+      "emoji": "🐢",
+      "foto": null
+    },
+    {
+      "titulo": "Zanahoria de conejo",
+      "descripcion": "Se mordisquea con mucha ceremonia.",
+      "emoji": "🥕",
+      "foto": null
+    },
+    {
+      "titulo": "Periquito musical",
+      "descripcion": "Canta antes del amanecer.",
+      "emoji": "🦜",
+      "foto": null
+    },
+    {
+      "titulo": "Champú de baño",
+      "descripcion": "Nadie quiere ducharse y menos todavía el perro.",
+      "emoji": "🧴",
+      "foto": null
+    },
+    {
+      "titulo": "Correa extensible",
+      "descripcion": "Largo alcance, cero control.",
+      "emoji": "🦮",
+      "foto": null
+    },
+    {
+      "titulo": "Huellas de barro",
+      "descripcion": "Decoran el suelo recién fregado.",
+      "emoji": "🐾",
+      "foto": null
+    },
+    {
+      "titulo": "Pez payaso",
+      "descripcion": "Naranja, rayado y siempre en movimiento.",
+      "emoji": "🐠",
+      "foto": null
+    }
+  ]
+}

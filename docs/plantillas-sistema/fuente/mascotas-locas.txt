@@ -1,0 +1,24 @@
+# nombre: Mascotas locas
+# descripcion: Todo lo que adoran (y destrozan) perros, gatos y compañía.
+# tono: familiar
+# tematica: Mascotas
+# presupuesto: 20
+# rondas: 10
+# clasificacion: elementos
+---
+🐶 | Cachorro con calcetín | No sabe cuál es suyo, pero se lo lleva igual. | puppy sock
+🐱 | Gato en la caja | Si cabe, se sienta. Aunque no quepa, también. | cat in box
+🦴 | Hueso gigante | Enterrado en el jardín desde hace una semana. | dog bone
+🐹 | Rueda de hámster | Kilómetros de carrera sin salir de la jaula. | hamster wheel
+🐟 | Pecera con castillo | Vivienda de lujo con vistas a la cocina. | aquarium castle
+🐦 | Loro bocazas | Repite lo que dijiste en el peor momento. | talking parrot
+🧶 | Ovillo de lana | Rueda por el pasillo perseguido por un gato. | yarn ball
+🥎 | Pelota babeada | Se lanza cien veces y siempre vuelve. | slobbery ball
+🛏️ | Cama redonda | Cuesta una fortuna y el perro duerme en el sofá. | pet bed
+🐢 | Tortuga veloz | Gana todas las carreras en su propia opinión. | tortoise
+🥕 | Zanahoria de conejo | Se mordisquea con mucha ceremonia. | rabbit carrot
+🦜 | Periquito musical | Canta antes del amanecer. | budgie bird
+🧴 | Champú de baño | Nadie quiere ducharse y menos todavía el perro. | pet shampoo
+🦮 | Correa extensible | Largo alcance, cero control. | dog leash
+🐾 | Huellas de barro | Decoran el suelo recién fregado. | muddy paw prints
+🐠 | Pez payaso | Naranja, rayado y siempre en movimiento. | clownfish

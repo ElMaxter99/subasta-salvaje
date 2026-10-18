@@ -1,0 +1,112 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Tesoros del antiguo Egipto",
+  "tematica": "Egipto",
+  "reglas": {
+    "presupuesto": 30,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Pirámide dorada",
+      "descripcion": "Resiste desde hace más de cuatro mil años.",
+      "emoji": "🔺",
+      "foto": null
+    },
+    {
+      "titulo": "Camello de caravana",
+      "descripcion": "Cruza el desierto sin quejarse.",
+      "emoji": "🐫",
+      "foto": null
+    },
+    {
+      "titulo": "Dunas del desierto",
+      "descripcion": "Arena infinita y un sol de justicia.",
+      "emoji": "🏜️",
+      "foto": null
+    },
+    {
+      "titulo": "Papiro con jeroglíficos",
+      "descripcion": "Un mensaje escrito con dibujos.",
+      "emoji": "📜",
+      "foto": null
+    },
+    {
+      "titulo": "Corona del faraón",
+      "descripcion": "Doble corona de oro y lapislázuli.",
+      "emoji": "👑",
+      "foto": null
+    },
+    {
+      "titulo": "Estatuilla de gato",
+      "descripcion": "Los felinos eran sagrados.",
+      "emoji": "🐈",
+      "foto": null
+    },
+    {
+      "titulo": "Vasija de alabastro",
+      "descripcion": "Guardaba ungüentos y perfumes.",
+      "emoji": "🏺",
+      "foto": null
+    },
+    {
+      "titulo": "Cosecha del Nilo",
+      "descripcion": "Cada año el río regalaba tierra fértil.",
+      "emoji": "🌾",
+      "foto": null
+    },
+    {
+      "titulo": "Barca de papiro",
+      "descripcion": "Navega tranquila por el río.",
+      "emoji": "⛵",
+      "foto": null
+    },
+    {
+      "titulo": "Esfinge vigilante",
+      "descripcion": "Guarda un acertijo sin respuesta.",
+      "emoji": "🗿",
+      "foto": null
+    },
+    {
+      "titulo": "Disco solar",
+      "descripcion": "Un símbolo de poder y de vida.",
+      "emoji": "☀️",
+      "foto": null
+    },
+    {
+      "titulo": "Llave de la vida",
+      "descripcion": "Un amuleto con forma de cruz con lazo.",
+      "emoji": "🔑",
+      "foto": null
+    },
+    {
+      "titulo": "Lámpara de aceite",
+      "descripcion": "Ilumina túneles y tumbas.",
+      "emoji": "🪔",
+      "foto": null
+    },
+    {
+      "titulo": "Mapa del explorador",
+      "descripcion": "Marca el camino hacia el tesoro.",
+      "emoji": "🧭",
+      "foto": null
+    },
+    {
+      "titulo": "Cobra real",
+      "descripcion": "Protegía la frente de los faraones.",
+      "emoji": "🐍",
+      "foto": null
+    },
+    {
+      "titulo": "Tambor ceremonial",
+      "descripcion": "Sonaba en las fiestas del río.",
+      "emoji": "🥁",
+      "foto": null
+    }
+  ]
+}

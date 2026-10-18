@@ -1,0 +1,25 @@
+# nombre: Gran viaje por Europa
+# descripcion: Souvenirs y recuerdos de un recorrido en tren por el continente.
+# tono: familiar
+# tematica: Viajes
+# presupuesto: 25
+# rondas: 10
+# clasificacion: elementos
+---
+🚆 | Billete de tren ilimitado | Un mes recorriendo capitales sin parar. | train ticket railway
+🗼 | Torre de recuerdo | Una miniatura brillante que ocupa toda la maleta. | eiffel tower souvenir
+🥐 | Desayuno de cruasán | Mantequilla, café y vistas a una plaza antigua. | croissant breakfast
+🧳 | Maleta que no cierra | Compraste demasiados recuerdos por el camino. | suitcase luggage
+🗺️ | Mapa desplegable | Imposible de volver a doblar como estaba. | folding map
+🎻 | Concierto en la plaza | Un músico callejero que se queda en la memoria. | street violin musician
+🍝 | Plato de pasta casera | Se come despacio y sin mirar el reloj. | pasta plate
+🏰 | Castillo de cuento | Torres, murallas y una escalera interminable. | castle fairytale
+🚲 | Bicicleta de alquiler | Para recorrer el casco antiguo sin prisa. | rental bicycle
+⛲ | Fuente de los deseos | Una moneda y un deseo en voz baja. | fountain coins
+📮 | Postal desde lejos | Llega a casa cuando ya has vuelto. | postcard mail
+🧀 | Queso de montaña | Huele fuerte y sabe de maravilla. | mountain cheese
+🥨 | Pretzel gigante | Sale caliente de una panadería de barrio. | pretzel bakery
+🛶 | Paseo en góndola | Canales, puentes y un remero que canta. | gondola canal
+🌷 | Campo de tulipanes | Filas de colores hasta el horizonte. | tulip field
+📷 | Cámara con carrete | Cada foto cuenta y no se puede borrar. | film camera vintage
+🍫 | Chocolate artesano | Una tableta pequeña y carísima que merece la pena. | artisan chocolate bar

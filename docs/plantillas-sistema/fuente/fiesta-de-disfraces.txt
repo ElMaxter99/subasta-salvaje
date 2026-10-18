@@ -1,0 +1,25 @@
+# nombre: Fiesta de disfraces
+# descripcion: Un guardarropa disparatado para la noche más divertida del año.
+# tono: adultos
+# tematica: Fiesta
+# presupuesto: 30
+# rondas: 10
+# clasificacion: elementos
+---
+🏴‍☠️ | Parche de pirata | Una gran aventura con un solo ojo. | pirate eye patch
+🧛 | Colmillos de vampiro | Se caen al primer bocado de canapé. | vampire fangs
+🥸 | Gafas con nariz | El clásico inmortal de las fiestas. | disguise glasses nose
+🦄 | Disfraz de unicornio | Cremallera trasera y cuerno de peluche. | unicorn costume
+🧙 | Sombrero de mago | Pico torcido y estrellas doradas. | wizard hat
+🤖 | Traje de robot | Hecho con cajas, papel de aluminio y paciencia. | robot costume cardboard
+👑 | Corona de rey | Gobierna el baile con puño de hierro. | king crown
+🦖 | Traje inflable de dinosaurio | Nadie puede sentarse ni pasar por las puertas. | inflatable dinosaur costume
+🎩 | Chistera de ilusionista | Del interior sale de todo menos un conejo. | magician top hat
+🪄 | Varita de hada | Brilla y concede deseos pequeños. | fairy wand
+👻 | Sábana fantasma | Dos agujeros y mucho misterio. | ghost sheet
+🕺 | Peluca de los setenta | Rizos, patillas y pantalones de campana. | disco wig
+💃 | Vestido de lentejuelas | Brilla más que la bola de discoteca. | sequin dress
+🤠 | Sombrero de vaquero | Desenfunda un chiste mejor que un revólver. | cowboy hat
+🥷 | Capucha de ninja | Aparece, desaparece y se come los canapés. | ninja costume
+🎭 | Antifaz de baile | Cubre la cara y regala misterio. | masquerade mask
+🪭 | Abanico de plumas | Abanica, señala y sentencia. | feather fan

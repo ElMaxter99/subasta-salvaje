@@ -33,6 +33,9 @@
     "ai:lab": "tsx --env-file-if-exists=.env.local scripts/ai/prompt-lab.ts",
     "library": "tsx scripts/library/fetch-commons.ts --all --open",
     "library:fetch": "tsx scripts/library/fetch-commons.ts",
+    "templates:build": "tsx scripts/templates/build.ts",
+    "templates:validate": "tsx scripts/templates/validate.ts",
+    "templates:import": "tsx --env-file-if-exists=.env.local scripts/templates/import.ts",
     "loadtest": "tsx scripts/loadtest/snapshots.ts"
   },
   "engines": {

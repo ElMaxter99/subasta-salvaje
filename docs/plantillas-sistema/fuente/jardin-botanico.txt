@@ -1,0 +1,25 @@
+# nombre: Jardín botánico
+# descripcion: Plantas, flores y semillas para un paseo educativo entre invernaderos.
+# tono: educativo
+# tematica: Plantas
+# presupuesto: 20
+# rondas: 10
+# clasificacion: elementos
+---
+🌱 | Brote tierno | Rompe la tierra con mucha determinación. | seedling sprout
+🌻 | Girasol gigante | Sigue al sol durante todo el día. | giant sunflower
+🌵 | Cactus del desierto | Almacena agua para meses de sequía. | desert cactus
+🌹 | Rosal espinoso | Pincha un poco y huele bien. | rose bush
+🍃 | Hoja de helecho | Un tapiz verde que ya existía con los dinosaurios. | fern leaf
+🌴 | Palmera datilera | Da dátiles dulces y sombra. | date palm
+🌿 | Albahaca fresca | Perfuma una cocina entera. | basil
+🪴 | Maceta de terracota | Tiene un agujero por el que escapa el agua. | terracotta pot
+🍄 | Seta de bosque | Ni planta ni animal: un hongo con sombrero. | forest mushroom
+🌷 | Tulipán de primavera | Florece una vez al año. | tulip
+🌳 | Roble centenario | Guarda cientos de anillos en su tronco. | oak tree
+🪻 | Lavanda violeta | Su olor atrae abejas y calma el sueño. | lavender
+🐝 | Abeja polinizadora | Sin ella, casi nada florecería. | bee
+🌾 | Espiga de trigo | Alimento de pan en medio mundo. | wheat ear
+💧 | Regadera de latón | Reparte lluvia en pequeñas dosis. | watering can
+🧑‍🌾 | Jardinero con sombrero | Habla con las plantas y ellas lo escuchan. | gardener
+🌺 | Hibisco tropical | Una flor grande, roja y efímera. | hibiscus

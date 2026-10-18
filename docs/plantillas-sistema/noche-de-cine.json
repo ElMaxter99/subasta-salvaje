@@ -1,0 +1,112 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Noche de cine en casa",
+  "tematica": "Cine",
+  "reglas": {
+    "presupuesto": 20,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Cubo de palomitas",
+      "descripcion": "Infinito al principio y vacío antes del primer tráiler.",
+      "emoji": "🍿",
+      "foto": null
+    },
+    {
+      "titulo": "Claqueta dorada",
+      "descripcion": "Para gritar «¡acción!» al empezar la sesión.",
+      "emoji": "🎬",
+      "foto": null
+    },
+    {
+      "titulo": "Sofá reclinable",
+      "descripcion": "El mejor asiento del salón por derecho propio.",
+      "emoji": "🛋️",
+      "foto": null
+    },
+    {
+      "titulo": "Proyector de pared",
+      "descripcion": "Convierte el salón en una sala de estreno.",
+      "emoji": "📽️",
+      "foto": null
+    },
+    {
+      "titulo": "Manta de peluche",
+      "descripcion": "Pesa poco, abriga mucho y nadie quiere compartirla.",
+      "emoji": "🧸",
+      "foto": null
+    },
+    {
+      "titulo": "Refresco gigante",
+      "descripcion": "Con hielo, pajita y fugas inesperadas.",
+      "emoji": "🥤",
+      "foto": null
+    },
+    {
+      "titulo": "Entrada de estreno",
+      "descripcion": "Fila uno, butaca central y cero spoilers.",
+      "emoji": "🎟️",
+      "foto": null
+    },
+    {
+      "titulo": "Alfombra de las estrellas",
+      "descripcion": "Para recibir al invitado más famoso.",
+      "emoji": "🌟",
+      "foto": null
+    },
+    {
+      "titulo": "Gafas de sol de director",
+      "descripcion": "Nadie sabe para qué, pero dan mucha autoridad.",
+      "emoji": "🕶️",
+      "foto": null
+    },
+    {
+      "titulo": "Mando a distancia",
+      "descripcion": "Quien lo tiene manda sobre toda la noche.",
+      "emoji": "📺",
+      "foto": null
+    },
+    {
+      "titulo": "Rollo de película antigua",
+      "descripcion": "Una joya en blanco y negro.",
+      "emoji": "🎞️",
+      "foto": null
+    },
+    {
+      "titulo": "Máscara de drama y comedia",
+      "descripcion": "Una llora, la otra ríe, las dos opinan.",
+      "emoji": "🎭",
+      "foto": null
+    },
+    {
+      "titulo": "Cabezada a mitad de peli",
+      "descripcion": "Todos juran que no se quedaron dormidos.",
+      "emoji": "💤",
+      "foto": null
+    },
+    {
+      "titulo": "Palomitas saladas",
+      "descripcion": "Para los que no se pasan al lado dulce.",
+      "emoji": "🧂",
+      "foto": null
+    },
+    {
+      "titulo": "Linterna del acomodador",
+      "descripcion": "Te guía hasta la butaca equivocada.",
+      "emoji": "🔦",
+      "foto": null
+    },
+    {
+      "titulo": "Megáfono del director",
+      "descripcion": "Cada orden suena mucho más importante.",
+      "emoji": "📣",
+      "foto": null
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+# nombre: Granja feliz
+# descripcion: Animales, cosechas y tractores para una mañana en el campo.
+# tono: familiar
+# tematica: Granja
+# presupuesto: 20
+# rondas: 10
+# clasificacion: elementos
+---
+🐄 | Vaca remolona | Da leche fresca y mira el horizonte. | cow
+🐔 | Gallina ponedora | Presume de cada huevo que pone. | hen
+🐖 | Cerdito juguetón | Rosado, curioso y muy amigo del barro. | pig
+🐑 | Oveja de lana esponjosa | Cuenta ovejas y te dormirás. | sheep
+🚜 | Tractor rojo | Cruza el campo con orgullo y ruido. | red tractor
+🌽 | Maíz dorado | Mazorcas altas bajo el sol. | corn field
+🥚 | Cesta de huevos | Recogidos esta mañana, todavía calientes. | egg basket
+🐴 | Caballo de paseo | Trota por el sendero sin prisa. | horse
+🧑‍🌾 | Espantapájaros | Los cuervos ya no le hacen caso. | scarecrow
+🐓 | Gallo madrugador | Despierta a todos antes del amanecer. | rooster
+🍎 | Cesto de manzanas | Dulces, crujientes y recién cogidas. | apple basket
+🌻 | Campo de girasoles | Todos miran al sol a la vez. | sunflower field
+🐐 | Cabra trepadora | Se sube a cualquier sitio, incluso al tejado. | goat
+🛖 | Granero rojo | Guarda heno, herramientas y gatos. | red barn
+🪣 | Cubo de leche | Lleno hasta el borde. | milk bucket
+🐇 | Conejo de corral | Mordisquea lechuga a todas horas. | rabbit

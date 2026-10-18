@@ -1,0 +1,118 @@
+{
+  "formato": "subasta-salvaje/plantilla@1",
+  "nombre": "Gran viaje por Europa",
+  "tematica": "Viajes",
+  "reglas": {
+    "presupuesto": 25,
+    "puja_minima": 1,
+    "rondas_maximas": 10,
+    "pujas_enteras": true,
+    "clasificacion": "elementos",
+    "modo_juego": "movil",
+    "modo_imagenes": "pegatinas"
+  },
+  "catalogo": [
+    {
+      "titulo": "Billete de tren ilimitado",
+      "descripcion": "Un mes recorriendo capitales sin parar.",
+      "emoji": "🚆",
+      "foto": null
+    },
+    {
+      "titulo": "Torre de recuerdo",
+      "descripcion": "Una miniatura brillante que ocupa toda la maleta.",
+      "emoji": "🗼",
+      "foto": null
+    },
+    {
+      "titulo": "Desayuno de cruasán",
+      "descripcion": "Mantequilla, café y vistas a una plaza antigua.",
+      "emoji": "🥐",
+      "foto": null
+    },
+    {
+      "titulo": "Maleta que no cierra",
+      "descripcion": "Compraste demasiados recuerdos por el camino.",
+      "emoji": "🧳",
+      "foto": null
+    },
+    {
+      "titulo": "Mapa desplegable",
+      "descripcion": "Imposible de volver a doblar como estaba.",
+      "emoji": "🗺️",
+      "foto": null
+    },
+    {
+      "titulo": "Concierto en la plaza",
+      "descripcion": "Un músico callejero que se queda en la memoria.",
+      "emoji": "🎻",
+      "foto": null
+    },
+    {
+      "titulo": "Plato de pasta casera",
+      "descripcion": "Se come despacio y sin mirar el reloj.",
+      "emoji": "🍝",
+      "foto": null
+    },
+    {
+      "titulo": "Castillo de cuento",
+      "descripcion": "Torres, murallas y una escalera interminable.",
+      "emoji": "🏰",
+      "foto": null
+    },
+    {
+      "titulo": "Bicicleta de alquiler",
+      "descripcion": "Para recorrer el casco antiguo sin prisa.",
+      "emoji": "🚲",
+      "foto": null
+    },
+    {
+      "titulo": "Fuente de los deseos",
+      "descripcion": "Una moneda y un deseo en voz baja.",
+      "emoji": "⛲",
+      "foto": null
+    },
+    {
+      "titulo": "Postal desde lejos",
+      "descripcion": "Llega a casa cuando ya has vuelto.",
+      "emoji": "📮",
+      "foto": null
+    },
+    {
+      "titulo": "Queso de montaña",
+      "descripcion": "Huele fuerte y sabe de maravilla.",
+      "emoji": "🧀",
+      "foto": null
+    },
+    {
+      "titulo": "Pretzel gigante",
+      "descripcion": "Sale caliente de una panadería de barrio.",
+      "emoji": "🥨",
+      "foto": null
+    },
+    {
+      "titulo": "Paseo en góndola",
+      "descripcion": "Canales, puentes y un remero que canta.",
+      "emoji": "🛶",
+      "foto": null
+    },
+    {
+      "titulo": "Campo de tulipanes",
+      "descripcion": "Filas de colores hasta el horizonte.",
+      "emoji": "🌷",
+      "foto": null
+    },
+    {
+      "titulo": "Cámara con carrete",
+      "descripcion": "Cada foto cuenta y no se puede borrar.",
+      "emoji": "📷",
+      "foto": null
+    },
+    {
+      "titulo": "Chocolate artesano",
+      "descripcion": "Una tableta pequeña y carísima que merece la pena.",
+      "emoji": "🍫",
+      "foto": null
+    }
+  ]
+}
