@@ -37,7 +37,7 @@ Los asuntos están en `supabase/templates/subjects.json`. Diseño: HTML con tabl
 2. Supabase envía `recovery.html` con el enlace `…/auth/callback?token_hash=…&type=recovery&next=/reset-password`.
 3. `GET /auth/callback` hace `verifyOtp` (o `exchangeCodeForSession` si llega `code`), crea la sesión y redirige a `next` (solo rutas internas). Enlace inválido/caducado → `/login?link=invalid` con aviso.
 4. `/reset-password` pide la contraseña nueva dos veces → `POST /api/auth/reset` (`updateUser`) → inicio.
-En **modo demo** no hay contraseñas: la ruta responde con un aviso y `/reset-password` redirige al login.
+Sin Supabase (solo desarrollo local) no hay contraseñas: la ruta responde con un aviso y `/reset-password` redirige al login.
 
 ## Qué NO está verificado
 - **El envío real:** no se ha probado contra un Supabase real (ni la entrega, ni los límites de envío del plan gratuito, que son pocos correos por hora; para producción conviene configurar SMTP propio en Supabase).

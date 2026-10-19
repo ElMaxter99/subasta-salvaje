@@ -14,3 +14,12 @@ Ejecución y entorno: ver `CLAUDE.md`. Notas:
 - No uses `pkill -f "next dev"` desde el propio shell (mata tu comando).
 - Para validar tipo/lint de scripts nuevos: `npm run lint && npm run typecheck` (hay 2 avisos conocidos en `scripts/assets/lib.mjs`).
 Antes de cerrar un cambio: lint + typecheck + `npm test` + (si toca BD) Postgres real + (si toca UI) e2e relevante + `npm run build` + `npm run scan:secrets`.
+
+## Modo de desarrollo (solo desarrollo/pruebas; no existe en producción)
+
+Herramienta interna para desarrollar y probar sin Supabase; **no es una función del producto**.
+- **Qué es:** el servidor usa PGlite (Postgres WASM, el mismo SQL `ss_*`) con datos y imágenes en disco (`.demo-data`, o el directorio de `DEMO_DATA_DIR`), acceso de anfitrión por botón (`/api/auth/demo`, cookie `ss_demo_host`), partida de ejemplo (`/api/dev/seed`), imágenes locales (`/api/demo-images`) y un banner amarillo «MODO DEMO».
+- **Cómo se activa** (`getRuntimeMode` en `src/lib/config/env.ts`): sin variables de Supabase y `NODE_ENV` distinto de `production`; o `ALLOW_DEMO_MODE=true` en un build local de producción; `FORCE_DEMO_MODE=true` lo fuerza aunque Supabase esté configurado. Sin credenciales en producción se muestra `/setup`.
+- **Nunca funciona en Vercel:** el código lo bloquea (protección en implementación; nombres exactos de las variables en `src/lib/config/env.ts`).
+- **Banner:** se oculta con `DEV_HIDE_BANNER=true`; lo usan las capturas del README (`node scripts/docs/screenshots.mjs`, que se generan con este modo).
+- `IMAGE_PROVIDER` sigue siendo la única forma de activar IA real también en este modo; sin él solo hay pegatinas (sin IA).

@@ -10,12 +10,12 @@ con emojis (sin IA) o edición por IA. Idioma del producto, comentarios y docs: 
 
 ## Stack
 Next.js 16 App Router (`proxy.ts`, `after()`, route handlers) · TypeScript estricto · Tailwind 4 · Zod 4 · Supabase
-(Postgres, Auth, Realtime Broadcast, Storage) · PGlite (Postgres WASM) para demo y tests · sharp · Vitest · Playwright.
+(Postgres, Auth, Realtime Broadcast, Storage) · PGlite (Postgres WASM) para tests y desarrollo local · sharp · Vitest · Playwright.
 Despliegue: Vercel (+ cron). Node ≥ 20. Panel de superadmin en `/admin` (usuarios, partidas, ajustes, **IA** y **plantillas del sistema** y **biblioteca de medios**; ver `docs/PLAN-SUPERADMIN.md`, `docs/PLANTILLAS-SISTEMA.md`, `README`).
 
 ## Comandos
 ```bash
-npm run dev            # sin credenciales arranca en MODO DEMO (PGlite + disco local en .demo-data)
+npm run dev            # sin credenciales arranca en modo de desarrollo (ver sección más abajo; PGlite + .demo-data)
 npm run lint && npm run typecheck && npm test      # comprobación rápida (≈25 s)
 npm run build && npm run scan:secrets              # antes de dar nada por terminado
 PG_TEST_URL=postgres://postgres:postgres@localhost:5432/postgres npx vitest run tests/postgres-real.test.ts   # Postgres 16 real
@@ -23,6 +23,15 @@ PW_CHROMIUM_PATH=/opt/pw-browsers/chromium-1194/chrome-linux/chrome npx playwrig
 npm run worker         # procesa la cola de imágenes en local   ·   npm run assets:build   # regenera subasta-salvaje-assets/
 ```
 En el contenedor remoto el Postgres de pruebas puede estar parado: `pg_ctlcluster 16 main start` (contraseña de `postgres`: `postgres`).
+
+## Modo de desarrollo (solo desarrollo/pruebas; no existe en producción)
+
+Herramienta interna para desarrollar y probar sin Supabase; **no es una función del producto**.
+- **Qué es:** el servidor usa PGlite (Postgres WASM, el mismo SQL `ss_*`) con datos y imágenes en disco (`.demo-data`, o el directorio de `DEMO_DATA_DIR`), acceso de anfitrión por botón (`/api/auth/demo`, cookie `ss_demo_host`), partida de ejemplo (`/api/dev/seed`), imágenes locales (`/api/demo-images`) y un banner amarillo «MODO DEMO».
+- **Cómo se activa** (`getRuntimeMode` en `src/lib/config/env.ts`): sin variables de Supabase y `NODE_ENV` distinto de `production`; o `ALLOW_DEMO_MODE=true` en un build local de producción; `FORCE_DEMO_MODE=true` lo fuerza aunque Supabase esté configurado. Sin credenciales en producción se muestra `/setup`.
+- **Nunca funciona en Vercel:** el código lo bloquea (protección en implementación; nombres exactos de las variables en `src/lib/config/env.ts`).
+- **Banner:** se oculta con `DEV_HIDE_BANNER=true`; lo usan las capturas del README (`node scripts/docs/screenshots.mjs`, que se generan con este modo).
+- `IMAGE_PROVIDER` sigue siendo la única forma de activar IA real también en este modo; sin él solo hay pegatinas (sin IA).
 
 ## Regla de oro de la arquitectura
 **Toda la lógica de dinero, adjudicación, imágenes y reglas vive en funciones SQL `ss_*`** (plpgsql, parámetro `p jsonb`,
@@ -55,8 +64,8 @@ valida (Zod), autentica, llama a `ctx.db.rpc('ss_*', …)` y presenta. **No dupl
 supabase/migrations/   SQL autoritativo (ver docs/ARQUITECTURA.md para el orden)
 src/lib/domain/        schemas Zod, tipos, errores, dinero, ranking, temáticas
 src/lib/services/      game-service, play-service, jobs-service, context (AppContext), seed, kick, page-data, system-template-service, library-service (biblioteca de medios: imágenes en GitHub + catálogo general), auth-mail, ai-audit-service, ai-gate
-src/lib/db/            pglite.ts (demo/tests, migraciones con seguimiento) · supabase.ts (rpc)
-src/lib/ai/            proveedores de imagen (demo/pegatinas, cloudflare, pollinations; openai sin uso), chain (fallback entre gratuitos), audit (uso de proveedores), compose, prompts, validación
+src/lib/db/            pglite.ts (tests y desarrollo, migraciones con seguimiento) · supabase.ts (rpc)
+src/lib/ai/            proveedores de imagen (pegatinas, cloudflare, pollinations; openai sin uso), chain (fallback entre gratuitos), audit (uso de proveedores), compose, prompts, validación
 src/lib/images/        normalize.ts: imagen interna única (WebP, tamaños/pesos fijos); TODA escritura de imagen a Storage pasa por aquí (docs/IMAGEN-INTERNA.md)
 src/lib/mail/          plantillas de correo con marca (templates.ts), cliente de Resend; sin Resend la app no envía correos propios
 src/lib/{auth,security,realtime,storage,client,config}/

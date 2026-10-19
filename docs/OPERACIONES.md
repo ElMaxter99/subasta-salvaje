@@ -17,7 +17,7 @@
 | `GAME_TTL_HOURS` (168) | borrado por inactividad (respaldo; el superadmin lo cambia en caliente) |
 | `SUPERADMIN_EMAILS` | superadmin (`/admin`) |
 | `SUPABASE_PLAN_DB_MB`, `SUPABASE_PLAN_STORAGE_MB` | topes informativos del panel |
-| `DEMO_DATA_DIR`, `WORKER_INTERVAL_MS` | demo local / worker |
+| `WORKER_INTERVAL_MS` | worker |
 
 ## Despliegue en Vercel
 Importar el repo, definir las variables (Production y Preview), redesplegar y comprobar `/api/health` (`ok: true`) y `/setup`. `vercel.json` programa dos crons diarios
@@ -43,7 +43,7 @@ Cada despliegue guarda las funciones con los archivos que Next «traza» para el
 
 Qué se hizo y por qué:
 - `process.cwd()` en `local.ts`, `context.ts` y `pglite.ts` hacía que Next incluyera **el proyecto entero** (assets, mascota, `docs`…) en cada función: se marcó con `/* turbopackIgnore: true */` y desapareció el aviso del build.
-- `outputFileTracingExcludes` (en `next.config.ts`) quita PGlite (27 MB, solo demo/tests; ahora se carga con `import()` solo en modo demo), las variantes musl/wasm de sharp, y carpetas que no son código (`docs`, `e2e`, `tests`, `scripts`, `subasta-salvaje-assets`, `supabase`).
+- `outputFileTracingExcludes` (en `next.config.ts`) quita PGlite (27 MB, solo tests y desarrollo; se carga con `import()` solo fuera de producción), las variantes musl/wasm de sharp, y carpetas que no son código (`docs`, `e2e`, `tests`, `scripts`, `subasta-salvaje-assets`, `supabase`).
 - `sharp` (≈ 20 MB) solo se añade a las 3 rutas que ejecutan trabajos de imágenes: `/api/jobs/process`, `/api/games/[code]/jobs` y `/api/games/[code]/actions`. Si algún día otra ruta usa sharp, añádela a `outputFileTracingIncludes`.
 - `ignoreCommand` en `vercel.json`: un commit que solo toca documentación, tests o migraciones **no genera despliegue** (compara con `VERCEL_GIT_PREVIOUS_SHA`; si no puede comparar, despliega).
 - `.vercelignore` excluye docs, e2e, tests y scripts de las subidas con la CLI.

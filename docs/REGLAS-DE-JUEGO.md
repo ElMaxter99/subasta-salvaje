@@ -56,7 +56,7 @@ nueva (`image_versions.parent_version_id`); el anfitrión puede restaurar versio
 
 ## Acceso de anfitriones y superadmin (migración 2200)
 - Cada anfitrión tiene un `host_profiles` (se crea en su primer acceso). **Registro abierto** (por defecto): cualquiera con cuenta entra. **Cerrado**: solo con invitación (`host_invites`, por correo) o si ya tenía partidas. **Bloqueado**: no entra ni gestiona nada (sus datos se conservan).
-- `SUPERADMIN_EMAILS` (correo confirmado) → `/admin`; nunca queda fuera por bloqueo o registro cerrado. En modo demo el anfitrión local es superadmin.
+- `SUPERADMIN_EMAILS` (correo confirmado) → `/admin`; nunca queda fuera por bloqueo o registro cerrado.
 - IA: debe estar configurada (`IMAGE_PROVIDER`), encendida (`ai_enabled` global) y permitida para ese anfitrión (`host_profiles.ai_enabled`); si no, `ai_not_available` / `ai_disabled_for_user`. Con la IA apagada los trabajos de partidas en modo IA quedan en cola.
 - Cuotas efectivas: ajuste del superadmin > variables de entorno > 10 por partida / 50 al día. `image_usage` guarda `host_id` y NO se borra con la partida.
 

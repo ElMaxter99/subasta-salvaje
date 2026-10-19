@@ -11,13 +11,12 @@
 ![Next.js 16](https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs)
 ![TypeScript estricto](https://img.shields.io/badge/TypeScript-estricto-3178c6?logo=typescript&logoColor=white)
 ![Supabase](https://img.shields.io/badge/Supabase-Postgres%20%C2%B7%20Realtime-3ecf8e?logo=supabase&logoColor=white)
-![Modo demo](https://img.shields.io/badge/modo%20demo-sin%20credenciales-f5b82e)
 ![Node >= 20](https://img.shields.io/badge/node-%E2%89%A5%2020-339933?logo=nodedotjs&logoColor=white)
 [![Licencia MIT](https://img.shields.io/badge/licencia-MIT-green)](LICENSE)
 
 <img src="docs/img/tv-subasta-en-curso.webp" alt="La pantalla de TV durante una puja: elemento anunciado, puja actual, quién va ganando y las imágenes de los jugadores" width="860">
 
-<sub>Vista de TV (1920×1080) durante una puja. Captura real en modo demo (pegatinas locales, sin IA).</sub>
+<sub>Vista de TV (1920×1080) durante una puja. Captura real de la app (pegatinas locales, sin IA).</sub>
 
 </div>
 
@@ -26,7 +25,7 @@
 1. [Qué es y cómo se juega](#qué-es-y-cómo-se-juega)
 2. [Características](#características)
 3. [Galería](#galería)
-4. [Inicio rápido (modo demo)](#inicio-rápido-modo-demo)
+4. [Desarrollo local](#desarrollo-local)
 5. [Variables de entorno](#variables-de-entorno)
 6. [Arquitectura](#arquitectura)
 7. [Estructura del repositorio](#estructura-del-repositorio)
@@ -80,7 +79,7 @@ Rutas principales: `/` (inicio) · `/new-game` · `/login` · `/join` · `/game/
 
 ## Galería
 
-Todas las capturas son **reales**, generadas con la app en **modo demo (pegatinas locales sin IA)** mediante `node scripts/docs/screenshots.mjs`.
+Todas las capturas son **reales**, generadas con la app con imágenes de **pegatinas locales (sin IA)**, regenerables con `node scripts/docs/screenshots.mjs`.
 
 <table>
 <tr>
@@ -139,18 +138,15 @@ Las fotos de las **partidas del sistema** (Halloween, casa encantada, fondo del 
 </tr>
 </table>
 
-## Inicio rápido (modo demo)
+## Desarrollo local
 
-Requisitos: Node.js ≥ 20 y npm. **No hace falta ninguna credencial**: sin variables de Supabase y fuera de producción, la app arranca en **modo demo** (PGlite local en `./.demo-data`, acceso de anfitrión con un botón, pegatinas sin IA y un banner amarillo permanente de «datos locales»).
+Requisitos: Node.js ≥ 20 y npm. Sin variables de Supabase, el servidor de desarrollo usa datos locales de desarrollo (no hace falta ninguna credencial); detalles y pruebas en [`docs/PRUEBAS.md`](docs/PRUEBAS.md).
 
 ```bash
 npm install
-npm run dev            # http://localhost:3000  → modo demo si no hay .env.local
+npm run dev            # http://localhost:3000
+npm run lint && npm run typecheck && npm test   # comprobación rápida
 ```
-
-1. Abre `http://localhost:3000`, pulsa **Crear partida** → **Entrar como anfitrión (demo)** (o «Cargar partida de ejemplo (demo)» para ver la interfaz con datos).
-2. Crea la partida (el asistente sugiere valores por defecto). En el panel, aplica la imagen inicial a todos y pulsa **Empezar partida**.
-3. Abre la **pantalla de TV** («Abrir en pestaña nueva») en otra ventana o dispositivo de la misma red: `http://IP-DE-TU-PC:3000/game/CÓDIGO/screen`.
 
 ### Scripts de npm
 
@@ -159,7 +155,7 @@ npm run dev            # http://localhost:3000  → modo demo si no hay .env.loc
 | `npm run dev` / `build` / `start` | Desarrollo, build de producción y servidor de producción |
 | `npm run lint` / `typecheck` | ESLint y `tsc --noEmit` |
 | `npm test` | Vitest (SQL real sobre PGlite, servicios, proveedores, validación) |
-| `npm run test:e2e` | Playwright (Chromium) en modo demo |
+| `npm run test:e2e` | Playwright (Chromium) |
 | `npm run worker` | Procesa la cola de imágenes en local (solo con Supabase) |
 | `npm run scan:secrets` | Busca credenciales en archivos, historial de git y bundle del navegador |
 | `npm run assets:build` | Regenera `subasta-salvaje-assets/` |
@@ -202,7 +198,7 @@ Plantilla sin valores: [`.env.example`](.env.example). Nunca subas `.env*` al re
 | `ALLOWED_HOST_EMAILS` | Recomendada | servidor | Correos autorizados como anfitrión (evita gasto de IA por terceros). |
 | `GAME_TTL_HOURS` | No (168) | servidor | Horas de inactividad tras las que una partida se borra sola (7 días). El superadmin lo cambia en caliente desde `/admin`. |
 | `SUPERADMIN_REQUIRE_MFA` | No | servidor | `true` = el panel `/admin` exige verificación en dos pasos (TOTP de Supabase Auth). Antes hay que activar MFA/TOTP en Supabase. Sin probar contra Supabase real; si algo falla, quita la variable. |
-| `SUPERADMIN_EMAILS` | Para usar `/admin` | servidor | Correo(s) del superadmin (con el correo confirmado). Sin ella `/admin` da 404. En modo demo el anfitrión local es superadmin. |
+| `SUPERADMIN_EMAILS` | Para usar `/admin` | servidor | Correo(s) del superadmin (con el correo confirmado). Sin ella `/admin` da 404. |
 | `SUPABASE_PLAN_DB_MB` / `SUPABASE_PLAN_STORAGE_MB` | No (500 / 1024) | servidor | Topes del plan de Supabase que muestran las barras del panel (solo informativos). |
 | `GITHUB_ASSETS_REPO`, `GITHUB_ASSETS_TOKEN` | Para subir fotos de plantillas | **solo servidor** | Repositorio público de fotos (`usuario/repo`) y token fino con *Contents: Read and write* solo sobre él. Activan el arrastrar y soltar de `/admin/plantillas` (las fotos van a GitHub + jsDelivr, no a Supabase). Opcional `GITHUB_ASSETS_BRANCH` (`main`). **Sin probar contra GitHub real.** |
 | `ASSET_CDN_HOSTS` | No (recomendada) | servidor | Servidores permitidos para las fotos de las plantillas del sistema (`cdn.tudominio.com`, separados por comas). Vacía = cualquier https. |
@@ -212,7 +208,7 @@ Plantilla sin valores: [`.env.example`](.env.example). Nunca subas `.env*` al re
 | `MAIL_REPLY_TO` | No | servidor | Dirección de respuesta. |
 | `CRON_SECRET` | Recomendada | servidor | Protege `/api/jobs/process` y `/api/jobs/purge`. |
 | `NEXT_PUBLIC_SITE_URL` | No | cliente+servidor | URL pública del despliegue (enlaces absolutos, Open Graph, correos). |
-| `FORCE_DEMO_MODE`, `ALLOW_DEMO_MODE`, `DEMO_DATA_DIR`, `WORKER_INTERVAL_MS` | No | servidor | Desarrollo / worker. |
+| `WORKER_INTERVAL_MS` | No | servidor | Intervalo del worker. |
 
 Operaciones y diagnóstico: [`docs/OPERACIONES.md`](docs/OPERACIONES.md).
 
@@ -234,15 +230,15 @@ flowchart LR
   RT -.-> Movil
 ```
 
-Los clientes releen el estado de la BD (fuente de verdad) y solo aplican versiones **mayores**; además hacen *polling* de seguridad. En **modo demo y en los tests se ejecuta el mismo SQL sobre [PGlite](https://pglite.dev)** (PostgreSQL real compilado a WASM). Capas, catálogo de funciones y migraciones en orden: [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md).
+Los clientes releen el estado de la BD (fuente de verdad) y solo aplican versiones **mayores**; además hacen *polling* de seguridad. En **los tests y el desarrollo local se ejecuta el mismo SQL sobre [PGlite](https://pglite.dev)** (PostgreSQL real compilado a WASM). Capas, catálogo de funciones y migraciones en orden: [`docs/ARQUITECTURA.md`](docs/ARQUITECTURA.md).
 
 Decisiones clave:
 
-- **Una única implementación de la lógica de juego: SQL.** Toda la lógica de dinero, pujas, adjudicación y cola de imágenes vive en funciones PL/pgSQL (`supabase/migrations/20260101000000_core.sql`, funciones `ss_*`). En producción se invocan con `supabase.rpc`; en el modo demo y en los tests se ejecuta **el mismo SQL** sobre [PGlite](https://pglite.dev) (PostgreSQL real compilado a WASM). No hay dos implementaciones divergentes.
+- **Una única implementación de la lógica de juego: SQL.** Toda la lógica de dinero, pujas, adjudicación y cola de imágenes vive en funciones PL/pgSQL (`supabase/migrations/20260101000000_core.sql`, funciones `ss_*`). En producción se invocan con `supabase.rpc`; en los tests y el desarrollo local se ejecuta **el mismo SQL** sobre [PGlite](https://pglite.dev) (PostgreSQL real compilado a WASM). No hay dos implementaciones divergentes.
 - **Atomicidad e idempotencia.** Cada función mutante bloquea la fila de la partida (`SELECT … FOR UPDATE`), de modo que las operaciones de una partida se serializan. `ss_award` verifica estado, saldo y datos esperados (`expected_winner_id`, `expected_price_cents`), cierra la subasta, descuenta el saldo, crea la compra (`UNIQUE(auction_id)`) y el trabajo de imagen (`UNIQUE(purchase_id)`) en **una sola transacción**. Un doble clic, una recarga o un reintento HTTP no pueden cobrar dos veces. Importes siempre en **céntimos enteros**.
 - **Seguridad por servidor.** El navegador nunca habla con las tablas: RLS está activado sin permisos para `anon`/`authenticated`, y todo pasa por rutas de Next.js que verifican la sesión de Supabase Auth y la propiedad de la partida (`games.host_id`), con la `service_role` solo en el servidor.
 - **Realtime compatible con Vercel.** Sin servidor WebSocket propio: Supabase Realtime *Broadcast* (publicado por REST desde el servidor) + *polling* de seguridad. La BD es la fuente de verdad; un evento duplicado o atrasado se ignora comparando `version`.
-- **Imágenes.** `ImageGenerationProvider` (`src/lib/ai/types.ts`) con `generateInitialScene`, `editScene` y `generateItemImage`. Proveedor real: OpenAI `gpt-image-1` (edición con imagen de referencia, `input_fidelity=high`). Proveedor `demo`: SVG locales marcados «DEMO» (no es IA).
+- **Imágenes.** `ImageGenerationProvider` (`src/lib/ai/types.ts`) con `generateInitialScene`, `editScene` y `generateItemImage`. Proveedor real: OpenAI `gpt-image-1` (edición con imagen de referencia, `input_fidelity=high`). Proveedor de pegatinas: SVG locales (no es IA).
 
 ## Estructura del repositorio
 
@@ -250,7 +246,7 @@ Decisiones clave:
 supabase/migrations/   SQL autoritativo (esquema, funciones ss_*, permisos _security_)
 src/lib/domain/        schemas Zod, tipos, errores, dinero, ranking, temáticas
 src/lib/services/      game-service, play-service, jobs-service, context, seed, page-data
-src/lib/db/            pglite.ts (demo/tests) · supabase.ts (rpc)
+src/lib/db/            pglite.ts (tests y desarrollo) · supabase.ts (rpc)
 src/lib/ai/            proveedores de imagen (pegatinas, cloudflare, openai), compose, prompts, validación
 src/lib/{auth,security,realtime,storage,client,config,audio,legal}/
 src/app/               páginas y /api/*
@@ -264,20 +260,6 @@ docs/                  documentación técnica (índice en docs/README.md) y doc
 ## Guía de referencia
 
 Detalle operativo y de reglas. Despliega cada bloque para leerlo; la memoria técnica complementaria está en [`docs/`](docs/README.md).
-
-<details>
-<summary><b>Qué funciona sin credenciales (modo demo)</b></summary>
-
-Si **no** defines las variables de Supabase y `NODE_ENV !== 'production'`, la app arranca en **modo demo**:
-
-- Base de datos local PGlite (`./.demo-data/pgdata`), imágenes en disco (`./.demo-data/images`).
-- Acceso de anfitrión con un botón (sin cuenta).
-- El modo de imágenes **pegatinas** (escenas SVG y emojis de los elementos) es local y no usa IA; en el modo demo la interfaz muestra además un banner amarillo permanente de «datos locales».
-- Con `IMAGE_PROVIDER=cloudflare` (u `openai`) y sus credenciales en modo demo se usa la IA real (la BD y el almacenamiento siguen siendo locales). Solo `IMAGE_PROVIDER` activa un proveedor real: tener credenciales en el entorno no basta.
-- En producción sin credenciales la app **no** cae a modo demo: muestra `/setup` con lo que falta (salvo que fuerces `ALLOW_DEMO_MODE=true`, no recomendado).
-- El botón «Cargar partida de ejemplo (demo)» de la landing crea una partida con jugadores, compras e imágenes para probar la interfaz.
-
-</details>
 
 <details id="configurar-supabase">
 <summary><b>Configurar Supabase (modo real)</b></summary>
@@ -296,7 +278,7 @@ Si **no** defines las variables de Supabase y `NODE_ENV !== 'production'`, la ap
 <summary><b>Configurar el proveedor de imágenes (pegatinas, Cloudflare, OpenAI)</b></summary>
 
 Cada **partida** elige su modo de imágenes al crearla (y puede cambiarlo en *Ajustes* mientras esté en la sala de espera):
-- **🎨 Pegatinas con emojis** (por defecto): cada compra añade el emoji del elemento a la imagen. Son ilustraciones SVG locales: **sin IA, gratis e instantáneo**, y siempre están disponibles. Cada imagen lleva la marca «Modo pegatinas · sin IA» y se guarda con `provider = 'demo'` (la interfaz la etiqueta como «Pegatinas»).
+- **🎨 Pegatinas con emojis** (por defecto): cada compra añade el emoji del elemento a la imagen. Son ilustraciones SVG locales: **sin IA, gratis e instantáneo**, y siempre están disponibles. Cada imagen lleva la marca «Modo pegatinas · sin IA» y la interfaz la etiqueta como «Pegatinas».
 - **✨ Con IA**: usa el proveedor de IA real configurado (`IMAGE_PROVIDER=cloudflare` u `openai`), con cuotas por partida y por día. Esta opción solo aparece disponible si el despliegue tiene IA configurada.
 
 **Ninguna credencial activa la IA por sí sola**: hay que pedirla con `IMAGE_PROVIDER`. Si la pides y faltan credenciales, la IA aparece como «no disponible» (las partidas en modo IA dejan sus trabajos en cola) y **nunca se cambia automáticamente a otro proveedor ni se activa un plan de pago**. Si el proveedor falla, la compra, el saldo y la imagen anterior se conservan y se puede seguir jugando; el trabajo se puede reintentar sin volver a cobrar.
@@ -331,7 +313,7 @@ Cuota y coste (según la documentación en el momento de escribir esto, sujeta a
 5. Redespliega y comprueba en el panel (pestaña *Imágenes*) el proveedor y el contador de cuota.
 
 #### Límites de generaciones reales
-`IMAGE_QUOTA_PER_GAME` (por defecto **10**) e `IMAGE_QUOTA_PER_DAY` (por defecto **50**, global a todas las partidas del despliegue, día UTC; es un límite **propio de la app**, independiente del de Cloudflare) limitan las llamadas a proveedores **reales** (`demo` no cuenta). La reserva es atómica en la base de datos (`ss_reserve_image_quota`) y cuenta cada llamada al proveedor, incluidas las que fallan. El panel del anfitrión muestra el contador en una etiqueta siempre visible de la cabecera («IA 3/10 · hoy 12/50», en ámbar al 80 % y en rojo al llegar al límite) y con detalle en la pestaña *Imágenes*. **Interruptor de seguridad:** `IMAGE_AI_DISABLED=true` apaga toda la IA real al instante (las partidas en modo pegatinas siguen funcionando; las de modo IA dejan sus trabajos en cola). Al alcanzar el límite, el trabajo falla con un mensaje claro («Cuota diaria de generaciones alcanzada (100/100)…»), la imagen anterior se conserva, la partida sigue y el trabajo se puede reintentar al día siguiente o tras subir el límite (el reintento no cobra ni vuelve a adjudicar nada). Si el contador diario está por debajo del límite de Cloudflare (10 000 neurons), no deberías llegar a un cobro; si pones un límite mayor del que cubre tu cuota gratuita, Cloudflare devolverá un error de cuota agotada y el trabajo fallará sin reintentos.
+`IMAGE_QUOTA_PER_GAME` (por defecto **10**) e `IMAGE_QUOTA_PER_DAY` (por defecto **50**, global a todas las partidas del despliegue, día UTC; es un límite **propio de la app**, independiente del de Cloudflare) limitan las llamadas a proveedores **reales** (las pegatinas no cuentan). La reserva es atómica en la base de datos (`ss_reserve_image_quota`) y cuenta cada llamada al proveedor, incluidas las que fallan. El panel del anfitrión muestra el contador en una etiqueta siempre visible de la cabecera («IA 3/10 · hoy 12/50», en ámbar al 80 % y en rojo al llegar al límite) y con detalle en la pestaña *Imágenes*. **Interruptor de seguridad:** `IMAGE_AI_DISABLED=true` apaga toda la IA real al instante (las partidas en modo pegatinas siguen funcionando; las de modo IA dejan sus trabajos en cola). Al alcanzar el límite, el trabajo falla con un mensaje claro («Cuota diaria de generaciones alcanzada (100/100)…»), la imagen anterior se conserva, la partida sigue y el trabajo se puede reintentar al día siguiente o tras subir el límite (el reintento no cobra ni vuelve a adjudicar nada). Si el contador diario está por debajo del límite de Cloudflare (10 000 neurons), no deberías llegar a un cobro; si pones un límite mayor del que cubre tu cuota gratuita, Cloudflare devolverá un error de cuota agotada y el trabajo fallará sin reintentos.
 
 #### OpenAI (alternativa de pago)
 1. Crea una API key en <https://platform.openai.com/api-keys> (puede requerir verificación de organización para `gpt-image-1`).
@@ -532,7 +514,7 @@ El bucket `game-images` admite `image/svg+xml` solo para el modo pegatinas y la 
 npm run lint         # ESLint
 npm run typecheck    # tsc --noEmit
 npm test             # Vitest: lógica real de SQL sobre PGlite + proveedor + validación
-npx playwright test  # E2E (Chromium) del flujo completo en modo demo
+npx playwright test  # E2E (Chromium) del flujo completo
 npm run build        # build de producción
 ```
 
@@ -560,7 +542,7 @@ Vercel (app) + Supabase (Postgres, Auth, Storage, Realtime) + cron para la cola 
 4. Despliega. Abre `https://TU-APP.vercel.app/setup` para comprobar qué variables detecta la app (no muestra valores).
 5. Crea tu usuario en `/login` → *Crear cuenta* y empieza una partida.
 
-Notas: las rutas que generan imágenes declaran `maxDuration = 300`. Si tu proyecto/plan de Vercel no admite ese valor el despliegue o la función pueden fallar: bájalo en `api/games/[code]/actions`, `api/games/[code]/jobs` y `api/jobs/process` (no lo he podido comprobar sin desplegar). La cola persistente cubre las ejecuciones cortadas. El modo demo está desactivado en producción.
+Notas: las rutas que generan imágenes declaran `maxDuration = 300`. Si tu proyecto/plan de Vercel no admite ese valor el despliegue o la función pueden fallar: bájalo en `api/games/[code]/actions`, `api/games/[code]/jobs` y `api/jobs/process` (no lo he podido comprobar sin desplegar). La cola persistente cubre las ejecuciones cortadas.
 
 Operaciones, migraciones en Supabase y diagnóstico: [`docs/OPERACIONES.md`](docs/OPERACIONES.md). Tareas manuales del propietario: [`docs/PENDIENTE.md`](docs/PENDIENTE.md).
 
@@ -607,8 +589,7 @@ Modelo de amenazas completo: [`docs/SEGURIDAD.md`](docs/SEGURIDAD.md).
 | La imagen cambia demasiado | Normal en modelos generativos: usa **Restaurar** en el historial y reintenta; sube `OPENAI_IMAGE_QUALITY` a `high`. |
 | La TV no se actualiza al instante | Realtime no conectado → la TV sigue por *polling* (≤ 8 s). Comprueba que Broadcast está permitido en Supabase. |
 | La TV se ve cortada | Pulsa el botón de pantalla completa (aparece al mover el ratón) y usa una ventana 16:9. |
-| Modo demo en producción | No existe: sin credenciales verás `/setup`. |
-| `npm run worker` dice «sólo funciona con Supabase» | El worker externo no sirve para el modo demo (BD local abierta por el servidor de desarrollo). |
+| `npm run worker` dice «sólo funciona con Supabase» | El worker externo necesita Supabase; en desarrollo local la cola la procesa el propio servidor. |
 | Build falla por `maxDuration` | Tu plan de Vercel limita la duración; reduce el valor en las rutas `api/games/[code]/actions`, `…/jobs` y `api/jobs/process`. |
 
 ## Documentación
@@ -642,7 +623,7 @@ Construido con [Next.js](https://nextjs.org), [Supabase](https://supabase.com), 
 
 El README forma parte de la definición de «terminado»: un cambio no está acabado si deja el README, sus capturas o sus enlaces desactualizados.
 
-- [ ] **Capturas:** si cambia el aspecto de una pantalla (inicio, asistente, panel, TV, móvil del jugador, resultados, superadmin, catálogo), regenera con `node scripts/docs/screenshots.mjs` (compila una build aislada en `.next-shots`, usa el modo demo y escribe `docs/img/*.webp`; opciones `--only=tv,podio`, `--rebuild`, `--keep`). Revisa las imágenes a ojo antes de subirlas y mantén cada una por debajo de ~250 KB.
+- [ ] **Capturas:** si cambia el aspecto de una pantalla (inicio, asistente, panel, TV, móvil del jugador, resultados, superadmin, catálogo), regenera con `node scripts/docs/screenshots.mjs` (compila una build aislada en `.next-shots`, usa datos locales de desarrollo y escribe `docs/img/*.webp`; opciones `--only=tv,podio`, `--rebuild`, `--keep`). Revisa las imágenes a ojo antes de subirlas y mantén cada una por debajo de ~250 KB.
 - [ ] **Scripts de npm:** si añades, renombras o quitas un script en `package.json`, actualiza la tabla de [Scripts de npm](#scripts-de-npm).
 - [ ] **Variables de entorno:** si cambia `.env.example` o la configuración (`src/lib/config`), actualiza la [tabla de variables](#variables-de-entorno) y `docs/OPERACIONES.md`.
 - [ ] **Funcionalidades:** si añades o cambias una función visible, actualiza [Características](#características), la galería y la sección de referencia correspondiente (y `docs/` si es una regla).

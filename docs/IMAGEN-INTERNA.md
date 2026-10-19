@@ -13,7 +13,7 @@ Reglas: solo PNG, JPEG o WebP (el tipo se decide por el **contenido**; SVG y GIF
 ## Dónde se aplica
 - Subida de imagen inicial (una o para todos) y de foto de elemento: `game-service.ts` (`toInternalImage`).
 - Fotos importadas por URL o por ZIP: llegan a la misma subida de elemento.
-- Salida de **cualquier proveedor de IA**: `jobs-service.ts`, antes de guardarla (también ahorra espacio en Supabase). Las pegatinas SVG del modo demo no se tocan.
+- Salida de **cualquier proveedor de IA**: `jobs-service.ts`, antes de guardarla (también ahorra espacio en Supabase). Las pegatinas SVG no se tocan.
 - Un test (`tests/image-entrypoints.test.ts`) falla si aparece otro punto de escritura en Storage que no use `normalizeImage`.
 - **Solo imágenes nuevas**: las ya guardadas no se reescriben.
 

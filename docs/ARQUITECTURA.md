@@ -3,7 +3,7 @@
 ## Principio: una sola implementación autoritativa
 Las reglas viven en **funciones SQL `ss_*`** (plpgsql, un parámetro `p jsonb`). Se ejecutan:
 - en producción vía `supabase.rpc('ss_*', { p })` (con la clave `service_role`, solo en servidor);
-- en demo y tests sobre **PGlite** (Postgres WASM) con el *mismo* SQL (`src/lib/db/pglite.ts`);
+- en tests y desarrollo local (solo desarrollo y pruebas) sobre **PGlite** (Postgres WASM) con el *mismo* SQL (`src/lib/db/pglite.ts`);
 - en `tests/postgres-real.test.ts` sobre Postgres 16 real (concurrencia, privilegios, RLS).
 
 Convenciones SQL: importes en céntimos enteros; errores `RAISE EXCEPTION 'ERR:codigo'` (P0001) que `toDomainError` traduce a
@@ -18,14 +18,14 @@ Navegador (TV / panel / móvil)  ──fetch──▶  /api/* (route handlers: h
                                               │  valida con Zod (schemas.ts) y autentica (host: Supabase Auth; jugador: cookie token)
                                               ▼
                                   services/{game,play,jobs}-service.ts   ──ctx.db.rpc('ss_*')──▶ Postgres (ss_* + RLS deny-all)
-                                              │                                  ▲ PGlite en demo/tests
+                                              │                                  ▲ PGlite en tests/desarrollo
                                               ├─ ctx.storage (Supabase Storage | disco local)
                                               ├─ ctx.publisher (Realtime Broadcast | noop)
                                               └─ ctx.provider / ctx.stickers (proveedores de imagen)
 ```
 - `AppContext` (`services/context.ts`) es un singleton por proceso: `mode` (`supabase`|`demo`|`unconfigured`), `db`, `storage`,
-  `publisher`, `provider` (IA real o `null`) y `stickers` (proveedor demo/pegatinas, siempre disponible).
-- El modo se decide en `config/env.ts` (`getRuntimeMode`): con credenciales de Supabase → `supabase`; sin ellas y sin producción → demo.
+  `publisher`, `provider` (IA real o `null`) y `stickers` (proveedor de pegatinas, siempre disponible).
+- El modo se decide en `config/env.ts` (`getRuntimeMode`): con credenciales de Supabase → `supabase`; sin ellas y sin producción → `demo` (modo de desarrollo, solo desarrollo y pruebas; ver `docs/PRUEBAS.md`).
 
 ## Tiempo real
 El cliente usa `useLiveGame` (`lib/client/use-live-game.ts`): instantánea inicial (SSR) + suscripción a **Realtime Broadcast**
@@ -65,7 +65,7 @@ política *deny-all* para `anon`/`authenticated`: toda lectura/escritura pasa po
 Páginas: `/` (lista), `/login`, `/new-game`, `/join`, `/setup`, `/game/[code]/{host,screen,play,results,history}`.
 API: `/api/games` (+`[code]`, `/actions`, `/initial-image`, `/jobs`), `/api/play/[code]/{join,bid,vote,leave,me}`,
 `/api/public/games/[code]`, `/api/jobs/{process,purge}` (cron, `CRON_SECRET`), `/api/catalog/initial/[id]`, `/api/health`,
-`/api/runtime`, `/api/auth/demo`, `/admin/*` + `/api/admin/{settings,users,invites,games}` (solo superadmin), `/api/dev/seed` (solo demo), `/api/demo-images/*`.
+`/api/runtime`, `/api/auth/demo` (solo desarrollo), `/admin/*` + `/api/admin/{settings,users,invites,games}` (solo superadmin), `/api/dev/seed` (solo desarrollo), `/api/demo-images/*` (solo desarrollo).
 
 ## Cola de imágenes y worker
 `image_jobs` (`initial`|`edit`|`item`) con reclamación atómica (`ss_claim_image_job`, lease), reintentos con espera, un trabajo

@@ -17,7 +17,7 @@
 - `redactSecrets` (`security/redact.ts`) limpia mensajes de error antes de guardarlos/mostrarlos. `npm run scan:secrets` revisa archivos versionados, historial y el bundle del navegador.
 - Un test (`tests/security.test.ts`) impide importar módulos de servidor (`service_role`, `getContext`) desde componentes cliente.
 - **Si el usuario pega una clave en el chat:** no la copies a ningún archivo ni la repitas; recomienda rotarla (`PENDIENTE.md` §1). Ya ocurrió con la clave de Cloudflare y la `sb_secret_` de Supabase.
-- No subir `*.jar`/cookies, `.demo-data`, `test-results` (en `.gitignore`).
+- No subir `*.jar`/cookies, los datos locales de desarrollo (`.demo-data`), `test-results` (en `.gitignore`).
 
 ## Integridad del dinero
 Cobro una vez (idempotencia + `ss_award_core` único), saldos nunca negativos (CHECK), bloqueo por partida, `clock_timestamp()` para el orden de pujas, restauración/reintento de imágenes

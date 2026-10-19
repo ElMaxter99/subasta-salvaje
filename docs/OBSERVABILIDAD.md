@@ -59,7 +59,7 @@ Si algún día se quisiera más detalle, Sentry o PostHog tienen plan gratuito, 
 ## Qué no se ha probado / limitaciones
 - **Contra un Supabase real:** las migraciones y las funciones `ss_*` se probaron en PGlite (Postgres WASM). No se ha ejecutado `…009901_security_observability.sql` ni las funciones contra Supabase/Postgres real (`tests/postgres-real.test.ts` no las cubre). Revisar tras `supabase db push`.
 - No se ha probado el envío real de correo con Resend (los tests simulan `fetch`); ni `onRequestError` de Next en un despliegue de Vercel; ni el volcado de contadores en un entorno serverless con muchas instancias.
-- Las métricas de peticiones sólo cuentan rutas envueltas en `handle()` (no `/api/health`, `/api/demo-images` ni `/api/catalog/initial`) y no las páginas; el tráfico de la TV por Realtime no pasa por el servidor.
+- Las métricas de peticiones sólo cuentan rutas envueltas en `handle()` (no `/api/health`, las rutas de imágenes locales de desarrollo ni `/api/catalog/initial`) y no las páginas; el tráfico de la TV por Realtime no pasa por el servidor.
 - Sin Realtime/WebSocket: no se mide la caída de conexiones de los móviles.
 - Los errores del navegador dependen de que el navegador llegue a ejecutar el reporter; un fallo de carga total del JS no se verá.
 

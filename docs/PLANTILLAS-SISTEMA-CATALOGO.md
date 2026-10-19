@@ -16,7 +16,7 @@ Tras editar una fuente: `npm run templates:build` (regenera todo y la tabla de a
 ```bash
 npm run templates:validate                       # valida TODO el catálogo contra el esquema Zod real y las reglas (código 1 si falla)
 npm run templates:import                         # ENSAYO en PGlite en memoria: no toca nada real
-npm run templates:import -- --apply              # importa en la base que use la app, como BORRADOR (Supabase si hay credenciales; si no, modo demo)
+npm run templates:import -- --apply              # importa en la base que use la app, como BORRADOR (Supabase si hay credenciales; si no, la base local de desarrollo)
 npm run templates:import -- --apply --publish    # además las publica
 npm run templates:import -- --only=cena-de-empresa --file=otro-lote.json
 ```

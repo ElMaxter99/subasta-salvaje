@@ -47,7 +47,7 @@ barata sin proveedor nuevo es **ahorrar neuronas** (ver §4.9). No se recomienda
 | Interfaz | `src/lib/ai/types.ts` | `ImageGenerationProvider { id: 'openai'\|'cloudflare'\|'demo'; capabilities.edit; generateInitialScene; editScene(base, itemImage?, previousItems…); generateItemImage }`. `ProviderError.retryable` decide reintento. |
 | Cloudflare | `cloudflare.ts` | Genera con `flux-1-schnell` (JSON, base64 JPEG). Edita con `flux-2-klein-4b` (multipart `input_image_0..1`, ≤ 480 px, 1024×768). Detecta «cuota diaria agotada» ⇒ error **no reintentable**. |
 | OpenAI | `openai.ts` | `gpt-image-1`: `/images/generations` y `/images/edits` (`image[]` con imagen del jugador + elemento). De pago, solo con `IMAGE_PROVIDER=openai`. |
-| Demo | `demo.ts` | Pegatinas SVG, sin IA, no cuenta cuota. |
+| Pegatinas | `demo.ts` | Pegatinas SVG, sin IA, no cuenta cuota. |
 | Plan B | `compose.ts` | `withEditFallback`: si klein rechaza la entrada (400/404/422) o no hay modelo de edición, genera el objeto aislado (o usa la foto del elemento), recorta el fondo (`cutOutBackground`) o enmarca (`frameImage`) y lo pega (`compositeOnto`). **Collage honesto, no edición real.** Cuota, red, credenciales o moderación **no** lo activan. |
 | Selección | `config/env.ts` `getImageProviderId` | **Un solo** proveedor (`IMAGE_PROVIDER`), sin fallback entre proveedores. `IMAGE_AI_DISABLED` lo apaga. |
 | Ensamblado | `services/context.ts` `buildProvider` | Devuelve un proveedor único; `ctx.stickers` para el modo pegatinas. |

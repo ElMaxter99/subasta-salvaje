@@ -1,7 +1,7 @@
 # Imágenes e IA
 
 ## Modos por partida (`games.image_mode`)
-- **`stickers` (por defecto):** el proveedor `demo` (`ai/demo.ts`) dibuja escenas SVG y añade el emoji del elemento comprado como pegatina.
+- **`stickers` (por defecto):** el proveedor de pegatinas (`ai/demo.ts`) dibuja escenas SVG y añade el emoji del elemento comprado como pegatina.
   Gratis, instantáneo, sin red; rotulado «Modo pegatinas · sin IA». Siempre disponible (`ctx.stickers`).
 - **`ai`:** usa el proveedor real configurado (`ctx.provider`). Solo se puede elegir si `IMAGE_PROVIDER` está bien configurado
   (`ai_not_available` si no). Sin proveedor, los trabajos de partidas `ai` quedan en cola: **nunca se simula**.
@@ -13,7 +13,7 @@ Los proveedores implementan `ImageGenerationProvider` (`ai/types.ts`): `generate
 |---|---|---|---|---|
 | `cloudflare` | `ai/cloudflare.ts` | `@cf/black-forest-labs/flux-1-schnell` (JSON `prompt`,`steps`; respuesta base64 `image`, JPEG) | `@cf/black-forest-labs/flux-2-klein-4b` por defecto (multipart `prompt`,`width`,`height`,`input_image_0`; referencia < 512 px con sharp) | Primera opción real. Cuota gratuita ≈ 10 000 neuronas/día; edición 1024×768 ≈ 85 neuronas (tarifa publicada, **contrastar**). Edición **sin probar contra la API real**. |
 | `openai` | `ai/openai.ts` | `/images/generations` (gpt-image-1) | `/images/edits` | De pago; solo si se pide con `IMAGE_PROVIDER=openai`. No edita SVG. |
-| `demo` | `ai/demo.ts` | SVG local | SVG local (pegatinas) | No es IA; no cuenta en cuotas. |
+| pegatinas | `ai/demo.ts` | SVG local | SVG local (pegatinas) | No es IA; no cuenta en cuotas. |
 
 `getImageProviderId` (`config/env.ts`): ninguna credencial activa la IA sola; hay que pedirla con `IMAGE_PROVIDER`. Si faltan credenciales ⇒ `null`
 (nunca cambia a otro proveedor). `IMAGE_AI_DISABLED=true` apaga la IA real al instante.
@@ -41,11 +41,11 @@ Si falla tras los reintentos se conserva la última imagen válida, la subasta s
 
 ## Cola y worker (`jobs-service.ts`)
 `processImageJobs`: reclama jobs (`ss_claim_image_job`, filtra por `image_modes` disponibles), reserva cuota (`ss_reserve_image_quota`, advisory lock) **antes** de llamar al proveedor,
-valida la salida por bytes (`image-validation.ts`: PNG/JPEG/WebP; SVG solo del proveedor demo), guarda en Storage y completa (`ss_complete_image_job`) o falla con espera
+valida la salida por bytes (`image-validation.ts`: PNG/JPEG/WebP; SVG solo del proveedor de pegatinas), guarda en Storage y completa (`ss_complete_image_job`) o falla con espera
 exponencial. Un worker caído se recupera al caducar el lease. Disparo: `after()` tras acciones, `/api/jobs/process` (cron/HTTP), `npm run worker`.
 
 ## Cuotas (`image_usage`)
-`IMAGE_QUOTA_PER_GAME` (10) y `IMAGE_QUOTA_PER_DAY` (50, global, día UTC). Cuentan llamadas **reales** (también las fallidas); `demo` no cuenta. El panel muestra
+`IMAGE_QUOTA_PER_GAME` (10) y `IMAGE_QUOTA_PER_DAY` (50, global, día UTC). Cuentan llamadas **reales** (también las fallidas); las pegatinas no cuentan. El panel muestra
 el contador (`ai-usage-chip.tsx`, pestaña Imágenes). Al agotarse: error claro, imagen anterior conservada, partida continúa.
 
 ## Prompts (`ai/prompts.ts`)
