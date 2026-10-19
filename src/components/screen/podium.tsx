@@ -17,7 +17,7 @@ function Winner({ player, votes, place, tv, shared }: { player: Player; votes: n
   return (
     <article className={`flex min-w-0 flex-col overflow-hidden rounded-2xl border-2 bg-night-800 ${s.ring}`} style={{ flex: '1 1 0', maxWidth: shared ? undefined : tv ? '30rem' : '20rem' }} data-testid={`podium-player-${place}`}>
       <div className="relative aspect-[3/2] w-full">
-        <HouseImage image={player.current_image} alt={`Casa final de ${player.name}`} className="absolute inset-0" emptyLabel="Sin casa final" />
+        <HouseImage image={player.current_image} alt={`Imagen final de ${player.name}`} className="absolute inset-0" emptyLabel="Sin imagen final" />
         {place === 1 ? <span className="absolute -top-1 left-1/2 -translate-x-1/2"><ItemIcon variant="item-corona" motion="drop" className={tv ? '!h-[3.2rem]' : '!h-10'} /></span> : null}
       </div>
       <div className="shrink-0 px-3 py-2 text-center" style={{ borderTop: `0.3rem solid ${player.color}` }}>

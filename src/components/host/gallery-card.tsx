@@ -24,7 +24,7 @@ export function GalleryCard({ ctx }: { ctx: HostCtx }) {
       <p className="mb-3 text-sm text-white/70">
         {g.closed
           ? 'La votación está cerrada y el resultado ya se ve en la TV.'
-          : `Los jugadores votan desde su móvil la mejor casa (no pueden votar la suya). Han votado ${g.voters.length} de ${Math.max(connected, g.voters.length)}. El recuento solo lo ves tú hasta que cierres la votación.`}
+          : `Los jugadores votan desde su móvil la mejor imagen (no pueden votar la suya). Han votado ${g.voters.length} de ${Math.max(connected, g.voters.length)}. El recuento solo lo ves tú hasta que cierres la votación.`}
       </p>
       <ol className="mb-3 space-y-1.5" aria-label="Recuento de votos">
         {results.map((r) => {

@@ -124,7 +124,7 @@ export function createAiHordeProvider(cfg: AiHordeProviderOptions): ImageGenerat
     generateItemImage: (input: ItemImageInput) => generate(buildItemImagePrompt(input)),
     async editScene(input: EditSceneInput): Promise<GeneratedImage> {
       void input;
-      throw new ProviderError('AI Horde solo genera imágenes nuevas y no edita la casa existente (la edición pasa por composición).', false, false, 'unsupported');
+      throw new ProviderError('AI Horde solo genera imágenes nuevas y no edita la imagen existente (la edición pasa por composición).', false, false, 'unsupported');
     },
   };
 }

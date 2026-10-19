@@ -33,7 +33,7 @@ export interface PollinationsConfig {
   /** Modelo de edición con imágenes de referencia (opcional; vacío = la edición no está disponible y se usa la composición). */
   editModel: string | null;
   size: string;
-  /** true si el propietario fijó POLLINATIONS_IMAGE_SIZE: no se adapta a la proporción de la casa al editar. */
+  /** true si el propietario fijó POLLINATIONS_IMAGE_SIZE: no se adapta a la proporción de la imagen al editar. */
   sizeFixed?: boolean;
 }
 
@@ -93,7 +93,7 @@ export function pollinationsConfig(env: NodeJS.ProcessEnv = process.env): Pollin
     model: env.POLLINATIONS_IMAGE_MODEL?.trim() || 'black-forest-labs/flux.1-schnell',
     editModel: /^(off|none|false|no)$/i.test(env.POLLINATIONS_EDIT_MODEL?.trim() ?? '') ? null : env.POLLINATIONS_EDIT_MODEL?.trim() || null,
     size: size && /^\d{3,4}x\d{3,4}$/.test(size) ? size : '1024x768',
-    /** true si el propietario fijó POLLINATIONS_IMAGE_SIZE: entonces no se adapta a la proporción de la casa al editar. */
+    /** true si el propietario fijó POLLINATIONS_IMAGE_SIZE: entonces no se adapta a la proporción de la imagen al editar. */
     sizeFixed: Boolean(size && /^\d{3,4}x\d{3,4}$/.test(size)),
   };
 }

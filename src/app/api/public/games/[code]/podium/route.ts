@@ -8,7 +8,7 @@ import { getPublicState } from '@/lib/services/game-service';
 export const maxDuration = 60;
 
 /**
- * Imagen PNG del podio final para compartir (solo datos públicos: nombres, puntuación en Ohros y casas finales).
+ * Imagen PNG del podio final para compartir (solo datos públicos: nombres, puntuación en Ohros y imágenes finales).
  * `?format=landscape|square|story` (1200×630 por defecto, 1080×1080, 1080×1350) y `?download=1` la sirve como descarga. Solo cuando la partida ha terminado; quien nunca entró no sale.
  */
 export async function GET(req: Request, { params }: { params: Promise<{ code: string }> }): Promise<Response> {

@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Subasta Salvaje',
     short_name: 'Subasta',
-    description: 'Subasta creativa multijugador: puja, construye tu casa y mira cómo la IA la transforma.',
+    description: 'Subasta creativa multijugador: parte de una imagen base, puja por elementos y transfórmala a tu manera.',
     start_url: '/',
     display: 'standalone',
     background_color: '#050816',

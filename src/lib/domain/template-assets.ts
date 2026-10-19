@@ -2,7 +2,7 @@ import type { Template } from './template';
 
 /**
  * Qué hace una imagen soltada en el editor de plantillas del superadmin: a qué campo va.
- * Se decide por el NOMBRE del archivo: «portada…», «casa…/inicial…» o el título de un elemento del catálogo
+ * Se decide por el NOMBRE del archivo: «portada…», «casa…/inicial…» (nombres admitidos para la imagen inicial) o el título de un elemento del catálogo
  * (sin tildes ni mayúsculas, p. ej. «sombrilla-roja.jpg» → «Sombrilla roja»). Lo que no encaja queda sin asignar.
  */
 export type AssetTarget = { kind: 'cover' } | { kind: 'scene' } | { kind: 'item'; index: number };
@@ -33,4 +33,4 @@ export function applyAsset(t: Template, target: AssetTarget, url: string): Templ
 }
 
 export const targetLabel = (t: AssetTarget, tpl: Pick<Template, 'catalogo'>): string =>
-  t.kind === 'cover' ? 'Portada' : t.kind === 'scene' ? 'Casa inicial' : `Elemento · ${tpl.catalogo?.[t.index]?.titulo ?? t.index + 1}`;
+  t.kind === 'cover' ? 'Portada' : t.kind === 'scene' ? 'Imagen inicial' : `Elemento · ${tpl.catalogo?.[t.index]?.titulo ?? t.index + 1}`;

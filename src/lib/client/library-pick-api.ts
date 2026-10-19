@@ -21,7 +21,7 @@ export async function listPickableImagesRequest(q: { role: LibraryRole; q?: stri
   return parse<PickList>(await fetch(`/api/library/images?${params}`));
 }
 
-/** Aplica una imagen de la biblioteca a la casa inicial común o a la foto de un elemento de la partida. */
+/** Aplica una imagen de la biblioteca a la imagen inicial común o a la foto de un elemento de la partida. */
 export async function applyLibraryImageRequest(roomCode: string, body: { target: 'initial'; image_id: string; scope_current: boolean; scope_new: boolean } | { target: 'item'; image_id: string; item_id: string }): Promise<ActionResponse> {
   const res = await fetch(`/api/games/${roomCode}/library-image`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
   return parse<ActionResponse>(res);

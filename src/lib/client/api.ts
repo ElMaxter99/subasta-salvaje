@@ -49,7 +49,7 @@ export async function uploadInitialImage(roomCode: string, playerId: string, fil
   return parse<ActionResponse>(res);
 }
 
-/** Sube la foto de un elemento del catálogo (PNG/JPEG/WebP; se reduce antes de subirla y el servidor la guarda en el formato interno). La IA la mezclará con la casa de quien gane el elemento. */
+/** Sube la foto de un elemento del catálogo (PNG/JPEG/WebP; se reduce antes de subirla y el servidor la guarda en el formato interno). La IA la mezclará con la imagen de quien gane el elemento. */
 export async function uploadItemImage(roomCode: string, itemId: string, file: File): Promise<ActionResponse> {
   const form = new FormData();
   form.set('item_id', itemId);

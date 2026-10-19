@@ -31,7 +31,7 @@ test('asistente de nueva partida: pasos, validación, resumen editable y creaci�
     else await expect(page.getByRole('navigation', { name: /Pasos/ }).getByRole('listitem')).toHaveCount(6);
     await page.screenshot({ path: info.outputPath(`wizard-${vp.name}-1.png`) });
 
-    // Los dos primeros pasos (quién puja / cómo cambian las casas) son pantallas distintas y cortas
+    // Los dos primeros pasos (quién puja / cómo cambian las imágenes) son pantallas distintas y cortas
     await expect(page.getByRole('radio', { name: /Cada jugador desde su móvil/ })).toBeVisible();
     await expect(page.getByRole('radio', { name: /Pegatinas con emojis/ })).toHaveCount(0);
     await nav.click();

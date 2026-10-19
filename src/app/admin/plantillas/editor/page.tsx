@@ -9,7 +9,7 @@ export const metadata = { title: 'Superadmin · Editor de plantilla', robots: { 
 
 /**
  * Editor de plantillas del sistema: el MISMO asistente que usa un anfitrión para «Nueva partida», con un paso más
- * (ficha: título, portada, casa inicial, fotos) y «Guardar borrador» en lugar de «Crear partida».
+ * (ficha: título, portada, imagen inicial, fotos) y «Guardar borrador» en lugar de «Crear partida».
  */
 export default async function SystemTemplateEditorPage({ searchParams }: { searchParams: Promise<{ id?: string }> }) {
   await requireSuperadmin();

@@ -10,7 +10,7 @@ test('presets en el asistente (rellenan y se ajustan al catálogo, siguen siendo
   await page.waitForTimeout(2500);
   const next = () => page.getByRole('button', { name: /Siguiente/ }).click();
   await next(); // quién puja
-  await next(); // casas
+  await next(); // imágenes
   await page.getByLabel('Nombre de la partida').fill('Partida con preset');
   await next();
   await expect(page.getByTestId('wizard-step-4')).toBeVisible();

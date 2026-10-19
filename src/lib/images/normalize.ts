@@ -17,7 +17,7 @@ export interface ImageSpec {
 }
 
 export const IMAGE_SPECS: Record<ImageKind, ImageSpec> = {
-  scene: { width: 1536, height: 1024, targetBytes: 300_000 }, // casa / escena (3:2)
+  scene: { width: 1536, height: 1024, targetBytes: 300_000 }, // imagen base / escena (3:2)
   item: { width: 768, height: 768, targetBytes: 150_000 }, // foto de un elemento del catálogo
   cover: { width: 1200, height: 630, targetBytes: 150_000 }, // portada de plantilla
 };

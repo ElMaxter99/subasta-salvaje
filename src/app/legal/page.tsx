@@ -14,7 +14,7 @@ export default function LegalNoticePage() {
       </section>
       <section>
         <h2>Objeto</h2>
-        <p>{APP_NAME} permite crear partidas en las que los jugadores pujan con dinero ficticio por objetos y ven evolucionar una imagen («su casa»). No se maneja dinero real ni se realizan pagos entre usuarios.</p>
+        <p>{APP_NAME} permite crear partidas en las que los jugadores pujan con dinero ficticio por elementos que transforman una imagen base (por ejemplo, una casa, una nave espacial o el salón de un castillo). No se maneja dinero real ni se realizan pagos entre usuarios.</p>
       </section>
       <section>
         <h2>Uso adecuado</h2>

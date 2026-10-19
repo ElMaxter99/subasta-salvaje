@@ -7,7 +7,7 @@ export async function createGameViaWizard(page: Page, opts: { name: string; mobi
   // 1. Quién puja
   if (opts.mobile) await page.getByRole('radio', { name: /Cada jugador desde su móvil/ }).check();
   await next();
-  // 2. Cómo cambian las casas (pegatinas por defecto)
+  // 2. Cómo cambian las imágenes (pegatinas por defecto)
   await next();
   // 3. Partida
   await page.getByLabel('Nombre de la partida').fill(opts.name);

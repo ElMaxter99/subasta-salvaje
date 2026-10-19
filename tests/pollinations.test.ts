@@ -21,7 +21,7 @@ describe('proveedor Pollinations (fetch simulado)', () => {
     expect(out.bytes.length).toBeGreaterThan(10);
   });
 
-  it('edita con multipart: casa + elemento como imágenes de referencia', async () => {
+  it('edita con multipart: imagen base + elemento como imágenes de referencia', async () => {
     const f = vi.fn(ok);
     const p = createPollinationsProvider({ ...cfg, fetchImpl: f as never });
     expect(p.capabilities.edit).toBe(true);

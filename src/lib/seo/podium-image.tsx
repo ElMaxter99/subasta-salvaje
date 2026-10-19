@@ -16,7 +16,7 @@ import { SITE_NAME } from './site';
  *  · `landscape` 1200×630 (el original y valor por defecto: tarjeta horizontal),
  *  · `square` 1080×1080,
  *  · `story` 1080×1350 (vertical, para el móvil).
- * Solo datos públicos de la instantánea (nombres, puntuación, casas finales, premios y estadísticas). Sin red en ejecución: todo sale de
+ * Solo datos públicos de la instantánea (nombres, puntuación, imágenes finales, premios y estadísticas). Sin red en ejecución: todo sale de
  * `public/assets` y de Storage; la tipografía es Baloo 2 (títulos y números, 700/800) y Nunito (texto) en TTF estáticos empaquetados (`fonts.ts`, docs/FUENTE-PODIO.md); si no se pueden leer, se usa la de `next/og` con la negrita simulada por contorno.
  */
 export const PODIUM_FORMATS = ['landscape', 'square', 'story'] as const;
@@ -49,7 +49,7 @@ export interface PodiumRow {
   color: string;
   rank: number | null;
   score: string;
-  /** Casa final como data URI PNG (puede faltar). */
+  /** Imagen final como data URI PNG (puede faltar). */
   house: string | null;
 }
 
@@ -105,7 +105,7 @@ const AWARD_ICON: Record<string, string> = {
 };
 const awardIconPath = (id: string) => AWARD_ICON[id] ?? 'mascot/item-brillo.webp';
 
-/** Casa final recortada a `w`×`h` como data URI PNG (satori no lee WebP). Si no se puede leer, null: se dibuja un marcador elegante. */
+/** Imagen final recortada a `w`×`h` como data URI PNG (satori no lee WebP). Si no se puede leer, null: se dibuja un marcador elegante. */
 async function houseThumb(storage: Pick<ImageStorage, 'get'>, p: Player, w: number, h: number): Promise<string | null> {
   const sp = p.current_image?.storage_path;
   if (!sp || /^https?:/i.test(sp)) return null;
@@ -198,7 +198,7 @@ function Medal({ rank, size }: { rank: number; size: number }) {
   );
 }
 
-/** Miniatura de la casa o, si no hay imagen, un marcador con el color del jugador y una casita dibujada. */
+/** Miniatura de la imagen o, si no hay imagen, un marcador con el color del jugador y un dibujo genérico. */
 function House({ src, w, h, color, radius }: { src: string | null; w: number; h: number; color: string; radius: number }) {
   if (src) return <img src={src} width={w} height={h} style={{ width: w, height: h, borderRadius: radius, objectFit: 'cover' }} alt="" />;
   const s = Math.round(Math.min(w, h) * 0.5);
@@ -381,7 +381,7 @@ function Layout({ m }: { m: Model }) {
     </div>
   );
 
-  // Sección principal: podio + resto (o cuadrícula de casas si no hay clasificación)
+  // Sección principal: podio + resto (o cuadrícula de imágenes si no hay clasificación)
   let main: React.ReactNode;
   if (n === 0) {
     main = <div style={{ display: 'flex', fontSize: 34, color: MUTED }}>Esta partida no tuvo jugadores.</div>;
@@ -478,11 +478,11 @@ function Layout({ m }: { m: Model }) {
 const CACHE_MAX = 24;
 const pngCache = new Map<string, Uint8Array>();
 
-/** ¿Alguna casa se está regenerando todavía? Entonces la imagen aún puede cambiar y no conviene cachearla mucho. */
+/** ¿Alguna imagen se está regenerando todavía? Entonces la imagen aún puede cambiar y no conviene cachearla mucho. */
 export const podiumStillSettling = (snapshot: PublicSnapshot): boolean => snapshot.players.some((p) => p.generating.length > 0);
 
 /**
- * PNG del podio final. Devuelve una `Response` con el PNG y caché HTTP corta (más corta mientras se generan las casas finales).
+ * PNG del podio final. Devuelve una `Response` con el PNG y caché HTTP corta (más corta mientras se generan las imágenes finales).
  * `download` añade `Content-Disposition: attachment`.
  */
 export async function renderPodiumImage(snapshot: PublicSnapshot, storage: Pick<ImageStorage, 'get'>, download: boolean, format: PodiumFormat = 'landscape'): Promise<Response> {
@@ -535,7 +535,7 @@ async function draw(snapshot: PublicSnapshot, storage: Pick<ImageStorage, 'get'>
   if (g?.enabled && g.closed && g.results?.length) {
     const top = Math.max(...g.results.map((r) => r.votes));
     const winners = players.filter((p) => g.results!.find((r) => r.player_id === p.id)?.votes === top);
-    if (top > 0 && winners.length > 0) chips.push({ icon: await asset(awardIconPath('gallery'), 96), title: 'Mejor casa', who: whoText(winners), detail: `${top} ${top === 1 ? 'voto' : 'votos'}` });
+    if (top > 0 && winners.length > 0) chips.push({ icon: await asset(awardIconPath('gallery'), 96), title: 'Mejor imagen', who: whoText(winners), detail: `${top} ${top === 1 ? 'voto' : 'votos'}` });
   }
   for (const a of awards) chips.push({ icon: await asset(awardIconPath(a.id), 96), title: plainText(a.title, 28), who: whoText(a.players), detail: plainText(a.detail, 30) });
 

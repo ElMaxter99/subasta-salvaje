@@ -15,7 +15,7 @@ test('el anfitrión sube la foto de un elemento del catálogo y puede quitarla',
     await tab.click();
     await expect(tab).toHaveAttribute('aria-selected', 'true', { timeout: 2000 });
   }).toPass({ timeout: 60_000 });
-  await expect(page.getByText(/mezcla esa foto con la imagen de su casa/)).toBeVisible();
+  await expect(page.getByText(/mezcla esa foto con la imagen de quien lo gana/)).toBeVisible();
 
   const first = (await (await ctx.request.get(`/api/games/${code}`)).json()).snapshot.items[0] as { id: string; name: string };
   const photo = await sharp({ create: { width: 120, height: 120, channels: 3, background: { r: 255, g: 105, b: 180 } } }).png().toBuffer();

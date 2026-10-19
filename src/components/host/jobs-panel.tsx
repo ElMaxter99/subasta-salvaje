@@ -63,7 +63,7 @@ export function JobsPanel({ ctx, refresh }: { ctx: HostCtx; refresh: () => Promi
       <UsageCard ctx={ctx} />
       {snapshot.game.image_mode === 'ai' && runtime.aiConfigured && !runtime.aiCanEdit ? (
         <Notice tone="warn">
-          El modelo de IA configurado solo genera imágenes nuevas: <b>no puede editar la casa existente</b>. Las compras se registran igual y la imagen anterior se conserva, pero la edición saldrá como fallida hasta que configures un modelo con edición (<code>CLOUDFLARE_EDIT_MODEL</code>) u otro proveedor.
+          El modelo de IA configurado solo genera imágenes nuevas: <b>no puede editar la imagen existente</b>. Las compras se registran igual y la imagen anterior se conserva, pero la edición saldrá como fallida hasta que configures un modelo con edición (<code>CLOUDFLARE_EDIT_MODEL</code>) u otro proveedor.
         </Notice>
       ) : null}
       {failed.length > 0 ? (

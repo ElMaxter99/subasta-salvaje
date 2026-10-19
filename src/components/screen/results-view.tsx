@@ -76,7 +76,7 @@ function TeamsTable({ teams, rule, tv }: { teams: TeamEntry[]; rule: RankingRule
   );
 }
 
-/** Final «antes / después»: miniatura de la casa inicial + deslizador para comparar. */
+/** Final «antes / después»: miniatura de la imagen inicial + deslizador para comparar. */
 function BeforeAfter({ player, tv }: { player: Player; tv: boolean }) {
   const before = player.initial_image;
   const after = player.current_image;
@@ -84,19 +84,19 @@ function BeforeAfter({ player, tv }: { player: Player; tv: boolean }) {
   const comparable = Boolean(before?.url && after?.url && before.id !== after.id);
   return (
     <div className="relative min-h-0 flex-1">
-      <HouseImage image={after} alt={`Casa final de ${player.name}`} className="absolute inset-0" emptyLabel="Sin casa final" />
+      <HouseImage image={after} alt={`Imagen final de ${player.name}`} className="absolute inset-0" emptyLabel="Sin imagen final" />
       {comparable ? (
         <>
           <div className="absolute inset-0 overflow-hidden" style={{ clipPath: `inset(0 ${100 - pos}% 0 0)` }} aria-hidden={pos === 0}>
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={before!.url!} alt={`Casa inicial de ${player.name}`} className="size-full object-cover" />
+            <img src={before!.url!} alt={`Imagen inicial de ${player.name}`} className="size-full object-cover" />
             <span className="absolute left-2 top-2 rounded-md bg-night-950/85 px-2 py-0.5 text-[1rem] font-black uppercase tracking-wider text-white">Antes</span>
           </div>
           {pos > 0 ? <div className="absolute inset-y-0 w-1 -translate-x-1/2 bg-white shadow-[0_0_12px_#fff]" style={{ left: `${pos}%` }} aria-hidden /> : null}
           {pos === 0 ? (
             <figure className="absolute left-2 top-2 m-0 overflow-hidden rounded-lg border-2 border-white/80 bg-night-950 shadow-lg">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={before!.url!} alt={`Casa inicial de ${player.name}`} className={`object-cover ${tv ? 'h-[4.5rem] w-[6.75rem]' : 'h-16 w-24'}`} />
+              <img src={before!.url!} alt={`Imagen inicial de ${player.name}`} className={`object-cover ${tv ? 'h-[4.5rem] w-[6.75rem]' : 'h-16 w-24'}`} />
               <figcaption className="bg-night-950 py-0.5 text-center text-[0.9rem] font-black uppercase tracking-wider text-white">Antes</figcaption>
             </figure>
           ) : null}
@@ -108,7 +108,7 @@ function BeforeAfter({ player, tv }: { player: Player; tv: boolean }) {
               max={100}
               value={pos}
               onChange={(e) => setPos(Number(e.target.value))}
-              aria-label={`Comparar antes y después de la casa de ${player.name}`}
+              aria-label={`Comparar antes y después de la imagen de ${player.name}`}
               className="absolute inset-x-3 bottom-2 w-[calc(100%-6.5rem)] accent-gold"
             />
           ) : null}
@@ -124,7 +124,7 @@ function ResultCard({ player, rank, scoreText, tv, dense, votes = null, galleryW
     <article
       className={`flex min-h-0 flex-col overflow-hidden rounded-2xl border-2 bg-night-800 ${tv ? 'w-full' : ''} ${rank === 1 || galleryWinner ? 'border-gold shadow-[0_0_3rem_rgb(251_191_36/0.3)]' : 'border-white/10'}`}
     >
-      {/* Siempre 3:2 (también en la TV): con `flex-1` la imagen se estiraba al alto de la tarjeta y `object-cover` recortaba la casa final. */}
+      {/* Siempre 3:2 (también en la TV): con `flex-1` la imagen se estiraba al alto de la tarjeta y `object-cover` recortaba la imagen final. */}
       <div className="relative flex min-h-0 aspect-[3/2] flex-col">
         <BeforeAfter player={player} tv={tv} />
         {player.generating.some((g) => g.kind === 'edit') ? (
@@ -200,14 +200,14 @@ function GalleryBanner({ snapshot, tv }: { snapshot: PublicSnapshot; tv: boolean
   if (info.g.open) {
     return (
       <p className={`mx-auto mt-2 w-fit rounded-2xl bg-violet px-6 py-2 text-center font-bold text-white ${size}`} role="status" data-testid="gallery-open">
-        🗳️ ¡Votación abierta! Vota desde tu móvil la mejor casa · {info.g.voters.length} {info.g.voters.length === 1 ? 'voto' : 'votos'} de {Math.max(connected, info.g.voters.length)}
+        🗳️ ¡Votación abierta! Vota desde tu móvil la mejor imagen · {info.g.voters.length} {info.g.voters.length === 1 ? 'voto' : 'votos'} de {Math.max(connected, info.g.voters.length)}
       </p>
     );
   }
   if (info.winners.length > 0) {
     return (
       <p className={`mx-auto mt-2 w-fit rounded-2xl bg-gold px-6 py-2 text-center font-display text-night-950 ${size}`} role="status" data-testid="gallery-winner">
-        🏆 Mejor casa según los jugadores: {info.winners.map((w) => w.name).join(' y ')} ({info.top} {info.top === 1 ? 'voto' : 'votos'})
+        🏆 Mejor imagen según los jugadores: {info.winners.map((w) => w.name).join(' y ')} ({info.top} {info.top === 1 ? 'voto' : 'votos'})
       </p>
     );
   }
@@ -218,7 +218,7 @@ function GalleryBanner({ snapshot, tv }: { snapshot: PublicSnapshot; tv: boolean
   );
 }
 
-/** Pantalla final: casas, antes/después, estadísticas y clasificación opcional. */
+/** Pantalla final: imágenes, antes/después, estadísticas y clasificación opcional. */
 export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapshot; tv?: boolean }) {
   const { game, stats } = snapshot;
   const players = joinedPlayers(snapshot.players); // quien nunca entró (modo móviles) no sale en el resultado
@@ -372,7 +372,7 @@ export function FinalResults({ snapshot, tv = false }: { snapshot: PublicSnapsho
 
       <PlayerStatsSection players={players} stats={snapshot.player_stats} />
 
-      <section aria-label="Casas finales" className="relative z-10 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+      <section aria-label="Imágenes finales" className="relative z-10 grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
         {ordered.map(({ player, rank }) => (
           <ResultCard key={player.id} player={player} rank={rank} scoreText={ranking && rank && rule !== 'balance' ? scoreLabel(rule, player) : null} tv={false} dense={false} {...cardProps(player.id)} />
         ))}

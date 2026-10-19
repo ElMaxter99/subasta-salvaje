@@ -141,7 +141,7 @@ async function generate(ctx: Ctx, provider: ImageGenerationProvider, job: Claime
   if (provider.id === 'openai' && (job.base_mime_type ?? base.mime) === 'image/svg+xml') {
     throw new ProviderError('La imagen base es un SVG de la galería/demo y OpenAI sólo edita PNG, JPEG o WebP. Sube una imagen PNG/JPG o genera la inicial con IA.', false, false);
   }
-  // Foto del elemento del catálogo (subida por el anfitrión o generada): se MEZCLA con la casa del ganador.
+  // Foto del elemento del catálogo (subida por el anfitrión o generada): se MEZCLA con la imagen del ganador.
   let itemImage: { bytes: Uint8Array; mime: string } | undefined;
   if (itemImagePath) {
     try {
@@ -195,7 +195,7 @@ async function runJob(ctx: Ctx, provider: ImageGenerationProvider, job: ClaimedJ
   try {
     // Sin capacidad de edición no se gasta cuota: se falla con un mensaje claro y la imagen anterior se conserva.
     if (job.kind === 'edit' && !provider.capabilities.edit) {
-      throw new ProviderError('El proveedor configurado sólo genera imágenes nuevas y no puede editar la casa existente. Se conserva la imagen anterior.', false);
+      throw new ProviderError('El proveedor configurado sólo genera imágenes nuevas y no puede editar la imagen existente. Se conserva la imagen anterior.', false);
     }
     reserved = await reserveQuota(ctx, provider, job);
     const kind: ImageKind = job.kind === 'item' ? 'item' : 'scene';

@@ -5,7 +5,7 @@ import sharp from 'sharp';
 const stamp = Date.now().toString(36); // la base del e2e persiste entre ejecuciones: nombres únicos
 const ORIGIN = { origin: 'http://localhost:3210' };
 
-test('biblioteca con roles: el superadmin etiqueta y publica; el anfitrión elige de la biblioteca la casa inicial y la foto de un elemento', async ({ browser }) => {
+test('biblioteca con roles: el superadmin etiqueta y publica; el anfitrión elige de la biblioteca la imagen inicial y la foto de un elemento', async ({ browser }) => {
   // Servidor local que imita la API de GitHub (la app apunta aquí por GITHUB_ASSETS_API_BASE)
   const hex40 = (n: number) => n.toString(16).padStart(40, '0');
   let blobs = 0;
@@ -70,23 +70,23 @@ test('biblioteca con roles: el superadmin etiqueta y publica; el anfitrión elig
     await expect(admin.getByText(/Etiqueta «e2e» añadida a 2 imágenes/)).toBeVisible({ timeout: 30_000 });
     await admin.getByRole('button', { name: 'Seleccionar todo lo visible' }).click();
     await admin.getByLabel('Rol para la selección').selectOption('product');
-    await admin.getByTestId('library-role-add').click(); // la casa también sirve de producto
+    await admin.getByTestId('library-role-add').click(); // la imagen también sirve de producto
     await expect(admin.getByText(/Rol añadido a 2 imágenes/)).toBeVisible({ timeout: 30_000 });
     await admin.getByRole('button', { name: 'Seleccionar todo lo visible' }).click();
     await admin.getByTestId('library-mark-reviewed').click();
     await expect(admin.getByText(/2 imágenes marcadas como revisadas/)).toBeVisible({ timeout: 30_000 });
     await admin.getByLabel('Filtrar por rol').selectOption('product');
     await expect(admin.getByTestId('library-image')).toHaveCount(2);
-    // Quitar el rol «producto» de la casa (ajuste en bloque por API): vuelve a ser solo de inicio
+    // Quitar el rol «producto» de la imagen (ajuste en bloque por API): vuelve a ser solo de inicio
     const casaId = images.find((i) => i.title === `Casa ${stamp}`)!.id;
     const upd = await ctx.request.post('/api/admin/library', { headers: ORIGIN, data: { op: 'images.update', ids: [casaId], patch: { roles_remove: ['product'] } } });
     expect(upd.ok()).toBeTruthy();
     await admin.close();
 
     expect(await pick('start', stamp)).toBe(1);
-    expect(await pick('product', stamp)).toBe(1); // solo la tetera: la casa dejó de ser producto
+    expect(await pick('product', stamp)).toBe(1); // solo la tetera: la imagen dejó de ser producto
 
-    // --- Anfitrión: partida nueva, casa inicial de la biblioteca
+    // --- Anfitrión: partida nueva, imagen inicial de la biblioteca
     const created = await ctx.request.post('/api/games', { data: { name: 'Biblioteca E2E', players: ['Ana', 'Beto'].map((name) => ({ name })) } });
     const code = (await created.json()).room_code as string;
     const page = await ctx.newPage();
@@ -126,11 +126,11 @@ test('biblioteca con roles: el superadmin etiqueta y publica; el anfitrión elig
     await expect(page.getByText(`Foto de «${first.name}» aplicada desde la biblioteca`)).toBeVisible({ timeout: 30_000 });
     expect((await snap()).items[0]!.image_url).toContain('/biblioteca/hogar');
 
-    // Una imagen sin el rol pedido (la casa ya no es «producto») no se puede aplicar a un elemento
+    // Una imagen sin el rol pedido (la imagen ya no es «producto») no se puede aplicar a un elemento
     const bad = await ctx.request.post(`/api/games/${code}/library-image`, { headers: ORIGIN, data: { target: 'item', image_id: casaId, item_id: first.id } });
     expect(bad.status()).toBe(404);
 
-    // --- Asistente «Nueva partida»: casa inicial elegida de la biblioteca en el paso «Las casas»; se aplica al crear la partida
+    // --- Asistente «Nueva partida»: imagen inicial elegida de la biblioteca en el paso «Las imágenes»; se aplica al crear la partida
     const wiz = await ctx.newPage();
     await wiz.goto('/new-game');
     const next = () => wiz.getByRole('button', { name: /Siguiente/ }).click();
@@ -141,10 +141,10 @@ test('biblioteca con roles: el superadmin etiqueta y publica; el anfitrión elig
     }).toPass({ timeout: 60_000 });
     await wiz.getByTestId('wizard-house-from-library').click();
     await wiz.getByLabel('Buscar en la biblioteca').fill(stamp);
-    await wiz.getByRole('button', { name: `Elegir Casa ${stamp}` }).click(); // la base del e2e conserva las casas de otras ejecuciones
+    await wiz.getByRole('button', { name: `Elegir Casa ${stamp}` }).click(); // la base del e2e conserva las imágenes de otras ejecuciones
     await expect(wiz.getByTestId('wizard-house-chosen')).toContainText(`Casa ${stamp}`);
     await next();
-    await wiz.getByLabel('Nombre de la partida').fill('Casa de biblioteca');
+    await wiz.getByLabel('Nombre de la partida').fill('Imagen de biblioteca');
     await next();
     await next();
     for (const [i, n] of ['Ana', 'Beto'].entries()) {
@@ -152,7 +152,7 @@ test('biblioteca con roles: el superadmin etiqueta y publica; el anfitrión elig
       await wiz.getByLabel(`Nombre del jugador ${i + 1}`).fill(n);
     }
     await next();
-    await expect(wiz.getByText(`Casa inicial: Casa ${stamp}`)).toBeVisible();
+    await expect(wiz.getByText(`Imagen inicial: Casa ${stamp}`)).toBeVisible();
     await wiz.getByRole('button', { name: /Crear partida/ }).click();
     await wiz.waitForURL(/\/game\/[A-Z0-9]+\/host/, { timeout: 60_000 });
     const wcode = wiz.url().match(/\/game\/([A-Z0-9]+)\/host/)![1]!;

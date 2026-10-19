@@ -84,7 +84,7 @@ export function SystemTemplatesPanel({ templates, cdnHosts }: { templates: Syste
               <td className="px-2 py-2">
                 <span className={`rounded-full px-2 py-0.5 text-xs font-bold ${t.status === 'published' ? 'bg-teal/20 text-teal' : 'bg-white/10 text-white/80'}`}>{t.status === 'published' ? 'Publicada' : 'Borrador'}</span>
               </td>
-              <td className="px-2 py-2 text-sm">{t.items} elementos · {t.players} jugadores{t.has_initial_image ? ' · casa inicial' : ''}</td>
+              <td className="px-2 py-2 text-sm">{t.items} elementos · {t.players} jugadores{t.has_initial_image ? ' · imagen inicial' : ''}</td>
               <td className="px-2 py-2">{fmtDate(t.updated_at)}</td>
               <td className="px-2 py-2">
                 <div className="flex flex-wrap gap-1">

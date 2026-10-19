@@ -6,7 +6,7 @@ import { analyticsDisabled } from '@/lib/analytics';
 import { siteUrl } from '@/lib/seo/site';
 import './globals.css';
 
-const DESCRIPTION = 'Subasta creativa multijugador: puja, construye tu casa y mira cómo la IA la transforma.';
+const DESCRIPTION = 'Subasta creativa multijugador: parte de una imagen base, puja por elementos y transfórmala a tu manera.';
 
 export const metadata: Metadata = {
   metadataBase: siteUrl(),

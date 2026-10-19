@@ -6,7 +6,7 @@ import { Mascot } from '@/components/mascot/mascot';
 import './screen.css';
 import { Ohros } from '@/components/ui/ohros';
 
-/** Instante (ms) hasta el que el overlay de adjudicación tapa la pantalla; lo usan las tarjetas para no animar «Casa actualizada» por debajo. */
+/** Instante (ms) hasta el que el overlay de adjudicación tapa la pantalla; lo usan las tarjetas para no animar «Imagen actualizada» por debajo. */
 export const awardOverlay = { until: 0 };
 
 const COLORS = ['#fbbf24', '#8b5cf6', '#2dd4bf', '#fb7185', '#f8fafc', '#60a5fa'];

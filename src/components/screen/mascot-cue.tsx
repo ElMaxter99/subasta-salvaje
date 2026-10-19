@@ -10,7 +10,7 @@ type Moment = { kind: 'announce' | 'bid'; n: number } | null;
 
 /**
  * Mascota de la cabecera de la TV: cambia de gesto según lo que ocurre (anuncio, puja nueva, cuenta atrás, puja cerrada, adjudicado…).
- * Vive en la cabecera, fuera del escenario y de las casas, así que nunca tapa información; es decorativa (aria-hidden).
+ * Vive en la cabecera, fuera del escenario y de las imágenes, así que nunca tapa información; es decorativa (aria-hidden).
  */
 export function MascotCue({ snap }: { snap: PublicSnapshot }) {
   const countdown = useAutoAwardCountdown(snap);

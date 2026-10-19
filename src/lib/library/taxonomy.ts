@@ -3,7 +3,7 @@
  *
  * Modelo de etiquetado de cada imagen:
  *  - `roles`: para qué sirve en una partida. Es un CONJUNTO (una imagen puede servir para varias cosas; vacío = sin rol, no se ofrece a los anfitriones).
- *      · `start`   → foto de inicio de partida (la «casa» / escena inicial de los jugadores).
+ *      · `start`   → foto de inicio de partida (la imagen base / escena inicial de los jugadores).
  *      · `product` → producto de catálogo (la foto de un elemento que se subasta).
  *    Añadir un rol nuevo = ampliar `LIBRARY_ROLES` aquí y el `check` de la tabla en una migración nueva.
  *  - `category`: temática (Halloween, Paisajes…) para buscar y medir la cobertura. Texto libre con sugerencias (`LIBRARY_CATEGORIES`).
@@ -11,7 +11,7 @@
  *  - `collection`: carpeta física en el repositorio de fotos (ya existía); no es lo mismo que la categoría.
  */
 export const LIBRARY_ROLES = [
-  { id: 'start', label: 'Foto de inicio de partida', short: 'Inicio', hint: 'La casa o escena con la que empiezan los jugadores' },
+  { id: 'start', label: 'Foto de inicio de partida', short: 'Inicio', hint: 'La imagen o escena con la que empiezan los jugadores' },
   { id: 'product', label: 'Producto de catálogo', short: 'Producto', hint: 'La foto de un elemento que se subasta' },
 ] as const;
 

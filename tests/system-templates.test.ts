@@ -90,7 +90,7 @@ describe('plantillas del sistema (SQL + servicio)', () => {
   it('una foto fuera del formato interno se acepta pero se avisa; el informe indica tamaño y formato', async () => {
     const checks = await checkTemplateImages(tpl() as never, { hosts: HOSTS, transport: serve({ '/portada.webp': { bytes: webp }, '/casa.webp': { bytes: bigPng, type: 'image/png' }, '/sombrilla.webp': { bytes: webp } }) });
     expect(checks.map((c) => c.ok)).toEqual([true, true, true]);
-    const casa = checks.find((c) => c.label === 'Casa inicial')!;
+    const casa = checks.find((c) => c.label === 'Imagen inicial')!;
     expect(casa).toMatchObject({ internal: false, format: 'png', width: 2000, height: 1500 });
     expect(casa.note).toMatch(/assets:normalize/);
     expect(checks.find((c) => c.label === 'Portada')!.internal).toBe(true);
@@ -126,7 +126,7 @@ describe('créditos en la tarjeta', () => {
   });
 });
 
-describe('imagen inicial de la casa que trae la plantilla', () => {
+describe('imagen inicial que trae la plantilla', () => {
   it('se descarga, se normaliza (WebP) y se aplica a los jugadores actuales y a los nuevos', async () => {
     const host = newHost();
     const { room_code } = await createGame(ctx, host, { name: 'Con casa', integer_bids: false, players: [{ name: 'Ana' }, { name: 'Beto' }] });
@@ -143,7 +143,7 @@ describe('imagen inicial de la casa que trae la plantilla', () => {
 
   it('un fallo (404, dirección interna o no es imagen) devuelve el motivo y no rompe la partida; solo el propietario', async () => {
     const host = newHost();
-    const { room_code } = await createGame(ctx, host, { name: 'Sin casa', integer_bids: false, players: [{ name: 'Ana' }] });
+    const { room_code } = await createGame(ctx, host, { name: 'Sin imagen', integer_bids: false, players: [{ name: 'Ana' }] });
     expect(await importInitialImage(ctx, room_code, host, 'https://cdn.ejemplo.com/no.png', { transport: serve({}) })).toMatchObject({ ok: false });
     expect(await importInitialImage(ctx, room_code, host, 'https://127.0.0.1/c.png', { transport: serve({}) })).toMatchObject({ ok: false, reason: 'dirección no permitida' });
     expect((await getHostState(ctx, room_code, host)).players[0]!.current_image).toBeFalsy();

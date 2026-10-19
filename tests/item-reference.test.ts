@@ -42,7 +42,7 @@ describe('el tema fija el prompt base de la imagen inicial', () => {
   });
 });
 
-describe('mezclar la foto del elemento con la casa: proveedores', () => {
+describe('mezclar la foto del elemento con la imagen: proveedores', () => {
   it('el prompt describe imagen 0 = escena e imagen 1 = elemento y exige reproducirlo fielmente', () => {
     const p = buildEditPrompt(input({ itemImage: { bytes: new Uint8Array([1]), mime: 'image/png' } }));
     expect(p).toMatch(/Image 0 is the BASE picture/);
@@ -122,7 +122,7 @@ describe('foto del elemento: subida del anfitrión y mezcla al ganar', () => {
     await act(ctx, room, host, { type: 'auction.award', auction_id: a.snapshot.auction!.id, expected_winner_id: pid, expected_price_cents: 100, idempotency_key: key() });
   };
 
-  it('subir foto → al ganar el elemento la IA recibe la foto del elemento junto a la casa; sin foto no', async () => {
+  it('subir foto → al ganar el elemento la IA recibe la foto del elemento junto a la imagen; sin foto no', async () => {
     const seen: { base: string; item: string | null; name: string }[] = [];
     const recording: ImageGenerationProvider = {
       id: 'demo', capabilities: { edit: true },

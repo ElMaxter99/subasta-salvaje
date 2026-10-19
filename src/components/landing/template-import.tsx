@@ -193,7 +193,7 @@ export function TemplateImport({ onTemplate, onCatalog }: { onTemplate: (values:
                         <span className="font-bold">{t.title}</span>
                         {t.description ? <span className="text-sm text-white/70">{t.description}</span> : null}
                         {t.credits ? <span className="text-xs italic text-white/50" data-testid="system-template-credits">Imágenes: {t.credits}</span> : null}
-                        <span className="text-xs text-white/60">{t.items} elementos · {t.players} jugadores{t.has_initial_image ? ' · con casa inicial' : ''}</span>
+                        <span className="text-xs text-white/60">{t.items} elementos · {t.players} jugadores{t.has_initial_image ? ' · con imagen inicial' : ''}</span>
                         <Button type="button" size="sm" variant="primary" className="mt-auto self-start" onClick={() => void loadSystem(t)} aria-label={`Usar la partida del sistema ${t.title}`}>Usar</Button>
                       </div>
                     </li>

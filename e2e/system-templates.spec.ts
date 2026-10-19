@@ -24,7 +24,7 @@ test('partidas del sistema: el superadmin crea y publica una plantilla; el anfit
   await expect(page.getByTestId('wizard-step-1')).toBeVisible({ timeout: 60_000 });
   await page.waitForTimeout(2500);
   await expect(page.getByTestId('template-import')).toHaveCount(0);
-  await next(page, 2); // Quién puja → Casas → Partida
+  await next(page, 2); // Quién puja → Imágenes → Partida
   await page.getByLabel('Nombre de la partida').fill(TITLE);
   await next(page, 3); // Reglas → Jugadores → Ficha
   await expect(page.getByTestId('system-step')).toBeVisible();
@@ -118,7 +118,7 @@ test('imágenes de una plantilla: se quedan en la vista y solo se suben, en UN c
     await page.goto('/admin/plantillas/editor');
     await expect(page.getByTestId('wizard-step-1')).toBeVisible({ timeout: 60_000 });
     await page.waitForTimeout(2500);
-    await next(page, 5); // Quién puja → Casas → Partida → Reglas → Jugadores → Ficha
+    await next(page, 5); // Quién puja → Imágenes → Partida → Reglas → Jugadores → Ficha
     await expect(page.getByTestId('template-dropzone')).toBeVisible();
 
     const k = parseInt(stamp, 36) % 200; // contenido único por ejecución
@@ -129,7 +129,7 @@ test('imágenes de una plantilla: se quedan en la vista y solo se suben, en UN c
     await page.getByLabel('Elegir imágenes').setInputFiles([await file('portada.jpg', `rgb(${200 - k % 50}, 50, 50)`), await file('Casa-Inicial.jpg', `rgb(50, ${200 - k % 50}, 50)`), await file('piscina-infinita.jpg', `rgb(50, 50, ${200 - k % 50})`), await file('IMG_0001.jpg', `rgb(200, 200, ${k % 90})`)]);
     const list = page.getByTestId('upload-list');
     await expect(list.getByText(/^Portada · se subirá al guardar/)).toBeVisible();
-    await expect(list.getByText(/^Casa inicial · se subirá al guardar/)).toBeVisible();
+    await expect(list.getByText(/^Imagen inicial · se subirá al guardar/)).toBeVisible();
     await expect(list.getByText(/^Elemento · Piscina infinita · se subirá al guardar/)).toBeVisible();
     await expect(list.getByText('No encaja con la portada')).toBeVisible();
     await list.getByLabel('Asignar IMG_0001.jpg').selectOption({ label: 'Elemento · Sofá gigante' });
@@ -140,14 +140,14 @@ test('imágenes de una plantilla: se quedan en la vista y solo se suben, en UN c
 
     // Resumen y guardado: ahora se preparan 4 imágenes y entran en UN solo commit; los enlaces quedan fijados a él
     await next(page, 1);
-    await expect(page.getByText(/Portada: ✔ · Casa inicial: ✔ · Fotos: 2\//)).toBeVisible();
+    await expect(page.getByText(/Portada: ✔ · Imagen inicial: ✔ · Fotos: 2\//)).toBeVisible();
     await page.getByRole('button', { name: 'Guardar borrador' }).click();
     await page.waitForURL(/\/admin\/plantillas(\?|$)/, { timeout: 60_000 });
     expect(blobs).toBe(4);
     expect(commits).toBe(1);
     expect(puts).toBe(0);
     const row = page.getByTestId('system-template-row').filter({ hasText: `subida-${stamp}` });
-    await expect(row).toContainText('casa inicial');
+    await expect(row).toContainText('imagen inicial');
     const id = (await (await ctx.request.get('/api/admin/system-templates')).json()).templates.find((t: { slug: string }) => t.slug === `subida-${stamp}`).id as string;
     const read = async () => ((await (await ctx.request.post('/api/admin/system-templates', { data: { op: 'get', id }, headers: { origin: 'http://localhost:3210' } })).json()) as { data: { portada: string; casa_inicial: string; catalogo: { titulo: string; foto?: string }[] } }).data;
     const first = await read();
@@ -200,7 +200,7 @@ test('editor visual: editar sin tocar el JSON (espacios, catálogo, orden, créd
   await page.goto('/admin/plantillas/editor');
   await expect(page.getByTestId('wizard-step-1')).toBeVisible({ timeout: 60_000 });
   await page.waitForTimeout(2500);
-  await next(page, 2); // Quién puja → Casas → Partida
+  await next(page, 2); // Quién puja → Imágenes → Partida
 
   // Escribir con espacios no se «come» el espacio final mientras se teclea
   const nombre = page.getByLabel('Nombre de la partida');

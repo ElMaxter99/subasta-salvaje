@@ -26,7 +26,7 @@ export interface PollinationsProviderOptions extends PollinationsConfig {
 }
 
 /**
- * Tamaño de la imagen editada. Por defecto 1024x768 (4:3), pero la casa suele tener otra proporción (p. ej. 16:9): pedir otra
+ * Tamaño de la imagen editada. Por defecto 1024x768 (4:3), pero la imagen suele tener otra proporción (p. ej. 16:9): pedir otra
  * hace que el modelo recorte y redibuje los bordes y «pierda» objetos. Se mantiene la proporción de la imagen de partida
  * (lado mayor = el del tamaño configurado, múltiplos de 64) salvo que el propietario fije POLLINATIONS_IMAGE_SIZE.
  */

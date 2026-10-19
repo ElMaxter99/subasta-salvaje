@@ -26,9 +26,9 @@ test('la pantalla final muestra la imagen FINAL (después) de cada jugador, no l
   const page = await (await browser.newContext()).newPage();
   await page.goto(`/game/${code}/results`);
   const card = page.getByRole('article').filter({ hasText: 'Ana' });
-  await expect(card.getByAltText('Casa final de Ana')).toBeVisible({ timeout: 30_000 });
-  const finalSrc = await card.getByAltText('Casa final de Ana').getAttribute('src');
-  const beforeSrc = await card.getByAltText('Casa inicial de Ana').first().getAttribute('src');
+  await expect(card.getByAltText('Imagen final de Ana')).toBeVisible({ timeout: 30_000 });
+  const finalSrc = await card.getByAltText('Imagen final de Ana').getAttribute('src');
+  const beforeSrc = await card.getByAltText('Imagen inicial de Ana').first().getAttribute('src');
   console.log('FINAL', finalSrc, 'ANTES', beforeSrc);
   expect(finalSrc).not.toBe(beforeSrc);
 });
@@ -56,7 +56,7 @@ test('TV: en «Fin de la subasta» la imagen «Después» se ve completa (3:2, s
   for (const size of [{ width: 1920, height: 1080 }, { width: 1366, height: 768 }]) {
     const tv = await (await browser.newContext({ viewport: size })).newPage();
     await tv.goto(`/game/${code}/screen`);
-    const after = tv.getByAltText('Casa final de Ana');
+    const after = tv.getByAltText('Imagen final de Ana');
     await expect(after).toBeVisible({ timeout: 60_000 });
     await tv.waitForTimeout(3000); // el servidor de desarrollo en frío puede recargar la página una vez
     await expect(after).toBeVisible();

@@ -84,7 +84,7 @@ export async function importItemPhotos(
 }
 
 /**
- * Imagen inicial de la casa que trae una plantilla: si ya está alojada en nuestro repositorio de fotos se usa por enlace; si no, se descarga con las mismas defensas, se normaliza al formato
+ * Imagen inicial que trae una plantilla: si ya está alojada en nuestro repositorio de fotos se usa por enlace; si no, se descarga con las mismas defensas, se normaliza al formato
  * interno y se aplica a los jugadores actuales y a los que se unan después. Un fallo NUNCA bloquea la partida.
  */
 export async function importInitialImage(ctx: Ctx, code: string, hostId: string, url: string, opts: FetchImageOptions = {}): Promise<{ ok: boolean; reason?: string }> {

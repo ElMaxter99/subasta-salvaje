@@ -14,7 +14,7 @@ export function PlayerCard({ player, leading, maxChips, dense, presence = null }
   const [seenId, setSeenId] = useState(imageId);
   const [updatedKey, setUpdatedKey] = useState(0);
   const [pendingKey, setPendingKey] = useState(0);
-  // Nueva versión de la casa (no en la carga inicial): ajuste de estado durante el render.
+  // Nueva versión de la imagen (no en la carga inicial): ajuste de estado durante el render.
   if (imageId !== seenId) {
     setSeenId(imageId);
     if (imageId) setPendingKey((k) => k + 1);
@@ -60,7 +60,7 @@ export function PlayerCard({ player, leading, maxChips, dense, presence = null }
 
   return (
     <article
-      aria-label={`Casa de ${player.name}`}
+      aria-label={`Imagen de ${player.name}`}
       style={{ '--leader': player.color } as React.CSSProperties}
       className={`relative flex h-full min-h-0 flex-col overflow-hidden rounded-2xl border-2 bg-night-800 transition-colors duration-500 ${
         leading ? 'ss-leader border-transparent' : 'border-white/10'
@@ -68,7 +68,7 @@ export function PlayerCard({ player, leading, maxChips, dense, presence = null }
     >
       <div className="relative min-h-0 flex-1">
         <div className={`absolute inset-0 transition-[filter,opacity] duration-500 motion-reduce:transition-none ${offline ? 'opacity-60 grayscale' : ''}`} data-testid={offline ? 'house-offline' : undefined}>
-          <HouseImage image={player.current_image} alt={`Casa de ${player.name}`} className="absolute inset-0" />
+          <HouseImage image={player.current_image} alt={`Imagen de ${player.name}`} className="absolute inset-0" />
         </div>
         {offline ? (
           <div role="status" data-testid="player-offline" className="pointer-events-none absolute inset-0 z-[5] flex items-center justify-center">
@@ -131,7 +131,7 @@ export function PlayerCard({ player, leading, maxChips, dense, presence = null }
             <div className="ss-shimmer absolute inset-0" aria-hidden />
             <p className="relative flex items-center gap-2 text-[1.1rem] font-bold text-violet-soft">
               <Hammer className="size-5 shrink-0 animate-pulse" aria-hidden />
-              <span className="truncate">Construyendo {building.item_name ?? 'mejora'}…</span>
+              <span className="truncate">Aplicando {building.item_name ?? 'elemento'}…</span>
             </p>
           </div>
         ) : null}
@@ -140,7 +140,7 @@ export function PlayerCard({ player, leading, maxChips, dense, presence = null }
           <>
             <div key={`f${updatedKey}`} className="ss-flash pointer-events-none absolute inset-0 bg-white" aria-hidden />
             <div key={`r${updatedKey}`} className="ss-ribbon absolute inset-x-0 top-1/3 z-10 bg-teal py-1.5 text-center font-display text-[1.5rem] uppercase tracking-wide text-night-950 shadow-xl" role="status">
-              ¡Casa actualizada!
+              ¡Imagen actualizada!
             </div>
           </>
         ) : null}

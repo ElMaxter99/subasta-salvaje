@@ -5,8 +5,8 @@ import { Notice } from './bits';
 import type { HostCtx } from './host-context';
 
 /**
- * Avisa de las casas cuya imagen FINAL aún no existe: ediciones en cola/en curso (se completarán solas) o fallidas
- * (la casa se queda con la imagen anterior hasta que se reintente). Sirve antes de finalizar y en la partida terminada.
+ * Avisa de los jugadores cuya imagen FINAL aún no existe: ediciones en cola/en curso (se completarán solas) o fallidas
+ * (cada una se queda con la imagen anterior hasta que se reintente). Sirve antes de finalizar y en la partida terminada.
  */
 export function PendingImagesNotice({ ctx }: { ctx: HostCtx }) {
   const { snapshot, busy, run } = ctx;
@@ -25,7 +25,7 @@ export function PendingImagesNotice({ ctx }: { ctx: HostCtx }) {
       {failed.length > 0 ? (
         <Notice tone="warn">
           <p>
-            ⚠️ {failed.length} {failed.length === 1 ? 'edición ha fallado' : 'ediciones han fallado'} ({names(failed)}): esas casas se quedarán con su imagen anterior (en «Después» se verá la inicial o una intermedia).
+            ⚠️ {failed.length} {failed.length === 1 ? 'edición ha fallado' : 'ediciones han fallado'} ({names(failed)}): esas imágenes se quedarán como estaban antes (en «Después» se verá la inicial o una intermedia).
           </p>
           <Button
             className="mt-2"

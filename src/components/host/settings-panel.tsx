@@ -37,8 +37,8 @@ const POLICIES: { id: JoinPolicy; label: string; hint: string }[] = [
 ];
 
 const IMAGE_MODES: { id: ImageMode; label: string; hint: string }[] = [
-  { id: 'stickers', label: '🎨 Pegatinas con emojis', hint: 'Sin IA, gratis e instantáneo: cada compra añade el emoji del elemento a la casa.' },
-  { id: 'ai', label: '✨ Con inteligencia artificial', hint: 'La IA genera y edita las casas. Con límites de generaciones por partida y por día.' },
+  { id: 'stickers', label: '🎨 Pegatinas con emojis', hint: 'Sin IA, gratis e instantáneo: cada compra añade el emoji del elemento a la imagen.' },
+  { id: 'ai', label: '✨ Con inteligencia artificial', hint: 'La IA genera y edita las imágenes. Con límites de generaciones por partida y por día.' },
 ];
 
 export function SettingsPanel({ ctx }: { ctx: HostCtx }) {

@@ -124,7 +124,7 @@ export function validatePack(entries: BundleEntry[]): PackReport {
     names.add(norm(t.nombre));
     if (e.tono && !PACK_TONES.includes(e.tono as (typeof PACK_TONES)[number])) errors.push(`${at} tono desconocido «${e.tono}»`);
     if (e.descripcion.length < 20) errors.push(`${at} la descripción de la tarjeta es demasiado corta`);
-    if (t.portada || t.casa_inicial) errors.push(`${at} no debe llevar portada ni casa inicial (las aportan la biblioteca y el superadmin)`);
+    if (t.portada || t.casa_inicial) errors.push(`${at} no debe llevar portada ni imagen inicial (las aportan la biblioteca y el superadmin)`);
     if (t.jugadores.length) errors.push(`${at} no debe llevar nombres de jugadores (datos personales)`);
     const items = t.catalogo ?? [];
     if (items.length < PACK_ITEMS.min || items.length > PACK_ITEMS.max) errors.push(`${at} debe tener entre ${PACK_ITEMS.min} y ${PACK_ITEMS.max} elementos (tiene ${items.length})`);

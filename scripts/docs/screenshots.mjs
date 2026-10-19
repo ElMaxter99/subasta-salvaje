@@ -229,7 +229,7 @@ async function main() {
       await tv.waitForTimeout(3000);
       await shot(tv, 'tv-sala-de-espera', { width: 1600, ms: 1500 });
 
-      // Compras previas para que las casas tengan pegatinas
+      // Compras previas para que las imágenes tengan pegatinas
       await act({ type: 'game.start' });
       const buys = [['Lucía', 400], ['Marcos', 600], ['Lucía', 300], ['Irene', 200]];
       for (const [who, price] of buys) {
@@ -242,7 +242,7 @@ async function main() {
       }
       await waitJobs();
 
-      // Entre subastas: las casas en primer plano
+      // Entre subastas: las imágenes en primer plano
       if (wanted('entre')) {
         await tv.reload();
         await tv.waitForTimeout(3000);

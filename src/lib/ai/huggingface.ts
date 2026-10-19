@@ -83,7 +83,7 @@ export function createHuggingFaceProvider(cfg: HuggingFaceProviderOptions): Imag
     generateItemImage: (input: ItemImageInput) => generate(buildItemImagePrompt(input)),
     async editScene(input: EditSceneInput): Promise<GeneratedImage> {
       void input;
-      throw new ProviderError('Hugging Face solo genera imágenes nuevas y no edita la casa existente (la edición pasa por composición).', false, false, 'unsupported');
+      throw new ProviderError('Hugging Face solo genera imágenes nuevas y no edita la imagen existente (la edición pasa por composición).', false, false, 'unsupported');
     },
   };
 }
