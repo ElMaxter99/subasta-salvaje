@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Crown, Hammer } from 'lucide-react';
+import { Crown, Hammer, Wifi, WifiOff } from 'lucide-react';
 import type { Player } from '@/lib/domain/types';
 import { formatOhros } from '@/lib/domain/money';
 import { awardOverlay } from './award-overlay';
@@ -39,6 +39,20 @@ export function PlayerCard({ player, leading, maxChips, dense, presence = null }
     return () => clearTimeout(t);
   }, [updatedKey]);
 
+  // Presencia (solo modo móviles y partida en curso): «Desconectado» sobre la foto; al volver, un breve «Reconectado».
+  const offline = presence === 'game' && player.claimed && player.online === false;
+  const [wasOffline, setWasOffline] = useState(offline);
+  const [backKey, setBackKey] = useState(0);
+  if (offline !== wasOffline) {
+    setWasOffline(offline);
+    if (!offline) setBackKey((k) => k + 1);
+  }
+  useEffect(() => {
+    if (!backKey) return;
+    const t = setTimeout(() => setBackKey(0), 4000);
+    return () => clearTimeout(t);
+  }, [backKey]);
+
   const building = player.generating[0];
   const chips = player.purchases;
   const shown = chips.slice(0, maxChips);
@@ -53,7 +67,24 @@ export function PlayerCard({ player, leading, maxChips, dense, presence = null }
       } ${presence === 'lobby' && !player.claimed ? 'opacity-60' : ''} ${updatedKey ? 'ss-ring' : ''}`}
     >
       <div className="relative min-h-0 flex-1">
-        <HouseImage image={player.current_image} alt={`Casa de ${player.name}`} className="absolute inset-0" />
+        <div className={`absolute inset-0 transition-[filter,opacity] duration-500 motion-reduce:transition-none ${offline ? 'opacity-60 grayscale' : ''}`} data-testid={offline ? 'house-offline' : undefined}>
+          <HouseImage image={player.current_image} alt={`Casa de ${player.name}`} className="absolute inset-0" />
+        </div>
+        {offline ? (
+          <div role="status" data-testid="player-offline" className="pointer-events-none absolute inset-0 z-[5] flex items-center justify-center">
+            <span className={`flex items-center gap-2 rounded-2xl border-2 border-white/70 bg-night-950/85 px-4 py-2 font-display uppercase tracking-wide text-white shadow-xl backdrop-blur ${dense ? 'text-[1.3rem]' : 'text-[1.8rem]'}`}>
+              <WifiOff className={dense ? 'size-6' : 'size-8'} aria-hidden /> <span aria-hidden>📵</span> Desconectado
+              <span className="sr-only">: el móvil de {player.name} ha perdido la conexión</span>
+            </span>
+          </div>
+        ) : null}
+        {backKey ? (
+          <div role="status" data-testid="player-reconnected" className="pointer-events-none absolute inset-x-0 top-1/2 z-[5] flex -translate-y-1/2 justify-center">
+            <span className="flex items-center gap-2 rounded-2xl bg-teal px-4 py-2 font-display text-[1.5rem] uppercase tracking-wide text-night-950 shadow-xl">
+              <Wifi className="size-6" aria-hidden /> Reconectado
+            </span>
+          </div>
+        ) : null}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-night-950/80 to-transparent" />
 
         {chips.length > 0 ? (
@@ -88,10 +119,10 @@ export function PlayerCard({ player, leading, maxChips, dense, presence = null }
         ) : null}
         {presence === 'game' && !leading ? (
           <span
-            title={player.claimed ? 'Móvil conectado' : 'Móvil sin conectar'}
-            className={`absolute right-2 top-2 size-3 rounded-full ${player.claimed ? 'bg-teal' : 'bg-white/25'}`}
+            title={offline ? 'Móvil desconectado' : player.claimed ? 'Móvil conectado' : 'Móvil sin conectar'}
+            className={`absolute right-2 top-2 size-3 rounded-full ${offline ? 'bg-rose' : player.claimed ? 'bg-teal' : 'bg-white/25'}`}
           >
-            <span className="sr-only">{player.claimed ? 'Móvil conectado' : 'Móvil sin conectar'}</span>
+            <span className="sr-only">{offline ? 'Móvil desconectado' : player.claimed ? 'Móvil conectado' : 'Móvil sin conectar'}</span>
           </span>
         ) : null}
 

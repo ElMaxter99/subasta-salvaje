@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { DomainError } from '@/lib/domain/errors';
-import { galleryVoteSchema, joinSchema, playerBidSchema, reactionSchema, unyieldBidSchema, yieldBidSchema, PLAYER_COLORS, roomCodeSchema } from '@/lib/domain/schemas';
+import { galleryVoteSchema, pingSchema, joinSchema, playerBidSchema, reactionSchema, unyieldBidSchema, yieldBidSchema, PLAYER_COLORS, roomCodeSchema } from '@/lib/domain/schemas';
 import type { PublicSnapshot } from '@/lib/domain/types';
 import type { AppContext } from './context';
 import { getPublicState } from './game-service';
@@ -113,4 +113,18 @@ export async function sendReaction(ctx: Ctx, roomCode: string, token: string | u
   const code = room(roomCode);
   await ctx.db.rpc('ss_send_reaction', { emoji: parsed.data.emoji, room_code: code, token_hash: hashToken(token) });
   return publishAfter(ctx, code);
+}
+
+/**
+ * Latido del móvil (≈ cada 15 s). Una sola llamada a la BD: sin bloqueo de la partida salvo cuando cambia el estado de conexión.
+ * Solo en ese caso (vuelve tras estar desconectado, o aviso de salida) se publica una instantánea nueva.
+ */
+export async function playerPing(ctx: Ctx, roomCode: string, token: string | undefined | null, rawBody: unknown): Promise<{ retired: boolean }> {
+  const parsed = pingSchema.safeParse(rawBody ?? {});
+  if (!parsed.success) throw new DomainError('invalid_input');
+  if (!token || token.length < 20 || token.length > 100) throw new DomainError('not_player');
+  const code = room(roomCode);
+  const res = await ctx.db.rpc<{ retired?: boolean; changed?: boolean }>('ss_player_ping', { room_code: code, token_hash: hashToken(token), bye: parsed.data.bye === true });
+  if (res.changed) await publishAfter(ctx, code);
+  return { retired: Boolean(res.retired) };
 }

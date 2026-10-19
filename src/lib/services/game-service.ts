@@ -123,6 +123,10 @@ function toRpc(action: GameAction): { fn: string; params: Record<string, unknown
       return { fn: 'ss_set_play_mode', params: rest };
     case 'player.release':
       return { fn: 'ss_release_player', params: rest };
+    case 'player.retire':
+      return { fn: 'ss_player_retire', params: rest };
+    case 'player.unretire':
+      return { fn: 'ss_player_unretire', params: rest };
     case 'game.reset':
       return { fn: 'ss_reset_game', params: {} };
     case 'game.start':
@@ -344,7 +348,9 @@ export async function autoAwardTick(ctx: Ctx, roomCode: string): Promise<boolean
   const r = await ctx.db.rpc<{ awarded?: boolean }>('ss_auto_award', { room_code: code });
   // Avance automático: fin por rondas agotadas, subasta automática (anunciar el siguiente) y saltar subastas sin pujas.
   const run = await ctx.db.rpc<{ changed?: boolean }>('ss_auto_run_tick', { room_code: code });
-  if (!r.awarded && !run.changed) return false;
+  // Barrido de presencia: marca como desconectados (y lo registra una vez) a los móviles sin latido.
+  const presence = await ctx.db.rpc<{ changed?: boolean }>('ss_presence_sweep', { room_code: code });
+  if (!r.awarded && !run.changed && !presence.changed) return false;
   const snap = await ctx.db.rpc<{ version: number }>('ss_get_state', { room_code: code, view: 'public' });
   await ctx.publisher.publish(code, snap.version);
   return Boolean(r.awarded);

@@ -10,6 +10,7 @@ import { ToastProvider, useToast } from '@/components/ui/toast';
 import { ApiError, fetchMe, leaveGameRequest } from '@/lib/client/api';
 import { GameGone } from '@/components/ui/game-gone';
 import { useLiveGame } from '@/lib/client/use-live-game';
+import { usePresencePing } from '@/lib/client/use-presence-ping';
 import type { PublicSnapshot, RuntimeInfo } from '@/lib/domain/types';
 
 export function PlayView(props: { roomCode: string; initial: PublicSnapshot; runtime: RuntimeInfo; initialPlayerId: string | null }) {
@@ -49,6 +50,7 @@ function PlayInner({ roomCode, initial, runtime, initialPlayerId }: { roomCode: 
     return () => clearInterval(id);
   }, [playerId, roomCode, dropPlayer]);
 
+  usePresencePing(roomCode, Boolean(playerId));
   const me = playerId ? snapshot.players.find((p) => p.id === playerId) : undefined;
 
   async function leave() {
