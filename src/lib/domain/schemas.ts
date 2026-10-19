@@ -58,6 +58,9 @@ export const actionSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('game.set_auto_run'), enabled: z.boolean(), gap_seconds: z.number().int().min(3).max(300), idle_seconds: z.number().int().min(10).max(600), auto_award_seconds: z.number().int().min(3).max(300).optional(), random: z.boolean().optional() }),
   z.object({ type: z.literal('game.set_join_policy'), join_policy: z.enum(['open', 'slots', 'closed']) }),
   z.object({ type: z.literal('player.release'), player_id: uuid }),
+  /** «Sacar de la TV» / «Volver a mostrar»: oculta al jugador en la TV y el espectador sin liberar su casilla ni tocar su saldo (docs/PRESENCIA-Y-RETIRADOS.md). */
+  z.object({ type: z.literal('player.retire'), player_id: uuid }),
+  z.object({ type: z.literal('player.unretire'), player_id: uuid }),
   z.object({ type: z.literal('game.start') }),
   z.object({ type: z.literal('game.pause') }),
   z.object({ type: z.literal('game.resume') }),
@@ -127,6 +130,8 @@ export const unyieldBidSchema = yieldBidSchema;
 export const galleryVoteSchema = z.object({ target_id: uuid });
 /** Reacciones del móvil a la TV: lista cerrada (la misma que valida `ss_send_reaction`). */
 export const REACTION_EMOJIS = ['👏', '😱', '😂', '🔥', '😭', '🤑', '🎉', '🤯'] as const;
+/** Latido del móvil: `bye` = aviso de salida (pagehide). La identidad sale de la cookie, nunca del cuerpo. */
+export const pingSchema = z.object({ bye: z.boolean().optional() });
 export const reactionSchema = z.object({ emoji: z.enum(REACTION_EMOJIS) });
 export const joinSchema = z.union([
   z.object({ player_id: uuid }),

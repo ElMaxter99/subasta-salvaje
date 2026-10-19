@@ -71,6 +71,7 @@ export const ERROR_MESSAGES: Record<string, string> = {
   already_yielded: 'Has cedido esta puja: ya no puedes pujar por este elemento.',
   unyield_closed: 'La subasta ya no está abierta: no se puede volver a pujar por este elemento.',
   unyield_too_late: 'Ya no puedes retractarte: otros jugadores cedieron después de ti y han pasado más de 8 segundos.',
+  player_retired: 'El anfitrión te ha sacado de la partida: ya no puedes pujar.',
   grace_not_applicable: 'La pausa de gracia solo vale con una cuenta atrás de adjudicación en marcha (automática o relámpago) y alguien liderando.',
   grace_limit: 'Ya has usado las 3 pausas de gracia de esta subasta.',
   reaction_too_fast: 'Vas muy rápido: espera un segundo antes de reaccionar otra vez.',

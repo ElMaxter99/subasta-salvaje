@@ -60,7 +60,9 @@ export function WatchView({ roomCode, initial, runtime, accessKey }: { roomCode:
 
 function LiveBody({ snapshot }: { snapshot: PublicSnapshot }) {
   const { game, auction } = snapshot;
-  const players = game.status === 'lobby' ? snapshot.players : joinedPlayers(snapshot.players);
+  // Los retirados por el anfitrión no salen mientras dura la partida (al terminar sí, con sus compras y saldo).
+  const visible = snapshot.players.filter((p) => !p.retired || game.status === 'finished');
+  const players = game.status === 'lobby' ? visible : joinedPlayers(visible);
   const live = game.status !== 'lobby' && (auction?.status === 'open' || auction?.status === 'closed');
   return (
     <div className="mx-auto flex max-w-3xl flex-col gap-5 px-4 py-4">
@@ -72,7 +74,7 @@ function LiveBody({ snapshot }: { snapshot: PublicSnapshot }) {
       ) : null}
       {live && auction ? <AuctionCard snapshot={snapshot} auction={auction} players={snapshot.players} /> : null}
       {game.status !== 'lobby' && !live ? <Between snapshot={snapshot} players={snapshot.players} /> : null}
-      <PlayersGrid players={players} leaderId={live && !auction?.hidden ? (auction?.current_bidder_id ?? null) : null} lobby={game.status === 'lobby'} />
+      <PlayersGrid players={players} playing={game.status === 'active' || game.status === 'paused'} leaderId={live && !auction?.hidden ? (auction?.current_bidder_id ?? null) : null} lobby={game.status === 'lobby'} />
     </div>
   );
 }
@@ -215,7 +217,7 @@ function Between({ snapshot, players }: { snapshot: PublicSnapshot; players: Pla
 }
 
 /** Casas y saldos de los jugadores (solo datos públicos de la instantánea). */
-function PlayersGrid({ players, leaderId, lobby }: { players: Player[]; leaderId: string | null; lobby: boolean }) {
+function PlayersGrid({ players, leaderId, lobby, playing }: { players: Player[]; leaderId: string | null; lobby: boolean; playing: boolean }) {
   return (
     <section aria-labelledby="watch-players">
       <h2 id="watch-players" className="mb-2 font-display text-xl text-gold">Jugadores</h2>
@@ -223,7 +225,12 @@ function PlayersGrid({ players, leaderId, lobby }: { players: Player[]; leaderId
         {players.map((p) => (
           <li key={p.id} className={`overflow-hidden rounded-2xl border-2 bg-night-800 ${leaderId === p.id ? 'border-gold' : 'border-white/10'}`} data-testid="watch-player">
             <div className="relative aspect-[3/2] w-full">
-              <HouseImage image={p.current_image} alt={`Casa de ${p.name}`} className="absolute inset-0" emptyLabel="Sin casa todavía" />
+              <div className={`absolute inset-0 ${playing && p.claimed && p.online === false ? 'opacity-60 grayscale' : ''}`}>
+                <HouseImage image={p.current_image} alt={`Casa de ${p.name}`} className="absolute inset-0" emptyLabel="Sin casa todavía" />
+              </div>
+              {playing && p.claimed && p.online === false ? (
+                <span role="status" data-testid="watch-offline" className="absolute left-2 top-2 rounded-full bg-night-950/85 px-3 py-1 text-sm font-black text-white">📵 Desconectado</span>
+              ) : null}
               {p.generating.some((g) => g.kind === 'edit') ? (
                 <span className="absolute bottom-2 right-2 rounded-full bg-violet px-3 py-1 text-sm font-black text-white">⏳ Mejorando la casa…</span>
               ) : null}

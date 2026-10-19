@@ -3,7 +3,7 @@
 import { MAX_PLAYERS } from '@/lib/domain/limits';
 import { useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowDown, ArrowUp, History, Pencil, Plus, Smartphone, Sparkles, Trash2, Upload, Wallet } from 'lucide-react';
+import { ArrowDown, ArrowUp, Eye, EyeOff, History, Pencil, Plus, Smartphone, Sparkles, Trash2, Upload, Wallet } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useToast } from '@/components/ui/toast';
@@ -178,6 +178,8 @@ function PlayerRow({ ctx, player: p, index, total, onMove, onRemove, onRelease }
   const [budget, setBudget] = useState('');
   const budgetCents = parseOhrosToCents(budget);
   const customBudget = lobby && p.initial_balance_cents != null && p.initial_balance_cents !== snapshot.game.initial_budget_cents;
+  const ago = p.last_seen_ago_seconds != null && p.last_seen_ago_seconds >= 60 ? `${Math.round(p.last_seen_ago_seconds / 60)} min` : p.last_seen_ago_seconds != null ? `${p.last_seen_ago_seconds} s` : '';
+  const leadsOpen = snapshot.auction?.status === 'open' && snapshot.auction.current_bidder_id === p.id;
   const initialJob = p.generating.find((g) => g.kind === 'initial');
 
   async function onFile(file: File | undefined) {
@@ -199,7 +201,10 @@ function PlayerRow({ ctx, player: p, index, total, onMove, onRemove, onRelease }
           </h3>
           <p className="text-lg font-bold text-gold"><Ohros cents={p.balance_cents} /></p>
           <div className="mt-1 flex flex-wrap gap-1.5">
-            {snapshot.game.play_mode === 'mobile' ? p.claimed ? <Pill tone="teal">📱 Conectado</Pill> : <Pill>Libre</Pill> : null}
+            {snapshot.game.play_mode === 'mobile' ? p.claimed ? (
+              p.online === false ? <span data-testid={`presence-${p.id}`}><Pill tone="rose">📵 Desconectado{ago ? ` hace ${ago}` : ''}</Pill></span> : <span data-testid={`presence-${p.id}`}><Pill tone="teal">📱 Conectado</Pill></span>
+            ) : <Pill>Libre</Pill> : null}
+            {p.retired ? <Pill tone="gold">🚫 Fuera de la TV</Pill> : null}
             {p.team ? <Pill tone="violet">Equipo {p.team}</Pill> : null}
             {customBudget ? <Pill tone="gold">Presupuesto propio</Pill> : null}
             <Pill>{p.purchases.length} {p.purchases.length === 1 ? 'elemento' : 'elementos'}</Pill>
@@ -286,9 +291,20 @@ function PlayerRow({ ctx, player: p, index, total, onMove, onRemove, onRelease }
             </>
           ) : null}
           {snapshot.game.play_mode === 'mobile' && p.claimed ? (
-            <Button size="md" variant="ghost" disabled={busy !== null} onClick={onRelease}>
+            <Button size="md" variant="ghost" disabled={busy !== null} onClick={onRelease} title="Libera la casilla para que otro móvil pueda reclamarla (distinto de «Sacar de la TV»)">
               <Smartphone className="size-4" aria-hidden /> Liberar móvil
             </Button>
+          ) : null}
+          {snapshot.game.play_mode === 'mobile' && (p.claimed || p.retired) ? (
+            p.retired ? (
+              <Button size="md" variant="secondary" disabled={busy !== null} loading={busy === `unretire-${p.id}`} onClick={() => void run(`unretire-${p.id}`, { type: 'player.unretire', player_id: p.id }, `${p.name} vuelve a mostrarse`)}>
+                <Eye className="size-4" aria-hidden /> Volver a mostrar
+              </Button>
+            ) : (
+              <Button size="md" variant="ghost" disabled={busy !== null} loading={busy === `retire-${p.id}`} onClick={() => void run(`retire-${p.id}`, { type: 'player.retire', player_id: p.id }, `${p.name} ya no se ve en la TV`)}>
+                <EyeOff className="size-4" aria-hidden /> Sacar de la TV
+              </Button>
+            )
           ) : null}
           <Button size="md" variant="ghost" disabled={busy !== null} onClick={() => setEditing((v) => !v)}>
             <Pencil className="size-4" aria-hidden /> Editar
@@ -299,6 +315,11 @@ function PlayerRow({ ctx, player: p, index, total, onMove, onRemove, onRelease }
             </Button>
           ) : null}
         </div>
+      ) : null}
+      {p.retired && leadsOpen ? (
+        <p role="status" className="mt-2 rounded-xl bg-gold/15 px-3 py-2 text-sm font-semibold text-gold-soft" data-testid={`retired-leads-${p.id}`}>
+          ⚠️ {p.name} está fuera de la partida pero va ganando la subasta abierta. Decide tú: cancela la subasta o adjudícala (se cobra como siempre).
+        </p>
       ) : null}
       <Link href={`/game/${roomCode}/history?player=${p.id}`} className="mt-2 inline-flex min-h-10 items-center gap-1.5 text-sm font-bold text-violet-soft underline-offset-4 hover:underline">
         <History className="size-4" aria-hidden /> Historial de imágenes

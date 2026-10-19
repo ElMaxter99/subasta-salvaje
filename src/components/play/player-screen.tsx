@@ -69,6 +69,8 @@ export function PlayerScreen({
   const open = auction?.status === 'open' && game.status === 'active';
   const closed = auction?.status === 'closed' && game.status !== 'finished';
   const leading = open && !auction.hidden && auction.current_bidder_id === me.id;
+  // El anfitrión lo sacó de la partida: sigue viendo la subasta, pero no puede pujar, ceder ni reaccionar (el servidor también lo impide).
+  const retired = me.retired === true && game.status !== 'finished';
   const blind = Boolean(auction?.hidden);
   const sealed = auction?.wild_event === 'sealed';
   const flash = auction?.wild_event === 'flash';
@@ -115,6 +117,11 @@ export function PlayerScreen({
         <SoundToggle />
       </div>
       <main className="flex-1 space-y-4 px-4 pb-6 pt-4">
+        {retired ? (
+          <p role="status" data-testid="retired-notice" className="rounded-2xl border-2 border-rose bg-rose/15 px-4 py-3 text-center text-base font-bold text-rose">
+            El anfitrión te ha sacado de la partida. Ya no puedes pujar; tus compras y tu saldo se conservan. Si fue un error, díselo.
+          </p>
+        ) : null}
         <OutbidAlert snapshot={snapshot} me={me} />
         <YieldNotice auction={auction ?? null} players={players} exceptId={me.id} className="text-sm" />
         <div className="flex justify-center empty:hidden"><AutoRunClock snapshot={snapshot} compact /></div>
@@ -272,10 +279,10 @@ export function PlayerScreen({
           </>
         ) : null}
 
-        {game.status === 'active' ? <ReactionBar roomCode={roomCode} onNotPlayer={onNotPlayer} /> : null}
+        {game.status === 'active' && !retired ? <ReactionBar roomCode={roomCode} onNotPlayer={onNotPlayer} /> : null}
       </main>
 
-      {open ? (
+      {open && !retired ? (
         <div className={`z-20 space-y-2 border-t border-white/10 bg-night-900/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur ${fixedBars ? 'sticky bottom-0' : ''}`}>
           {!sealed && !leading ? <YieldButton roomCode={roomCode} auctionId={auction.id} yielded={yielded} onSnapshot={onSnapshot} onNotPlayer={onNotPlayer} /> : null}
           <BidPad

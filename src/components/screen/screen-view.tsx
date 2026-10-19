@@ -72,7 +72,8 @@ export function ScreenView({ roomCode, initial, runtime }: { roomCode: string; i
   // Modo móviles: en la TV solo aparecen los jugadores que están dentro (con su móvil identificado). Si alguien entra en mitad de la
   // partida aparece su puesto y si se sale desaparece, así los puestos vacíos no ocupan pantalla. En modo anfitrión se ven todos.
   const mobile = game.play_mode === 'mobile';
-  const shown = mobile ? players.filter((p) => p.claimed) : players;
+  // Los «retirados» por el anfitrión no salen mientras dura la partida (en la pantalla final y los resultados sí).
+  const shown = mobile ? players.filter((p) => p.claimed && (!p.retired || finished)) : players;
   const { cols, rows } = gridFor(shown.length);
   const lobby = game.status === 'lobby';
   const liveAuction = !lobby && live && (live.status === 'open' || live.status === 'closed') ? live : null;

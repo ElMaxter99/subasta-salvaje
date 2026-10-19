@@ -50,6 +50,12 @@ export interface Player {
   claimed: boolean;
   /** false = en modo móviles nunca ha entrado: no sale en el resultado final ni cuenta en la votación. */
   joined?: boolean;
+  /** Modo móviles: false = el móvil dejó de dar señales (sin latido hace > 40 s). Calculado en la BD; nunca lleva marcas de tiempo. */
+  online?: boolean;
+  /** El anfitrión lo ha sacado de la TV (y del espectador) mientras dura la partida; sigue en resultados con sus compras y saldo. */
+  retired?: boolean;
+  /** Solo en la vista del anfitrión: segundos desde el último latido del móvil. */
+  last_seen_ago_seconds?: number;
   current_image_version_id: string | null;
   current_image: ImageRef | null;
   initial_image: ImageRef | null;
