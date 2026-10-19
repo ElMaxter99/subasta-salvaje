@@ -369,7 +369,7 @@ async function main() {
   } finally {
     await browser.close();
   }
-  log('listo. Revisa docs/img/ y recuerda que son capturas del modo demo (pegatinas locales sin IA).');
+  log('listo. Revisa docs/img/ y recuerda que son capturas con pegatinas locales (sin IA).');
 }
 
 main().then(() => process.exit(0), (e) => { console.error(e); process.exit(1); });
