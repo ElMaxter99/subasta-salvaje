@@ -30,7 +30,12 @@ import { formatAmount, formatOhros } from '@/lib/domain/money';
  */
 function subscribeViewport(cb: () => void) {
   window.addEventListener('resize', cb);
-  return () => window.removeEventListener('resize', cb);
+  // Cambiar el tamaño de letra (ajustes del navegador o del sistema) no dispara `resize`: se vuelve a medir cada segundo (barato; solo re-renderiza si cambia).
+  const id = window.setInterval(cb, 1000);
+  return () => {
+    window.removeEventListener('resize', cb);
+    window.clearInterval(id);
+  };
 }
 const fixedBarsFit = () => window.innerHeight >= 32 * (parseFloat(getComputedStyle(document.documentElement).fontSize) || 16);
 function useFixedBars() {
