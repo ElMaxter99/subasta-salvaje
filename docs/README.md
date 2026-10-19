@@ -30,7 +30,7 @@ una regla, una migración o una decisión, actualiza el documento correspondient
 - [`FASE1-JUEGO.md`](FASE1-JUEGO.md): retractarse de ceder, pad de pujas, pausa de gracia, sonidos y premios nuevos.
 - [`ESPECTADOR-Y-PODIO.md`](ESPECTADOR-Y-PODIO.md): modo espectador `/watch` e imagen del podio en tres formatos.
 - [`BIBLIOTECA-ETIQUETAS.md`](BIBLIOTECA-ETIQUETAS.md): roles, categorías y etiquetas de la biblioteca, selector en la partida, cobertura y parecidas.
-- [`PLANTILLAS-SISTEMA-CATALOGO.md`](PLANTILLAS-SISTEMA-CATALOGO.md): catálogo de 36 partidas del sistema, validador e importador.
+- [`PLANTILLAS-SISTEMA-CATALOGO.md`](PLANTILLAS-SISTEMA-CATALOGO.md): catálogo de 69 partidas del sistema (36 base + 33 variantes), validador e importador.
 - [`CASAR-FOTOS-PLANTILLAS.md`](CASAR-FOTOS-PLANTILLAS.md): motor de casamiento foto↔elemento de plantilla, script y botón del admin.
 - [`FUENTES-OPENVERSE-MUSEOS.md`](FUENTES-OPENVERSE-MUSEOS.md): descarga de imágenes CC0/PDM de Openverse y museos, licencias y límites.
 - [`FUENTE-PODIO.md`](FUENTE-PODIO.md): fuentes TTF (Baloo 2, Nunito) de la imagen del podio y las OG, origen, licencia y regeneración.
