@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 test('modo espectador: /watch con clave y sin sesión muestra subasta, saldos y casas, sin controles; a ciegas no revela el importe; el anfitrión puede desactivarlo', async ({ browser }) => {
+  test.setTimeout(180_000); // recorre clave, desactivar, cambiar enlace y final: en una pasada completa el valor por defecto (90 s) se queda corto
   const hostCtx = await browser.newContext();
   const host = hostCtx.request;
   expect((await host.post('/api/auth/demo')).ok()).toBeTruthy();
