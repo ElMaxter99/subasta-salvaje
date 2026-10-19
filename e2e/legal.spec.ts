@@ -44,7 +44,9 @@ test('sin variables legales: aviso de titular pendiente, sin datos inventados', 
 test('cookies: la tabla lista las claves reales', async ({ page }) => {
   await page.goto('/cookies');
   const table = page.getByTestId('storage-table');
-  for (const k of ['ss_demo_host', 'ss_p_', 'ss_audio_tv', 'ss_import_notice', 'sb-']) await expect(table).toContainText(k);
+  for (const k of ['ss_p_', 'ss_audio_tv', 'ss_import_notice', 'sb-']) await expect(table).toContainText(k);
+  // La cookie del modo de desarrollo no es del producto: no aparece en la política pública
+  await expect(table).not.toContainText('ss_demo_host');
 });
 
 for (const [label, size] of [['móvil 390px', { width: 390, height: 844 }], ['escritorio 1920px', { width: 1920, height: 1080 }]] as const) {
