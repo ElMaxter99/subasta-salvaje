@@ -12,7 +12,7 @@ const LABELS: Record<ConnectionState, string> = {
 export function ConnectionBadge({ state, runtime, className = '' }: { state: ConnectionState; runtime?: RuntimeInfo; className?: string }) {
   const Icon = state === 'live' ? Wifi : state === 'offline' ? WifiOff : RefreshCw;
   const tone = state === 'live' ? 'text-teal' : state === 'offline' ? 'text-rose' : 'text-gold';
-  const detail = state === 'polling' && runtime?.mode === 'demo' ? ' (sondeo local)' : '';
+  const detail = state === 'polling' && runtime?.mode === 'demo' && !runtime.hideDevBanner ? ' (sondeo local)' : '';
   return (
     <span className={`inline-flex items-center gap-1.5 text-sm font-semibold ${tone} ${className}`} role="status">
       <Icon className={`size-4 ${state === 'polling' ? 'animate-spin-slow' : ''}`} aria-hidden />
@@ -24,7 +24,7 @@ export function ConnectionBadge({ state, runtime, className = '' }: { state: Con
 
 /** Aviso visible de que se ejecuta con datos locales (modo demo de desarrollo, sin Supabase). */
 export function DemoBanner({ runtime }: { runtime: RuntimeInfo }) {
-  if (runtime.mode !== 'demo') return null;
+  if (runtime.mode !== 'demo' || runtime.hideDevBanner) return null;
   return (
     <div className="flex items-center justify-center gap-2 bg-gold px-3 py-1.5 text-center text-sm font-bold text-night-950">
       <FlaskConical className="size-4 shrink-0" aria-hidden />

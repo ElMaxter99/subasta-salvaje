@@ -126,7 +126,7 @@ export default async function Home() {
           </div>
         </section>
 
-        {runtime.mode === 'demo' ? (
+        {runtime.mode === 'demo' && !runtime.hideDevBanner ? (
           <section className="rounded-3xl border border-dashed border-gold/50 p-6">
             <h2 className="font-display text-lg text-gold">Modo demo</h2>
             <p className="mb-3 text-sm text-white/70">

@@ -47,8 +47,8 @@ describe('páginas legales', () => {
     ].map(read).join('\n');
     const names = STORAGE_INVENTORY.map((s) => s.name).join(' ');
     // lo que el código usa -> debe estar en el inventario
-    expect(src).toContain("DEMO_COOKIE = 'ss_demo_host'");
-    expect(names).toContain('ss_demo_host');
+    // La cookie del anfitrión local (modo de desarrollo) NO se inventaría: solo existe en desarrollo y nunca en un despliegue real.
+    expect(names).not.toContain('ss_demo_host');
     expect(src).toContain('`ss_p_${roomCode.toUpperCase()}`');
     expect(names).toContain('ss_p_');
     expect(src).toContain('`ss_audio_${role}`');
@@ -69,6 +69,10 @@ describe('páginas legales', () => {
     // Cada escritura de cookie debe ser una de las inventariadas (la sesión de Supabase se escribe vía setAll).
     const sets = [...text.matchAll(/\bres\.cookies\.set\(\s*([A-Za-z_.]+)/g)].map((m) => m[1]!);
     for (const n of sets) expect(['DEMO_COOKIE', 'playerCookieName'], `cookie sin inventariar: ${n}`).toContain(n);
+    // …y la de desarrollo solo se escribe en rutas que exigen el modo de desarrollo (404 en cualquier otro caso).
+    for (const f of ['src/app/api/auth/demo/route.ts', 'src/app/api/dev/seed/route.ts']) {
+      expect(read(f), f).toMatch(/getRuntimeMode\(\) !== 'demo'/);
+    }
   });
 
   it('sin variables legales no se inventa ningún dato del titular', () => {

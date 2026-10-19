@@ -83,4 +83,16 @@ describe('infraestructura', () => {
     expect(getRuntimeMode({ NODE_ENV: 'production', ALLOW_DEMO_MODE: 'true' } as never)).toBe('demo');
     expect(getRuntimeMode({ NODE_ENV: 'production', SUPABASE_SERVICE_ROLE_KEY: 's' } as never)).toBe('unconfigured');
   });
+  it('el modo de desarrollo es imposible en Vercel (producción o preview), se pida lo que se pida', () => {
+    const full = { NEXT_PUBLIC_SUPABASE_URL: 'u', NEXT_PUBLIC_SUPABASE_ANON_KEY: 'a', SUPABASE_SERVICE_ROLE_KEY: 's' };
+    for (const host of [{ VERCEL: '1' }, { VERCEL_ENV: 'preview' }, { VERCEL_URL: 'x.vercel.app' }]) {
+      // sin Supabase: nunca demo, ni siquiera con ALLOW_DEMO_MODE o fuera de producción
+      expect(getRuntimeMode({ ...host, NODE_ENV: 'production', ALLOW_DEMO_MODE: 'true' } as never)).toBe('unconfigured');
+      expect(getRuntimeMode({ ...host, NODE_ENV: 'development' } as never)).toBe('unconfigured');
+      // con Supabase: FORCE_DEMO_MODE se ignora
+      expect(getRuntimeMode({ ...host, ...full, NODE_ENV: 'production', FORCE_DEMO_MODE: 'true', ALLOW_DEMO_MODE: 'true' } as never)).toBe('supabase');
+    }
+    // fuera de Vercel sigue funcionando para desarrollo y pruebas
+    expect(getRuntimeMode({ ...full, NODE_ENV: 'production', FORCE_DEMO_MODE: 'true', ALLOW_DEMO_MODE: 'true' } as never)).toBe('demo');
+  });
 });

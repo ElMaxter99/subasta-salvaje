@@ -14,8 +14,20 @@ export function missingSupabaseVars(env: NodeJS.ProcessEnv = process.env): strin
   return SUPABASE_REQUIRED_VARS.filter((k) => !env[k]?.trim());
 }
 
+/** ¿Se ejecuta en un alojamiento real (Vercel)? Allí el modo de desarrollo local NO existe, se pida lo que se pida. */
+export function isHostedDeployment(env: NodeJS.ProcessEnv = process.env): boolean {
+  return Boolean(env.VERCEL || env.VERCEL_ENV || env.VERCEL_URL);
+}
+
+/**
+ * Modo de ejecución. El modo `demo` (datos locales: PGlite + disco) es SOLO una herramienta de desarrollo y de pruebas: se activa
+ * fuera de producción, o con `ALLOW_DEMO_MODE=true` en un build local, y `FORCE_DEMO_MODE=true` lo fuerza aunque haya Supabase.
+ * En Vercel (cualquier entorno: producción o preview) NUNCA se activa: sin Supabase configurado → `unconfigured` (pantalla /setup).
+ */
 export function getRuntimeMode(env: NodeJS.ProcessEnv = process.env): RuntimeMode {
-  if (missingSupabaseVars(env).length === 0 && env.FORCE_DEMO_MODE !== 'true') return 'supabase';
+  const supabase = missingSupabaseVars(env).length === 0;
+  if (isHostedDeployment(env)) return supabase ? 'supabase' : 'unconfigured';
+  if (supabase && env.FORCE_DEMO_MODE !== 'true') return 'supabase';
   if (env.NODE_ENV !== 'production' || env.ALLOW_DEMO_MODE === 'true') return 'demo';
   return 'unconfigured';
 }

@@ -355,6 +355,8 @@ export interface RuntimeInfo {
   aiProvider: 'openai' | 'cloudflare' | 'pollinations' | 'aihorde' | 'huggingface' | 'demo';
   /** El proveedor configurado puede EDITAR la imagen existente de un jugador (si no, sólo genera imágenes nuevas). */
   aiCanEdit: boolean;
+  /** Solo desarrollo: oculta el banner de datos locales (lo usan las capturas de la documentación). Nunca existe en Supabase. */
+  hideDevBanner?: boolean;
   /** Sólo en Supabase: permite que el navegador se suscriba a Realtime. */
   supabaseUrl?: string;
   supabaseAnonKey?: string;

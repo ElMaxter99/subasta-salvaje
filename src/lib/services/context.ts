@@ -94,6 +94,7 @@ export function getRuntimeInfo(ctx?: Pick<AppContext, 'mode' | 'provider'>): Run
     aiConfigured: provider !== null,
     aiProvider: provider?.id ?? 'demo',
     aiCanEdit: provider?.capabilities.edit ?? false,
+    ...(m === 'demo' && process.env.DEV_HIDE_BANNER === 'true' ? { hideDevBanner: true } : {}),
     ...(m === 'supabase' ? { supabaseUrl: getSupabaseConfig().url, supabaseAnonKey: getSupabaseConfig().anonKey } : {}),
   };
 }

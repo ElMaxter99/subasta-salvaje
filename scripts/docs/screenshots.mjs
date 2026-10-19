@@ -37,7 +37,7 @@ const MAX_KB = 240;
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const log = (...a) => console.log('[capturas]', ...a);
-const demoEnv = { ...process.env, ALLOW_DEMO_MODE: 'true', FORCE_DEMO_MODE: 'true', NEXT_DIST_DIR: DIST, DEMO_DATA_DIR: DATA };
+const demoEnv = { ...process.env, ALLOW_DEMO_MODE: 'true', FORCE_DEMO_MODE: 'true', DEV_HIDE_BANNER: 'true', NEXT_DIST_DIR: DIST, DEMO_DATA_DIR: DATA };
 
 let server = null;
 function cleanup() {

@@ -39,7 +39,7 @@ export default function CookiesPage() {
             </tbody>
           </table>
         </div>
-        <p className="text-sm text-white/70">Las cookies de jugador y de demostración son <code>HttpOnly</code> y <code>SameSite=Lax</code> (y <code>Secure</code> en producción).</p>
+        <p className="text-sm text-white/70">La cookie de jugador es <code>HttpOnly</code> y <code>SameSite=Lax</code> (y <code>Secure</code> en producción).</p>
       </section>
       <section>
         <h2>¿Hace falta banner de consentimiento?</h2>
