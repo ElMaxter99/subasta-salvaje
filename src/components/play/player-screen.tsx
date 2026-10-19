@@ -66,6 +66,8 @@ export function PlayerScreen({
   const fixedBars = useFixedBars();
   const nameOf = (id: string | null) => players.find((p) => p.id === id)?.name ?? 'Alguien';
 
+  // El anfitrión puede pasar a registrar él las pujas a mitad de partida: el móvil sigue identificado pero ya no puede pujar.
+  const hostMode = game.play_mode !== 'mobile';
   const open = auction?.status === 'open' && game.status === 'active';
   const closed = auction?.status === 'closed' && game.status !== 'finished';
   const leading = open && !auction.hidden && auction.current_bidder_id === me.id;
@@ -115,6 +117,12 @@ export function PlayerScreen({
         <SoundToggle />
       </div>
       <main className="flex-1 space-y-4 px-4 pb-6 pt-4">
+        {hostMode && game.status !== 'finished' ? (
+          <div role="status" aria-live="polite" data-testid="host-mode-notice" className="space-y-1 rounded-2xl border-2 border-gold/60 bg-gold/15 px-4 py-3 text-base">
+            <p className="font-bold text-gold-soft">Ahora el anfitrión registra las pujas</p>
+            <p className="text-white/85">No puedes pujar desde el móvil. Dile tu puja en voz alta y sigue la subasta en la TV. Conservas tu casilla y tu saldo; si vuelve al modo móviles, podrás pujar de nuevo.</p>
+          </div>
+        ) : null}
         <OutbidAlert snapshot={snapshot} me={me} />
         <YieldNotice auction={auction ?? null} players={players} exceptId={me.id} className="text-sm" />
         <div className="flex justify-center empty:hidden"><AutoRunClock snapshot={snapshot} compact /></div>
@@ -272,10 +280,10 @@ export function PlayerScreen({
           </>
         ) : null}
 
-        {game.status === 'active' ? <ReactionBar roomCode={roomCode} onNotPlayer={onNotPlayer} /> : null}
+        {game.status === 'active' && !hostMode ? <ReactionBar roomCode={roomCode} onNotPlayer={onNotPlayer} /> : null}
       </main>
 
-      {open ? (
+      {open && !hostMode ? (
         <div className={`z-20 space-y-2 border-t border-white/10 bg-night-900/95 px-4 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur ${fixedBars ? 'sticky bottom-0' : ''}`}>
           {!sealed && !leading ? <YieldButton roomCode={roomCode} auctionId={auction.id} yielded={yielded} onSnapshot={onSnapshot} onNotPlayer={onNotPlayer} /> : null}
           <BidPad

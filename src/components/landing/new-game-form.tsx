@@ -27,6 +27,8 @@ import { PLAYER_COLORS } from '@/lib/domain/schemas';
 import { THEME_PRESETS, getThemePreset } from '@/lib/domain/themes';
 import { Stepper, type StepInfo } from './new-game-stepper';
 import { Ohros } from '@/components/ui/ohros';
+import { RoundsField } from '@/components/ui/rounds-field';
+import { PRESETS, planPreset, type PresetContext, type PresetId, type PresetPlan } from '@/lib/domain/presets';
 
 const CUSTOM = CUSTOM_THEME;
 /** `2xl` (≥1536 px, p. ej. una TV a 1080p con zoom del navegador) agranda campos y botones para leer a distancia. */
@@ -76,6 +78,18 @@ function Choice({ checked, disabled, name, value, onChange, title, desc, tag }: 
   );
 }
 
+/** Ritmo de la partida (valores de serie de SQL: adjudicación automática apagada a 20 s, pausa 10 s, 60 s sin pujas, sin sorpresas). */
+interface Pace { awardOn: boolean; awardSecs: string; gap: string; idle: string; wild: string }
+const DEFAULT_PACE: Pace = { awardOn: false, awardSecs: '20', gap: '10', idle: '60', wild: '0' };
+const inRange = (t: string, lo: number, hi: number) => /^\d+$/.test(t) && Number(t) >= lo && Number(t) <= hi;
+const paceError = (p: Pace): string | null => {
+  if (!inRange(p.awardSecs, 3, 300)) return 'Los segundos de la adjudicación automática deben estar entre 3 y 300.';
+  if (!inRange(p.gap, 3, 300)) return 'La pausa entre subastas debe estar entre 3 y 300 segundos.';
+  if (!inRange(p.idle, 10, 600)) return 'El tiempo sin pujas debe estar entre 10 y 600 segundos.';
+  if (!inRange(p.wild, 0, 100)) return 'La probabilidad de eventos sorpresa debe estar entre 0 y 100 %.';
+  return null;
+};
+
 export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvailable: boolean; systemEditor?: { draft: SystemDraft | null; uploadsEnabled: boolean }; aiProvider: 'openai' | 'cloudflare' | 'pollinations' | 'aihorde' | 'huggingface' | 'demo' }) {
   const router = useRouter();
   const steps = systemEditor ? SYSTEM_STEPS : STEPS;
@@ -95,6 +109,10 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
   const [ranking, setRanking] = useState<'none' | 'balance' | 'items' | 'votes'>(init?.ranking ?? 'none');
   const [maxRounds, setMaxRounds] = useState(init?.maxRounds ?? '');
   const [integerBids, setIntegerBids] = useState(init?.integerBids ?? true);
+  // Preset elegido y «ritmo» (adjudicación/subasta automática y sorpresas). `pace` null = valores de serie, no se envía nada.
+  const [presetId, setPresetId] = useState<PresetId | null>(null);
+  const [appliedPlan, setAppliedPlan] = useState<PresetPlan | null>(null);
+  const [pace, setPace] = useState<Pace | null>(null);
   // Sin jugadores de partida: se pueden crear luego en el panel o, en modo móviles, darse de alta ellos mismos.
   const [players, setPlayers] = useState<string[]>(init?.players ?? []);
   const [initialImageUrl, setInitialImageUrl] = useState<string | null>(init?.initialImageUrl ?? null);
@@ -140,6 +158,48 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
   /** Rondas por defecto = elementos del catálogo de la temática (las temáticas libres usan el catálogo base). */
   const defaultRounds = items?.length ?? (preset ?? getThemePreset('free'))?.items.length ?? 12;
   const roundsValue = maxRounds.trim() === '' ? defaultRounds : Number(maxRounds);
+  /** Lo que el asistente tiene ahora, en la forma que entiende `planPreset` (para listar qué cambia un preset y detectar ediciones a mano). */
+  const presetContext = (): PresetContext => {
+    const p = pace ?? DEFAULT_PACE;
+    return {
+      status: 'new',
+      items: defaultRounds,
+      play_mode: playMode,
+      current: {
+        initial_budget_cents: parseOhrosToCents(budget) ?? undefined,
+        min_bid_cents: parseOhrosToCents(minBid) ?? undefined,
+        max_rounds: Number.isInteger(roundsValue) ? roundsValue : undefined,
+        integer_bids: integerBids,
+        max_players: maxPlayers,
+        auto_award_enabled: p.awardOn,
+        auto_award_seconds: Number(p.awardSecs),
+        auto_run_gap_seconds: Number(p.gap),
+        auto_run_idle_seconds: Number(p.idle),
+        wild_chance_pct: Number(p.wild),
+        join_policy: 'open',
+      },
+    };
+  };
+  function applyPreset(id: PresetId) {
+    const plan = planPreset(id, presetContext());
+    const st = plan.settings;
+    if (st.initial_budget_cents !== undefined) setBudget(String(st.initial_budget_cents / 100));
+    if (st.min_bid_cents !== undefined) setMinBid(String(st.min_bid_cents / 100));
+    if (st.max_rounds !== undefined) setMaxRounds(String(st.max_rounds));
+    if (st.integer_bids !== undefined) setIntegerBids(st.integer_bids);
+    if (st.max_players !== undefined) setMaxPlayersText(String(st.max_players));
+    setPace({
+      awardOn: st.auto_award?.enabled ?? false,
+      awardSecs: String(st.auto_award?.seconds ?? 20),
+      gap: String(st.auto_run?.gap_seconds ?? 10),
+      idle: String(st.auto_run?.idle_seconds ?? 60),
+      wild: String(st.wild_chance_pct ?? 0),
+    });
+    setPresetId(id);
+    setAppliedPlan(plan);
+    setError(null);
+  }
+  const presetEdited = presetId !== null && planPreset(presetId, presetContext()).changes.length > 0;
   /** Copia el catálogo de la temática para poder editarlo (a partir de aquí es un catálogo propio). */
   function customizeCatalog() {
     const base = (preset ?? getThemePreset('free'))?.items ?? [];
@@ -171,6 +231,9 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
   }
 
   function applyTemplate(v: LoadedTemplate, opts: { jump?: boolean } = {}) {
+    setPresetId(null);
+    setAppliedPlan(null);
+    setPace(null);
     setName(v.name);
     setThemeChoice(v.themeChoice);
     setCustomTheme(v.customTheme);
@@ -211,6 +274,10 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
       if (integerBids && m % 100 !== 0) return 'Con pujas en Ohros enteros, la puja mínima también debe ser un Ohro entero (1, 2, 3…).';
       if (!Number.isInteger(roundsValue) || roundsValue < 1 || roundsValue > 500) return 'El máximo de rondas debe ser un número entre 1 y 500.';
       if (roundsValue > defaultRounds) return `El máximo de rondas no puede superar los ${defaultRounds} elementos del catálogo.`;
+      if (pace) {
+        const pe = paceError(pace);
+        if (pe) return pe;
+      }
     }
     if (systemEditor && i === 5) {
       if (!meta.title.trim()) return 'Escribe el título de la tarjeta.';
@@ -279,6 +346,16 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
         max_rounds: Math.min(roundsValue, defaultRounds), // nunca más rondas que elementos en el catálogo (el catálogo pudo cambiar después)
         max_players: maxPlayers,
         integer_bids: integerBids,
+        ...(pace
+          ? {
+              extras: {
+                auto_award: { enabled: pace.awardOn, seconds: Number(pace.awardSecs) },
+                auto_run: { gap_seconds: Number(pace.gap), idle_seconds: Number(pace.idle) },
+                wild_chance_pct: Number(pace.wild),
+                ...(presetId ? { preset_id: presetId } : {}),
+              },
+            }
+          : {}),
         ...(systemSlug ? { template_slug: systemSlug } : {}),
         players: names.map((n, i) => ({ name: n, color: PLAYER_COLORS[i % PLAYER_COLORS.length] })),
         ...(items ? { items: items.map((i) => ({ name: i.name, description: i.description, emoji: i.emoji })) } : {}),
@@ -526,6 +603,27 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
           ) : null}
 
           {step === 3 ? (
+            <>
+            <fieldset className={card} data-testid="wizard-presets">
+              <legend className="px-2 font-display text-xl 2xl:text-3xl">Preset (opcional)</legend>
+              <p className="text-sm text-white/70 2xl:text-lg">Rellena de golpe el dinero, las rondas y el ritmo. Se ajusta a los {defaultRounds} elementos del catálogo y después puedes cambiar cualquier valor.</p>
+              <div className="grid gap-2 md:grid-cols-2">
+                {PRESETS.map((p) => (
+                  <Choice key={p.id} name="preset" value={p.id} checked={presetId === p.id && !presetEdited} onChange={() => applyPreset(p.id)} title={<>{p.emoji} {p.label}</>} desc={p.desc} />
+                ))}
+              </div>
+              {presetId && appliedPlan ? (
+                <div className="rounded-2xl border border-teal/40 bg-teal/10 p-3 text-sm 2xl:text-lg" data-testid="wizard-preset-applied" role="status">
+                  <p className="font-bold text-teal">{presetEdited ? `«${appliedPlan.preset.label}» con cambios tuyos (personalizado)` : `«${appliedPlan.preset.label}» aplicado`}</p>
+                  {appliedPlan.changes.length > 0 ? (
+                    <ul className="mt-1 space-y-0.5 text-white/85">
+                      {appliedPlan.changes.map((c) => <li key={c.key}>{c.label}: <span className="text-white/55 line-through">{c.from}</span> → <b className="text-gold">{c.to}</b></li>)}
+                    </ul>
+                  ) : <p className="text-white/80">No ha cambiado nada: ya estaba así.</p>}
+                  {appliedPlan.notes.map((n) => <p key={n} className="mt-1 text-white/80">{n}</p>)}
+                </div>
+              ) : null}
+            </fieldset>
             <section className={card}>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
@@ -542,8 +640,8 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <label htmlFor="rounds" className={label}>Máximo de rondas</label>
-                  <input id="rounds" inputMode="numeric" value={maxRounds} placeholder={String(defaultRounds)} onChange={(e) => setMaxRounds(e.target.value.replace(/\D/g, '').slice(0, 3))} className={field} />
-                  <p className="mt-1 text-xs text-white/55 2xl:text-base">Por defecto, los {defaultRounds} elementos del catálogo (ese es también el máximo). Al jugarse todas las rondas la partida termina sola.</p>
+                  <RoundsField id="rounds" value={maxRounds} onChange={setMaxRounds} total={defaultRounds} inputClassName={field} />
+                  <p className="mt-1 text-xs text-white/55 2xl:text-base">Por defecto, todos los elementos del catálogo (ese es también el máximo). Al jugarse todas las rondas la partida termina sola.</p>
                 </div>
                 <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-white/10 bg-night-900 p-3 sm:mt-6 has-[:focus-visible]:ring-4 has-[:focus-visible]:ring-gold/50">
                   <input type="checkbox" checked={integerBids} onChange={(e) => setIntegerBids(e.target.checked)} className="mt-1 size-5 shrink-0 accent-[#fbbf24] 2xl:size-6" />
@@ -561,7 +659,34 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
                   ))}
                 </select>
               </div>
+              <details className="rounded-2xl border border-white/10 bg-night-900 p-3" data-testid="wizard-pace" open={pace !== null}>
+                <summary className="cursor-pointer font-bold 2xl:text-xl">Ritmo y sorpresas (opcional)</summary>
+                <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                  <label className="flex cursor-pointer items-start gap-3 sm:col-span-2">
+                    <input type="checkbox" checked={(pace ?? DEFAULT_PACE).awardOn} onChange={(e) => setPace({ ...(pace ?? DEFAULT_PACE), awardOn: e.target.checked })} className="mt-1 size-5 shrink-0 accent-[#fbbf24] 2xl:size-6" />
+                    <span><b>Adjudicación automática</b><span className="block text-sm text-white/65">La subasta se adjudica sola unos segundos después de la última puja.</span></span>
+                  </label>
+                  <div>
+                    <label htmlFor="pace-award" className={label}>Adjudicar a los (s)</label>
+                    <input id="pace-award" inputMode="numeric" className={field} value={(pace ?? DEFAULT_PACE).awardSecs} onChange={(e) => setPace({ ...(pace ?? DEFAULT_PACE), awardSecs: e.target.value.replace(/\D/g, '').slice(0, 3) })} />
+                  </div>
+                  <div>
+                    <label htmlFor="pace-wild" className={label}>Eventos sorpresa (%)</label>
+                    <input id="pace-wild" inputMode="numeric" className={field} value={(pace ?? DEFAULT_PACE).wild} onChange={(e) => setPace({ ...(pace ?? DEFAULT_PACE), wild: e.target.value.replace(/\D/g, '').slice(0, 3) })} />
+                  </div>
+                  <div>
+                    <label htmlFor="pace-gap" className={label}>Pausa entre subastas, automática (s)</label>
+                    <input id="pace-gap" inputMode="numeric" className={field} value={(pace ?? DEFAULT_PACE).gap} onChange={(e) => setPace({ ...(pace ?? DEFAULT_PACE), gap: e.target.value.replace(/\D/g, '').slice(0, 3) })} />
+                  </div>
+                  <div>
+                    <label htmlFor="pace-idle" className={label}>Sin pujas se salta a los (s)</label>
+                    <input id="pace-idle" inputMode="numeric" className={field} value={(pace ?? DEFAULT_PACE).idle} onChange={(e) => setPace({ ...(pace ?? DEFAULT_PACE), idle: e.target.value.replace(/\D/g, '').slice(0, 3) })} />
+                  </div>
+                </div>
+                <p className="mt-2 text-xs text-white/55 2xl:text-base">La subasta automática se enciende luego desde el panel; aquí solo se fijan sus tiempos. Todo se puede cambiar en Ajustes.</p>
+              </details>
             </section>
+            </>
           ) : null}
 
           {step === 4 ? (
@@ -641,6 +766,13 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
                   </p>
                   <p className="text-white/70">{roundsValue} {roundsValue === 1 ? 'ronda' : 'rondas'} máximo · {integerBids ? 'pujas en Ohros enteros' : 'se admiten céntimos'}</p>
                   <p className="text-white/70">{RANKING_LABEL[ranking]}</p>
+                  {pace ? (
+                    <p className="text-white/70" data-testid="summary-pace">
+                      {presetId ? `${PRESETS.find((x) => x.id === presetId)?.label}${presetEdited ? ' (personalizado)' : ''} · ` : ''}
+                      {pace.awardOn ? `adjudica a los ${pace.awardSecs} s` : 'sin adjudicación automática'} · pausa {pace.gap} s · sin pujas {pace.idle} s · sorpresas {pace.wild} %
+                    </p>
+                  ) : null}
+                  <p className="text-white/70">Hasta {maxPlayers} jugadores</p>
                 </>
               ))}
               {items && editingCatalog ? (

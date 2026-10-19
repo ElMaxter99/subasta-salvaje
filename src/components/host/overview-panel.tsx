@@ -13,6 +13,7 @@ import { AutoRunCard } from './auto-run-card';
 import { GalleryCard } from './gallery-card';
 import { PendingImagesNotice } from './pending-images';
 import { JoinCard } from './join-card';
+import { AccessCard } from './access-card';
 import { Ohros } from '@/components/ui/ohros';
 
 function Check({ ok, children }: { ok: boolean; children: React.ReactNode }) {
@@ -101,12 +102,13 @@ export function OverviewPanel({ ctx, goTo }: { ctx: HostCtx; goTo: (s: 'jugadore
         </div>
       </Card>
 
+      <AccessCard ctx={ctx} />
+      <JoinCard ctx={ctx} />
+
       {game.status === 'finished' ? <PendingImagesNotice ctx={ctx} /> : null}
       <GalleryCard ctx={ctx} />
 
       <AutoRunCard ctx={ctx} />
-
-      <JoinCard ctx={ctx} />
 
       {game.status === 'lobby' ? (
         <Card title="Antes de empezar">

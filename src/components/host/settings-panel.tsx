@@ -15,6 +15,8 @@ import { ResetGameDialog } from './reset-dialog';
 import { Card, Dot, Notice, inputCls } from './bits';
 import type { HostCtx } from './host-context';
 import { Ohros } from '@/components/ui/ohros';
+import { RoundsField } from '@/components/ui/rounds-field';
+import { PresetCard } from './preset-card';
 
 const RULES: { id: RankingRule; label: string; hint: string }[] = [
   { id: 'none', label: 'Ninguna', hint: 'Sin clasificación: solo se muestran los resultados.' },
@@ -47,12 +49,21 @@ export function SettingsPanel({ ctx }: { ctx: HostCtx }) {
   const [minBid, setMinBid] = useState('');
   const [rounds, setRounds] = useState(String(game.total_rounds));
   const [maxPlayers, setMaxPlayers] = useState(String(game.max_players ?? MAX_PLAYERS));
+  // Si cambian desde fuera (un preset, el catálogo…) los campos se actualizan solos.
+  const [seen, setSeen] = useState({ rounds: game.total_rounds, maxPlayers: game.max_players ?? MAX_PLAYERS });
+  if (seen.rounds !== game.total_rounds || seen.maxPlayers !== (game.max_players ?? MAX_PLAYERS)) {
+    setSeen({ rounds: game.total_rounds, maxPlayers: game.max_players ?? MAX_PLAYERS });
+    setRounds(String(game.total_rounds));
+    setMaxPlayers(String(game.max_players ?? MAX_PLAYERS));
+  }
   const [finishOpen, setFinishOpen] = useState(false);
   const [resetOpen, setResetOpen] = useState(false);
   const minCents = parseOhrosToCents(minBid);
 
   return (
     <div className="space-y-4">
+      <PresetCard ctx={ctx} />
+
       <Card title="Partida">
         <form
           className="space-y-2"
@@ -125,13 +136,11 @@ export function SettingsPanel({ ctx }: { ctx: HostCtx }) {
           <label htmlFor="max-rounds" className="text-sm font-semibold text-white/80">
             Máximo de rondas (ahora {game.total_rounds}; jugadas {game.rounds_completed})
           </label>
-          <div className="flex gap-2">
-            <input id="max-rounds" className={inputCls} inputMode="numeric" value={rounds} disabled={finished} onChange={(e) => setRounds(e.target.value.replace(/\D/g, '').slice(0, 3))} />
-            <Button type="submit" variant="secondary" disabled={finished || !rounds || Number(rounds) < 1 || Number(rounds) > snapshot.items.length || Number(rounds) === game.total_rounds || busy !== null} loading={busy === 'rounds'}>
-              Guardar
-            </Button>
-          </div>
-          <p className="text-xs text-white/55">Al jugarse todas las rondas (adjudicadas o canceladas) la partida termina sola. Mínimo: las rondas ya jugadas ({game.rounds_completed}); máximo: los {snapshot.items.length} elementos del catálogo.</p>
+          <RoundsField id="max-rounds" value={rounds} onChange={setRounds} total={snapshot.items.length} min={game.rounds_completed} inputClassName={inputCls} disabled={finished} />
+          <Button type="submit" variant="secondary" disabled={finished || !rounds || Number(rounds) < Math.max(1, game.rounds_completed) || Number(rounds) > snapshot.items.length || Number(rounds) === game.total_rounds || busy !== null} loading={busy === 'rounds'}>
+            Guardar rondas
+          </Button>
+          <p className="text-xs text-white/55">Al jugarse todas las rondas (adjudicadas o canceladas) la partida termina sola. Mínimo: las rondas ya jugadas ({game.rounds_completed}); máximo: los {snapshot.items.length} elementos del catálogo. Si quitas elementos del catálogo, el máximo se recorta solo para no pasar de ahí; si añades, no cambia: súbelo aquí.</p>
         </form>
         <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-2xl border border-white/10 bg-night-900 p-3">
           <input
