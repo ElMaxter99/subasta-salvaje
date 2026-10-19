@@ -1,8 +1,8 @@
 # Subasta Salvaje · guía para Claude (léela primero)
 
-App full-stack de subastas creativas multijugador. Una **TV** (`/game/[code]/screen`) muestra la subasta en público, el
+App full-stack de subastas creativas multijugador: se parte de una **imagen base** (una casa, una nave espacial, el salón de un castillo, una oficina…, a elegir o subir) y los jugadores la transforman con los elementos que ganan pujando, para dejarla lo más divertida —o lo más útil— posible según cada grupo. Hay partidas temáticas (plantillas del sistema) pero todo es personalizable. Una **TV** (`/game/[code]/screen`) muestra la subasta en público, el
 **anfitrión/gamemaster** la lleva desde un panel privado (`/game/[code]/host`) y los **jugadores** pueden pujar desde su móvil
-(`/game/[code]/play`, modo «móviles»). Cada jugador tiene una «casa» (imagen) que **evoluciona** con cada compra: pegatinas
+(`/game/[code]/play`, modo «móviles»). Cada jugador tiene una **imagen** (partiendo de la imagen base; internamente `HouseImage`/`catalog_id house`) que **evoluciona** con cada compra: pegatinas
 con emojis (sin IA) o edición por IA. Idioma del producto, comentarios y docs: **español**.
 
 > Antes de tocar nada: lee `AGENTS.md` (aviso sobre Next.js 16) y el índice `docs/README.md`.

@@ -9,14 +9,14 @@ Cada imagen (`library_images`) tiene, además de título, colección, etiquetas 
 
 | Campo | Qué es | Notas |
 |---|---|---|
-| `roles` (`text[]`) | Para qué sirve en una partida | Conjunto. Hoy: `start` = **foto de inicio de partida** (la casa/escena inicial de los jugadores) y `product` = **producto de catálogo** (foto de un elemento que se subasta). Una imagen puede tener **los dos** o **ninguno** (sin rol: no se ofrece a los anfitriones). |
+| `roles` (`text[]`) | Para qué sirve en una partida | Conjunto. Hoy: `start` = **foto de inicio de partida** (la imagen base/escena inicial de los jugadores) y `product` = **producto de catálogo** (foto de un elemento que se subasta). Una imagen puede tener **los dos** o **ninguno** (sin rol: no se ofrece a los anfitriones). |
 | `category` | Temática (Halloween, Paisajes…) | Texto libre con sugerencias (`LIBRARY_CATEGORIES`). Sirve para buscar y para medir la cobertura. |
 | `tags` | Etiquetas libres de búsqueda | Ya existían (máx. 20, minúsculas). |
 | `collection` | Carpeta física en el repositorio de fotos | Ya existía. **No** es lo mismo que la categoría (la colección cambia la ruta del archivo; la categoría solo es metadato y se edita sin tocar GitHub). |
 | `reviewed` | Revisada por el superadmin | Ya existía. **Ahora es también «publicada»**: solo las revisadas se ofrecen a los anfitriones en el selector. |
 | `phash` | Huella perceptual (dHash de 64 bits) | Para avisar de imágenes parecidas. Nula en las anteriores a esta versión (ver §5). |
 
-**Por qué `roles` como conjunto y no un único `kind`:** un paisaje sirve de casa inicial pero también puede ser un producto («Isla desierta»);
+**Por qué `roles` como conjunto y no un único `kind`:** un paisaje sirve de imagen inicial pero también puede ser un producto («Isla desierta»);
 con un campo único habría que duplicar la imagen (y el hash de contenido lo impide). Es extensible: para añadir un rol hay que ampliar
 `LIBRARY_ROLES` en `src/lib/library/taxonomy.ts` y el `check` de la tabla en una **migración nueva** (el resto —filtros, parches, selector— ya trabaja con la lista).
 
@@ -48,7 +48,7 @@ Ofrecer a los anfitriones solo lo revisado evita que una foto dudosa llegue a un
 - **Dónde:**
   - *Panel del anfitrión → Jugadores → «Imagen de partida para todos»* (sala de espera): botón «Elegir de la biblioteca (foto de inicio de partida)»; pide confirmación y respeta el «¿A quién se aplica?» (actuales / nuevos).
   - *Panel del anfitrión → Catálogo*: botón «De la biblioteca» en cada elemento (aplica al elegir).
-  - *Asistente «Nueva partida» → Las casas*: «Casa inicial (opcional)»; se aplica al crear la partida por la ruta que ya usan las plantillas.
+  - *Asistente «Nueva partida» → Las imágenes*: «Imagen inicial (opcional)»; se aplica al crear la partida por la ruta que ya usan las plantillas.
 - **API de solo lectura:** `GET /api/library/images?role=start|product&q=&category=&limit=&offset=` (anfitrión con sesión, 120 peticiones/min, `limit` ≤ 60). El rol es obligatorio. Devuelve solo imágenes **con ese rol y revisadas**, y por imagen únicamente `id, url, title, collection, category, tags, roles, credit, width, height` (sin ruta interna, hash, huella ni autor del alta) más el recuento por categoría. La lógica está en `ss_library_pick_list`.
 - **Aplicar:** `POST /api/games/[code]/library-image` con `{ target: 'initial', image_id, scope_current, scope_new }` o `{ target: 'item', image_id, item_id }`. El servicio (`src/lib/services/library-pick-service.ts`) vuelve a comprobar en SQL (`ss_library_pick_get`) que la imagen existe, está revisada y tiene el rol que corresponde al destino, y delega en **las funciones ya existentes** `setInitialFromHosted` / `setItemImageFromHosted` (→ `ss_apply_initial_image` / `ss_set_item_image`) que comprueban propietario y estado de la partida. No hay lógica nueva de escritura de imágenes.
 - **Imagen interna única:** la imagen ya se normalizó a WebP/tamaño interno (`src/lib/images/normalize.ts`) **al entrar** en la biblioteca, así que al aplicarla **se usa por enlace, sin descargarla ni copiarla** a Storage (igual que las fotos de las plantillas del sistema; requiere `GITHUB_ASSETS_REPO` y que el enlace sea de ese repositorio, `isHostedImage`). Nada se genera: **no es IA**, no consume cuotas ni toca saldos.

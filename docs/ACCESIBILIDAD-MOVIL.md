@@ -87,5 +87,5 @@ emula `reducedMotion` y comprueba que ningún `.ss-mascot`/`[data-mascot]` conse
   bloquean el pad si se espera, pero no se ha medido en dispositivo.
 - Foco oculto por barras fijas (WCAG 2.4.11): el campo de importe se desplaza al centro al enfocarlo (`scrollIntoView`); el resto de controles
   no tiene `scroll-padding`. No se ha comprobado con teclado físico en móvil.
-- Contraste calculado sobre colores planos; las superficies con degradado/`backdrop-blur` (cabecera `night-900/95`) y las imágenes de casa no se han medido.
+- Contraste calculado sobre colores planos; las superficies con degradado/`backdrop-blur` (cabecera `night-900/95`) y las imágenes de los jugadores no se han medido.
 - Los avisos de la TV (`/screen`) y del anfitrión quedan fuera de esta auditoría (la TV es pantalla pública, sin lector).

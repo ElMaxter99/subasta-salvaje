@@ -45,7 +45,7 @@ subasta → `cancelled`, `current_auction_id` → null, borra la compra y su job
 al `parent_version_id` (si esa versión era la actual); las versiones se conservan sin vínculo a la compra. Idempotente por clave; evento `award_undone`.
 
 ## Galería final y votación (migración 1800)
-Solo `play_mode = mobile`. Al `finished`, `gallery.open`: cada jugador identificado vota una casa (no la suya; se puede cambiar) con `ss_gallery_vote`;
+Solo `play_mode = mobile`. Al `finished`, `gallery.open`: cada jugador identificado vota una imagen (no la suya; se puede cambiar) con `ss_gallery_vote`;
 el recuento (`gallery.results`) solo lo ve el anfitrión hasta `gallery.close` (`ss_gallery_set`), que fija `gallery_closed_at` y lo publica. Los tokens
 de móvil **se conservan** tras finalizar (solo sirven para votar/ver); en partidas `host` se borran al finalizar. Independiente de `ranking_rule = votes`.
 

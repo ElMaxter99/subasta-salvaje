@@ -40,7 +40,7 @@ sueltos (flecha, barras, puntos, trazos, lema manuscrito): son formas simples qu
 ## Dónde aparece
 Inicio (hero con la mascota principal y estado vacío «aún no has creado ninguna partida»), 404 (`not-found.tsx`), «partida ya no existe» (triste), «partida no es tuya» (enfadado),
 sala de espera de la TV (feliz), cabecera de la TV (cue contextual), overlay «¡Adjudicado!» (pose «adjudica» a un lado de la tarjeta), pantalla final «¡Fin de la subasta!» (hype), móvil al terminar (celebrando) y panel → Imágenes vacío (pensativo).
-**Legibilidad en TV:** la mascota nunca está sobre el escenario ni las casas: vive en la cabecera (4,4 rem) y, en el overlay, junto a la tarjeta (que ya tapa la pantalla durante ~5 s).
+**Legibilidad en TV:** la mascota nunca está sobre el escenario ni las imágenes de los jugadores: vive en la cabecera (4,4 rem) y, en el overlay, junto a la tarjeta (que ya tapa la pantalla durante ~5 s).
 
 ## Límites y pendiente para una colección completa
 - Resolución: la mascota principal es 555×665 y el resto ≈ 150 px. A tamaños grandes (TV 4K) se ve pixelada; por eso en la TV solo se usan tamaños `xs`/`md`.

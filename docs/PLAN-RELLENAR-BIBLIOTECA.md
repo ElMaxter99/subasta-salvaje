@@ -19,7 +19,7 @@ Primera tanda: **≈ 700 imágenes publicadas**. Los objetivos viven en `LIBRARY
 
 | Rol | Categorías (objetivo) | Total |
 |---|---|---|
-| `start` — foto de inicio de partida (escena 1536×1024, buena para ser «la casa») | Paisajes 60 · Playa y verano 20 · Halloween 15 · Navidad 15 | ≈ 110 |
+| `start` — foto de inicio de partida (escena 1536×1024, buena como imagen base (una casa, una nave, un salón…)) | Paisajes 60 · Playa y verano 20 · Halloween 15 · Navidad 15 | ≈ 110 |
 | `product` — producto de catálogo (objeto 768 px, fondo limpio) | 12 categorías × 40 (Halloween, Navidad, Objetos del hogar, Comida y bebida, Dulces y chocolates, Animales, Deportes, Instrumentos musicales, Transportes, Disfraces y sombreros, Herramientas, Juguetes, Plantas y flores) + Playa y verano 30 · Frutas y verduras 30 · Mascotas disfrazadas 30 | ≈ 600 |
 
 - Una imagen puede tener ambos roles (p. ej. una isla): se cuenta en los dos.
@@ -32,7 +32,7 @@ Primera tanda: **≈ 700 imágenes publicadas**. Los objetivos viven en `LIBRARY
 | 1 | **Wikimedia Commons** (API sin clave) | Mezcla; el script **solo acepta CC0 / dominio público** (con `--allow-by`, también CC BY / CC BY-SA y entonces la atribución es obligatoria) | `npm run library` (§3) |
 | 2 | **Museos con acceso abierto** (Met Museum y Art Institute of Chicago con script; Rijksmuseum, Smithsonian… manual) | CC0 en lo marcado como tal | `npm run library:openverse -- --source met\|artic` (§3b); el resto, a mano (§4). Objetos curiosos: cerámica, sombreros, juguetes antiguos |
 | 3 | **Openverse** (agrega Commons, Flickr, museos; clave gratuita opcional) | El script **solo** acepta `cc0` y `pdm` | `npm run library:openverse` (§3b) |
-| 4 | **Fotos propias** del propietario | Propiedad del titular | La vía más limpia para productos «de casa». Anota «Foto propia · <año>» como crédito |
+| 4 | **Fotos propias** del propietario | Propiedad del titular | La vía más limpia para productos «de hogar». Anota «Foto propia · <año>» como crédito |
 | 5 | **Generadas con IA** (botón «Generar imagen» del catálogo, cadena gratuita) | Del propietario (revisa los términos del proveedor) | Solo para productos sin foto; cuenta en el tope diario; crédito automático «Generada con IA (proveedor · modelo)» |
 
 No se han verificado hoy las condiciones vigentes de Commons, Openverse ni de los museos: **léelas antes de la primera tanda grande**.
@@ -79,7 +79,7 @@ Marca todo antes de pasar a §6. Para fotos de museos o propias, esto es lo que 
 - [ ] **Licencia permitida y anotada** (CC0 / dominio público / propia / generada). Autor y enlace en la fila del manifiesto.
 - [ ] **Sin marcas de agua**, logos ni texto llamativo; sin marcas comerciales reconocibles ni personajes con derechos.
 - [ ] **Sin personas reconocibles ni menores**; sin contenido sensible.
-- [ ] **Un objeto por foto**, centrado, fondo limpio (mezcla mejor con la casa del jugador) — para `product`. Para `start`: escena amplia, sin objeto dominante, buena luz.
+- [ ] **Un objeto por foto**, centrado, fondo limpio (mezcla mejor con la imagen del jugador) — para `product`. Para `start`: escena amplia, sin objeto dominante, buena luz.
 - [ ] Nítida, no pixelada ni muy comprimida; horizontal para `start`.
 - [ ] Título comprensible en español; sin duplicados evidentes en la carpeta (usa `index.html` para verlo de un vistazo).
 - [ ] Revisa a ojo en la galería local `index.html` y **borra del disco** lo que no cumpla; luego `npm run library:fetch -- --index-only`.

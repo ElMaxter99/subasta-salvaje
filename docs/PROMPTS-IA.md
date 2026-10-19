@@ -1,6 +1,6 @@
 # Prompts de edición con IA (mezcla de imágenes)
 
-Objetivo del juego: partir de **una imagen base cualquiera** (una casa, un batido de leche, una mascota…) y que, con cada compra, la IA **una la imagen nueva con la última del jugador de la forma más natural y divertida**. La partida no da contexto: la IA debe deducirlo de lo que ve. Código: `src/lib/ai/prompts.ts` (`buildEditPrompt`, `buildBlendPrompt`).
+Objetivo del juego: partir de **una imagen base cualquiera** (una casa, una nave espacial, un batido de leche, una mascota…) y que, con cada compra, la IA **una la imagen nueva con la última del jugador de la forma más natural y divertida**. La partida no da contexto: la IA debe deducirlo de lo que ve. Código: `src/lib/ai/prompts.ts` (`buildEditPrompt`, `buildBlendPrompt`).
 
 > **Edición, no «añadir».** El juego no es pegar un objeto encima: la IA debe **editar** la imagen base para que la combinación tenga sentido y gracia (un barco pide agua y la persona de la foto puede subirse; un sombrero lo lleva la persona o el animal; un ingrediente se vierte en el batido y lo cambia). Puede cambiar el entorno y hacer que el sujeto interactúe con el elemento; lo único intocable es lo añadido antes y la identidad de la base (mismo sujeto, encuadre, proporción y estilo).
 > **Límite de longitud:** los proveedores cortan el prompt en ~2000 caracteres (Pollinations 2000, Cloudflare 2048): el prompt es corto a propósito y se comprime (nombres y descripciones) para que **nunca se pierda el final** (comprobación final y «sin texto»); hay un test.
@@ -39,8 +39,8 @@ La cadena asigna a cada proveedor las tareas para las que sirve (`realEdit` en `
 
 | Tarea | Orden de prueba |
 |---|---|
-| Generar desde cero (casa inicial, imagen de un elemento, «Generar imagen») | primero los que **solo generan** (AI Horde, Hugging Face), después los que sirven para todo (Cloudflare, Pollinations con modelo de edición) |
-| Editar la casa del jugador (compras, regenerar) | solo los que **editan de verdad**; si ninguno responde, composición (collage) |
+| Generar desde cero (imagen inicial, imagen de un elemento, «Generar imagen») | primero los que **solo generan** (AI Horde, Hugging Face), después los que sirven para todo (Cloudflare, Pollinations con modelo de edición) |
+| Editar la imagen del jugador (compras, regenerar) | solo los que **editan de verdad**; si ninguno responde, composición (collage) |
 
 Dentro de cada grupo manda el orden de `IMAGE_PROVIDERS`. Si un proveedor «solo generar» falla por cuota o red, se pasa al siguiente hasta llegar a los editores. **Sin probar** contra los servicios reales.
 
@@ -54,7 +54,7 @@ Cada imagen generada con IA (también las normales, no solo las regeneradas) gua
 
 ## Prueba A/B en una partida real (Pikachu + barca a pedales)
 1. **Prepara**: aplica las migraciones hasta `…5700` (+ `notify pgrst, 'reload schema';`) y despliega. En Vercel: `IMAGE_PROVIDERS` (p. ej. `cloudflare,pollinations`), `CLOUDFLARE_EDIT_MODEL`, `IMAGE_EDIT_GUARD`, claves. En `/admin/ajustes` sube temporalmente la cuota por partida y por día (cada generación y cada «regenerar» cuenta; por defecto 10/partida y 50/día).
-2. **Crea la partida** con «Cómo cambian las casas → Con IA», 1 jugador, la foto de la persona en la puerta como imagen inicial (subida) y un catálogo con *Pikachu* y *Una barca a pedales* con su foto (de la biblioteca o subida).
+2. **Crea la partida** con «Cómo cambian las imágenes → Con IA», 1 jugador, la foto de la persona en la puerta como imagen inicial (subida) y un catálogo con *Pikachu* y *Una barca a pedales* con su foto (de la biblioteca o subida).
 3. **Compra** el Pikachu y luego la barca con ese jugador. En el panel → Historial mira cada versión (IA, modelo, prompt, «guardia de zona…»).
 4. **Repite el último paso con otro modelo o prompt sin volver a comprar**: cambia la variable en Vercel (`CLOUDFLARE_EDIT_MODEL`, `IMAGE_EDIT_GUARD`…), redespliega y en el Historial pulsa **«Regenerar»** en la versión actual: vuelve a generar partiendo de la versión anterior (la actual se conserva) y no cobra nada (máx. 10 por compra). Compara con «A»/«B».
 5. Para probar un prompt nuevo sin desplegar, usa `npm run ai:lab` (más abajo).

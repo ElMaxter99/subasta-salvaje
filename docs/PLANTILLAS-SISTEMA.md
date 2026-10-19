@@ -5,12 +5,12 @@ Plantillas creadas por el superadmin que cualquier anfitrión ve en **Nueva part
 ## Qué lleva una plantilla
 El mismo formato `subasta-salvaje/plantilla@1` (ver `PLANTILLAS.md`: reglas, jugadores, catálogo) más dos campos opcionales:
 - `portada`: URL https de la imagen de la tarjeta (1200×630).
-- `casa_inicial`: URL https de la **imagen inicial de la casa**; al crear la partida se aplica **por enlace** (sin copiarla) a los jugadores actuales y a los que se unan después.
+- `casa_inicial` (nombre técnico del campo): URL https de la **imagen base de la partida**; al crear la partida se aplica **por enlace** (sin copiarla) a los jugadores actuales y a los que se unan después.
 - `creditos`: autoría o fuente de las imágenes (≤ 200 caracteres; se muestra, en pequeño, en la tarjeta de «Partidas del sistema»).
 Cada elemento del catálogo puede llevar `foto` (URL https) y un `credito` opcional (≤ 120 caracteres; solo lo ves en el editor). En plantillas del sistema no se admiten rutas de ZIP.
 
 ## Superadmin: `/admin/plantillas`
-- **Nueva plantilla / Editar** abren `/admin/plantillas/editor`: el **mismo asistente que usa un anfitrión en «Nueva partida»** (Quién puja → Las casas → Partida → Reglas → Jugadores) con un paso más, **Ficha** (título de la tarjeta, identificador, descripción, orden, créditos, portada, casa inicial y arrastrar y soltar de fotos), y un Resumen que acaba en **Guardar borrador** en lugar de «Crear partida». Así el superadmin sigue siempre el flujo que seguirá el usuario. En el paso 1, «¿Tienes una plantilla?» permite importar un JSON, ZIP o CSV. El catálogo se edita como en el asistente, con «Subir» foto y crédito por elemento. Las plantillas del sistema llevan siempre catálogo propio (se parte del de la temática).
+- **Nueva plantilla / Editar** abren `/admin/plantillas/editor`: el **mismo asistente que usa un anfitrión en «Nueva partida»** (Quién puja → Las imágenes → Partida → Reglas → Jugadores) con un paso más, **Ficha** (título de la tarjeta, identificador, descripción, orden, créditos, portada, casa inicial y arrastrar y soltar de fotos), y un Resumen que acaba en **Guardar borrador** en lugar de «Crear partida». Así el superadmin sigue siempre el flujo que seguirá el usuario. En el paso 1, «¿Tienes una plantilla?» permite importar un JSON, ZIP o CSV. El catálogo se edita como en el asistente, con «Subir» foto y crédito por elemento. Las plantillas del sistema llevan siempre catálogo propio (se parte del de la temática).
 - **Comprobar imágenes**: descarga cada foto (con las defensas SSRF de `safe-fetch`) y muestra formato, tamaño, peso y si está en el *formato interno* (ver `IMAGEN-INTERNA.md`). Una foto fuera del formato interno se acepta y se reduce al copiarla, pero conviene prepararla con `npm run assets:normalize`.
 - **Publicar**: solo si **todas** las imágenes se descargan y se leen; si alguna falla no se publica y el informe dice cuál. **Retirar** la vuelve a dejar en borrador. **Borrar** no afecta a las partidas ya creadas.
 - Todo queda en **Auditoría** (creada, modificada, publicada, retirada, borrada).
@@ -18,7 +18,7 @@ Cada elemento del catálogo puede llevar `foto` (URL https) y un `credito` opcio
 ## Imágenes de una plantilla: se eligen en la vista y se publican al guardar
 En el paso **Ficha** (y en el catálogo) las imágenes se **suben, se arrastran o se eligen de la biblioteca**; **nunca se escribe una URL**.
 **Subir/arrastrar no sube nada todavía**: la imagen se queda en la vista (vista previa local) y se asigna por el **nombre del archivo**
-(`portada.jpg` → portada, `casa.jpg`/`casa-inicial.jpg` → casa inicial, y el título de un elemento: `sombrilla-roja.jpg` → «Sombrilla roja»; sin
+(`portada.jpg` → portada, `casa.jpg`/`casa-inicial.jpg` → imagen inicial, y el título de un elemento: `sombrilla-roja.jpg` → «Sombrilla roja»; sin
 tildes ni mayúsculas); las que no encajan quedan con un desplegable «Asignar a…». Las de la biblioteca ya están alojadas y no se vuelven a subir.
 
 Al pulsar **«Guardar borrador»** ocurre, en este orden:
