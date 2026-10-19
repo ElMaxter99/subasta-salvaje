@@ -117,7 +117,7 @@ La colección con alfa real (`public/assets/mascot-vector/`) es vectorial. Para 
 - [ ] Comprobar que el crédito gratuito de Hugging Face (token con permiso de Inference Providers) sigue cubriendo ese modelo; si no, quitar `huggingface` de `IMAGE_PROVIDERS`.
 
 ## 5n. Lo añadido en la unión de ramas (probar tú, 18-10-2026)
-- [ ] Aplicar en Supabase las migraciones `…8000`–`…8401`, `…9000`/`…9001` y `…9100`/`…9101` (ceder la puja), `…9200`/`…9201` (endurecimiento de /api/play) `…9400`/`…9401` (estadísticas por jugador), `…9500`–`…9505` (Fase 1), `…9600`/`…9601` (biblioteca con roles), `…9800`/`…9801` (espectador) y `…9900`/`…9901` (observabilidad) (reacciones, repetición, reglas extra, administración, comparador, exportar, arreglos de la unión) y `notify pgrst, 'reload schema';`. Las `_security_` no se ejecutan en PGlite: **sin probar contra Supabase real**.
+- [ ] Aplicar en Supabase las migraciones `…8000`–`…8401`, `…9000`/`…9001` y `…9100`/`…9101` (ceder la puja), `…9200`/`…9201` (endurecimiento de /api/play) `…9400`/`…9401` (estadísticas por jugador), `…9500`–`…9505` (Fase 1), `…9600`/`…9601` (biblioteca con roles), `…9800`/`…9801` (espectador) `…9900`/`…9901` (observabilidad), `…010100`/`…010101` (clave del espectador), `…010400`/`…010401` (presets y acceso) y `…010500`/`…010501` (presencia) (reacciones, repetición, reglas extra, administración, comparador, exportar, arreglos de la unión) y `notify pgrst, 'reload schema';`. Las `_security_` no se ejecutan en PGlite: **sin probar contra Supabase real**.
 - [ ] Probar con móviles reales: reacciones (animación y sonido en la TV), ⚡ Relámpago y ✉️ Sobre cerrado, presupuesto individual y equipos.
 - [ ] Probar el **comparador de modelos** (`/admin/ia/comparar`) con Cloudflare/Pollinations reales y vigilar los 60 s de Vercel con dos elementos.
 - [ ] **GitHub Actions** (`docs/CI.md`): el workflow nunca se ha ejecutado; revisar la primera ejecución (acciones, `npm ci`, Playwright en frío, falsos positivos de `scan:secrets`).
@@ -156,3 +156,10 @@ La colección con alfa real (`public/assets/mascot-vector/`) es vectorial. Para 
 - [ ] Revisión humana de las 33 variantes (ortografía y tono infantil) antes de publicarlas.
 - [ ] Verificar en Vercel real que las TTF salen en el bundle del podio y de las imágenes OG (`outputFileTracingIncludes`).
 - [ ] Escenas nuevas para Playa, Halloween y Navidad (siguen pendientes).
+
+## 5q. Tras presets, control de móviles y presencia
+- [ ] Aplicar en Supabase las migraciones `…010400`–`…010501` y `notify pgrst, 'reload schema';`.
+- [ ] Probar en móviles reales y Supabase real: latidos (`sendBeacon` en iOS, pestañas en segundo plano → se ven «Desconectado» a los ~40 s, hay que avisar a los jugadores), barrido en `autoAwardTick` y `ss_apply_settings`.
+- [ ] Decidir si en modo móviles los jugadores aún sin conectar deben contar en la adjudicación instantánea tras pasar a móviles a mitad de partida.
+- [ ] Probar los valores de los presets con grupos reales y ajustarlos.
+- [ ] Valorar mostrar los eventos de conexión en la Repetición/historial y un caso de latidos en `scripts/loadtest`.

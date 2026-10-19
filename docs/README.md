@@ -34,6 +34,8 @@ una regla, una migración o una decisión, actualiza el documento correspondient
 - [`CASAR-FOTOS-PLANTILLAS.md`](CASAR-FOTOS-PLANTILLAS.md): motor de casamiento foto↔elemento de plantilla, script y botón del admin.
 - [`FUENTES-OPENVERSE-MUSEOS.md`](FUENTES-OPENVERSE-MUSEOS.md): descarga de imágenes CC0/PDM de Openverse y museos, licencias y límites.
 - [`FUENTE-PODIO.md`](FUENTE-PODIO.md): fuentes TTF (Baloo 2, Nunito) de la imagen del podio y las OG, origen, licencia y regeneración.
+- [`PRESETS-Y-CONTROL-MOVILES.md`](PRESETS-Y-CONTROL-MOVILES.md): presets de partida, rondas, tarjeta «¿Quién puja?» y cambios de modo a mitad de partida.
+- [`PRESENCIA-Y-RETIRADOS.md`](PRESENCIA-Y-RETIRADOS.md): latido de los móviles, «Desconectado» en la TV y jugadores retirados.
 - [`OBSERVABILIDAD.md`](OBSERVABILIDAD.md): errores y métricas propios, panel, alertas, privacidad y límites.
 - [`CI.md`](CI.md): integración continua en GitHub Actions (qué ejecuta y qué no se ha podido verificar).
 - [`SEGURIDAD-PLAY.md`](SEGURIDAD-PLAY.md): revisión de seguridad de las rutas `/api/play/*` (hallazgos, arreglos y lo no resuelto).
