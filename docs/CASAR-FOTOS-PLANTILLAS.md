@@ -50,7 +50,7 @@ Con `--apply` omite las plantillas no importadas (`npm run templates:import -- -
 ## Panel de administración
 `/admin/plantillas` → fila de la plantilla → **Sugerir fotos de la biblioteca**: lista de elementos con miniatura, título de la foto, confianza, puntuación y motivos; alternativas en miniatura;
 **Aceptar** una a una o **Aceptar las de confianza alta**. Solo con plantillas en borrador. Las etiquetas se leen del lote del repositorio (`docs/plantillas-sistema/lote.json`) por título de elemento;
-si el archivo no existe en el despliegue, se casa solo por título, descripción y emoji (menos precisión). Aplicar guarda el **enlace** de la biblioteca (y su crédito) en la plantilla;
+el archivo viaja en el despliegue (`outputFileTracingIncludes` en `next.config.ts`; sin él, el análisis de Next trazaría todo el proyecto); si aun así no se encontrara, se casa solo por título, descripción y emoji (menos precisión). Aplicar guarda el **enlace** de la biblioteca (y su crédito) en la plantilla;
 **no copia ni sube imágenes, no publica, no usa IA**. Antes de publicar, el superadmin sigue usando «Comprobar imágenes» y «Publicar» como siempre.
 
 ## Garantías (las comprueba `tests/library-match-service.test.ts`)

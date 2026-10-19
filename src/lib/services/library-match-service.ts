@@ -32,12 +32,16 @@ export async function loadMatchableImages(ctx: Pick<AppContext, 'db'>): Promise<
   return out;
 }
 
-/** Etiquetas del lote (por título de elemento normalizado) de una plantilla; vacío si no hay lote o no está esa plantilla. */
+/**
+ * Etiquetas del lote (por título de elemento normalizado) de una plantilla; vacío si no hay lote o no está esa plantilla.
+ * La ruta por defecto es fija; el parámetro `file` es para pruebas y scripts. El archivo viaja en el despliegue gracias a
+ * `outputFileTracingIncludes` (next.config.ts), y los `turbopackIgnore` evitan que el análisis estático trace todo el proyecto.
+ */
 export function loteTagsBySlug(slug: string, file = path.join(process.cwd(), 'docs', 'plantillas-sistema', 'lote.json')): Map<string, string[]> {
   const map = new Map<string, string[]>();
   try {
-    if (!existsSync(file)) return map;
-    const lote = JSON.parse(readFileSync(file, 'utf8')) as { plantillas?: BundleEntry[] };
+    if (!existsSync(/*turbopackIgnore: true*/ file)) return map;
+    const lote = JSON.parse(readFileSync(/*turbopackIgnore: true*/ file, 'utf8')) as { plantillas?: BundleEntry[] };
     const e = lote.plantillas?.find((p) => p.slug === slug);
     const cat = (e?.plantilla as { catalogo?: { titulo: string }[] } | undefined)?.catalogo ?? [];
     cat.forEach((it, i) => { if (e?.etiquetas?.[i]) map.set(normText(it.titulo), e.etiquetas[i]!); });

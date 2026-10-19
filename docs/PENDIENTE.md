@@ -124,6 +124,29 @@ La colección con alfa real (`public/assets/mascot-vector/`) es vectorial. Para 
 - [ ] Estadísticas: las partidas anteriores a `games.template_slug` no cuentan en «plantillas más jugadas».
 - [ ] Pendiente sin hacer: eventos «robo» y «subasta inversa» (dinero), **traducción al inglés / i18n** (propuesta: diccionarios `es`/`en` por ámbito, `lang` dinámico, `Intl`, correos por idioma; requiere decidir librería y revisión humana), auditoría con lector de pantalla/axe, semilla fija elegida por el usuario en el comparador, sorteo automático de eventos que incluya relámpago/sobre cerrado (`wild_chance_pct` solo elige entre «a ciegas» y «doble o mitad»).
 
+## 5o. Tras la integración de la Fase 1, biblioteca, plantillas, espectador y observabilidad
+- [ ] **Tras desplegar la biblioteca, marcar como «revisadas» las imágenes existentes** (filtro «Sin revisar» → «Marcar como revisadas»): hasta entonces el selector «Elegir de la biblioteca» sale vacío.
+- [ ] Ejecutar el piloto de relleno de la biblioteca (3 categorías × ~40 imágenes, ver `docs/PLAN-RELLENAR-BIBLIOTECA.md`) y probar GitHub/jsDelivr y Wikimedia reales (no probado).
+- [ ] Importar las 69 plantillas (`npm run templates:import -- --apply`, entran en borrador), revisar textos y tonos y publicarlas desde `/admin/plantillas`; después, casar fotos de la biblioteca por título/etiquetas.
+- [ ] Probar en Supabase real: migraciones `…9500`–`…9901`, `ss_obs_*`, huella `phash` (`bit_count`), `ss_unyield_bid`, `ss_auction_grace`, `ss_set_spectator`; y Resend/`onRequestError` en Vercel para la observabilidad.
+- [ ] Escuchar y afinar los sonidos nuevos (ceder, gracia); probar la gracia y retractarse con móviles reales.
+- [ ] Verificar cómo se ven los PNG del podio (vertical y cuadrado) en WhatsApp/Instagram; valorar una fuente TTF propia (la de `next/og` no tiene negrita real).
+- [ ] Aplicar la migración `…010100`/`…010101` (clave del espectador): los enlaces de espectador antiguos (sin `?k=`) dejan de funcionar; cada anfitrión debe copiar el nuevo desde su panel. Decidir si además se quiere ocultar la TV/resultados por código (hoy públicos) y revisar el tope de 240/min por IP y sala con muchos espectadores tras la misma IP.
+
+## 5p. Tras casar fotos, packs, variantes y fuente
+- [ ] Probar `npm run library:openverse` contra Openverse, el Met y el Art Institute reales (sin red en el contenedor) y confirmar sus condiciones; decidir si se registra la clave gratuita de Openverse.
+- [ ] Rellenar la biblioteca y probar `npm run templates:match` con fotos reales; ampliar `match-lexicon.ts` según los huecos; valorar guardar las etiquetas de los elementos en la plantilla (hoy solo en el lote).
+- [ ] Revisión humana de las 33 variantes (ortografía y tono infantil) antes de publicarlas.
+- [ ] Verificar en Vercel real que las TTF salen en el bundle del podio y de las imágenes OG (`outputFileTracingIncludes`).
+- [ ] Escenas nuevas para Playa, Halloween y Navidad (siguen pendientes).
+
+## 5q. Tras presets, control de móviles y presencia
+- [ ] Aplicar en Supabase las migraciones `…010400`–`…010501` y `notify pgrst, 'reload schema';`.
+- [ ] Probar en móviles reales y Supabase real: latidos (`sendBeacon` en iOS, pestañas en segundo plano → se ven «Desconectado» a los ~40 s, hay que avisar a los jugadores), barrido en `autoAwardTick` y `ss_apply_settings`.
+- [ ] Decidir si en modo móviles los jugadores aún sin conectar deben contar en la adjudicación instantánea tras pasar a móviles a mitad de partida.
+- [ ] Probar los valores de los presets con grupos reales y ajustarlos.
+- [ ] Valorar mostrar los eventos de conexión en la Repetición/historial y un caso de latidos en `scripts/loadtest`.
+
 ## 6. Cron externo (opcional pero recomendado en producción)
 - [ ] El cron de `vercel.json` es diario (límite del plan *Hobby*). Para que los trabajos de imagen y el borrado se procesen con más frecuencia, programa en GitHub Actions o cron-job.org una llamada cada minuto a `/api/jobs/process` con la cabecera `Authorization: Bearer <CRON_SECRET>`.
 
@@ -139,27 +162,3 @@ La colección con alfa real (`public/assets/mascot-vector/`) es vectorial. Para 
 - [ ] Ideas del plan de superadmin no incluidas por ahora: alertas (descartadas: solo dashboard), conversión de imágenes a WebP y retención por versiones, detección de archivos huérfanos en el bucket, cuotas de IA por usuario (hoy: global + permiso por usuario), exportación CSV de la auditoría.
 - [ ] **Mascota:** para una colección completa de poses independientes con transparencia real hacen falta renders por pose (≥ 1024 px, fondo transparente o liso): primero mascota principal, celebrando, sorprendida y triste (`docs/MASCOTA.md`). Los recortes actuales de la lámina son de ≈150 px (bustos/poses).
 - [ ] **Mezcla de la foto del elemento con la casa** (Cloudflare `input_image_1`, OpenAI `image[]`): implementado según la documentación, **sin probar contra las APIs reales**. Prueba con un elemento con foto (p. ej. un conejo rosa con lazo azul) y comprueba que el objeto conserva su aspecto.
-
-## 5o. Tras la integración de la Fase 1, biblioteca, plantillas, espectador y observabilidad
-- [ ] **Tras desplegar la biblioteca, marcar como «revisadas» las imágenes existentes** (filtro «Sin revisar» → «Marcar como revisadas»): hasta entonces el selector «Elegir de la biblioteca» sale vacío.
-- [ ] Ejecutar el piloto de relleno de la biblioteca (3 categorías × ~40 imágenes, ver `docs/PLAN-RELLENAR-BIBLIOTECA.md`) y probar GitHub/jsDelivr y Wikimedia reales (no probado).
-- [ ] Importar las 69 plantillas (`npm run templates:import -- --apply`, entran en borrador), revisar textos y tonos y publicarlas desde `/admin/plantillas`; después, casar fotos de la biblioteca por título/etiquetas.
-- [ ] Probar en Supabase real: migraciones `…9500`–`…9901`, `ss_obs_*`, huella `phash` (`bit_count`), `ss_unyield_bid`, `ss_auction_grace`, `ss_set_spectator`; y Resend/`onRequestError` en Vercel para la observabilidad.
-- [ ] Escuchar y afinar los sonidos nuevos (ceder, gracia); probar la gracia y retractarse con móviles reales.
-- [ ] Verificar cómo se ven los PNG del podio (vertical y cuadrado) en WhatsApp/Instagram; valorar una fuente TTF propia (la de `next/og` no tiene negrita real).
-- [ ] Aplicar la migración `…010100`/`…010101` (clave del espectador): los enlaces de espectador antiguos (sin `?k=`) dejan de funcionar; cada anfitrión debe copiar el nuevo desde su panel. Decidir si además se quiere ocultar la TV/resultados por código (hoy públicos) y revisar el tope de 240/min por IP y sala con muchos espectadores tras la misma IP.
-- [ ] Corregir `e2e/a11y.spec.ts` si sigue fallando (cabecera `sticky` en lugar de `static` a 360 px con texto al 200 %): comprobar tras la integración.
-
-## 5p. Tras casar fotos, packs, variantes y fuente
-- [ ] Probar `npm run library:openverse` contra Openverse, el Met y el Art Institute reales (sin red en el contenedor) y confirmar sus condiciones; decidir si se registra la clave gratuita de Openverse.
-- [ ] Rellenar la biblioteca y probar `npm run templates:match` con fotos reales; ampliar `match-lexicon.ts` según los huecos; valorar guardar las etiquetas de los elementos en la plantilla (hoy solo en el lote).
-- [ ] Revisión humana de las 33 variantes (ortografía y tono infantil) antes de publicarlas.
-- [ ] Verificar en Vercel real que las TTF salen en el bundle del podio y de las imágenes OG (`outputFileTracingIncludes`).
-- [ ] Escenas nuevas para Playa, Halloween y Navidad (siguen pendientes).
-
-## 5q. Tras presets, control de móviles y presencia
-- [ ] Aplicar en Supabase las migraciones `…010400`–`…010501` y `notify pgrst, 'reload schema';`.
-- [ ] Probar en móviles reales y Supabase real: latidos (`sendBeacon` en iOS, pestañas en segundo plano → se ven «Desconectado» a los ~40 s, hay que avisar a los jugadores), barrido en `autoAwardTick` y `ss_apply_settings`.
-- [ ] Decidir si en modo móviles los jugadores aún sin conectar deben contar en la adjudicación instantánea tras pasar a móviles a mitad de partida.
-- [ ] Probar los valores de los presets con grupos reales y ajustarlos.
-- [ ] Valorar mostrar los eventos de conexión en la Repetición/historial y un caso de latidos en `scripts/loadtest`.

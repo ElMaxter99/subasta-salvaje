@@ -34,6 +34,8 @@ const config: NextConfig = {
   outputFileTracingIncludes: {
     '/api/public/games/*/podium': FONT_FILES,
     '/game/*/*/opengraph-image': FONT_FILES,
+    // Panel de plantillas del sistema: etiquetas del lote para casar fotos de la biblioteca (ver library-match-service.ts)
+    '/api/admin/system-templates': ['./docs/plantillas-sistema/lote.json'],
     '/api/jobs/process': SHARP_FILES,
     '/api/games/*/actions': SHARP_FILES,
     '/api/games/*/jobs': SHARP_FILES,
