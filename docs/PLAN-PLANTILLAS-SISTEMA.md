@@ -18,14 +18,14 @@
 ## 0. Decisiones tomadas (17-10-2026)
 Tamaños y formato de §3: **aprobados**. Imágenes de partidas en **Supabase** (lo más barato y sencillo; tienen 10 GB). Las **plantillas del sistema** guardan sus fotos en un **proveedor externo**: **R2 descartado** (exige método de pago, riesgo de cobro); se usa **GitHub + jsDelivr** (gratis, sin tarjeta) y **se copian a la partida al crearla**. Las plantillas pueden llevar **catálogo, reglas e imagen inicial de la casa**. Los **borradores solo los ve el superadmin**. Se normalizan **solo las imágenes nuevas**.
 **Cambio (17-10-2026):** el superadmin quiere **arrastrar y soltar** las imágenes en el editor; la app SÍ sube, a un repositorio de GitHub servido por jsDelivr (token fino solo en el servidor), no a Supabase. Sustituye al «la app no sube nada» de §5.
-**Estado:** fases 1 (imagen interna), 2 (SQL/servicio/API), 3 (panel `/admin/plantillas`), 4 (lista blanca `ASSET_CDN_HOSTS`, copia al crear, `assets:normalize`) y 5 (galería en Nueva partida, con casa inicial) implementadas — ver `IMAGEN-INTERNA.md` y `PLANTILLAS-SISTEMA.md`. Pendiente: capturas del README y validación con un CDN real.
+**Estado:** fases 1 (imagen interna), 2 (SQL/servicio/API), 3 (panel `/admin/plantillas`), 4 (lista blanca `ASSET_CDN_HOSTS`, copia al crear, `assets:normalize`) y 5 (galería en Nueva partida, con imagen inicial) implementadas — ver `IMAGEN-INTERNA.md` y `PLANTILLAS-SISTEMA.md`. Pendiente: capturas del README y validación con un CDN real.
 
 ## 3. Imagen interna única (fase 1, la base de todo)
 **Especificación propuesta** (a confirmar):
 
 | Tipo | Máximo | Formato | Objetivo de peso |
 |---|---|---|---|
-| Casa / escena (inicial, edición, base compartida) | 1536 × 1024 (3:2), `fit: inside` | WebP calidad ≈ 80 | ≤ 300 KB |
+| Imagen base / escena (inicial, edición, base compartida) | 1536 × 1024 (3:2), `fit: inside` | WebP calidad ≈ 80 | ≤ 300 KB |
 | Foto de elemento del catálogo | 768 × 768, `fit: inside` | WebP (conserva transparencia) | ≤ 150 KB |
 | Portada de plantilla del sistema | 1200 × 630 | WebP | ≤ 150 KB |
 
@@ -94,6 +94,6 @@ Total aproximado: **10–14 días** de trabajo. Las fases 1 y 2 son independient
 1. **Especificación de imagen** (§3): ¿valen 1536×1024 y 768×768 en WebP, o prefieres otros tamaños/formato?
 2. **Dónde alojar las fotos:** ¿R2, jsDelivr (Git) u otro? ¿Tienes ya un dominio para el CDN?
 3. **Copiar al crear la partida** (recomendado) **o mostrar desde el CDN** sin copiar.
-4. ¿Las plantillas del sistema pueden llevar **imagen inicial/base de la casa** ya hecha (también por URL), o solo catálogo y reglas?
+4. ¿Las plantillas del sistema pueden llevar **imagen inicial/base** ya hecha (también por URL), o solo catálogo y reglas?
 5. ¿Quién ve las **borradores**? (propuesta: solo el superadmin). ¿Hace falta **idioma/etiquetas** para filtrar la galería?
 6. ¿Normalizamos también las **imágenes ya guardadas** (script de migración con ensayo en seco) o solo las nuevas?

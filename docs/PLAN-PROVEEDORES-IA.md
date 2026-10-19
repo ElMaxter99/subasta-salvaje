@@ -46,7 +46,7 @@ barata sin proveedor nuevo es **ahorrar neuronas** (ver §4.9). No se recomienda
 |---|---|---|
 | Interfaz | `src/lib/ai/types.ts` | `ImageGenerationProvider { id: 'openai'\|'cloudflare'\|'demo'; capabilities.edit; generateInitialScene; editScene(base, itemImage?, previousItems…); generateItemImage }`. `ProviderError.retryable` decide reintento. |
 | Cloudflare | `cloudflare.ts` | Genera con `flux-1-schnell` (JSON, base64 JPEG). Edita con `flux-2-klein-4b` (multipart `input_image_0..1`, ≤ 480 px, 1024×768). Detecta «cuota diaria agotada» ⇒ error **no reintentable**. |
-| OpenAI | `openai.ts` | `gpt-image-1`: `/images/generations` y `/images/edits` (`image[]` con casa + elemento). De pago, solo con `IMAGE_PROVIDER=openai`. |
+| OpenAI | `openai.ts` | `gpt-image-1`: `/images/generations` y `/images/edits` (`image[]` con imagen del jugador + elemento). De pago, solo con `IMAGE_PROVIDER=openai`. |
 | Demo | `demo.ts` | Pegatinas SVG, sin IA, no cuenta cuota. |
 | Plan B | `compose.ts` | `withEditFallback`: si klein rechaza la entrada (400/404/422) o no hay modelo de edición, genera el objeto aislado (o usa la foto del elemento), recorta el fondo (`cutOutBackground`) o enmarca (`frameImage`) y lo pega (`compositeOnto`). **Collage honesto, no edición real.** Cuota, red, credenciales o moderación **no** lo activan. |
 | Selección | `config/env.ts` `getImageProviderId` | **Un solo** proveedor (`IMAGE_PROVIDER`), sin fallback entre proveedores. `IMAGE_AI_DISABLED` lo apaga. |
@@ -61,7 +61,7 @@ Limitaciones que impone el diseño actual a la integración de más proveedores:
 
 ## 3. Matriz comparativa
 
-Leyenda: **T2I** texto→imagen · **EDIT** imagen+prompt→imagen · **MULTI** varias referencias (casa + objeto). «Gratis» = sin tarjeta ni pago.
+Leyenda: **T2I** texto→imagen · **EDIT** imagen+prompt→imagen · **MULTI** varias referencias (imagen del jugador + objeto). «Gratis» = sin tarjeta ni pago.
 
 | Candidato | Cuota gratuita real y periodo | Tarjeta | Uso comercial de lo generado | T2I | EDIT | MULTI | Riesgo de retirada | Estado de verificación |
 |---|---|---|---|---|---|---|---|---|
@@ -81,7 +81,7 @@ Leyenda: **T2I** texto→imagen · **EDIT** imagen+prompt→imagen · **MULTI** 
 | **Leonardo.ai** | App: 150 tokens/día, salidas no comerciales [T]; la API es de pago aparte (≈ 5 $ de inicio) [T] | Sí | Gratis: no comercial | Sí | Sí | Limitado | — | Solo terceros; **descartado** |
 | **OpenAI** (ya integrado) | Ninguna | Sí | Sí | Sí | Sí | Sí | — | Ya en código |
 | **Autoalojado ComfyUI + FLUX.2 klein 4B** | **Ilimitado** (tu GPU). Apache 2.0 [F: BFL] | No | Sí (Apache 2.0) | Sí | Sí | Sí, multi-referencia [F: BFL; una plantilla de ComfyUI recomienda Dev para casos complejos: probar] | Nulo (es tuyo) | Licencia/capacidad verificadas; **latencia y calidad por probar en tu máquina** |
-| **Autoalojado Stable Diffusion/SDXL + IP-Adapter/inpainting** | Ilimitado | No | Según checkpoint | Sí | Inpainting sí; mezcla casa+objeto peor que FLUX.2 | Limitado | Nulo | No verificado, no recomendado frente a klein |
+| **Autoalojado Stable Diffusion/SDXL + IP-Adapter/inpainting** | Ilimitado | No | Según checkpoint | Sí | Inpainting sí; mezcla imagen+objeto peor que FLUX.2 | Limitado | Nulo | No verificado, no recomendado frente a klein |
 | **Ollama** | — | — | — | **No genera imágenes** (confirmado por el enunciado) | — | — | — | Descartado |
 
 Calidad/latencia/fiabilidad orientativas (sin medir): Cloudflare ~ segundos (schnell 4 pasos), edición klein pocos segundos; FLUX.2 klein 4B local ≈ 1–5 s en una RTX 4070-3090 según BFL («sub-second» en hardware alto de gama) [F, afirmación del fabricante]; Gemini/OpenAI 5–30 s; Pollinations variable (cola) [?]. **Nada de esto está medido en este proyecto.**
@@ -129,7 +129,7 @@ mapeo actual del texto «daily free allocation/neurons» pasa a `kind:'quota'`.
 **Cooldown en memoria con TTL** (p. ej. hasta las 00:00 UTC para cuotas diarias; `Retry-After` para 429) para no gastar peticiones en un proveedor agotado; es
 una optimización, la verdad está en SQL.
 
-Atención a la **consistencia visual**: si la cadena cambia de proveedor entre la edición *n* y la *n+1* de una misma casa, el estilo puede variar. Mitigación: la
+Atención a la **consistencia visual**: si la cadena cambia de proveedor entre la edición *n* y la *n+1* de una misma imagen, el estilo puede variar. Mitigación: la
 edición siempre parte de la imagen actual (ya ocurre) y el prompt fuerza «conservar todo lo existente»; registrar `provider` en `image_versions`. Opción `IMAGE_CHAIN_STICKY=true`:
 preferir el proveedor que produjo la versión anterior de ese jugador si está disponible.
 
@@ -168,7 +168,7 @@ Superadmin (cumple el aviso de `PLAN-SUPERADMIN.md`: «el panel no puede elegir 
 `app_settings.ai_chain` (orden y activo/inactivo por proveedor, solo entre los configurados en env), topes por proveedor, interruptor por proveedor, estado de salud/cooldown y uso del día por proveedor. Confirmación explícita (escribir el nombre) para pasar un proveedor de pago a activo.
 
 ### 4.8 Proveedor autoalojado (`ai/selfhosted.ts`)
-- Cliente HTTP de ComfyUI con **workflows plantilla** JSON versionados en el repo (`src/lib/ai/workflows/*.json`): T2I FLUX.2 klein 4B y edición con 2 imágenes de referencia (casa + objeto). Se sube cada referencia con `/upload/image`, se parametriza el prompt, se encola, se hace polling con timeout y se descarga el resultado.
+- Cliente HTTP de ComfyUI con **workflows plantilla** JSON versionados en el repo (`src/lib/ai/workflows/*.json`): T2I FLUX.2 klein 4B y edición con 2 imágenes de referencia (imagen del jugador + objeto). Se sube cada referencia con `/upload/image`, se parametriza el prompt, se encola, se hace polling con timeout y se descarga el resultado.
 - Seguridad: el servidor del propietario **no se expone en abierto**: túnel (Cloudflare Tunnel/Tailscale Funnel) con token en cabecera y límite de tamaño. La app solo lo usa si responde a un `GET /system_stats` previo (comprobación de salud con cooldown) porque el PC puede estar apagado.
 - Aviso: Vercel (serverless) necesita acceso entrante al PC; documentar la latencia y que si el PC está apagado la cadena pasa a Cloudflare.
 - Alternativa más simple: un pequeño servicio propio (FastAPI/diffusers) con dos endpoints; más código fuera de este repo, por lo que se descarta para la primera fase.
@@ -235,7 +235,7 @@ Superadmin (cumple el aviso de `PLAN-SUPERADMIN.md`: «el panel no puede elegir 
 | **Retirada o recorte de capa gratuita** (ya ocurrió con Gemini [T]) | Cadena configurable en caliente; composición siempre disponible; reverificar cuotas cada trimestre (fecha en este doc). |
 | **Cobro accidental** | Proveedores de pago exigen clave + `*_PAID_ACK` + tope; reserva SQL con tope de coste; no hay autodetección por credencial; `IMAGE_AI_DISABLED`. |
 | **Términos de servicio / abuso de cuentas** | No crear múltiples cuentas para multiplicar cuotas; respetar límites; usar claves a nombre del propietario. |
-| **Privacidad**: las imágenes de las casas y la foto del elemento (subida por el anfitrión; puede contener personas) se envían a terceros | Aviso al anfitrión al activar el modo `ai`; solo se envía la casa del jugador y la foto del elemento, nunca nombres ni correos; revisar si el proveedor entrena con los datos (Cloudflare, Google, Pollinations: **no verificado**); el modo pegatinas no envía nada; el autoalojado no envía nada fuera. |
+| **Privacidad**: las imágenes de los jugadores y la foto del elemento (subida por el anfitrión; puede contener personas) se envían a terceros | Aviso al anfitrión al activar el modo `ai`; solo se envía la imagen del jugador y la foto del elemento, nunca nombres ni correos; revisar si el proveedor entrena con los datos (Cloudflare, Google, Pollinations: **no verificado**); el modo pegatinas no envía nada; el autoalojado no envía nada fuera. |
 | **Licencias del modelo** | Preferir pesos Apache 2.0 (klein-4B, schnell); evitar klein-9B / dev / Kontext-dev en uso comercial (licencia no comercial) [F: BFL]; documentar el modelo exacto de cada proveedor. |
 | **Marca de agua / metadatos** (SynthID en Gemini, posibles marcas en gratuitos) | Registrar `model` y `provider` en `image_versions`; informar al usuario. |
 | **Inconsistencia visual entre proveedores** | Edición siempre sobre la imagen actual; `sticky`; prompts de conservación. |
@@ -268,7 +268,7 @@ Documentación que debe actualizarse al implementar (honestidad): `README` y `IM
 | **0. Verificación** | Releer páginas oficiales (§8), medir neuronas reales de schnell y klein con 2–3 llamadas en la cuenta gratuita, probar Pollinations con una clave gratuita (1 generación + 1 edición), registrar fechas. | 0,5 día | Tabla §3 con todo en [F] o marcado descartado; coste real por llamada documentado. |
 | **1. Cadena y contabilidad** | Tipos, `chain.ts`, `errors.ts`, migración SQL por proveedor y topes, `jobs-service` con candidatos, composición como candidato final, tests unitarios/SQL/contrato con simulados. | 3–4 días | Con 2 proveedores simulados: fallback por cuota/429/fallo; moderación no salta; coste de pago jamás supera el tope; `image_usage` por proveedor; lint+typecheck+tests+Postgres real verdes; sin cambio de comportamiento con un solo proveedor. |
 | **2. Superadmin y configuración** | `IMAGE_PROVIDERS`, reglas de «de pago», panel (orden, interruptores, topes, uso por proveedor, salud). | 2 días | Un proveedor de pago no puede activarse sin clave + ACK + tope; cambios en caliente; e2e básico. |
-| **3. Autoalojado** (si hay GPU) | Adaptador ComfyUI + workflows + health check + guía de túnel. | 3–4 días + pruebas en la máquina del propietario | Una casa evoluciona 5 compras con edición multi-referencia manteniendo consistencia razonable (revisión manual); latencia p95 medida; PC apagado ⇒ fallback sin errores visibles. |
+| **3. Autoalojado** (si hay GPU) | Adaptador ComfyUI + workflows + health check + guía de túnel. | 3–4 días + pruebas en la máquina del propietario | Una imagen evoluciona 5 compras con edición multi-referencia manteniendo consistencia razonable (revisión manual); latencia p95 medida; PC apagado ⇒ fallback sin errores visibles. |
 | **4. Pollinations** (si Fase 0 lo confirma) | Adaptador y fixtures de contrato. | 1–2 días | Superado el contrato; prueba real controlada documentada; límites y términos anotados. |
 | **5. Opcionales de pago** (Gemini u otro) | Adaptador con tope, solo si el propietario lo decide. | 1–2 días cada uno | Reserva SQL con coste, `paid_not_confirmed`, prueba real con tope de céntimos. |
 | **6. Cierre** | Documentación, `PENDIENTE.md`, `npm run build && npm run scan:secrets`. | 0,5 día | Documentación honesta («sin probar contra el servicio real» donde proceda). |
@@ -279,7 +279,7 @@ Total aproximado: 9–13 días de trabajo según se incluyan fases 3–5.
 1. ¿Hay una máquina con **GPU** (≥ 12–16 GB de VRAM recomendados) que pueda estar encendida durante las partidas, y se acepta un túnel con token? Define si vale la pena la Fase 3.
 2. ¿Se permite crear una **clave gratuita de Pollinations** (y revisar sus términos) para la Fase 0/4?
 3. ¿Se admite algún proveedor **de pago como opt-in** con tope diario (p. ej. 1–2 €)? Si sí, ¿cuál y qué tope? Por defecto: ninguno.
-4. Prioridad entre **coste cero** y **consistencia visual** (¿se tolera que dos proveedores distintos retoquen la misma casa? ¿activar `sticky`?).
+4. Prioridad entre **coste cero** y **consistencia visual** (¿se tolera que dos proveedores distintos retoquen la misma imagen? ¿activar `sticky`?).
 5. Aceptación del **aviso de privacidad** sobre imágenes enviadas a terceros en el modo `ai` (y si los anfitriones pueden subir fotos de personas).
 6. Cuotas objetivo: ¿cuántas imágenes/día se quieren cubrir gratis? Determina si basta Cloudflare con ahorro (Fase 0) o hace falta el autoalojado.
 7. Cuándo lanzar las migraciones (DECISIONES nº 23: «todo de golpe»).

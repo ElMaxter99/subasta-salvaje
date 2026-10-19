@@ -62,7 +62,7 @@ Después de cada migración nueva, vuelve a probar a mano: crear partida, pujar,
 
 ## 5c-bis. AI Horde y Hugging Face (más eslabones gratuitos)
 - [ ] Aplica las migraciones `…4800`/`…4900` (los ajustes por proveedor admiten los nuevos).
-- [ ] **AI Horde:** añade `aihorde` a `IMAGE_PROVIDERS` (sin credenciales; opcional `AI_HORDE_API_KEY` de una cuenta gratuita). Léete sus términos. **Sin probar contra el servicio real**: genera una casa y un objeto y, si falla, copia el error (los nombres de campo pueden diferir).
+- [ ] **AI Horde:** añade `aihorde` a `IMAGE_PROVIDERS` (sin credenciales; opcional `AI_HORDE_API_KEY` de una cuenta gratuita). Léete sus términos. **Sin probar contra el servicio real**: genera una imagen base y un objeto y, si falla, copia el error (los nombres de campo pueden diferir).
 - [ ] **Hugging Face:** crea un token en tu cuenta gratuita (permiso para Inference Providers), `HF_TOKEN` en Vercel (*Sensitive*) y `huggingface` en `IMAGE_PROVIDERS`. Comprueba que el modelo por defecto (`black-forest-labs/FLUX.1-schnell`) está servido por `hf-inference` y cuánto crédito gratuito tienes.
 
 ## 5c-ter. Poses 3D de la mascota (opcional)
@@ -98,14 +98,14 @@ La colección con alfa real (`public/assets/mascot-vector/`) es vectorial. Para 
 - [ ] Aplica las migraciones `…5200`/`…5300` (modelo de cada versión en el historial) y `…5400`/`…5500` (jugadores activos y `joined`) y `…5600`–`…9001` (regenerar la versión actual, regenerar forzando un proveedor, nota «por qué este proveedor» reiniciar la partida generar con IA la imagen de un producto del catálogo general, y elementos perdidos/anuncio al azar/rondas ≤ catálogo).
 - [ ] Vuelve a probar dos compras seguidas en una partida con IA: el historial (Detalles) muestra ahora IA, modelo y tipo, y el prompt pide que la compra anterior siga visible y la nueva vaya a otra zona. **No verificado contra Pollinations real**: si la 2.ª compra sigue tapando la 1.ª, copia las dos imágenes y los prompts; la alternativa fiable es la composición (collage), que conserva la imagen anterior píxel a píxel.
 - [ ] Con la guardia de zona (`region-guard.ts`) lo anterior se conserva fuera de la zona del objeto nuevo; **sin probar con el modelo real**. Haz dos o tres compras seguidas y revisa en el historial (Detalles → «guardia de zona» en el prompt) que se conservan y que los objetos nuevos no salen recortados; si recorta, dímelo y ajusto el tamaño de las zonas.
-- [ ] Si Pollinations rechaza el tamaño con la proporción de la casa (p. ej. `1024x576`), fija `POLLINATIONS_IMAGE_SIZE=1024x768` y avisa.
+- [ ] Si Pollinations rechaza el tamaño con la proporción de la imagen (p. ej. `1024x576`), fija `POLLINATIONS_IMAGE_SIZE=1024x768` y avisa.
 
 ## 5j. Imágenes por enlace
 - [ ] Las partidas creadas con una plantilla del sistema ya no copian sus fotos: TV y móviles las cargan de jsDelivr y la IA las lee por enlace. Requiere `GITHUB_ASSETS_REPO` definida en Vercel (sin ella se descargan como antes). **Sin probar contra jsDelivr real.** Revisa en una partida real que la casa y las fotos se ven y que una edición con IA lee la base.
 - [ ] Revisa el texto de `/privacidad` (jsDelivr recibe ahora también las peticiones de TV y móviles).
 
 ## 5k. Pulir los prompts con el modelo real
-- [ ] Con `npm run ai:lab` (ver `docs/PROMPTS-IA.md`) prueba 2-3 bases distintas (una casa, un batido de leche, una mascota) con 2-3 elementos cada una y revisa `paso-N.png` y `prompts.txt`. Qué mirar: ¿se integra de forma natural y divertida?, ¿hay bordes/halos de collage?, ¿se conservan los elementos anteriores? Dime qué falla y ajusto el texto (`src/lib/ai/prompts.ts`).
+- [ ] Con `npm run ai:lab` (ver `docs/PROMPTS-IA.md`) prueba 2-3 bases distintas (una casa, una nave espacial, un batido de leche, una mascota) con 2-3 elementos cada una y revisa `paso-N.png` y `prompts.txt`. Qué mirar: ¿se integra de forma natural y divertida?, ¿hay bordes/halos de collage?, ¿se conservan los elementos anteriores? Dime qué falla y ajusto el texto (`src/lib/ai/prompts.ts`).
 
 ## 5l. Probar un modelo de edición mejor (gratis)
 - [ ] En Vercel: `CLOUDFLARE_EDIT_MODEL=@cf/black-forest-labs/flux-2-klein-9b` y `IMAGE_PROVIDERS=cloudflare,pollinations`; compara con `npm run ai:lab` la misma batería (persona en una puerta + Pikachu + barca). Mide neurons/imagen con `npm run ai:measure -- --yes --edit` y ajusta `IMAGE_QUOTA_PER_DAY`. Si queda corto, prueba `flux-2-dev`.
@@ -161,4 +161,4 @@ La colección con alfa real (`public/assets/mascot-vector/`) es vectorial. Para 
 - [x] **MFA/TOTP del superadmin**: implementado como opt-in (`SUPERADMIN_REQUIRE_MFA=true`, página `/seguridad-admin`, `requireSuperadmin()` exige `aal2`). **Sin probar contra Supabase real.** Para activarlo: 1) en Supabase → Authentication → Sign In / Providers → Multi-Factor, activa TOTP; 2) pon la variable en Vercel y redespliega; 3) entra en `/admin`: te llevará a configurar el QR. Si algo falla, quita la variable para recuperar el acceso.
 - [ ] Ideas del plan de superadmin no incluidas por ahora: alertas (descartadas: solo dashboard), conversión de imágenes a WebP y retención por versiones, detección de archivos huérfanos en el bucket, cuotas de IA por usuario (hoy: global + permiso por usuario), exportación CSV de la auditoría.
 - [ ] **Mascota:** para una colección completa de poses independientes con transparencia real hacen falta renders por pose (≥ 1024 px, fondo transparente o liso): primero mascota principal, celebrando, sorprendida y triste (`docs/MASCOTA.md`). Los recortes actuales de la lámina son de ≈150 px (bustos/poses).
-- [ ] **Mezcla de la foto del elemento con la casa** (Cloudflare `input_image_1`, OpenAI `image[]`): implementado según la documentación, **sin probar contra las APIs reales**. Prueba con un elemento con foto (p. ej. un conejo rosa con lazo azul) y comprueba que el objeto conserva su aspecto.
+- [ ] **Mezcla de la foto del elemento con la imagen** (Cloudflare `input_image_1`, OpenAI `image[]`): implementado según la documentación, **sin probar contra las APIs reales**. Prueba con un elemento con foto (p. ej. un conejo rosa con lazo azul) y comprueba que el objeto conserva su aspecto.

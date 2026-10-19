@@ -4,7 +4,7 @@ Toda imagen que se guarda en el sistema pasa por `normalizeImage` (`src/lib/imag
 
 | Tipo | Caja máxima (no se amplía) | Peso objetivo |
 |---|---|---|
-| `scene` — casa / escena (inicial, base compartida, ediciones de IA) | 1536 × 1024 | 300 KB |
+| `scene` — imagen base / escena (inicial, base compartida, ediciones de IA) | 1536 × 1024 | 300 KB |
 | `item` — foto de un elemento del catálogo | 768 × 768 | 150 KB |
 | `cover` — portada de plantilla del sistema | 1200 × 630 | 150 KB |
 
@@ -23,7 +23,7 @@ Reglas: solo PNG, JPEG o WebP (el tipo se decide por el **contenido**; SVG y GIF
 ## Preparar fotos para tu CDN (plantillas del sistema)
 ```bash
 npm run assets:normalize -- ./mis-fotos                   # elementos  -> ./mis-fotos/normalizadas
-npm run assets:normalize -- ./mis-fotos --kind=scene      # casas
+npm run assets:normalize -- ./mis-fotos --kind=scene      # imágenes base
 npm run assets:normalize -- ./mis-fotos --kind=cover --out=./salida
 ```
 Usa el mismo módulo que el servidor: lo que sale pasa la validación sin cambios. No toca los originales y muestra el peso antes y después.

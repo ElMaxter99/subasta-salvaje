@@ -6,7 +6,7 @@
 
 ### Puja. Construye. Alucina.
 
-**Subasta creativa multijugador para noches de juegos.** Cada jugador parte de una casa vacía y un presupuesto; la tele muestra el espectáculo, el anfitrión dirige la subasta y cada compra hace que la casa **evolucione** con pegatinas (sin IA) o con edición de imagen por IA.
+**Juego multijugador de subastas creativas.** Se parte de una **imagen base** (una casa, una nave espacial, el salón de un castillo, una oficina, un jardín…) y, subasta a subasta, los jugadores la transforman con los **elementos** que ganan pujando, para dejarla lo más **divertida —o lo más útil— posible**, como la entienda cada grupo. Hay partidas temáticas listas, pero **todo es personalizable**: la imagen base y los elementos pueden ser infinitas combinaciones. La tele muestra el espectáculo, el anfitrión dirige la subasta y cada compra hace que la imagen **evolucione** con pegatinas (sin IA) o con edición de imagen por IA.
 
 ![Next.js 16](https://img.shields.io/badge/Next.js-16-black?logo=nextdotjs)
 ![TypeScript estricto](https://img.shields.io/badge/TypeScript-estricto-3178c6?logo=typescript&logoColor=white)
@@ -15,7 +15,7 @@
 ![Node >= 20](https://img.shields.io/badge/node-%E2%89%A5%2020-339933?logo=nodedotjs&logoColor=white)
 [![Licencia MIT](https://img.shields.io/badge/licencia-MIT-green)](LICENSE)
 
-<img src="docs/img/tv-subasta-en-curso.webp" alt="La pantalla de TV durante una puja: elemento anunciado, puja actual, quién va ganando y las casas de los jugadores" width="860">
+<img src="docs/img/tv-subasta-en-curso.webp" alt="La pantalla de TV durante una puja: elemento anunciado, puja actual, quién va ganando y las imágenes de los jugadores" width="860">
 
 <sub>Vista de TV (1920×1080) durante una puja. Captura real en modo demo (pegatinas locales, sin IA).</sub>
 
@@ -44,11 +44,13 @@
 
 ## Qué es y cómo se juega
 
-1. **Crea la partida** en `/new-game` (asistente de 6 pasos o importando una plantilla JSON): temática, presupuesto, reglas y jugadores.
+1. **Crea la partida** en `/new-game` (asistente de 6 pasos o importando una plantilla JSON): elige o sube la **imagen base** (una casa, una nave, un castillo… lo que quieras), la temática, el presupuesto, las reglas y los jugadores. Puedes partir de una plantilla del sistema o personalizarlo todo.
 2. **La tele** (`/game/[código]/screen`) muestra la sala de espera con el código y un QR; los jugadores entran desde el móvil en `/join` (modo «móviles») o pujan en voz alta (modo «anfitrión»).
 3. **El anfitrión** (`/game/[código]/host`, privado) anuncia un elemento, recoge pujas, cierra y adjudica; o activa la **subasta automática**.
-4. **Cada compra se cobra una sola vez** y la casa del ganador evoluciona: pegatinas con emojis (sin IA, gratis e instantáneo) o edición por IA si el despliegue la tiene configurada.
-5. **Al final**, los jugadores votan la mejor casa desde el móvil; cuando todos han votado, la TV pasa sola al **podio**.
+4. **Cada compra se cobra una sola vez** y la imagen del ganador se transforma con el elemento: pegatinas con emojis (sin IA, gratis e instantáneo) o edición por IA si el despliegue la tiene configurada.
+5. **Al final**, los jugadores votan la mejor imagen desde el móvil (la más divertida, la más útil… como la entienda el grupo); cuando todos han votado, la TV pasa sola al **podio**.
+
+Ejemplos de imagen base: la casa de toda la vida, una nave espacial a medio montar, el salón de un castillo, una oficina gris, un jardín… Hay **partidas temáticas** listas (plantillas del sistema), pero todo se puede personalizar: tú decides la imagen de partida y el catálogo de elementos. Qué cuenta como «mejor» (la más divertida, la más útil…) lo decide cada grupo al votar. Sin IA configurada, las transformaciones son pegatinas locales; con IA, depende de los proveedores gratuitos configurados y de lo que consigan editar (ver más abajo las limitaciones honestas).
 
 <table>
 <tr>
@@ -67,7 +69,7 @@ Rutas principales: `/` (inicio) · `/new-game` · `/login` · `/join` · `/game/
   - **Cada jugador desde su móvil:** entran con el código de sala o el QR, eligen nombre y pujan ellos mismos (sin cuenta: cookie `httpOnly` por jugador).
 - **TV sin salvapantallas:** la pantalla de la TV pide el bloqueo de pantalla del navegador y reproduce un vídeo mínimo en bucle para que el televisor no active el salvapantallas (indicador «Pantalla activa»; no hay garantía en todos los modelos).
 - **Selector de emojis:** en todos los campos de emoji (catálogo, plantillas, biblioteca) hay un botón que abre un selector con categorías y buscador en español, para quien no tiene teclado de emojis (PC); también se puede escribir o pegar.
-- **Casas que evolucionan:** modo **pegatinas con emojis (sin IA)** por defecto, o modo **con IA** (cadena de proveedores gratuitos: Cloudflare Workers AI, Pollinations, AI Horde y Hugging Face; OpenAI solo si es el único y lo pides, con cuotas por partida y por día e interruptor de apagado). Nunca se activa un proveedor de pago por sí solo. La subasta nunca se bloquea por la IA. El **historial de imágenes** del anfitrión muestra qué IA y qué modelo hizo cada versión, el tipo de trabajo (edición real, composición, pegatinas…) y el prompt, y explica **por qué se usó cada proveedor** (cadena, saltos y motivos) y permite **regenerar** la versión actual, incluso forzando un proveedor concreto, (para probar otro modelo o prompt sin volver a comprar; no cobra y se conserva la anterior).
+- **Imágenes que evolucionan:** modo **pegatinas con emojis (sin IA)** por defecto, o modo **con IA** (cadena de proveedores gratuitos: Cloudflare Workers AI, Pollinations, AI Horde y Hugging Face; OpenAI solo si es el único y lo pides, con cuotas por partida y por día e interruptor de apagado). Nunca se activa un proveedor de pago por sí solo. La subasta nunca se bloquea por la IA. El **historial de imágenes** del anfitrión muestra qué IA y qué modelo hizo cada versión, el tipo de trabajo (edición real, composición, pegatinas…) y el prompt, y explica **por qué se usó cada proveedor** (cadena, saltos y motivos) y permite **regenerar** la versión actual, incluso forzando un proveedor concreto, (para probar otro modelo o prompt sin volver a comprar; no cobra y se conserva la anterior).
 - **Subasta automática y adjudicación automática** (por tiempo o instantánea), rondas máximas, pujas en Ohros enteros, **eventos sorpresa** (a ciegas, doble o mitad, impuesto al más rico) y **deshacer** la última adjudicación.
 - **Votación y podio:** galería final con voto de cada jugador (no se puede votar a uno mismo); la votación se cierra sola cuando todos los conectados han votado y la TV muestra el podio.
 - **Plantillas de partida** (JSON, CSV de catálogo o ZIP con fotos): importar, editar el catálogo, guardar y exportar. Ver [`docs/PLANTILLAS.md`](docs/PLANTILLAS.md).
@@ -88,8 +90,8 @@ Todas las capturas son **reales**, generadas con la app en **modo demo (pegatina
 </tr>
 <tr>
 <td width="50%" align="center"><img src="docs/img/asistente-paso1-quien-puja.webp" alt="Asistente de nueva partida, paso 1: quién puja"><br><sub>Nueva partida · paso 1 de 6</sub></td>
-<td width="25%" align="center"><img src="docs/img/asistente-paso2-casas.webp" alt="Asistente de nueva partida, paso 2: cómo cambian las casas"><br><sub>Nueva partida · paso 2 (casas)</sub></td>
-<td width="25%" align="center"><img src="docs/img/jugador-movil-votacion.webp" alt="Votación de la mejor casa en el móvil"><br><sub>Votación en el móvil</sub></td>
+<td width="25%" align="center"><img src="docs/img/asistente-paso2-casas.webp" alt="Asistente de nueva partida, paso 2: cómo cambian las imágenes"><br><sub>Nueva partida · paso 2 (imágenes)</sub></td>
+<td width="25%" align="center"><img src="docs/img/jugador-movil-votacion.webp" alt="Votación de la mejor imagen en el móvil"><br><sub>Votación en el móvil</sub></td>
 </tr>
 <tr>
 <td width="50%" align="center"><img src="docs/img/plantilla-importada-resumen.webp" alt="Resumen del asistente tras importar una plantilla JSON"><br><sub>Plantilla importada: resumen</sub></td>
@@ -97,12 +99,12 @@ Todas las capturas son **reales**, generadas con la app en **modo demo (pegatina
 <td width="25%" align="center"><img src="docs/img/superadmin-resumen.webp" alt="Panel de superadmin con el peso de la base de datos y la cuota de IA"><br><sub>Superadmin</sub></td>
 </tr>
 <tr>
-<td width="50%" align="center"><img src="docs/img/tv-entre-subastas.webp" alt="TV entre subastas con las casas de los jugadores en primer plano y el último adjudicado"><br><sub>TV entre subastas: las casas en primer plano</sub></td>
+<td width="50%" align="center"><img src="docs/img/tv-entre-subastas.webp" alt="TV entre subastas con las imágenes de los jugadores en primer plano y el último adjudicado"><br><sub>TV entre subastas: las imágenes en primer plano</sub></td>
 <td width="25%" align="center"><img src="docs/img/espectador-movil.webp" alt="Modo espectador en el móvil: subasta en curso, solo lectura"><br><sub>Modo espectador (solo lectura)</sub></td>
 <td width="25%" align="center"><img src="docs/img/admin-observabilidad.webp" alt="Panel de observabilidad del superadmin con errores agrupados y métricas de uso"><br><sub>Observabilidad (superadmin)</sub></td>
 </tr>
 <tr>
-<td width="50%" align="center"><img src="docs/img/tv-desconectado.webp" alt="TV con la casa de un jugador desconectado en grises y la insignia Desconectado"><br><sub>TV: un jugador desconectado se ve en su foto</sub></td>
+<td width="50%" align="center"><img src="docs/img/tv-desconectado.webp" alt="TV con la imagen de un jugador desconectado en grises y la insignia Desconectado"><br><sub>TV: un jugador desconectado se ve en su foto</sub></td>
 <td width="25%" align="center"><img src="docs/img/anfitrion-quien-puja.webp" alt="Panel del anfitrión con la tarjeta ¿Quién puja? para abrir la partida a móviles"><br><sub>Anfitrión: «¿Quién puja?»</sub></td>
 <td width="25%" align="center"><img src="docs/img/anfitrion-jugadores-presencia.webp" alt="Panel de jugadores con su estado de conexión y el botón Sacar de la TV"><br><sub>Anfitrión: presencia y «Sacar de la TV»</sub></td>
 </tr>
@@ -110,13 +112,13 @@ Todas las capturas son **reales**, generadas con la app en **modo demo (pegatina
 <td colspan="3" align="center"><img src="docs/img/admin-biblioteca.webp" alt="Biblioteca de medios del superadmin con roles, categorías y panel de cobertura" width="520"><br><sub>Biblioteca de medios: roles, categorías y cobertura</sub></td>
 </tr>
 <tr>
-<td colspan="3" align="center"><img src="docs/img/resultados-podio.webp" alt="Página de resultados con el podio, estadísticas y casas antes y después" width="520"><br><sub>Resultados con podio, estadísticas y casas «antes / después»</sub></td>
+<td colspan="3" align="center"><img src="docs/img/resultados-podio.webp" alt="Página de resultados con el podio, estadísticas e imágenes antes y después" width="520"><br><sub>Resultados con podio, estadísticas e imágenes «antes / después»</sub></td>
 </tr>
 </table>
 
 ### Repositorio hermano de imágenes: [subasta-salvaje-public](https://github.com/ElMaxter99/subasta-salvaje-public)
 
-Las fotos de las **partidas del sistema** (Halloween, casa encantada, batido…) no viven en este repositorio ni en Supabase, sino en [`ElMaxter99/subasta-salvaje-public`](https://github.com/ElMaxter99/subasta-salvaje-public), un repositorio público sin ánimo de lucro que la app llena con el arrastrar y soltar de `/admin/plantillas` y que se sirve por jsDelivr. Ese repositorio enlaza de vuelta a este proyecto. Configuración en `GITHUB_ASSETS_*` (ver variables de entorno) y [`docs/PLANTILLAS-SISTEMA.md`](docs/PLANTILLAS-SISTEMA.md).
+Las fotos de las **partidas del sistema** (Halloween, casa encantada, fondo del mar, batido…) no viven en este repositorio ni en Supabase, sino en [`ElMaxter99/subasta-salvaje-public`](https://github.com/ElMaxter99/subasta-salvaje-public), un repositorio público sin ánimo de lucro que la app llena con el arrastrar y soltar de `/admin/plantillas` y que se sirve por jsDelivr. Ese repositorio enlaza de vuelta a este proyecto. Configuración en `GITHUB_ASSETS_*` (ver variables de entorno) y [`docs/PLANTILLAS-SISTEMA.md`](docs/PLANTILLAS-SISTEMA.md).
 
 ### Recursos gráficos del proyecto
 
@@ -294,7 +296,7 @@ Si **no** defines las variables de Supabase y `NODE_ENV !== 'production'`, la ap
 <summary><b>Configurar el proveedor de imágenes (pegatinas, Cloudflare, OpenAI)</b></summary>
 
 Cada **partida** elige su modo de imágenes al crearla (y puede cambiarlo en *Ajustes* mientras esté en la sala de espera):
-- **🎨 Pegatinas con emojis** (por defecto): cada compra añade el emoji del elemento a la casa. Son ilustraciones SVG locales: **sin IA, gratis e instantáneo**, y siempre están disponibles. Cada imagen lleva la marca «Modo pegatinas · sin IA» y se guarda con `provider = 'demo'` (la interfaz la etiqueta como «Pegatinas»).
+- **🎨 Pegatinas con emojis** (por defecto): cada compra añade el emoji del elemento a la imagen. Son ilustraciones SVG locales: **sin IA, gratis e instantáneo**, y siempre están disponibles. Cada imagen lleva la marca «Modo pegatinas · sin IA» y se guarda con `provider = 'demo'` (la interfaz la etiqueta como «Pegatinas»).
 - **✨ Con IA**: usa el proveedor de IA real configurado (`IMAGE_PROVIDER=cloudflare` u `openai`), con cuotas por partida y por día. Esta opción solo aparece disponible si el despliegue tiene IA configurada.
 
 **Ninguna credencial activa la IA por sí sola**: hay que pedirla con `IMAGE_PROVIDER`. Si la pides y faltan credenciales, la IA aparece como «no disponible» (las partidas en modo IA dejan sus trabajos en cola) y **nunca se cambia automáticamente a otro proveedor ni se activa un plan de pago**. Si el proveedor falla, la compra, el saldo y la imagen anterior se conservan y se puede seguir jugando; el trabajo se puede reintentar sin volver a cobrar.
@@ -302,7 +304,7 @@ Cada **partida** elige su modo de imágenes al crearla (y puede cambiarlo en *Aj
 #### Edición con foto de referencia (FLUX.2 klein) y plan B por composición
 **Edición real:** con Cloudflare configurado, la app edita la imagen actual de cada jugador usándola como referencia (`@cf/black-forest-labs/flux-2-klein-4b`, ahora **activo por defecto**; cambia el modelo con `CLOUDFLARE_EDIT_MODEL` o pon `off` para desactivarlo). Según la tarifa publicada (≈5,4 neuronas por tile de entrada y ≈26 por tile de salida de 512²) una edición de 1024×768 cuesta unas 85 neuronas, es decir ~110 ediciones al día dentro de las 10 000 neuronas gratuitas; **contrástalo con la página de precios vigente**. El nombre exacto de los campos multipart (`input_image_0`) no pude confirmarlo en la documentación: si el modelo rechaza la entrada (400/404/422) se activa el plan B siguiente; cuota, red o credenciales no lo activan.
 
-**Plan B (composición):** si el modelo de edición no existe, está desactivado (`off`) o rechaza la entrada, la app usa una **edición por composición** (`src/lib/ai/compose.ts`): genera con IA solo el objeto nuevo sobre fondo blanco liso (1 generación, cuenta en la misma cuota), recorta el fondo y lo pega con sombra en un hueco libre de la imagen actual. La escena anterior se conserva píxel a píxel. **Limitación honesta:** es un collage, no una edición real; el objeto no adapta luz ni perspectiva a la casa, y si el modelo no devuelve un fondo liso el recorte falla (se reintenta y, si sigue fallando, se conserva la imagen anterior). Desactívalo con `IMAGE_EDIT_COMPOSE=false`. Probado con respuestas simuladas; **no probado contra la API real de Cloudflare**.
+**Plan B (composición):** si el modelo de edición no existe, está desactivado (`off`) o rechaza la entrada, la app usa una **edición por composición** (`src/lib/ai/compose.ts`): genera con IA solo el objeto nuevo sobre fondo blanco liso (1 generación, cuenta en la misma cuota), recorta el fondo y lo pega con sombra en un hueco libre de la imagen actual. La escena anterior se conserva píxel a píxel. **Limitación honesta:** es un collage, no una edición real; el objeto no adapta luz ni perspectiva a la imagen, y si el modelo no devuelve un fondo liso el recorte falla (se reintenta y, si sigue fallando, se conserva la imagen anterior). Desactívalo con `IMAGE_EDIT_COMPOSE=false`. Probado con respuestas simuladas; **no probado contra la API real de Cloudflare**.
 
 #### Cloudflare Workers AI (primera opción real)
 
@@ -310,13 +312,13 @@ Verificado en la documentación oficial de Cloudflare (consulta de las páginas 
 
 | Modelo | Uso | Entrada | Salida |
 |---|---|---|---|
-| `@cf/black-forest-labs/flux-1-schnell` (**por defecto**, el más económico) | Generación texto→imagen: imagen inicial de la casa e imágenes de elementos | JSON `prompt` (1–2048 caracteres), `steps` (1–8, por defecto 4) | `image`: base64 (JPEG) |
+| `@cf/black-forest-labs/flux-1-schnell` (**por defecto**, el más económico) | Generación texto→imagen: imagen base e imágenes de elementos | JSON `prompt` (1–2048 caracteres), `steps` (1–8, por defecto 4) | `image`: base64 (JPEG) |
 | `@cf/black-forest-labs/flux-2-klein-4b` (opcional) | **Edición** multi-referencia | `multipart/form-data`: `prompt`, `width`, `height`, `input_image_0..3` (cada una < 512×512); 4 pasos fijos | `image`: base64 |
 
 Endpoint REST: `POST https://api.cloudflare.com/client/v4/accounts/{CLOUDFLARE_ACCOUNT_ID}/ai/run/{modelo}` con `Authorization: Bearer {CLOUDFLARE_API_TOKEN}`. La respuesta se interpreta como `{ result: { image } }` (también se admite `{ image }` o una imagen binaria).
 
-**Limitación importante:** `flux-1-schnell` **no admite imagen de referencia, así que no puede editar la casa existente**. Con él, la imagen inicial y las imágenes de elementos se generan, pero las ediciones por compra salen como *fallidas* con un mensaje claro (la compra, el saldo y la imagen anterior se conservan; el panel avisa y no gasta cuota). Opciones:
-- Definir `CLOUDFLARE_EDIT_MODEL=@cf/black-forest-labs/flux-2-klein-4b`: la app redimensiona la casa actual a < 512 px (con `sharp`) y la envía como `input_image_0`. **Esta ruta está implementada según la documentación y probada solo con respuestas simuladas, no contra la API real**; la calidad de conservación de detalles con referencias tan pequeñas puede ser limitada y el coste por imagen es mayor que el de schnell.
+**Limitación importante:** `flux-1-schnell` **no admite imagen de referencia, así que no puede editar la imagen existente**. Con él, la imagen inicial y las imágenes de elementos se generan, pero las ediciones por compra salen como *fallidas* con un mensaje claro (la compra, el saldo y la imagen anterior se conservan; el panel avisa y no gasta cuota). Opciones:
+- Definir `CLOUDFLARE_EDIT_MODEL=@cf/black-forest-labs/flux-2-klein-4b`: la app redimensiona la imagen actual a < 512 px (con `sharp`) y la envía como `input_image_0`. **Esta ruta está implementada según la documentación y probada solo con respuestas simuladas, no contra la API real**; la calidad de conservación de detalles con referencias tan pequeñas puede ser limitada y el coste por imagen es mayor que el de schnell.
 - Usar otro proveedor con edición real (`IMAGE_PROVIDER=openai`) o integrar uno nuevo implementando `ImageGenerationProvider` (`src/lib/ai/types.ts`, ver `capabilities.edit`) y registrándolo en `src/lib/services/context.ts`.
 
 Cuota y coste (según la documentación en el momento de escribir esto, sujeta a cambios): Workers AI incluye **10 000 *neurons* al día gratis**; más allá solo se factura en el plan *Workers Paid* (desde 5 USD/mes), que **no se activa solo**. Algunos modelos exigen el plan de pago (las peticiones del plan gratuito devuelven 403). flux-1-schnell se factura por *tile* de 512×512 (4,80 neurons) y por paso (9,60 neurons); una imagen de 1024×1024 con 4 pasos serían ≈ 58 neurons, es decir, del orden de 170 imágenes/día gratis (estimación mía a partir de esas cifras). Comprueba los precios vigentes en la página oficial de precios de Workers AI.
@@ -335,7 +337,7 @@ Cuota y coste (según la documentación en el momento de escribir esto, sujeta a
 1. Crea una API key en <https://platform.openai.com/api-keys> (puede requerir verificación de organización para `gpt-image-1`).
 2. `IMAGE_PROVIDER=openai` y `OPENAI_API_KEY` (opcionales: `OPENAI_IMAGE_MODEL`, `OPENAI_IMAGE_SIZE`, `OPENAI_IMAGE_QUALITY`, `OPENAI_IMAGE_INPUT_FIDELITY`, ver `.env.example`). Admite edición con imagen de referencia (`input_fidelity=high`).
 
-#### Cómo se edita una casa
+#### Cómo se edita la imagen
 La imagen actual del jugador + un prompt (`src/lib/ai/prompts.ts`) que exige conservar composición, perspectiva y objetos previos, añadir **solo** el nuevo elemento e integrar luz/escala/sombras, sin texto ni marcas de agua. Los modelos no garantizan una conservación perfecta: por eso cada edición crea una **versión nueva** (la anterior se conserva), puedes **reintentar** y **restaurar** versiones desde el historial. Control de costes adicional: máximo 150 trabajos de imagen por partida y 5 reintentos manuales por trabajo. Como el registro de Supabase Auth es abierto, define `ALLOWED_HOST_EMAILS` para que solo esas cuentas sean anfitrión.
 
 </details>
@@ -364,7 +366,7 @@ Define `CRON_SECRET` (cadena larga aleatoria): Vercel la envía automáticamente
 <details>
 <summary><b>Imagen de partida para jugadores actuales y nuevos</b></summary>
 
-En el panel (*Jugadores → Imagen de partida para todos*, solo en la sala de espera) puedes subir una foto, elegir una de la galería o **generar** la imagen inicial (con IA o como pegatinas, según el modo de la partida) y decidir a quién se aplica: **jugadores actuales**, **jugadores nuevos** (los que se unan después desde el móvil o que añadas en el panel) o ambos. Para los nuevos se guarda como imagen por defecto de la partida (se puede quitar). Si es una generación, se hace **UNA sola** (trabajo `base`, una unidad de cuota): la misma imagen, el mismo archivo, para todos los jugadores, también para quien se una mientras se genera o después (mientras la partida siga en la sala de espera). Volver a pulsar «generar» sustituye la imagen de todos; la generación individual por jugador (pestaña Jugadores) sigue disponible si quieres casas distintas.
+En el panel (*Jugadores → Imagen de partida para todos*, solo en la sala de espera) puedes subir una foto, elegir una de la galería o **generar** la imagen inicial (con IA o como pegatinas, según el modo de la partida) y decidir a quién se aplica: **jugadores actuales**, **jugadores nuevos** (los que se unan después desde el móvil o que añadas en el panel) o ambos. Para los nuevos se guarda como imagen por defecto de la partida (se puede quitar). Si es una generación, se hace **UNA sola** (trabajo `base`, una unidad de cuota): la misma imagen, el mismo archivo, para todos los jugadores, también para quien se una mientras se genera o después (mientras la partida siga en la sala de espera). Volver a pulsar «generar» sustituye la imagen de todos; la generación individual por jugador (pestaña Jugadores) sigue disponible si quieres imágenes base distintas.
 
 </details>
 
@@ -403,29 +405,29 @@ Los jugadores **no tienen cuenta**. Al unirse (reclamar un nombre libre o entrar
 
 Requieren las migraciones `…1800` y `…1900` (ver `docs/PENDIENTE.md`).
 
-- **Deshacer la última adjudicación** (panel → *Subasta* → «Última adjudicación»). Devuelve exactamente lo cobrado, libera el elemento, borra la compra y su trabajo de imagen, y la casa del jugador vuelve a su imagen anterior (la versión generada se conserva en el historial, sin vínculo con la compra). Solo la **última** compra de la partida (así la cadena de imágenes de cada jugador no se rompe), con motivo opcional y clave de idempotencia (un doble clic no devuelve el dinero dos veces). Si la imagen de esa compra se está generando en ese instante, se pide esperar unos segundos. Queda registrado en la actividad (`award_undone`).
+- **Deshacer la última adjudicación** (panel → *Subasta* → «Última adjudicación»). Devuelve exactamente lo cobrado, libera el elemento, borra la compra y su trabajo de imagen, y la imagen del jugador vuelve a su versión anterior (la versión generada se conserva en el historial, sin vínculo con la compra). Solo la **última** compra de la partida (así la cadena de imágenes de cada jugador no se rompe), con motivo opcional y clave de idempotencia (un doble clic no devuelve el dinero dos veces). Si la imagen de esa compra se está generando en ese instante, se pide esperar unos segundos. Queda registrado en la actividad (`award_undone`).
 - **Eventos sorpresa.** Al anunciar un elemento eliges *Normal*, *🙈 A ciegas* o *🎲 Doble o mitad*; o fijas en *Eventos sorpresa* una probabilidad (15/25/50/100 %) y eliges «Automático».
   - **A ciegas:** en la TV y en los móviles se oculta el importe, el líder y las pujas mientras la subasta está abierta (solo se ve cuántas pujas hay); el anfitrión sí lo ve. Las pujas siguen las reglas normales: una puja demasiado baja se rechaza, lo que da una pista al jugador (no es una puja sellada pura). Se revela al adjudicar.
   - **Doble o mitad:** al adjudicar se sortea (50 %) si el ganador paga la **mitad** de su puja o el **doble** (limitado a su saldo). `purchases.price_cents` guarda lo realmente cobrado y la TV muestra el resultado. El sorteo usa `random()` de PostgreSQL en el servidor, nunca el navegador.
   - **Impuesto al más rico:** el jugador con más saldo paga el 20 % (a la baja) y se reparte a partes iguales entre los demás; los céntimos sobrantes se quedan con el primer pagador, así que la suma de saldos no cambia. Si hay empate en el máximo pagan todos los empatados. Solo entre subastas (no con una puja abierta) y con clave de idempotencia. La TV lo anuncia unos segundos.
-- **Galería final con votación** (solo en partidas «cada jugador desde su móvil»). Al finalizar, cada móvil ve las casas de los demás y vota la mejor (un voto por jugador, **no se puede votar a uno mismo**, se puede cambiar hasta el cierre). La TV y la página de resultados muestran el progreso («N votos»); el recuento solo lo ve el anfitrión hasta que pulsa **«Cerrar votación y revelar»**, momento en que se publican los votos por casa y el ganador (empates: se muestran todos). Es independiente de la clasificación «votación del público» (que apunta el anfitrión a mano). Los móviles conservan su identidad tras finalizar solo para esto: no pueden pujar, y el token desaparece con la partida (borrado a las 12 h).
+- **Galería final con votación** (solo en partidas «cada jugador desde su móvil»). Al finalizar, cada móvil ve las imágenes de los demás y vota la mejor (un voto por jugador, **no se puede votar a uno mismo**, se puede cambiar hasta el cierre). La TV y la página de resultados muestran el progreso («N votos»); el recuento solo lo ve el anfitrión hasta que pulsa **«Cerrar votación y revelar»**, momento en que se publican los votos por imagen y el ganador (empates: se muestran todos). Es independiente de la clasificación «votación del público» (que apunta el anfitrión a mano). Los móviles conservan su identidad tras finalizar solo para esto: no pueden pujar, y el token desaparece con la partida (borrado a las 12 h).
 
 </details>
 
 <details>
 <summary><b>Rondas, pujas enteras y subasta automática</b></summary>
 
-- **Imagen interna única:** toda imagen que se guarda (subidas, fotos importadas y salidas de la IA) se reduce a WebP con tamaño y peso acotados y sin metadatos (casas 1536×1024 ≤ 300 KB; fotos de elementos 768×768 ≤ 150 KB); el móvil la reduce antes de subirla. Detalles y script para preparar fotos de un CDN: [`docs/IMAGEN-INTERNA.md`](docs/IMAGEN-INTERNA.md).
+- **Imagen interna única:** toda imagen que se guarda (subidas, fotos importadas y salidas de la IA) se reduce a WebP con tamaño y peso acotados y sin metadatos (imágenes de partida 1536×1024 ≤ 300 KB; fotos de elementos 768×768 ≤ 150 KB); el móvil la reduce antes de subirla. Detalles y script para preparar fotos de un CDN: [`docs/IMAGEN-INTERNA.md`](docs/IMAGEN-INTERNA.md).
 - **Máximo de jugadores** por partida: 10 por defecto y 10 como tope de la aplicación (`MAX_PLAYERS` / `ss_max_players_cap()`). El anfitrión puede fijar uno menor al crearla (paso «Jugadores») o en Ajustes → *Jugadores*; al llegar al máximo nadie más entra, ni siquiera con el código de la partida (lo hace cumplir SQL).
 - **Máximo de rondas** al crear la partida (por defecto, los elementos del catálogo): al jugarse todas, la partida termina sola. Editable en Ajustes → *Rondas y pujas*.
 - **Moneda: Ohros.** El dinero del juego se llama Ohros (1 Ohro, 2 Ohros) y se muestra con el icono de moneda.
 - **Reacciones del móvil a la TV**
 - **Ceder la puja** (modo móviles): el jugador pulsa «Ceder la puja (no sigo)» y deja de pujar por ese elemento (irrevocable en esa subasta). La TV y el panel muestran quién ha cedido; si ceden todos los que podían seguir y alguien lleva la puja, con la adjudicación automática se adjudica al instante (por la misma función de cobro, una sola vez) y, si nadie había pujado, con la subasta automática el elemento se da por perdido sin esperar al reloj. No disponible en «sobre cerrado». (8 emojis, límites en SQL), **imagen del podio descargable** y **repetición de la partida** para el anfitrión (`/game/<código>/replay`, línea de tiempo paso a paso).
-- **TV con los jugadores rodeando la subasta:** durante la puja, la imagen del elemento va en el centro (título y «puja actual» arriba, quién gana debajo) y las casas de los jugadores la rodean a izquierda, derecha y abajo, de modo que escala de 2 a 10 jugadores sin cambiar el diseño. Entre una subasta y la siguiente (con el último adjudicado y la cuenta atrás) las casas pasan a primer plano, grandes, en una sola vista.
+- **TV con los jugadores rodeando la subasta:** durante la puja, la imagen del elemento va en el centro (título y «puja actual» arriba, quién gana debajo) y las imágenes de los jugadores la rodean a izquierda, derecha y abajo, de modo que escala de 2 a 10 jugadores sin cambiar el diseño. Entre una subasta y la siguiente (con el último adjudicado y la cuenta atrás) las imágenes pasan a primer plano, grandes, en una sola vista.
 - **Pulido de juego (Fase 1):** «Volver a pujar» (retractarse de ceder, solo con la subasta abierta y, si otros cedieron después, en los primeros 8 s), pad con «Igualar +1» y «Subir al máximo», **pausa de gracia** del anfitrión (+10 s, 3 usos por subasta, no toca saldos), sonidos al ceder y de gracia, controles de la TV que no tapan la pantalla final y más premios (el remate más ajustado, el rápido, el remontador, el peleón). Detalle en [`docs/FASE1-JUEGO.md`](docs/FASE1-JUEGO.md).
 - **Modo espectador** (`/game/<código>/watch?k=<clave>`): enlace de solo lectura para seguir la partida desde otro móvil (sin sesión ni controles; las pujas a ciegas y los sobres no revelan importes). **Control de acceso real:** el enlace lleva una clave secreta distinta por partida que solo ve el anfitrión; sin ella (o con el modo desactivado, o tras «Cambiar enlace») se muestra «enlace no disponible» y la API responde 403. El QR y el enlace están en el panel del anfitrión (ya no en la TV, que es pública por código). La TV y los resultados siguen siendo públicos por código de sala. Ver [`docs/ESPECTADOR-Y-PODIO.md`](docs/ESPECTADOR-Y-PODIO.md).
-- **Imagen del podio rehecha** para compartir: `/api/public/games/<código>/podium?format=landscape|square|story` (1200×630, 1080×1080 y 1080×1350) con medallas, casas, premios y estadísticas; descarga en vertical desde el móvil.
-- **Biblioteca con roles y etiquetas:** cada imagen puede ser «foto de inicio» y/o «producto», con categoría y etiquetas (edición en bloque, filtros, panel de cobertura y aviso de imágenes parecidas). Desde la partida, «Elegir de la biblioteca» para la casa inicial, los productos y el asistente de nueva partida (solo imágenes revisadas). El `manifest.csv` admite `roles`, `categoria` y `etiquetas`; `npm run library` admite `--roles`, `--category` y `--tags`. Plan operativo para rellenarla en [`docs/PLAN-RELLENAR-BIBLIOTECA.md`](docs/PLAN-RELLENAR-BIBLIOTECA.md) y detalle técnico en [`docs/BIBLIOTECA-ETIQUETAS.md`](docs/BIBLIOTECA-ETIQUETAS.md).
+- **Imagen del podio rehecha** para compartir: `/api/public/games/<código>/podium?format=landscape|square|story` (1200×630, 1080×1080 y 1080×1350) con medallas, imágenes finales, premios y estadísticas; descarga en vertical desde el móvil.
+- **Biblioteca con roles y etiquetas:** cada imagen puede ser «foto de inicio» y/o «producto», con categoría y etiquetas (edición en bloque, filtros, panel de cobertura y aviso de imágenes parecidas). Desde la partida, «Elegir de la biblioteca» para la imagen inicial, los productos y el asistente de nueva partida (solo imágenes revisadas). El `manifest.csv` admite `roles`, `categoria` y `etiquetas`; `npm run library` admite `--roles`, `--category` y `--tags`. Plan operativo para rellenarla en [`docs/PLAN-RELLENAR-BIBLIOTECA.md`](docs/PLAN-RELLENAR-BIBLIOTECA.md) y detalle técnico en [`docs/BIBLIOTECA-ETIQUETAS.md`](docs/BIBLIOTECA-ETIQUETAS.md).
 - **69 partidas del sistema listas** (36 base + 33 variantes por edad, duración y número de jugadores) en `docs/plantillas-sistema/` (solo emoji, sin fotos): `npm run templates:validate`, `npm run templates:build` y `npm run templates:import` (ensayo por defecto; `--apply` escribe como borrador; publicar es manual), y «Importar varias (.json)» en `/admin/plantillas`. Catálogo en [`docs/PLANTILLAS-SISTEMA-CATALOGO.md`](docs/PLANTILLAS-SISTEMA-CATALOGO.md).
 - **Casar fotos de la biblioteca con las plantillas:** `npm run templates:match` (ensayo por defecto; `--apply` solo a borradores, por enlace, sin copiar ni IA) y el botón «Sugerir fotos de la biblioteca» en `/admin/plantillas`, con puntuación explicada por título, etiquetas y categoría. Ver [`docs/CASAR-FOTOS-PLANTILLAS.md`](docs/CASAR-FOTOS-PLANTILLAS.md).
 - **Más contenido para la biblioteca:** 3 packs nuevos (Mascotas disfrazadas, Juguetes, Plantas y flores) y `npm run library:openverse` (solo CC0 y Public Domain Mark; Openverse, Met Museum y Art Institute of Chicago; sin probar contra los servicios reales). Ver [`docs/FUENTES-OPENVERSE-MUSEOS.md`](docs/FUENTES-OPENVERSE-MUSEOS.md).
@@ -445,22 +447,22 @@ Requieren las migraciones `…1800` y `…1900` (ver `docs/PENDIENTE.md`).
 - **Solo pujas en Ohros enteros** (por defecto): 1, 2, 3… Ohros; si lo desactivas se admiten 1,50 Ohros, etc.
 - **TV en modo móviles:** solo se ven los puestos de los jugadores que están dentro (con sonido al entrar, al salir y un aviso distinto cuando están todos los previstos); quien **nunca entra** no sale en el resultado final y no cuenta para la adjudicación automática (si nadie de los que están dentro puede superar la puja, se adjudica al instante); si alguien entra a mitad de partida aparece su puesto y si se sale desaparece (en modo anfitrión se ven todos).
 - **Jugadores en el asistente:** ninguno por defecto; se pueden crear luego en el panel o, en modo móviles, darse de alta ellos mismos.
-- **Imagen inicial obligatoria:** no se puede empezar la partida hasta que todos los jugadores tengan su casa de partida (subida, de la galería o generada).
+- **Imagen inicial obligatoria:** no se puede empezar la partida hasta que todos los jugadores tengan su imagen de partida (subida, de la galería o generada).
 - **Subasta automática** (Resumen): anuncia por orden los elementos disponibles, adjudica sola (con el último tiempo usado o el que indiques) y espera una **pausa configurable** entre subastas; si nadie puja, salta al siguiente; al acabar las rondas finaliza. El servidor avanza cuando hay una pantalla (TV, móvil o panel) abierta. Requiere las migraciones `…2600`/`…2700`.
 
 </details>
 
 <details>
-<summary><b>Fotos de los elementos y mezcla con la casa</b></summary>
+<summary><b>Fotos de los elementos y mezcla con la imagen</b></summary>
 
-En *Catálogo* cada elemento tiene **«Generar imagen»** (la IA usa nombre + descripción + temática) y **«Subir foto»** (PNG/JPEG/WebP, máx. 7 MB; también «Quitar foto»). Cuando alguien gana un elemento que tiene foto, la IA **mezcla esa foto con la imagen de la casa del ganador** (la casa se conserva y el objeto se parece a su foto). Sin foto, la IA usa solo el texto. El tema de la partida determina el prompt base de la imagen inicial. Requiere las migraciones `…2400`/`…2500`. La mezcla con Cloudflare/OpenAI está implementada según su documentación pero **no probada contra las APIs reales**.
+En *Catálogo* cada elemento tiene **«Generar imagen»** (la IA usa nombre + descripción + temática) y **«Subir foto»** (PNG/JPEG/WebP, máx. 7 MB; también «Quitar foto»). Cuando alguien gana un elemento que tiene foto, la IA **mezcla esa foto con la imagen del ganador** (la imagen se conserva y el objeto se parece a su foto). Sin foto, la IA usa solo el texto. El tema de la partida determina el prompt base de la imagen inicial. Requiere las migraciones `…2400`/`…2500`. La mezcla con Cloudflare/OpenAI está implementada según su documentación pero **no probada contra las APIs reales**.
 
 </details>
 
 <details>
 <summary><b>Crear una partida (asistente por pasos y plantillas)</b></summary>
 
-`/new-game` es un asistente de 6 pasos: **Quién puja** → **Las casas** (pegatinas o IA; paso propio para no tener que hacer scroll) → **Partida** (nombre y temática) → **Reglas** (presupuesto, puja mínima, clasificación) → **Jugadores** → **Resumen** (con «Editar» en cada bloque). Cada paso valida sus campos antes de dejar avanzar, Enter avanza (solo en el último crea la partida), los pasos completados del indicador permiten volver atrás y la mascota comenta cada paso. **Responsive:** móvil (barra de progreso «Paso X de 6» y botones fijos abajo), escritorio (indicador con círculos y etiquetas) y TV/pantallas ≥ 1536 px (campos, textos y botones más grandes, foco visible grueso para mando o teclado); respeta `prefers-reduced-motion`. Hay un e2e que lo recorre en 390, 1280 y 1920 px.
+`/new-game` es un asistente de 6 pasos: **Quién puja** → **Las imágenes** (imagen base; pegatinas o IA; paso propio para no tener que hacer scroll) → **Partida** (nombre y temática) → **Reglas** (presupuesto, puja mínima, clasificación) → **Jugadores** → **Resumen** (con «Editar» en cada bloque). Cada paso valida sus campos antes de dejar avanzar, Enter avanza (solo en el último crea la partida), los pasos completados del indicador permiten volver atrás y la mascota comenta cada paso. **Responsive:** móvil (barra de progreso «Paso X de 6» y botones fijos abajo), escritorio (indicador con círculos y etiquetas) y TV/pantallas ≥ 1536 px (campos, textos y botones más grandes, foco visible grueso para mando o teclado); respeta `prefers-reduced-motion`. Hay un e2e que lo recorre en 390, 1280 y 1920 px.
 
 **Plantillas:** en el primer paso puedes importar un archivo JSON (`subasta-salvaje/plantilla@1`), un CSV de catálogo o un ZIP con fotos; el asistente se rellena y salta al Resumen, donde puedes editar el catálogo (captura en la [galería](#galería)), guardarlo como plantilla propia o exportarlo desde Ajustes. Formato y seguridad (fotos por URL con protección SSRF): [`docs/PLANTILLAS.md`](docs/PLANTILLAS.md).
 
@@ -500,7 +502,7 @@ Identidad visual completa (logo, tipografía, tokens, mini héroe vectorial): [`
 
 1. Crea una partida y abre `/game/CÓDIGO/screen` en una pestaña (o la tele) y `/game/CÓDIGO/host` en otra.
 2. Empieza la partida, anuncia un elemento: la TV debe cambiar sin recargar. Registra pujas: el precio y el líder se actualizan al instante.
-3. Adjudica (con confirmación): salta la animación «¡ADJUDICADO!», baja el saldo una sola vez y aparece «Construyendo …» sobre la casa; al terminar el trabajo, la imagen se sustituye con una transición.
+3. Adjudica (con confirmación): salta la animación «¡ADJUDICADO!», baja el saldo una sola vez y aparece «Aplicando …» sobre la imagen; al terminar el trabajo, la imagen se sustituye con una transición.
 4. Indicadores: el panel muestra «En directo» (Realtime conectado), «Sincronizando» (polling) o «Sin conexión · reintentando». Apaga el wifi unos segundos y vuélvelo a encender: el estado se recupera solo.
 5. Diagnóstico rápido: `GET /api/runtime` devuelve modo y variables que faltan; `GET /api/public/games/CÓDIGO` devuelve el estado público.
 
@@ -578,7 +580,7 @@ Modelo de amenazas completo: [`docs/SEGURIDAD.md`](docs/SEGURIDAD.md).
 
 **Qué NO está verificado (honestidad):**
 - **Nunca se ha probado contra servicios reales:** la API de OpenAI, la de Cloudflare Workers AI (incluida la edición con `flux-2-klein-4b` y el nombre exacto de sus campos multipart), el comportamiento exacto de PostgREST/Realtime/Storage de Supabase ni un despliegue real en Vercel (por ejemplo, el valor `maxDuration = 300` en un plan Hobby). Todo eso se probó con respuestas simuladas y Postgres local; hay una lista de lo pendiente en [`docs/PENDIENTE.md`](docs/PENDIENTE.md).
-- **El modo pegatinas no es IA:** las casas de las capturas son ilustraciones SVG locales (etiquetadas «sin IA»). No se simula IA en ningún sitio.
+- **El modo pegatinas no es IA:** las imágenes de las capturas son ilustraciones SVG locales (etiquetadas «sin IA»). No se simula IA en ningún sitio.
 - **El asset pack y el logo no son 3D ni IA:** son ilustraciones vectoriales aproximadas y un logo raster; las expresiones de la mascota conservan el fondo oscuro de la lámina original (ver [`docs/MARCA.md`](docs/MARCA.md), [`docs/MASCOTA.md`](docs/MASCOTA.md), [`docs/ASSETS.md`](docs/ASSETS.md)).
 - **Las cifras de precios y cuotas** de Cloudflare/OpenAI son estimaciones a partir de su documentación en el momento de escribirlas: contrástalas con las páginas vigentes.
 - **Textos legales:** son una plantilla informativa, no asesoramiento jurídico ([`docs/LEGAL.md`](docs/LEGAL.md)).
@@ -602,7 +604,7 @@ Modelo de amenazas completo: [`docs/SEGURIDAD.md`](docs/SEGURIDAD.md).
 | Error 400 de OpenAI sobre `input_fidelity` | Tu modelo no lo admite: `OPENAI_IMAGE_INPUT_FIDELITY=off`. |
 | «El modelo configurado solo genera imágenes nuevas…» | `flux-1-schnell` no edita. Define `CLOUDFLARE_EDIT_MODEL` o usa otro proveedor con edición (ver *Configurar el proveedor de imágenes*). |
 | «Cuota … alcanzada» | Se llegó a `IMAGE_QUOTA_PER_GAME`/`PER_DAY` (o a la cuota gratuita de Cloudflare). La partida sigue; reintenta más tarde o sube el límite. |
-| La imagen cambia demasiado la casa | Normal en modelos generativos: usa **Restaurar** en el historial y reintenta; sube `OPENAI_IMAGE_QUALITY` a `high`. |
+| La imagen cambia demasiado | Normal en modelos generativos: usa **Restaurar** en el historial y reintenta; sube `OPENAI_IMAGE_QUALITY` a `high`. |
 | La TV no se actualiza al instante | Realtime no conectado → la TV sigue por *polling* (≤ 8 s). Comprueba que Broadcast está permitido en Supabase. |
 | La TV se ve cortada | Pulsa el botón de pantalla completa (aparece al mover el ratón) y usa una ventana 16:9. |
 | Modo demo en producción | No existe: sin credenciales verás `/setup`. |

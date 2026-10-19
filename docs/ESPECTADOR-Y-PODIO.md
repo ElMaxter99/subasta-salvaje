@@ -9,7 +9,7 @@ descargable con tres formatos y diseño de marca.
 Una página pública, pensada para el móvil, que muestra la partida en directo **sin sesión, sin token de jugador y sin ningún control**:
 - Subasta en curso: imagen (o emoji) del elemento, puja actual, «va ganando X», últimas pujas (5), reloj de adjudicación automática y reloj de la
   subasta automática (`AutoRunClock`), avisos de evento sorpresa y de quién ha cedido.
-- Casas y saldos de todos los jugadores (con elementos conseguidos); el líder de la puja se resalta.
+- Imágenes y saldos de todos los jugadores (con elementos conseguidos); el líder de la puja se resalta.
 - Sala de espera, pausa y «entre subastas» (último adjudicado + cuenta atrás a la siguiente).
 - Partida terminada: reutiliza `FinalResults` (podio/clasificación, estadísticas, premios, antes/después, botón de la imagen del podio).
 
@@ -20,7 +20,7 @@ instantánea que ya usan la TV y los resultados: sin `host_id`, trabajos, versio
   (`blind ? undefined / []`): muestra «¿¿ ??», cuántas pujas hay y, en sobre cerrado, quién ya ha pujado (sin importes). Al adjudicar se revela como
   en la TV.
 - Sin sonido (no usa `useGameAudio`). Sin escritura: ni `POST`, ni botones, ni formularios (un test lee el código fuente y lo impide; el e2e lo
-  comprueba en el DOM). En la pantalla final se conserva el deslizador «antes/después» de las casas, que es solo de visualización.
+  comprueba en el DOM). En la pantalla final se conserva el deslizador «antes/después» de las imágenes, que es solo de visualización.
 
 ### Accesibilidad y SEO
 - Móvil primero (una columna, 2 a partir de 480 px), sin desbordamiento horizontal (e2e a 390 px), texto ≥ 14 px, colores de la paleta ya auditada
@@ -49,7 +49,7 @@ instantánea que ya usan la TV y los resultados: sin `host_id`, trabajos, versio
 ### Pruebas
 - `tests/spectator.test.ts` (Vitest + PGlite): interruptor (por defecto activo, lo ve la instantánea pública, solo el anfitrión, valor booleano), puja
   a ciegas sin importe/líder/pujas ni datos de anfitrión, vista sin controles ni escrituras, texto del enlace.
-- `e2e/spectator.spec.ts` (Playwright, móvil 390 px): abre `/watch` sin sesión, ve subasta/saldos/casas, sin botones ni campos, sin desbordamiento; la
+- `e2e/spectator.spec.ts` (Playwright, móvil 390 px): abre `/watch` sin sesión, ve subasta/saldos/imágenes, sin botones ni campos, sin desbordamiento; la
   acción de anfitrión se rechaza sin sesión; subasta a ciegas → «¿¿ ??» y el importe no aparece ni en el DOM ni en la API pública; desactivar muestra
   el aviso; el panel del anfitrión ofrece el enlace; el final muestra estadísticas.
 - **No probado:** Postgres 16 real (`tests/postgres-real.test.ts` no se ha tocado; la migración usa el mismo patrón que `sound`/`player_stats`),
@@ -71,10 +71,10 @@ instantánea que ya usan la TV y los resultados: sin `host_id`, trabajos, versio
 
 ### Qué contiene
 Logo y mascota de marca (de `public/assets`), título, nombre de la partida, fecha (en español, zona Madrid), **podio con medallas** oro/plata/bronce
-(1.º en el centro; los empates comparten escalón y medalla), **miniaturas de la casa final** leídas de Storage (recortadas con `sharp`; si no hay
+(1.º en el centro; los empates comparten escalón y medalla), **miniaturas de la imagen final** leídas de Storage (recortadas con `sharp`; si no hay
 imagen o está en una URL externa, un marcador con el color del jugador y una casita), resto de jugadores en filas compactas (hasta 10), **premios**
-(`computeAwards`, con icono de la mascota por premio y «Mejor casa» si la galería cerró con votos) y **3 estadísticas** (elementos, dinero gastado,
-pujas). Con clasificación «ninguna» se muestra una cuadrícula de casas con el saldo final. Con 0 jugadores, un aviso.
+(`computeAwards`, con icono de la mascota por premio y «Mejor imagen» si la galería cerró con votos) y **3 estadísticas** (elementos, dinero gastado,
+pujas). Con clasificación «ninguna» se muestra una cuadrícula de imágenes con el saldo final. Con 0 jugadores, un aviso.
 Nombres largos y con emojis: se sanean (`plainText`, sin emojis porque satori los pediría a un CDN) y se recortan con puntos suspensivos en
 contenedores de ancho fijo. En `landscape` hay sitio para 3 premios; en `square`/`story` para 2–6 según cuántos jugadores haya debajo del podio.
 
@@ -82,10 +82,10 @@ contenedores de ancho fijo. En `landscape` hay sitio para 3 premios; en `square`
 - `src/lib/seo/podium-image.tsx` (`next/og`/satori, sin dependencias nuevas). `renderPodiumImage(snapshot, storage, download, format)` ahora devuelve
   una `Response` PNG (antes `ImageResponse`; los tests existentes siguen valiendo). API: `PODIUM_FORMATS`, `PODIUM_SIZES`, `parsePodiumFormat`,
   `podiumRows`, `plainText`, `podiumDate`.
-- **Sin red en ejecución:** logo, mascota e iconos se leen de `public/assets` y se convierten a PNG con `sharp` (cacheados en memoria); las casas, de
+- **Sin red en ejecución:** logo, mascota e iconos se leen de `public/assets` y se convierten a PNG con `sharp` (cacheados en memoria); las imágenes de los jugadores, de
   Storage. **Tipografía:** Baloo 2 (títulos, nombres y cifras, peso 800) y Nunito (cuerpo), en TTF estáticas empaquetadas en `src/assets/fonts/` con negrita real (ver `docs/FUENTE-PODIO.md`); si no cargan, se vuelve a Geist con la negrita simulada por contorno.
 - **Caché:** en proceso (hasta 24 PNG, clave = id de partida + formato + `version` de la instantánea, así que una imagen nueva invalida sola) y HTTP
-  `max-age=30, s-maxage=120, stale-while-revalidate=300`; si alguna casa aún se está generando (`generating`), no se cachea en proceso y el CDN solo
+  `max-age=30, s-maxage=120, stale-while-revalidate=300`; si alguna imagen aún se está generando (`generating`), no se cachea en proceso y el CDN solo
   10 s.
 - Botón de descarga (`screen/podium-download.tsx`, resultados web y móvil): principal vertical + enlaces «Cuadrada» y «Horizontal».
 
@@ -94,7 +94,7 @@ contenedores de ancho fijo. En `landscape` hay sitio para 3 premios; en `square`
   premios, con galería, sin casas, 1 y 0 jugadores en los 3 formatos, comprobando el **tamaño exacto del PNG**; cabeceras y caché.
   `PODIUM_DUMP=/ruta npx vitest run tests/podium-image.test.ts` guarda los PNG para revisarlos a ojo (se revisaron todos los casos).
 - `e2e/podium-image.spec.ts`: los tres tamaños, 400 en formatos inválidos, 409/no disponible antes de terminar y enlaces de descarga.
-- **No probado:** miniaturas con imágenes reales de IA en Supabase Storage (solo imágenes sintéticas); miniaturas de casas en URL externa (se
+- **No probado:** miniaturas con imágenes reales de IA en Supabase Storage (solo imágenes sintéticas); miniaturas de imágenes en URL externa (se
   omiten a propósito); cómo las muestran WhatsApp/Instagram.
 
 ### Dependencia con `computeAwards` (rama `feat/game`)
