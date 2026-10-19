@@ -54,7 +54,7 @@ export interface EditSceneInput {
   previousItems: string[];
   /**
    * Imagen del elemento del catálogo (subida por el anfitrión o generada con IA). Si existe, la edición debe MEZCLARLA con la
-   * imagen de la casa: el objeto añadido tiene que parecerse a esta referencia (formas, colores, detalles).
+   * imagen base: el objeto añadido tiene que parecerse a esta referencia (formas, colores, detalles).
    */
   itemImage?: ImageData;
 }
@@ -78,7 +78,7 @@ export interface ImageGenerationProvider {
    * (y su cuota) para editar. Si falta se deduce de `capabilities.edit`.
    */
   readonly realEdit?: boolean;
-  /** Qué sabe hacer el modelo configurado. `edit=false`: sólo genera imágenes nuevas (no puede editar la casa existente). */
+  /** Qué sabe hacer el modelo configurado. `edit=false`: sólo genera imágenes nuevas (no puede editar la imagen existente). */
   readonly capabilities: { edit: boolean };
   generateInitialScene(input: InitialSceneInput): Promise<GeneratedImage>;
   editScene(input: EditSceneInput): Promise<GeneratedImage>;

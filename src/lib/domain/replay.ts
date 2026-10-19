@@ -1,7 +1,7 @@
 import type { ImageVersion, ReplayRound } from './types';
 
 /**
- * Casa de un jugador tras `step` rondas de la repetición (0 = antes de la primera ronda).
+ * Imagen de un jugador tras `step` rondas de la repetición (0 = antes de la primera ronda).
  * Parte de su imagen base (la versión completada más antigua que no nace de una compra) y aplica, en orden de creación,
  * las ediciones nacidas de compras de las rondas ya reproducidas. Función pura, solo lectura.
  */

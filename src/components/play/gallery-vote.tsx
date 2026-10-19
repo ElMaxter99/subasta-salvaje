@@ -8,7 +8,7 @@ import { useToast } from '@/components/ui/toast';
 import { ApiError, galleryVoteRequest } from '@/lib/client/api';
 import type { Player, PublicSnapshot } from '@/lib/domain/types';
 
-/** Galería final: el jugador vota la mejor casa (no la suya). Puede cambiar su voto hasta que el anfitrión cierre. */
+/** Galería final: el jugador vota la mejor imagen (no la suya). Puede cambiar su voto hasta que el anfitrión cierre. */
 export function GalleryVote({ roomCode, snapshot, me, onSnapshot, onNotPlayer }: { roomCode: string; snapshot: PublicSnapshot; me: Player; onSnapshot: (s: PublicSnapshot) => void; onNotPlayer: () => void }) {
   const toast = useToast();
   const g = snapshot.gallery;
@@ -44,17 +44,17 @@ export function GalleryVote({ roomCode, snapshot, me, onSnapshot, onNotPlayer }:
     return (
       <section aria-label="Resultado de la votación" className="rounded-3xl border border-gold/40 bg-night-800 p-5 text-center" data-testid="gallery-result">
         <h3 className="font-display text-xl">Votación cerrada</h3>
-        <p className="mt-1 text-lg font-bold text-gold">{winner ? `🏆 Mejor casa: ${winner.name} (${top!.votes} ${top!.votes === 1 ? 'voto' : 'votos'})` : 'Nadie recibió votos'}</p>
+        <p className="mt-1 text-lg font-bold text-gold">{winner ? `🏆 Mejor imagen: ${winner.name} (${top!.votes} ${top!.votes === 1 ? 'voto' : 'votos'})` : 'Nadie recibió votos'}</p>
       </section>
     );
   }
 
   return (
-    <section aria-label="Votar la mejor casa" className="space-y-3 rounded-3xl border border-violet/50 bg-night-800 p-4" data-testid="gallery-vote">
+    <section aria-label="Votar la mejor imagen" className="space-y-3 rounded-3xl border border-violet/50 bg-night-800 p-4" data-testid="gallery-vote">
       <h3 className="flex items-center gap-2 font-display text-xl">
-        <Vote className="size-5 text-violet-soft" aria-hidden /> Vota la mejor casa
+        <Vote className="size-5 text-violet-soft" aria-hidden /> Vota la mejor imagen
       </h3>
-      <p className="text-sm text-white/70">{voted ? 'Ya has votado. Puedes cambiar tu voto hasta que el anfitrión cierre la votación.' : 'Elige la casa que más te guste. No puedes votar la tuya.'}</p>
+      <p className="text-sm text-white/70">{voted ? 'Ya has votado. Puedes cambiar tu voto hasta que el anfitrión cierre la votación.' : 'Elige la imagen que más te guste. No puedes votar la tuya.'}</p>
       <ul className="grid grid-cols-2 gap-3">
         {others.map((p) => {
           const mine = choice === p.id;
@@ -68,7 +68,7 @@ export function GalleryVote({ roomCode, snapshot, me, onSnapshot, onNotPlayer }:
                 className={`block w-full overflow-hidden rounded-2xl border-2 text-left ${mine ? 'border-gold' : 'border-white/10'} bg-night-900 disabled:opacity-60`}
               >
                 <span className="relative block aspect-[3/2]">
-                  <HouseImage image={p.current_image} alt={`Casa de ${p.name}`} className="absolute inset-0" emptyLabel="Sin casa" />
+                  <HouseImage image={p.current_image} alt={`Imagen de ${p.name}`} className="absolute inset-0" emptyLabel="Sin imagen" />
                   {mine ? <span className="absolute right-1.5 top-1.5 flex size-7 items-center justify-center rounded-full bg-gold text-night-950"><Check className="size-4" aria-hidden /></span> : null}
                 </span>
                 <span className="block truncate px-3 py-2 font-bold" style={{ color: p.color }}>{p.name}</span>

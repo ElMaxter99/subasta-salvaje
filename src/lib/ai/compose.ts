@@ -7,7 +7,7 @@ import { ProviderError, type EditSceneInput, type GeneratedImage, type ImageGene
  *  2. recorta su fondo liso y
  *  3. lo pega con sombra sobre la imagen actual, en un hueco libre.
  * La escena anterior se conserva píxel a píxel (por construcción), pero NO es una edición real: el objeto no se
- * integra con la luz ni la perspectiva de la casa. Es un collage honesto, sin coste extra ni proveedor de pago.
+ * integra con la luz ni la perspectiva de la imagen. Es un collage honesto, sin coste extra ni proveedor de pago.
  */
 
 /** Posiciones (centro-horizontal, base-vertical) normalizadas, en orden de uso. */
@@ -61,7 +61,7 @@ export async function cutOutBackground(bytes: Uint8Array, tolerance = 70): Promi
 
 /**
  * Recuadro redondeado con borde blanco para una foto que no tiene fondo liso recortable (p. ej. una foto subida por el
- * anfitrión o una imagen de catálogo con degradado). Se pega como «foto en la casa» en lugar de recortar el objeto.
+ * anfitrión o una imagen de catálogo con degradado). Se pega como «foto en la imagen» en lugar de recortar el objeto.
  */
 export async function frameImage(bytes: Uint8Array, maxSide = 420): Promise<Uint8Array> {
   const { default: sharp } = await import('sharp');

@@ -42,11 +42,11 @@ export const templateSchema = z.object({
     .optional()
     .default({}),
   jugadores: z.array(text('cada jugador debe ser un texto').transform(clean).pipe(z.string().min(1, 'hay un nombre de jugador vacío').max(40, 'un nombre de jugador supera los 40 caracteres')), { error: '«jugadores» debe ser una lista de nombres' }).max(TEMPLATE_LIMITS.players, `como máximo ${TEMPLATE_LIMITS.players} jugadores`).optional().default([]),
-  /** Solo plantillas del sistema: URL https de la portada de la tarjeta y de la imagen inicial de la casa (se copia a la partida). */
+  /** Solo plantillas del sistema: URL https de la portada de la tarjeta y de la imagen inicial (se copia a la partida). */
   portada: text('la portada debe ser una URL').trim().max(500, 'la URL de la portada supera los 500 caracteres').nullable().optional(),
   /** Autoría o fuente de las imágenes de la plantilla (se muestra en la tarjeta de «Partidas del sistema»). */
   creditos: text('los créditos deben ser un texto').transform(clean).pipe(z.string().max(200, 'los créditos superan los 200 caracteres')).nullable().optional(),
-  casa_inicial: text('la casa inicial debe ser una URL').trim().max(500, 'la URL de la casa inicial supera los 500 caracteres').nullable().optional(),
+  casa_inicial: text('la imagen inicial debe ser una URL').trim().max(500, 'la URL de la imagen inicial supera los 500 caracteres').nullable().optional(),
   catalogo: z.array(itemSchema, { error: '«catalogo» debe ser una lista de elementos' }).max(TEMPLATE_LIMITS.items, `como máximo ${TEMPLATE_LIMITS.items} elementos`).optional(),
 });
 export type Template = z.infer<typeof templateSchema>;
@@ -65,7 +65,7 @@ export interface TemplateFormValues {
   playMode: 'host' | 'mobile';
   imageMode: 'stickers' | 'ai';
   players: string[];
-  /** Imagen inicial de la casa (URL https) que trae la plantilla: se copia a la partida al crearla. */
+  /** Imagen inicial (URL https) que trae la plantilla: se copia a la partida al crearla. */
   initialImageUrl: string | null;
   /** Solo plantillas del sistema: portada de la tarjeta y créditos de las imágenes. */
   portada?: string | null;

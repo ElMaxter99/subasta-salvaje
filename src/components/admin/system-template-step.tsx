@@ -25,7 +25,7 @@ const label = 'mb-1 block text-sm font-bold 2xl:text-lg';
 
 /**
  * Paso «Ficha del sistema» del asistente en modo superadmin: título, identificador, tarjeta (descripción, orden, créditos),
- * portada, casa inicial y arrastrar y soltar de imágenes (se suben al repositorio de fotos, nunca a Supabase).
+ * portada, imagen inicial y arrastrar y soltar de imágenes (se suben al repositorio de fotos, nunca a Supabase).
  * El asistente conserva el estado; este componente solo pinta y sube.
  */
 export function SystemTemplateStep({
@@ -53,7 +53,7 @@ export function SystemTemplateStep({
     for (const file of files) {
       const id = ++seq.current;
       const target = forced ?? matchTarget(file.name, tpl);
-      if (!target) { rows.push({ id, name: file.name, state: 'unassigned', message: 'No encaja con la portada, la casa ni ningún elemento: asígnala abajo', file }); continue; }
+      if (!target) { rows.push({ id, name: file.name, state: 'unassigned', message: 'No encaja con la portada, la imagen inicial ni ningún elemento: asígnala abajo', file }); continue; }
       const url = addLocal(file);
       if (target.kind === 'cover') onMeta({ portada: url });
       else if (target.kind === 'scene') onInitialImage(url);
@@ -101,7 +101,7 @@ export function SystemTemplateStep({
         <div className="grid gap-4 sm:grid-cols-2">
           {([
             ['Portada de la tarjeta', meta.portada, (u: string | null) => onMeta({ portada: u }), 'cover'],
-            ['Casa inicial (la reciben los jugadores)', initialImage, onInitialImage, 'scene'],
+            ['Imagen inicial (la reciben los jugadores)', initialImage, onInitialImage, 'scene'],
           ] as const).map(([title, url, set, kind]) => (
             <div key={kind} className="space-y-2 rounded-2xl border border-white/10 bg-night-900 p-3" data-testid={`system-${kind}`}>
               <h3 className="text-sm font-bold uppercase tracking-wide text-white/60">{title}</h3>
@@ -110,8 +110,8 @@ export function SystemTemplateStep({
                 <img src={url} alt="" referrerPolicy="no-referrer" className="aspect-[1200/630] w-full rounded-xl object-cover" />
               ) : <div className="grid aspect-[1200/630] w-full place-items-center rounded-xl bg-night-950 text-sm text-white/50">Sin imagen</div>}
               <div className="flex flex-wrap gap-2">
-                {picker(kind, `Subir ${kind === 'cover' ? 'portada' : 'casa inicial'}`)}
-                <button type="button" onClick={() => setPick(kind)} aria-label={`Elegir ${kind === 'cover' ? 'portada' : 'casa inicial'} de la biblioteca`} className="inline-flex min-h-11 items-center rounded-xl border border-white/15 px-3 text-sm font-semibold hover:bg-white/10">De la biblioteca</button>
+                {picker(kind, `Subir ${kind === 'cover' ? 'portada' : 'imagen inicial'}`)}
+                <button type="button" onClick={() => setPick(kind)} aria-label={`Elegir ${kind === 'cover' ? 'portada' : 'imagen inicial'} de la biblioteca`} className="inline-flex min-h-11 items-center rounded-xl border border-white/15 px-3 text-sm font-semibold hover:bg-white/10">De la biblioteca</button>
                 {url ? <button type="button" onClick={() => set(null)} className="inline-flex min-h-11 items-center gap-1 rounded-xl px-3 text-sm text-white/70 hover:bg-white/10"><ImageOff className="size-4" aria-hidden /> Quitar</button> : null}
               </div>
             </div>
@@ -128,7 +128,7 @@ export function SystemTemplateStep({
           {uploadsEnabled ? (
             <>
               <p className="font-bold">Arrastra aquí varias imágenes (o <label className="cursor-pointer underline">elígelas<input type="file" multiple accept="image/png,image/jpeg,image/webp" className="sr-only" aria-label="Elegir imágenes" onChange={(e) => { handleFiles(Array.from(e.target.files ?? [])); e.target.value = ''; }} /></label>)</p>
-              <p className="mt-1 text-xs text-white/60">Las imágenes se quedan aquí hasta que pulses «Guardar borrador»: entonces se reducen al formato interno y se publican en un único commit de tu repositorio de fotos (no en Supabase), y las que ya no se usen se borran. Se asignan por el nombre del archivo: <code>portada.jpg</code>, <code>casa.jpg</code> o el título del elemento (<code>sombrilla-roja.jpg</code>). Sube solo imágenes que puedas usar y anota su origen en FUENTES.md del repositorio de fotos.</p>
+              <p className="mt-1 text-xs text-white/60">Las imágenes se quedan aquí hasta que pulses «Guardar borrador»: entonces se reducen al formato interno y se publican en un único commit de tu repositorio de fotos (no en Supabase), y las que ya no se usen se borran. Se asignan por el nombre del archivo: <code>portada.jpg</code>, <code>inicial.jpg</code> o el título del elemento (<code>sombrilla-roja.jpg</code>). Sube solo imágenes que puedas usar y anota su origen en FUENTES.md del repositorio de fotos.</p>
             </>
           ) : (
             <p className="text-white/70" data-testid="uploads-disabled">La subida de imágenes no está configurada: define <code>GITHUB_ASSETS_REPO</code> y <code>GITHUB_ASSETS_TOKEN</code> en Vercel (ver docs/PLANTILLAS-SISTEMA.md). Mientras tanto puedes pegar enlaces https.</p>
@@ -152,7 +152,7 @@ export function SystemTemplateStep({
                   }}>
                     <option value="">Asignar a…</option>
                     <option value="cover">Portada</option>
-                    <option value="scene">Casa inicial</option>
+                    <option value="scene">Imagen inicial</option>
                     {itemTitles.map((t, idx) => <option key={idx} value={`item-${idx}`}>Elemento · {t}</option>)}
                   </select>
                 ) : null}
@@ -163,7 +163,7 @@ export function SystemTemplateStep({
       </section>
       <LibraryImagePicker
         open={pick !== null}
-        title={pick === 'cover' ? 'Elegir la portada' : 'Elegir la casa inicial'}
+        title={pick === 'cover' ? 'Elegir la portada' : 'Elegir la imagen inicial'}
         onClose={() => setPick(null)}
         onPick={(image) => { if (pick === 'cover') onMeta({ portada: image.url }); else onInitialImage(image.url); setPick(null); }}
       />

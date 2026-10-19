@@ -35,7 +35,7 @@ export async function renderOg(kind: GameLinkKind | 'generic', game: GameCard | 
   const [logoSrc, headSrc, fonts] = await Promise.all([logo(), head(), loadBrandFonts()]);
   const title = fonts ? { fontFamily: TITLE_FAMILY } : {};
   const headline = !game
-    ? 'Puja. Construye. Alucina.'
+    ? 'Puja. Transforma. Alucina.'
     : kind === 'invite' ? 'Te han invitado a jugar' : kind === 'tv' ? 'Pantalla de TV' : kind === 'watch' ? 'Sigue la subasta en directo' : game.winner ? `Gana ${game.winner}` : 'Fin de la subasta';
   const sub = !game ? 'Subastas creativas para noches de juegos' : game.name;
   const note = !game ? '' : kind === 'invite' ? 'Entra desde tu móvil con este código' : kind === 'tv' ? 'Abre este enlace en la tele' : kind === 'watch' ? 'Solo lectura · sin cuenta ni código' : `${game.players.length} jugadores`;

@@ -4,7 +4,7 @@ import { joinedPlayers } from '@/lib/domain/players';
 import { computeRanking } from '@/lib/domain/ranking';
 
 export const SITE_NAME = 'Subasta Salvaje';
-export const SITE_DESCRIPTION = 'Subasta creativa multijugador: puja, construye tu casa y mira cómo la IA la transforma.';
+export const SITE_DESCRIPTION = 'Subasta creativa multijugador: parte de una imagen base, puja por elementos y transfórmala a tu manera.';
 
 /** Dominio público para `metadataBase` y los enlaces absolutos de Open Graph (variable → producción de Vercel → localhost). */
 export function siteUrl(env: NodeJS.ProcessEnv = process.env): URL {
@@ -51,8 +51,8 @@ export function gameLinkText(kind: GameLinkKind, g: GameCard | null): { title: s
   if (!g) return { title: SITE_NAME, description: SITE_DESCRIPTION };
   if (kind === 'invite') return { title: `Te han invitado a «${g.name}»`, description: `Entra con el código ${g.code} y puja desde tu móvil en Subasta Salvaje.` };
   if (kind === 'tv') return { title: `Pantalla de TV · ${g.name}`, description: `Sala ${g.code}. Abre este enlace en la tele para seguir la subasta en directo.` };
-  if (kind === 'watch') return { title: `Sigue en directo «${g.name}»`, description: `Mira la subasta, las pujas y las casas de ${g.players.length} jugadores sin cuenta ni código. Solo lectura.` };
-  return { title: g.winner ? `Resultados de «${g.name}»: gana ${g.winner}` : `Resultados de «${g.name}»`, description: `Así quedaron las casas de ${g.players.length} jugadores en Subasta Salvaje.` };
+  if (kind === 'watch') return { title: `Sigue en directo «${g.name}»`, description: `Mira la subasta, las pujas y las imágenes de ${g.players.length} jugadores sin cuenta ni código. Solo lectura.` };
+  return { title: g.winner ? `Resultados de «${g.name}»: gana ${g.winner}` : `Resultados de «${g.name}»`, description: `Así quedaron las imágenes de ${g.players.length} jugadores en Subasta Salvaje.` };
 }
 
 /** Metadatos de un enlace de partida. La imagen la genera `opengraph-image.tsx` de la propia ruta (Next la añade sola). */

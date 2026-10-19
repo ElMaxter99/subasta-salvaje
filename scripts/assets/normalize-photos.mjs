@@ -5,7 +5,7 @@
  * pasa sin cambios la validación de la aplicación.
  *
  *   npm run assets:normalize -- ./mis-fotos                       # elementos (768 px) -> ./mis-fotos/normalizadas
- *   npm run assets:normalize -- ./mis-fotos --kind=scene          # casas/escenas (1536x1024)
+ *   npm run assets:normalize -- ./mis-fotos --kind=scene          # imágenes base/escenas (1536x1024)
  *   npm run assets:normalize -- ./mis-fotos --kind=cover --out=./salida
  * Entrada: un archivo o una carpeta (recursiva) con PNG/JPG/WebP. No modifica los originales.
  */

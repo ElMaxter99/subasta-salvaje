@@ -63,7 +63,7 @@ describe('imágenes ya alojadas: se usan por enlace, sin descargarlas ni copiarl
     expect(item.image_url).toContain('games'); // copia propia
   });
 
-  it('al generar con IA se lee la casa y la foto del elemento por enlace y SOLO el resultado se guarda en el almacenamiento', async () => {
+  it('al generar con IA se lee la imagen y la foto del elemento por enlace y SOLO el resultado se guarda en el almacenamiento', async () => {
     fetched.length = 0;
     const filesBefore = ctx.storage.files.size;
     const seen: { base: string; item?: string }[] = [];

@@ -109,7 +109,7 @@ export function CatalogPanel({ ctx }: { ctx: HostCtx }) {
       </p>
 
       <Notice tone="info">
-        📷 Cada elemento puede tener su <b>foto</b> (la subes tú o la genera la IA). Cuando alguien gana el elemento, la IA <b>mezcla esa foto con la imagen de su casa</b>: si la foto es un conejo rosa con un lazo azul, ese conejo aparecerá en la casa. Sin foto, la IA usa solo el nombre y la descripción. (En modo pegatinas se añade el emoji.)
+        📷 Cada elemento puede tener su <b>foto</b> (la subes tú o la genera la IA). Cuando alguien gana el elemento, la IA <b>mezcla esa foto con la imagen de quien lo gana</b>: si la foto es un conejo rosa con un lazo azul, ese conejo aparecerá en la imagen. Sin foto, la IA usa solo el nombre y la descripción. (En modo pegatinas se añade el emoji.)
       </Notice>
 
       <ul className="space-y-3">

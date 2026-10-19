@@ -12,7 +12,7 @@ import { Card, Dot, Notice, Pill, Thumb } from './bits';
 
 const PLAY_MS = 2200;
 
-/** Repetición de la partida (solo lectura): línea de tiempo de rondas y reproducción paso a paso de cómo evoluciona cada casa. */
+/** Repetición de la partida (solo lectura): línea de tiempo de rondas y reproducción paso a paso de cómo evoluciona cada imagen. */
 export function ReplayView({ roomCode, snapshot, rounds, runtime }: { roomCode: string; snapshot: HostSnapshot; rounds: ReplayRound[]; runtime: RuntimeInfo }) {
   const [step, setStep] = useState(0); // 0 = inicio; n = tras la ronda n
   const [playingRaw, setPlaying] = useState(false);
@@ -69,16 +69,16 @@ export function ReplayView({ roomCode, snapshot, rounds, runtime }: { roomCode: 
                 <p className="ml-auto text-sm font-bold text-white/70" data-testid="replay-step">Paso {step} de {total}</p>
               </div>
               <p className="mt-3 min-h-6 text-white/85" role="status" data-testid="replay-caption">
-                {current ? <RoundText r={current} nameOf={nameOf} /> : 'Casas al empezar la partida.'}
+                {current ? <RoundText r={current} nameOf={nameOf} /> : 'Imágenes al empezar la partida.'}
               </p>
             </Card>
 
-            <section aria-label="Casas de los jugadores" className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4" data-testid="replay-houses">
+            <section aria-label="Imágenes de los jugadores" className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4" data-testid="replay-houses">
               {houses.map(({ player, version }) => {
                 const bought = current && current.winner_id === player.id;
                 return (
                   <div key={player.id} className={`rounded-2xl border-2 bg-night-800 p-2 ${bought ? 'border-gold' : 'border-white/10'}`} data-testid="replay-house">
-                    <Thumb url={version?.url} alt={`Casa de ${player.name}`} className="aspect-[3/2] w-full" />
+                    <Thumb url={version?.url} alt={`Imagen de ${player.name}`} className="aspect-[3/2] w-full" />
                     <p className="mt-2 flex items-center gap-2 truncate font-bold"><Dot color={player.color} className="size-3" /> {player.name}</p>
                     {bought ? <p className="text-sm font-bold text-gold">Se lleva {current.emoji ?? '🎁'} {current.item_name}</p> : null}
                   </div>

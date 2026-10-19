@@ -90,7 +90,7 @@ export function PlayersPanel({ ctx }: { ctx: HostCtx }) {
       {lobby && aiMode && !ctx.runtime.aiConfigured ? (
         <Notice tone="warn">IA no configurada: las imágenes iniciales quedan en cola. Puedes subir una imagen propia, elegir de la galería o cambiar al modo pegatinas en Ajustes.</Notice>
       ) : null}
-      {lobby && !aiMode ? <Notice tone="info">Modo pegatinas: «Generar imagen inicial» dibuja una escena vacía local (sin IA). También puedes subir una imagen o elegir de la galería.</Notice> : null}
+      {lobby && !aiMode ? <Notice tone="info">Modo pegatinas: «Generar imagen inicial» dibuja una ilustración base local (sin IA). También puedes subir una imagen o elegir de la galería.</Notice> : null}
 
       <JoinCard ctx={ctx} />
 

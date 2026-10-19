@@ -13,7 +13,7 @@ const gray = () => sharp({ create: { width: 640, height: 360, channels: 3, backg
 const withSquare = (img: Sharp, x: number, y: number, w: number, h: number, c: string) =>
   img.composite([{ input: { create: { width: w, height: h, channels: 3 as const, background: c } }, left: x, top: y }]).png().toBuffer().then((b) => new Uint8Array(b));
 
-describe('una edición que «pierde» lo anterior no puede borrarlo de la casa', () => {
+describe('una edición que «pierde» lo anterior no puede borrarlo de la imagen', () => {
   it('2.ª compra: el modelo repinta la escena sin el objeto de la 1.ª, pero la imagen guardada lo conserva', async () => {
     let call = 0;
     const provider: ImageGenerationProvider = {

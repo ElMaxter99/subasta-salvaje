@@ -145,7 +145,7 @@ describe('repetición de la partida', () => {
     await expect(getReplay(ctx, 'ZZZZZZ', host)).rejects.toMatchObject({ code: 'game_not_found' });
   });
 
-  it('houseAtStep reconstruye la casa de cada jugador ronda a ronda', () => {
+  it('houseAtStep reconstruye la imagen de cada jugador ronda a ronda', () => {
     const v = (id: string, player_id: string, at: number, source: string | null, status: ImageVersion['generation_status'] = 'completed'): ImageVersion => ({
       id, player_id, parent_version_id: null, storage_path: id, source_purchase_id: source, item_name: null, origin: source ? 'edit' : 'initial', provider: 'demo',
       prompt_used: null, generation_status: status, is_approved: true, error_message: null, created_at: new Date(2026, 0, 1, 0, at).toISOString(),

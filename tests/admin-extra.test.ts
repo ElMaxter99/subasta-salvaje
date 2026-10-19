@@ -85,7 +85,7 @@ describe('edición en bloque de productos', () => {
 });
 
 describe('plantilla del sistema desde una colección', () => {
-  it('crea un borrador con slug único, catálogo con fotos por enlace, portada y casa inicial', async () => {
+  it('crea un borrador con slug único, catálogo con fotos por enlace, portada y imagen inicial', async () => {
     const p1 = await img('Foto sombrilla', 'Playa Verano', 'Autor X');
     const house = await img('Casa en la playa', 'Escenas');
     await addLibraryItems(ctx, 'admin@test', [

@@ -47,7 +47,7 @@ function buildOne(id: ImageProviderId): ImageGenerationProvider {
     }), realEdit: true };
   }
   if (id === 'pollinations') { const inner = createPollinationsProvider(pollinationsConfig()!); return { ...withEditFallback(inner), realEdit: inner.capabilities.edit }; }
-  // Solo generan: la «edición» de la casa pasa por composición (gratis, con el objeto generado por el siguiente proveedor disponible).
+  // Solo generan: la «edición» de la imagen pasa por composición (gratis, con el objeto generado por el siguiente proveedor disponible).
   if (id === 'aihorde') return { ...withEditFallback(createAiHordeProvider(aiHordeConfig())), realEdit: false };
   if (id === 'huggingface') return { ...withEditFallback(createHuggingFaceProvider(huggingFaceConfig()!)), realEdit: false };
   const cf = createCloudflareProvider(cloudflareConfig()!);

@@ -100,9 +100,9 @@ export function createDemoProvider(): ImageGenerationProvider {
     capabilities: { edit: true },
     async generateInitialScene(input: InitialSceneInput): Promise<GeneratedImage> {
       return {
-        bytes: enc(renderScene(input.theme, `Escena inicial de ${input.playerName}`)),
+        bytes: enc(renderScene(input.theme, `Imagen base de ${input.playerName}`)),
         mime: 'image/svg+xml',
-        prompt: `[PEGATINAS] Escena vacía local para «${input.theme}» (sin IA)`,
+        prompt: `[PEGATINAS] Imagen base local para «${input.theme}» (sin IA)`,
         model: 'demo-svg',
       };
     },

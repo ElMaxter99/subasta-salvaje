@@ -51,10 +51,10 @@ export default async function Home() {
             <Sparkles className="size-4" aria-hidden /> Subastas creativas para noches de juegos
           </p>
           <h1 className="font-display text-5xl uppercase leading-[0.95] tracking-tight sm:text-7xl">
-            Puja. Construye. <span className="text-gold">Alucina.</span>
+            Puja. Transforma. <span className="text-gold">Alucina.</span>
           </h1>
           <p className="mx-auto max-w-2xl text-lg text-white/75 md:mx-0">
-            Cada jugador parte de una casa vacía y un presupuesto. Tú diriges la subasta desde el móvil; la tele muestra el espectáculo y la IA va transformando cada casa con lo que se compra.
+            Cada jugador parte de una imagen base (una casa, una nave espacial, el salón de un castillo…) y un presupuesto. Tú diriges la subasta desde el móvil; la tele muestra el espectáculo y la imagen se va transformando con los elementos que se ganan.
           </p>
           <div className="flex flex-col items-center justify-center gap-3 sm:flex-row md:justify-start">
             <Link

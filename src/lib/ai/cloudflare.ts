@@ -98,7 +98,7 @@ export function createCloudflareProvider(cfg: CloudflareProviderOptions): ImageG
     async editScene(input: EditSceneInput): Promise<GeneratedImage> {
       if (!cfg.editModel) {
         throw new ProviderError(
-          `El modelo de Cloudflare configurado (${cfg.model}) sólo genera imágenes nuevas y no puede editar la casa existente. Se conserva la imagen anterior. Define CLOUDFLARE_EDIT_MODEL (p. ej. @cf/black-forest-labs/flux-2-klein-4b) o usa otro proveedor con edición.`,
+          `El modelo de Cloudflare configurado (${cfg.model}) sólo genera imágenes nuevas y no puede editar la imagen existente. Se conserva la imagen anterior. Define CLOUDFLARE_EDIT_MODEL (p. ej. @cf/black-forest-labs/flux-2-klein-4b) o usa otro proveedor con edición.`,
           false,
           false,
           'unsupported',

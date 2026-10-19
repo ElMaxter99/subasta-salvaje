@@ -216,7 +216,7 @@ function Between({ snapshot, players }: { snapshot: PublicSnapshot; players: Pla
   );
 }
 
-/** Casas y saldos de los jugadores (solo datos públicos de la instantánea). */
+/** Imágenes y saldos de los jugadores (solo datos públicos de la instantánea). */
 function PlayersGrid({ players, leaderId, lobby, playing }: { players: Player[]; leaderId: string | null; lobby: boolean; playing: boolean }) {
   return (
     <section aria-labelledby="watch-players">
@@ -226,13 +226,13 @@ function PlayersGrid({ players, leaderId, lobby, playing }: { players: Player[];
           <li key={p.id} className={`overflow-hidden rounded-2xl border-2 bg-night-800 ${leaderId === p.id ? 'border-gold' : 'border-white/10'}`} data-testid="watch-player">
             <div className="relative aspect-[3/2] w-full">
               <div className={`absolute inset-0 ${playing && p.claimed && p.online === false ? 'opacity-60 grayscale' : ''}`}>
-                <HouseImage image={p.current_image} alt={`Casa de ${p.name}`} className="absolute inset-0" emptyLabel="Sin casa todavía" />
+                <HouseImage image={p.current_image} alt={`Imagen de ${p.name}`} className="absolute inset-0" emptyLabel="Sin imagen todavía" />
               </div>
               {playing && p.claimed && p.online === false ? (
                 <span role="status" data-testid="watch-offline" className="absolute left-2 top-2 rounded-full bg-night-950/85 px-3 py-1 text-sm font-black text-white">📵 Desconectado</span>
               ) : null}
               {p.generating.some((g) => g.kind === 'edit') ? (
-                <span className="absolute bottom-2 right-2 rounded-full bg-violet px-3 py-1 text-sm font-black text-white">⏳ Mejorando la casa…</span>
+                <span className="absolute bottom-2 right-2 rounded-full bg-violet px-3 py-1 text-sm font-black text-white">⏳ Transformando la imagen…</span>
               ) : null}
             </div>
             <div className="px-3 py-2" style={{ borderTop: `0.25rem solid ${p.color}` }}>

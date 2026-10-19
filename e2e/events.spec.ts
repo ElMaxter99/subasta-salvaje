@@ -69,8 +69,8 @@ test('eventos sorpresa, deshacer adjudicación y galería con votación', async 
   // Final y galería: Ana vota a Beto desde el móvil; Beto no puede votarse
   expect((await act({ type: 'game.finish' })).ok()).toBeTruthy();
   await expect(ana.p.getByTestId('gallery-vote')).toBeVisible({ timeout: 20_000 });
-  await expect(beto.p.getByRole('button', { name: /Casa de Beto/ })).toHaveCount(0);
-  await ana.p.getByRole('button', { name: /Casa de Beto/ }).click();
+  await expect(beto.p.getByRole('button', { name: /Imagen de Beto/ })).toHaveCount(0);
+  await ana.p.getByRole('button', { name: /Imagen de Beto/ }).click();
   await expect.poll(async () => (await state()).gallery.results.find((r: { player_id: string }) => r.player_id === betoId).votes).toBe(1);
   const final = await context.newPage();
   await final.goto(`/game/${code}/screen`);

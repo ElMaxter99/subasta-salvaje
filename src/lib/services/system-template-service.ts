@@ -40,11 +40,11 @@ const saveSchema = z.object({
   data: z.unknown(),
 });
 
-/** Todas las URL de fotos que lleva una plantilla (portada, casa inicial y fotos de elementos), con su tipo de imagen. */
+/** Todas las URL de fotos que lleva una plantilla (portada, imagen inicial y fotos de elementos), con su tipo de imagen. */
 export function templateImageUrls(t: Template): { label: string; url: string; kind: ImageKind }[] {
   const out: { label: string; url: string; kind: ImageKind }[] = [];
   if (t.portada) out.push({ label: 'Portada', url: t.portada, kind: 'cover' });
-  if (t.casa_inicial) out.push({ label: 'Casa inicial', url: t.casa_inicial, kind: 'scene' });
+  if (t.casa_inicial) out.push({ label: 'Imagen inicial', url: t.casa_inicial, kind: 'scene' });
   (t.catalogo ?? []).forEach((it, i) => {
     if (it.foto) out.push({ label: `Elemento ${i + 1} · ${it.titulo}`, url: it.foto, kind: 'item' });
   });
@@ -92,7 +92,7 @@ export async function saveSystemTemplate(ctx: Ctx, actor: string, raw: unknown):
 
 const fromCollectionSchema = z.object({
   collection: z.string().trim().min(1, 'Elige una colección').max(60),
-  /** Imagen de la biblioteca (objeto o escena) que será la casa inicial. */
+  /** Imagen de la biblioteca (objeto o escena) que será la imagen inicial. */
   house_image_id: z.string().uuid().nullish(),
   /** Producto cuya foto será la portada (por defecto, el primero con foto). */
   cover_item_id: z.string().uuid().nullish(),
@@ -100,7 +100,7 @@ const fromCollectionSchema = z.object({
 
 /**
  * Crea un BORRADOR de plantilla del sistema desde una colección del catálogo general: título = colección, slug libre, catálogo = sus
- * productos (con la foto por enlace, sin copiar nada), portada = foto de un producto y casa inicial = imagen de la biblioteca.
+ * productos (con la foto por enlace, sin copiar nada), portada = foto de un producto y imagen inicial = imagen de la biblioteca.
  * El contenido lo arma SQL (`ss_admin_collection_template`); aquí se valida con las mismas reglas que cualquier plantilla del sistema.
  */
 export async function createTemplateFromCollection(ctx: Ctx, actor: string, raw: unknown): Promise<{ template: SystemTemplateSummary; truncated: boolean; total: number }> {
@@ -256,7 +256,7 @@ const commitSchema = z.object({
   slug: z.string().trim().max(60).default(''),
   templateId: z.string().uuid().nullish(),
   staged: z.array(stagedTemplateSchema).max(200).default([]),
-  /** Enlaces https que el formulario conserva (portada, casa inicial y fotos) además de las preparadas. */
+  /** Enlaces https que el formulario conserva (portada, imagen inicial y fotos) además de las preparadas. */
   keepUrls: z.array(z.string().max(500)).max(400).default([]),
 });
 

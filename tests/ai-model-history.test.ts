@@ -42,7 +42,7 @@ describe('el historial guarda el modelo de IA de cada versión', () => {
 });
 
 describe('prompt de edición: la base puede ser cualquier cosa y se EDITA con el elemento (no solo se añade)', () => {
-  it('no asume una casa: cubre lugares, comida/bebida, objetos, animales y personas, y pide una edición creativa y coherente (sin collage ni halos)', () => {
+  it('no asume el tipo de imagen base: cubre lugares, comida/bebida, objetos, animales y personas, y pide una edición creativa y coherente (sin collage ni halos)', () => {
     const p = buildEditPrompt({ ...input, theme: 'batido de leche', previousItems: [] });
     expect(p).toMatch(/can be anything \(a place, a room, a drink, a food, an object, an animal, a person\)/);
     expect(p).toMatch(/Do not just paste the element on top: EDIT the base so the combination makes sense and is fun/);
@@ -87,7 +87,7 @@ describe('prompt de edición: lo ya comprado debe seguir visible', () => {
 });
 
 describe('tamaño de la edición en Pollinations', () => {
-  it('conserva la proporción de la casa (16:9 → 1024x576) salvo que el propietario fije el tamaño', async () => {
+  it('conserva la proporción de la imagen (16:9 → 1024x576) salvo que el propietario fije el tamaño', async () => {
     const wide = await png(1, 2, 3, 1536, 864);
     expect(await editSize(wide, { size: '1024x768' })).toBe('1024x576');
     expect(await editSize(await png(1, 2, 3, 1200, 1200), { size: '1024x768' })).toBe('1024x1024');

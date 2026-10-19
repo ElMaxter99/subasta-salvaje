@@ -7,7 +7,7 @@ import { libraryApi, type CollectionCount, type LibraryImage } from '@/lib/clien
 
 const field = 'w-full rounded-xl border border-white/15 bg-night-900 px-3 py-2 text-base';
 
-/** Modal para elegir UNA imagen de la biblioteca (portada o casa inicial de una plantilla del sistema). Solo superadmin. */
+/** Modal para elegir UNA imagen de la biblioteca (portada o imagen inicial de una plantilla del sistema). Solo superadmin. */
 export function LibraryImagePicker({ open, title, onClose, onPick }: { open: boolean; title: string; onClose: () => void; onPick: (image: LibraryImage) => void }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [images, setImages] = useState<LibraryImage[]>([]);

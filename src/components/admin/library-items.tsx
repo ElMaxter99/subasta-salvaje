@@ -171,7 +171,7 @@ export function LibraryItems({ aiConfigured = false, uploadsEnabled = true }: { 
     <div className="space-y-5">
       {msg ? <p role="status" className={`rounded-2xl px-4 py-2 text-sm font-semibold ${msg.ok ? 'bg-teal/15 text-teal' : 'bg-rose/20 text-rose'}`}>{msg.text}</p> : null}
       <p className="rounded-2xl border border-white/10 bg-night-800/70 px-4 py-3 text-sm text-white/75">
-        📷 Cada producto puede tener su <b>foto</b> (la subes, la eliges de Imágenes o la genera la IA). Al importarlo en una partida, la IA mezcla esa foto con la casa del jugador. {aiConfigured ? 'La generación con IA usa la cadena de proveedores gratuitos y cuenta en el tope diario.' : 'La IA no está configurada en el servidor: «Generar imagen» está desactivada.'}
+        📷 Cada producto puede tener su <b>foto</b> (la subes, la eliges de Imágenes o la genera la IA). Al importarlo en una partida, la IA mezcla esa foto con la imagen del jugador. {aiConfigured ? 'La generación con IA usa la cadena de proveedores gratuitos y cuenta en el tope diario.' : 'La IA no está configurada en el servidor: «Generar imagen» está desactivada.'}
       </p>
 
       <div className="flex flex-wrap items-center justify-between gap-3">

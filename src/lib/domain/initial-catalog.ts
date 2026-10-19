@@ -7,7 +7,7 @@ export interface InitialCatalogEntry {
   emoji: string;
 }
 
-export const INITIAL_CATALOG: InitialCatalogEntry[] = THEME_PRESETS.map((t) => ({ id: t.id, label: `${t.label} vacía`, emoji: t.emoji }));
+export const INITIAL_CATALOG: InitialCatalogEntry[] = THEME_PRESETS.map((t) => ({ id: t.id, label: `Imagen base · ${t.label}`, emoji: t.emoji }));
 
 export function getCatalogEntry(id: string): InitialCatalogEntry | undefined {
   return INITIAL_CATALOG.find((e) => e.id === id);

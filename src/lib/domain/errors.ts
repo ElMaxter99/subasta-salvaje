@@ -44,7 +44,7 @@ export const ERROR_MESSAGES: Record<string, string> = {
   host_blocked: 'Tu cuenta está bloqueada. Contacta con el administrador.',
   signups_closed: 'El registro está cerrado: necesitas una invitación del administrador.',
   bid_not_whole: 'En esta partida solo se puede pujar en Ohros enteros (1, 2, 3…).',
-  initial_image_required: 'Falta la imagen inicial: todos los jugadores necesitan su casa de partida antes de empezar (sube una, elige una de la galería o genérala).',
+  initial_image_required: 'Falta la imagen inicial: todos los jugadores necesitan su imagen base antes de empezar (sube una, elige una de la galería o genérala).',
   rounds_above_catalog: 'El máximo de rondas no puede superar el número de elementos del catálogo.',
   no_items_left: 'No quedan elementos disponibles en el catálogo.',
   rounds_below_played: 'El máximo de rondas no puede ser menor que las rondas ya jugadas.',

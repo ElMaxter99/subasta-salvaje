@@ -353,7 +353,7 @@ export interface RuntimeInfo {
   aiConfigured: boolean;
   /** Proveedor de IA REAL configurado ('demo' = ninguno: sólo está disponible el modo pegatinas). */
   aiProvider: 'openai' | 'cloudflare' | 'pollinations' | 'aihorde' | 'huggingface' | 'demo';
-  /** El proveedor configurado puede EDITAR la imagen existente de una casa (si no, sólo genera imágenes nuevas). */
+  /** El proveedor configurado puede EDITAR la imagen existente de un jugador (si no, sólo genera imágenes nuevas). */
   aiCanEdit: boolean;
   /** Sólo en Supabase: permite que el navegador se suscriba a Realtime. */
   supabaseUrl?: string;

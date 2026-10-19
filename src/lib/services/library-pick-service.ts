@@ -11,7 +11,7 @@ type Ctx = Pick<AppContext, 'db' | 'storage' | 'publisher'>;
 /**
  * Selector de la biblioteca para ANFITRIONES («Elegir de la biblioteca»). Solo lectura sobre imágenes con el rol pedido y REVISADAS
  * por el superadmin; nunca devuelve rutas internas, huellas ni datos de gestión. Cada rol tiene su uso:
- *  - `start`   → casa / foto de inicio de partida (imagen inicial común);
+ *  - `start`   → imagen base / foto de inicio de partida (imagen inicial común);
  *  - `product` → foto de un elemento del catálogo.
  */
 export interface PickQuery { role: LibraryRole; q?: string; category?: string | null; limit?: number; offset?: number }

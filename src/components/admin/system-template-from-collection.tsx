@@ -14,7 +14,7 @@ const field = 'w-full rounded-xl border border-white/15 bg-night-900 px-3 py-2 t
 
 /**
  * «Crear desde una colección de la biblioteca»: crea un BORRADOR de plantilla del sistema con los productos de una colección
- * (fotos por enlace, sin copiar nada), la portada de un producto y una casa inicial elegida de la biblioteca (objeto o escena).
+ * (fotos por enlace, sin copiar nada), la portada de un producto y una imagen inicial elegida de la biblioteca (objeto o escena).
  * Después abre el editor de plantillas para ajustarla.
  */
 export function SystemTemplateFromCollection({ open, onClose }: { open: boolean; onClose: () => void }) {
@@ -62,7 +62,7 @@ export function SystemTemplateFromCollection({ open, onClose }: { open: boolean;
     }
   }
 
-  const ready = collection !== '' && !busy; // la casa inicial es opcional: se puede poner luego en el editor
+  const ready = collection !== '' && !busy; // la imagen inicial es opcional: se puede poner luego en el editor
   return (
     <>
       <ConfirmDialog
@@ -87,7 +87,7 @@ export function SystemTemplateFromCollection({ open, onClose }: { open: boolean;
             </select>
           </label>
           <div>
-            <p className="font-semibold">Casa inicial</p>
+            <p className="font-semibold">Imagen inicial</p>
             <div className="mt-1 flex items-center gap-3">
               {house ? (
                 // eslint-disable-next-line @next/next/no-img-element -- alojada en el CDN del propietario
@@ -99,7 +99,7 @@ export function SystemTemplateFromCollection({ open, onClose }: { open: boolean;
           {error ? <p role="alert" className="rounded-xl bg-rose/15 px-3 py-2 text-rose">{error}</p> : null}
         </div>
       </ConfirmDialog>
-      <LibraryImagePicker open={open && picking} title="Casa inicial de la plantilla" onClose={() => setPicking(false)} onPick={(img) => { setHouse(img); setPicking(false); setError(''); }} />
+      <LibraryImagePicker open={open && picking} title="Imagen inicial de la plantilla" onClose={() => setPicking(false)} onPick={(img) => { setHouse(img); setPicking(false); setError(''); }} />
     </>
   );
 }

@@ -38,7 +38,7 @@ const card = 'space-y-4 rounded-3xl border border-white/10 bg-night-800/70 p-4 s
 
 const STEPS: (StepInfo & { mascot: MascotId; say: string; title: string; hint: string })[] = [
   { id: 'modo', label: 'Quién puja', mascot: 'expr-feliz', say: '¡Empezamos!', title: '¿Quién va a pujar?', hint: 'Elige si pujáis en voz alta o cada jugador desde su móvil.' },
-  { id: 'casas', label: 'Las casas', mascot: 'expr-sorprendido', say: '¡Magia!', title: '¿Cómo cambian las casas?', hint: 'Cada compra transforma la casa del jugador: con pegatinas gratis o con inteligencia artificial.' },
+  { id: 'casas', label: 'Las imágenes', mascot: 'expr-sorprendido', say: '¡Magia!', title: '¿Cómo cambian las imágenes?', hint: 'Cada compra transforma la imagen del jugador: con pegatinas gratis o con inteligencia artificial.' },
   { id: 'partida', label: 'Partida', mascot: 'expr-guino', say: 'Ponle nombre', title: 'Dale personalidad a la partida', hint: 'El nombre sale en la tele y la temática decide los elementos que se subastan.' },
   { id: 'reglas', label: 'Reglas', mascot: 'expr-pensativo', say: 'Ojo al dinero', title: 'Dinero y reglas', hint: 'Cuánto tiene cada jugador, la puja más baja posible y cómo se decide quién gana.' },
   { id: 'jugadores', label: 'Jugadores', mascot: 'expr-sorprendido', say: '¿Quién viene?', title: '¿Quién juega?', hint: 'Mínimo 2 para empezar. Podrás cambiarlos en la sala de espera.' },
@@ -48,7 +48,7 @@ const STEPS: (StepInfo & { mascot: MascotId; say: string; title: string; hint: s
 /** Modo superadmin: mismo recorrido que el anfitrión, con un paso más («Ficha») antes del resumen. */
 const SYSTEM_STEPS: typeof STEPS = [
   ...STEPS.slice(0, 5),
-  { id: 'ficha', label: 'Ficha', mascot: 'expr-guino', say: 'La tarjeta', title: 'Ficha de la partida del sistema', hint: 'Título, descripción, portada, casa inicial y fotos: lo que verán los anfitriones al elegirla.' },
+  { id: 'ficha', label: 'Ficha', mascot: 'expr-guino', say: 'La tarjeta', title: 'Ficha de la partida del sistema', hint: 'Título, descripción, portada, imagen inicial y fotos: lo que verán los anfitriones al elegirla.' },
   { ...STEPS[5]!, title: 'Revisa y guarda el borrador', hint: 'Pulsa «Editar» en cualquier bloque. Publicarla se hace desde la lista de plantillas, tras comprobar las imágenes.' },
 ];
 
@@ -283,7 +283,7 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
       if (!meta.title.trim()) return 'Escribe el título de la tarjeta.';
       if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(meta.slug) || meta.slug.length < 2) return 'El identificador solo admite minúsculas, números y guiones (mínimo 2 caracteres).';
       if (meta.portada && !/^(https:\/\/|blob:)/i.test(meta.portada)) return 'La portada no es válida: súbela o elígela de la biblioteca.';
-      if (initialImageUrl && !/^(https:\/\/|blob:)/i.test(initialImageUrl)) return 'La casa inicial no es válida: súbela o elígela de la biblioteca.';
+      if (initialImageUrl && !/^(https:\/\/|blob:)/i.test(initialImageUrl)) return 'La imagen inicial no es válida: súbela o elígela de la biblioteca.';
     }
     if (i === 4 && (!Number.isInteger(maxPlayers) || maxPlayers < 1 || maxPlayers > MAX_PLAYERS)) return `El máximo de jugadores debe estar entre 1 y ${MAX_PLAYERS}.`;
     if (i === 4 && names.length > maxPlayers) return `Has puesto ${names.length} jugadores y el máximo es ${maxPlayers}: quita alguno o sube el máximo.`;
@@ -366,7 +366,7 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
         setBusyLabel(photos.length ? `Descargando ${photos.length} ${photos.length === 1 ? 'foto' : 'fotos'}…` : 'Descargando la imagen inicial…');
         try {
           const r = await importPhotosRequest(room_code, photos, initialImageUrl);
-          const failed = [...r.failed, ...(r.initial && !r.initial.ok ? [{ name: 'Imagen inicial de la casa', reason: r.initial.reason ?? 'no se pudo guardar' }] : [])];
+          const failed = [...r.failed, ...(r.initial && !r.initial.ok ? [{ name: 'Imagen inicial', reason: r.initial.reason ?? 'no se pudo guardar' }] : [])];
           if (failed.length > 0) window.sessionStorage.setItem('ss_import_notice', JSON.stringify({ code: room_code, imported: r.imported, failed }));
         } catch {
           window.sessionStorage.setItem('ss_import_notice', JSON.stringify({ code: room_code, imported: 0, failed: photos.map((p) => ({ name: p.name, reason: 'no se pudo descargar' })) }));
@@ -441,7 +441,7 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
     setBusy(true);
     setError(null);
     try {
-      // 1. Preparar (sin commit) las imágenes nuevas: portada, casa inicial y fotos de elementos con archivo local.
+      // 1. Preparar (sin commit) las imágenes nuevas: portada, imagen inicial y fotos de elementos con archivo local.
       const fields: { url: string | null; kind: 'cover' | 'scene' | 'item'; name: string }[] = [
         { url: meta.portada, kind: 'cover', name: 'portada' },
         { url: initialImageUrl, kind: 'scene', name: 'casa-inicial' },
@@ -546,8 +546,8 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
           {step === 1 ? (
             <>
               <fieldset className={card}>
-                <legend className="px-2 font-display text-xl 2xl:text-3xl">Cómo cambian las casas</legend>
-                <Choice name="image_mode" value="stickers" checked={imageMode === 'stickers'} onChange={() => setImageMode('stickers')} title="🎨 Pegatinas con emojis" tag="Gratis" desc="Cada compra añade el emoji del elemento a la casa del jugador. Ilustraciones locales: sin IA, gratis e instantáneo." />
+                <legend className="px-2 font-display text-xl 2xl:text-3xl">Cómo cambian las imágenes</legend>
+                <Choice name="image_mode" value="stickers" checked={imageMode === 'stickers'} onChange={() => setImageMode('stickers')} title="🎨 Pegatinas con emojis" tag="Gratis" desc="Cada compra añade el emoji del elemento a la imagen del jugador. Ilustraciones locales: sin IA, gratis e instantáneo." />
                 <Choice
                   name="image_mode"
                   value="ai"
@@ -555,25 +555,25 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
                   disabled={!aiAvailable}
                   onChange={() => setImageMode('ai')}
                   title="✨ Con inteligencia artificial"
-                  desc={aiAvailable ? `La IA (${providerLabel(aiProvider)}) genera la casa inicial y la va editando con cada compra. Tiene límites de generaciones por partida y por día.` : 'No disponible: este despliegue no tiene un proveedor de IA configurado (IMAGE_PROVIDER). Usa el modo pegatinas.'}
+                  desc={aiAvailable ? `La IA (${providerLabel(aiProvider)}) genera la imagen inicial y la va editando con cada compra. Tiene límites de generaciones por partida y por día.` : 'No disponible: este despliegue no tiene un proveedor de IA configurado (IMAGE_PROVIDER). Usa el modo pegatinas.'}
                 />
               </fieldset>
               {systemEditor ? null : (
                 <fieldset className={card} data-testid="wizard-house">
-                  <legend className="px-2 font-display text-xl 2xl:text-3xl">Casa inicial (opcional)</legend>
-                  <p className="text-sm text-white/70 2xl:text-lg">Puedes elegir ya una foto de la biblioteca como casa inicial de todos los jugadores. Si no, la pondrás luego desde el panel (subiéndola, de la galería o generándola).</p>
+                  <legend className="px-2 font-display text-xl 2xl:text-3xl">Imagen inicial (opcional)</legend>
+                  <p className="text-sm text-white/70 2xl:text-lg">Puedes elegir ya una foto de la biblioteca como imagen inicial de todos los jugadores. Si no, la pondrás luego desde el panel (subiéndola, de la galería o generándola).</p>
                   {initialImageUrl ? (
                     <div className="flex items-center gap-3 rounded-2xl bg-night-900 p-2" data-testid="wizard-house-chosen">
                       {/* eslint-disable-next-line @next/next/no-img-element -- alojada en el CDN del propietario o vista local */}
                       <img src={initialImageUrl} alt="" referrerPolicy="no-referrer" className="aspect-[3/2] w-28 rounded-xl object-cover" />
-                      <span className="min-w-0 flex-1 truncate text-sm font-bold">{houseTitle || 'Casa inicial elegida'}</span>
-                      <Button type="button" variant="ghost" size="sm" onClick={() => { setInitialImageUrl(null); setHouseTitle(''); }} aria-label="Quitar la casa inicial elegida"><X className="size-4" aria-hidden /></Button>
+                      <span className="min-w-0 flex-1 truncate text-sm font-bold">{houseTitle || 'Imagen inicial elegida'}</span>
+                      <Button type="button" variant="ghost" size="sm" onClick={() => { setInitialImageUrl(null); setHouseTitle(''); }} aria-label="Quitar la imagen inicial elegida"><X className="size-4" aria-hidden /></Button>
                     </div>
                   ) : null}
                   <div>
                     <Button type="button" variant="secondary" onClick={() => setHousePicker(true)} data-testid="wizard-house-from-library">Elegir de la biblioteca</Button>
                   </div>
-                  <HostLibraryPicker open={housePicker} role="start" title="Elegir la casa inicial de la biblioteca" onClose={() => setHousePicker(false)} onPick={(img) => { setInitialImageUrl(img.url); setHouseTitle(img.title); setHousePicker(false); }} />
+                  <HostLibraryPicker open={housePicker} role="start" title="Elegir la imagen inicial de la biblioteca" onClose={() => setHousePicker(false)} onPick={(img) => { setInitialImageUrl(img.url); setHouseTitle(img.title); setHousePicker(false); }} />
                 </fieldset>
               )}
             </>
@@ -747,10 +747,10 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
               {summaryRow('Quién puja', 0, (
                 <p className="font-bold">{playMode === 'host' ? 'Pujas del anfitrión' : 'Cada jugador desde su móvil'}</p>
               ))}
-              {summaryRow('Las casas', 1, (
+              {summaryRow('Las imágenes', 1, (
                 <>
                   <p className="font-bold">{imageMode === 'stickers' ? '🎨 Pegatinas con emojis (sin IA)' : '✨ Con inteligencia artificial'}</p>
-                  {!systemEditor && initialImageUrl ? <p className="text-white/70">Casa inicial: {houseTitle || 'elegida'}</p> : null}
+                  {!systemEditor && initialImageUrl ? <p className="text-white/70">Imagen inicial: {houseTitle || 'elegida'}</p> : null}
                 </>
               ))}
               {summaryRow('Partida', 2, (
@@ -827,7 +827,7 @@ export function NewGameForm({ aiAvailable, aiProvider, systemEditor }: { aiAvail
                 <>
                   <p className="font-bold">{meta.title || '—'} <span className="font-mono text-sm font-normal text-white/60">{meta.slug}</span></p>
                   <p className="text-white/70">{meta.description || 'Sin descripción'}</p>
-                  <p className="text-white/70">Portada: {meta.portada ? '✔' : 'falta'} · Casa inicial: {initialImageUrl ? '✔' : 'falta'} · Fotos: {(items ?? []).filter((i) => i.photoUrl).length}/{(items ?? []).length}</p>
+                  <p className="text-white/70">Portada: {meta.portada ? '✔' : 'falta'} · Imagen inicial: {initialImageUrl ? '✔' : 'falta'} · Fotos: {(items ?? []).filter((i) => i.photoUrl).length}/{(items ?? []).length}</p>
                 </>
               )) : null}
               <div className={`rounded-2xl border border-white/10 bg-night-900 p-4 md:col-span-2 ${systemEditor ? 'hidden' : ''}`} data-testid="save-template">

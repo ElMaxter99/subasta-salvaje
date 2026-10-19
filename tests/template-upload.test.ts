@@ -75,7 +75,7 @@ describe('cliente de GitHub (fetch simulado)', () => {
 
 describe('qué campo recibe cada imagen soltada', () => {
   const t = { catalogo: [{ titulo: 'Sombrilla roja', descripcion: '' }, { titulo: 'Hamaca', descripcion: '' }, { titulo: 'Hamaca doble', descripcion: '' }] };
-  it('por nombre de archivo: portada, casa y elementos (sin tildes ni mayúsculas)', () => {
+  it('por nombre de archivo: portada, imagen inicial y elementos (sin tildes ni mayúsculas)', () => {
     expect(matchTarget('Portada.JPG', t)).toEqual({ kind: 'cover' });
     expect(matchTarget('casa-inicial.png', t)).toEqual({ kind: 'scene' });
     expect(matchTarget('Sombrilla_Roja.webp', t)).toEqual({ kind: 'item', index: 0 });

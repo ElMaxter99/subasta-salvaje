@@ -10,7 +10,7 @@ let seq = 0;
 const COLORS = ['#fb7185', '#2dd4bf', '#a78bfa', '#fbbf24', '#60a5fa', '#34d399', '#f472b6', '#f97316', '#22d3ee', '#a3e635'];
 const NAMES = ['Ana', 'Beto', 'Carla', 'Dani', 'Elena', 'Fran', 'Gloria', 'Hugo', 'Irene', 'Javi'];
 
-/** Instantánea sintética (no necesita base de datos): jugadores con saldo y compras, opcionalmente con casa en Storage. */
+/** Instantánea sintética (no necesita base de datos): jugadores con saldo y compras, opcionalmente con imagen en Storage. */
 function snap(n: number, o: { names?: string[]; rule?: 'balance' | 'none' | 'items' | 'votes'; balances?: number[]; stats?: boolean; gallery?: boolean; houses?: boolean; generating?: boolean } = {}): { s: PublicSnapshot; storage: ReturnType<typeof createMemoryStorage> } {
   const storage = createMemoryStorage();
   const players: Player[] = Array.from({ length: n }, (_, i) => ({
@@ -84,7 +84,7 @@ describe('imagen del podio: formatos', () => {
     ['sin-clasificacion', 6, { rule: 'none' }],
     ['sin-premios', 4, { stats: false }],
     ['galeria', 5, { gallery: true }],
-    ['sin-casas', 3, { houses: false }],
+    ['sin-imagenes', 3, { houses: false }],
     ['un-jugador', 1, {}],
     ['cero-jugadores', 0, {}],
   ];
@@ -103,7 +103,7 @@ describe('imagen del podio: formatos', () => {
     }
   }
 
-  it('descarga con nombre por formato, caché corta y más corta mientras se generan las casas', async () => {
+  it('descarga con nombre por formato, caché corta y más corta mientras se generan las imágenes', async () => {
     const a = snap(3);
     await fillHouses(a.s, a.storage);
     const story = await renderPodiumImage(a.s, a.storage, true, 'story');

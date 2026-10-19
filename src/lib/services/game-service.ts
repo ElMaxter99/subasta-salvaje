@@ -277,7 +277,7 @@ export async function uploadInitialImage(
 
 /**
  * Pone (o quita, con `bytes = null`) la foto de un elemento del catálogo. Esa foto se usa como referencia cuando alguien gana el
- * elemento: la IA la mezcla con la imagen de la casa del ganador. Sólo el anfitrión propietario; valida tipo real y tamaño.
+ * elemento: la IA la mezcla con la imagen del ganador. Sólo el anfitrión propietario; valida tipo real y tamaño.
  */
 async function setItemImage(ctx: Ctx, code: string, hostId: string, itemId: string, bytes: Uint8Array | null): Promise<ActionResult> {
   let mime = '';

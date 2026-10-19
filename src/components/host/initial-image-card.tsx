@@ -56,7 +56,7 @@ export function InitialImageCard({ ctx }: { ctx: HostCtx }) {
           ? `la foto «${pending.image.title || 'de la biblioteca'}» de la biblioteca (no es IA)`
         : aiMode
           ? 'UNA imagen generada con IA, la misma para todos'
-          : 'UNA escena vacía generada (pegatinas), la misma para todos';
+          : 'UNA ilustración base generada (pegatinas), la misma para todos';
   const who = forCurrent && forNew ? `los ${n} jugadores actuales y los que se unan después` : forCurrent ? `los ${n} jugadores actuales` : 'los jugadores que se unan después';
 
   async function apply() {
@@ -71,7 +71,7 @@ export function InitialImageCard({ ctx }: { ctx: HostCtx }) {
   return (
     <Card title="Imagen de partida para todos" icon={<Images className="size-5 text-gold" aria-hidden />}>
       <p className="mb-3 text-sm text-white/70">
-        Pon la misma casa inicial a todos de una vez (subiendo una foto, de la galería o generándola) y decide a quién se aplica. Después podrás cambiarla para jugadores concretos.
+        Pon la misma imagen inicial a todos de una vez (subiendo una foto, de la galería o generándola) y decide a quién se aplica. Después podrás cambiarla para jugadores concretos.
       </p>
 
       <fieldset className="mb-3 rounded-2xl border border-white/10 bg-night-900 p-3">
@@ -145,7 +145,7 @@ export function InitialImageCard({ ctx }: { ctx: HostCtx }) {
       </ul>
       <p className="mt-2 text-xs text-white/50">Las de la galería son ilustraciones incluidas en la app (no generadas por IA). Con IA real, para editarlas sube una imagen PNG/JPG.</p>
 
-      <HostLibraryPicker open={picking} role="start" title="Elegir la casa inicial de la biblioteca" onClose={() => setPicking(false)} onPick={(image) => { setPicking(false); setPending({ kind: 'library', image }); }} />
+      <HostLibraryPicker open={picking} role="start" title="Elegir la imagen inicial de la biblioteca" onClose={() => setPicking(false)} onPick={(image) => { setPicking(false); setPending({ kind: 'library', image }); }} />
 
       <ConfirmDialog
         open={pending !== null}
