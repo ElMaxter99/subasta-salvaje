@@ -103,6 +103,11 @@ export function CatalogPanel({ ctx }: { ctx: HostCtx }) {
         <Notice tone="warn">Esta partida usa IA pero no hay proveedor configurado: la generación de imágenes de elementos está desactivada.</Notice>
       ) : null}
 
+      <p className="rounded-2xl bg-night-800 px-4 py-2 text-sm font-semibold text-white/80" data-testid="catalog-rounds-hint">
+        {items.length} {items.length === 1 ? 'producto' : 'productos'} en el catálogo · se juegan {snapshot.game.total_rounds} {snapshot.game.total_rounds === 1 ? 'ronda' : 'rondas'}
+        {snapshot.game.total_rounds < items.length && snapshot.game.status !== 'finished' ? ` (${items.length - snapshot.game.total_rounds} no saldrán). Sube el máximo en Ajustes si quieres usarlos todos.` : '.'}
+      </p>
+
       <Notice tone="info">
         📷 Cada elemento puede tener su <b>foto</b> (la subes tú o la genera la IA). Cuando alguien gana el elemento, la IA <b>mezcla esa foto con la imagen de su casa</b>: si la foto es un conejo rosa con un lazo azul, ese conejo aparecerá en la casa. Sin foto, la IA usa solo el nombre y la descripción. (En modo pegatinas se añade el emoji.)
       </Notice>
@@ -225,7 +230,11 @@ export function CatalogPanel({ ctx }: { ctx: HostCtx }) {
         loading={busy === 'item-remove'}
         onCancel={() => setRemoving(null)}
         onConfirm={async () => {
-          if (removing) await run('item-remove', { type: 'item.remove', item_id: removing.id }, 'Elemento eliminado');
+          if (removing) {
+            const r = await run('item-remove', { type: 'item.remove', item_id: removing.id }, 'Elemento eliminado');
+            const adj = r?.result.rounds_adjusted;
+            if (typeof adj === 'number') toast.success(`El máximo de rondas se ha ajustado a ${adj}: no puede superar los elementos del catálogo.`);
+          }
           setRemoving(null);
         }}
       >

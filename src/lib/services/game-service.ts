@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto';
 import { DomainError } from '@/lib/domain/errors';
 import { PLAYER_COLORS, actionSchema, createGameSchema, roomCodeSchema, type CreateGameInput, type GameAction } from '@/lib/domain/schemas';
 import { getThemePreset } from '@/lib/domain/themes';
+import { planPreset, presetContextFromSnapshot, type PresetId } from '@/lib/domain/presets';
 import { getImageProviderId } from '@/lib/config/env';
 import { effectiveQuota, effectiveTtlHours, getSettings } from './settings';
 import type { GameSummary, HostSnapshot, ImageUsage, PublicSnapshot } from '@/lib/domain/types';
@@ -49,6 +50,11 @@ export async function createGame(ctx: Ctx, hostId: string, rawInput: unknown): P
   if (input.template_slug) await ctx.db.rpc('ss_set_game_template', { room_code: res.room_code, host_id: hostId, template_slug: input.template_slug }).catch(() => undefined);
   // Reglas: máximo de rondas (por defecto, el tamaño del catálogo) y pujas enteras.
   await ctx.db.rpc('ss_set_game_rules', { room_code: res.room_code, host_id: hostId, max_rounds: input.max_rounds ?? items.length, integer_bids: input.integer_bids });
+  // Ajustes de ritmo (adjudicación/subasta automática, sorpresas, entrada): los valida SQL; un fallo aquí no debe dejar la partida a medias.
+  const extras = input.extras;
+  if (extras && (extras.auto_award || extras.auto_run || extras.wild_chance_pct !== undefined || extras.join_policy)) {
+    await ctx.db.rpc('ss_apply_settings', { room_code: res.room_code, host_id: hostId, ...extras });
+  }
   return res;
 }
 
@@ -117,6 +123,8 @@ function toRpc(action: GameAction): { fn: string; params: Record<string, unknown
       return { fn: 'ss_spectator_regenerate', params: rest };
     case 'game.set_auto_run':
       return { fn: 'ss_set_auto_run', params: rest };
+    case 'game.set_access':
+      return { fn: 'ss_apply_settings', params: rest };
     case 'game.set_join_policy':
       return { fn: 'ss_set_join_policy', params: rest };
     case 'game.set_mode':
@@ -194,6 +202,7 @@ export async function performAction(ctx: Ctx, roomCode: string, hostId: string, 
   if (action.type === 'game.set_image_mode' && action.image_mode === 'ai') await assertAiAllowed(ctx, hostId);
   if (action.type === 'item.clear_image') return setItemImage(ctx, code, hostId, action.item_id, null);
   if (action.type === 'image.set_initial_all') return setInitialFromCatalog(ctx, code, hostId, action.catalog_id, { current: action.scope_current, new: action.scope_new });;
+  if (action.type === 'game.apply_preset') return applyPreset(ctx, code, hostId, action.preset_id);
   const { fn, params } = toRpc(action);
   const result = await ctx.db.rpc<Record<string, unknown>>(fn, { ...params, room_code: code, host_id: hostId });
   if (action.type === 'game.reset') {
@@ -209,6 +218,19 @@ export async function performAction(ctx: Ctx, roomCode: string, hostId: string, 
   const snapshot = await getHostState(ctx, code, hostId);
   await ctx.publisher.publish(code, snapshot.version);
   return { result, snapshot };
+}
+
+/**
+ * Aplica un preset: calcula los valores con `planPreset` (catálogo y estado reales de la partida) y los envía a
+ * `ss_apply_settings`, que los valida con las funciones de siempre y lo hace todo o nada.
+ */
+async function applyPreset(ctx: Ctx, code: string, hostId: string, presetId: PresetId): Promise<ActionResult> {
+  const snap = await getHostState(ctx, code, hostId);
+  const plan = planPreset(presetId, presetContextFromSnapshot(snap));
+  const result = await ctx.db.rpc<Record<string, unknown>>('ss_apply_settings', { ...plan.settings, preset_id: presetId, room_code: code, host_id: hostId });
+  const snapshot = await getHostState(ctx, code, hostId);
+  await ctx.publisher.publish(code, snapshot.version);
+  return { result: { ...result, changes: plan.changes, skipped: plan.skipped, notes: plan.notes }, snapshot };
 }
 
 /** Valida (tipo real y tamaño) y lleva la imagen al formato interno (WebP, tamaño y peso acotados, sin metadatos). */

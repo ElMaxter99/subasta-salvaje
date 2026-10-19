@@ -49,6 +49,7 @@ export function JoinCard({ ctx }: { ctx: HostCtx }) {
             {roomCode}
           </p>
           <p className="break-all text-sm text-white/70">{url || 'Cargando enlace…'}</p>
+          {snapshot.game.join_policy === 'closed' ? <p className="text-sm font-semibold text-gold-soft" data-testid="join-closed">Entrada cerrada: el código no deja entrar a nadie nuevo (los ya conectados siguen jugando).</p> : null}
           <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-start">
             <Button size="md" variant="secondary" onClick={copy} disabled={!url}>
               {copied ? <Check className="size-4 text-teal" aria-hidden /> : <Copy className="size-4" aria-hidden />}

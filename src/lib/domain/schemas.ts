@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { MAX_PLAYERS } from './limits';
 import { THEME_PRESETS } from './themes';
+import { PRESET_IDS } from './presets';
 
 const uuid = z.string().uuid();
 const color = z.string().regex(/^#[0-9a-fA-F]{6}$/);
@@ -19,6 +20,17 @@ const cents = z.number().int().min(1).max(100_000_000);
 
 export const PLAYER_COLORS = ['#fbbf24', '#a78bfa', '#2dd4bf', '#fb7185', '#60a5fa', '#a3e635', '#f97316', '#e879f9', '#38bdf8', '#facc15', '#34d399', '#f472b6'];
 
+/** Ajustes que no son columnas de `ss_create_game` y se aplican justo después de crear (los valida SQL: mismos rangos que las acciones `game.set_*`). */
+export const createExtrasSchema = z.object({
+  auto_award: z.object({ enabled: z.boolean(), seconds: z.number().int().min(3).max(300) }).optional(),
+  auto_run: z.object({ gap_seconds: z.number().int().min(3).max(300), idle_seconds: z.number().int().min(10).max(600) }).optional(),
+  wild_chance_pct: z.number().int().min(0).max(100).optional(),
+  join_policy: z.enum(['open', 'slots', 'closed']).optional(),
+  /** Preset elegido en el asistente (solo se anota en el registro de la partida). */
+  preset_id: z.enum(PRESET_IDS).optional(),
+});
+export type CreateExtras = z.infer<typeof createExtrasSchema>;
+
 export const createGameSchema = z.object({
   name: z.string().trim().min(1).max(80),
   theme: z.string().trim().min(1).max(120).default('house'),
@@ -34,6 +46,7 @@ export const createGameSchema = z.object({
   players: z.array(z.object({ name, color: color.optional() })).max(MAX_PLAYERS).default([]),
   /** Máximo de jugadores de la partida (1..MAX_PLAYERS; por defecto MAX_PLAYERS). Lo vuelve a comprobar SQL. */
   max_players: z.number().int().min(1).max(MAX_PLAYERS).optional(),
+  extras: createExtrasSchema.optional(),
   /** Slug de la partida del sistema de la que sale (solo estadísticas; si no existe o no está publicada se ignora). */
   template_slug: z.string().trim().toLowerCase().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/).max(60).optional(),
   /** Si se omite, se usa el catálogo de la plantilla de temática (o vacío si es temática libre). */
@@ -56,6 +69,10 @@ export const actionSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('game.set_spectator'), spectator_enabled: z.boolean() }),
   z.object({ type: z.literal('game.regenerate_spectator') }),
   z.object({ type: z.literal('game.set_auto_run'), enabled: z.boolean(), gap_seconds: z.number().int().min(3).max(300), idle_seconds: z.number().int().min(10).max(600), auto_award_seconds: z.number().int().min(3).max(300).optional(), random: z.boolean().optional() }),
+  /** Preset de partida: el servidor calcula los valores (`planPreset`, ajustados al catálogo y al estado) y los aplica de una vez. */
+  z.object({ type: z.literal('game.apply_preset'), preset_id: z.enum(PRESET_IDS) }),
+  /** Quién puja y quién puede entrar, de un toque y atómico («Abrir para móviles» = móviles + entrada abierta). */
+  z.object({ type: z.literal('game.set_access'), play_mode: z.enum(['host', 'mobile']).optional(), join_policy: z.enum(['open', 'slots', 'closed']).optional() }).refine((a) => a.play_mode !== undefined || a.join_policy !== undefined, { message: 'Indica el modo o la política de entrada' }),
   z.object({ type: z.literal('game.set_join_policy'), join_policy: z.enum(['open', 'slots', 'closed']) }),
   z.object({ type: z.literal('player.release'), player_id: uuid }),
   /** «Sacar de la TV» / «Volver a mostrar»: oculta al jugador en la TV y el espectador sin liberar su casilla ni tocar su saldo (docs/PRESENCIA-Y-RETIRADOS.md). */
