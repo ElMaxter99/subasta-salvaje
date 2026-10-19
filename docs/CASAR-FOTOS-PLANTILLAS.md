@@ -40,7 +40,7 @@ npm run templates:match -- --apply                       # guarda las de confian
 npm run templates:match -- --apply --min=media           # incluye las de confianza media
 npm run templates:match -- --only=antiguo-egipto --file=otro-lote.json --threshold=0.45 --out=informe
 ```
-Funciona con cualquier lote (`--file`) o con `docs/plantillas-sistema/lote.json`. Lee la biblioteca de la base que use la app (Supabase con credenciales; si no, demo `.demo-data`) **solo en lectura**.
+Funciona con cualquier lote (`--file`) o con `docs/plantillas-sistema/lote.json`. Lee la biblioteca de la base que use la app (Supabase con credenciales; si no, la base local de desarrollo) **solo en lectura**.
 Con `--apply` omite las plantillas no importadas (`npm run templates:import -- --apply`) y las publicadas. Informe en consola y en `.match-report/` (ignorado por git):
 `casamiento.json` (cobertura por plantilla, propuestas, huecos), `casamiento.csv` (una fila por elemento) y `huecos.csv` (palabras de elementos sin foto, de más a menos pedidas).
 

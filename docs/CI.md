@@ -1,6 +1,6 @@
 # Integración continua (GitHub Actions)
 
-Workflow: `.github/workflows/ci.yml`. Se ejecuta en cada `push` y `pull_request`. Node 20, caché de npm, sin secretos (la app arranca en modo demo).
+Workflow: `.github/workflows/ci.yml`. Se ejecuta en cada `push` y `pull_request`. Node 20, caché de npm, sin secretos (en CI la app usa el modo de desarrollo local, solo desarrollo y pruebas; ver `docs/PRUEBAS.md`).
 
 | Trabajo | Qué hace |
 |---|---|

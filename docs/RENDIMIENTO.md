@@ -2,7 +2,7 @@
 
 Medición reproducible de lo que cuesta leer el estado de la partida (`ss_get_state`, 17 funciones apiladas por envoltorios `alter function … rename to …_pre_*`) y de las escrituras que toman el bloqueo `FOR UPDATE` de la partida (`ss_player_bid`, `ss_yield_bid`) cuando hay 10 o 20 móviles, una TV y un anfitrión.
 
-> **Honestidad sobre lo medido.** Cada cifra indica su motor. **PGlite** (WASM, monohilo, en memoria) es el motor del modo demo y de los tests: **no representa** a Postgres de Supabase. Las cifras de **Postgres 16 real** son de una instalación local (`localhost`, 4 núcleos, sin red, el generador de carga en la misma máquina): tampoco son las de Supabase (red, pooler, CPU compartida, plan). **Nada de esto se ha medido contra Supabase real**; sirve para detectar crecimientos no lineales y órdenes de magnitud, no para prometer latencias.
+> **Honestidad sobre lo medido.** Cada cifra indica su motor. **PGlite** (WASM, monohilo, en memoria) es el motor de los tests y del desarrollo local: **no representa** a Postgres de Supabase. Las cifras de **Postgres 16 real** son de una instalación local (`localhost`, 4 núcleos, sin red, el generador de carga en la misma máquina): tampoco son las de Supabase (red, pooler, CPU compartida, plan). **Nada de esto se ha medido contra Supabase real**; sirve para detectar crecimientos no lineales y órdenes de magnitud, no para prometer latencias.
 
 ## Cómo reproducir
 
@@ -21,7 +21,7 @@ El script es `scripts/loadtest/snapshots.ts` (tsx). **No es un test de vitest** 
 
 - **Escenario:** partida en modo móviles con N jugadores (cada uno reclamado con su token), 14 elementos, saldo alto, subasta abierta con 10 pujas hechas desde móviles reales (`playerBid`). Se usan los servicios reales (`getPublicState`, `getHostState`, `playerBid`, `yieldBid`), no SQL a mano, salvo la columna «SQL pura».
 - **Tope de jugadores:** el producto limita a 10 (`MAX_PLAYERS`, `ss_max_players_cap()` y un `check` en `games`). Para N = 20 el script, **solo en su base temporal**, elimina ese `check` y redefine `ss_max_players_cap()` a 100. No se toca ninguna migración. N = 20 es por tanto una prueba de estrés por encima del producto actual.
-- **Intervalo de sondeo real** (`src/lib/client/use-live-game.ts`): en modo local/demo 1500 ms; con Supabase, 8000 ms como red de seguridad si Realtime está conectado (3000 ms si no). La TV y los móviles leen `/api/public/games/[code]` (= `getPublicState`, 1 RPC); el anfitrión `/api/games/[code]` (= `getHostState`, 4 RPC: estado, uso de IA, ajustes y actividad).
+- **Intervalo de sondeo real** (`src/lib/client/use-live-game.ts`): sin Supabase (desarrollo local) 1500 ms; con Supabase, 8000 ms como red de seguridad si Realtime está conectado (3000 ms si no). La TV y los móviles leen `/api/public/games/[code]` (= `getPublicState`, 1 RPC); el anfitrión `/api/games/[code]` (= `getHostState`, 4 RPC: estado, uso de IA, ajustes y actividad).
 - **Lecturas secuenciales:** 400 lecturas tras 30 de calentamiento; percentiles p50/p95/p99 (método del rango superior).
 - **Ráfaga concurrente (peor caso):** N móviles + 1 TV + 1 anfitrión lanzan su lectura exactamente a la vez, 40 veces. Es el caso de sondeos sincronizados (p. ej. todos reconectan tras un aviso).
 - **Sostenido (caso real):** los N + 2 clientes sondean cada 1500 ms con fase aleatoria durante 12 s.

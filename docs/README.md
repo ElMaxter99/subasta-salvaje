@@ -4,7 +4,7 @@
 
 | Documento | Para qué sirve |
 |---|---|
-| [ARQUITECTURA.md](ARQUITECTURA.md) | Capas, flujo de una petición, catálogo de funciones SQL `ss_*`, migraciones en orden, tiempo real, modos demo/Supabase |
+| [ARQUITECTURA.md](ARQUITECTURA.md) | Capas, flujo de una petición, catálogo de funciones SQL `ss_*`, migraciones en orden, tiempo real, Supabase y PGlite (tests y desarrollo) |
 | [REGLAS-DE-JUEGO.md](REGLAS-DE-JUEGO.md) | Reglas de negocio: subasta, pujas, adjudicación (manual/automática), eventos sorpresa, deshacer, galería, modos de juego |
 | [IMAGENES-IA.md](IMAGENES-IA.md) | Proveedores, modos pegatinas/IA, cola de trabajos, cuotas, edición real y por composición, prompts |
 | [SEGURIDAD.md](SEGURIDAD.md) | Modelo de amenazas, RLS/permisos, identidad de jugadores, secretos, límites de tasa |

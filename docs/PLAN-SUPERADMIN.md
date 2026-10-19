@@ -25,7 +25,7 @@ Estado: **implementado en lo acordado** (fases 0–4: acceso, peso/resumen, part
 - Todo el backend del panel usa funciones SQL nuevas `ss_admin_*` con `EXECUTE` solo para `service_role` (mismo patrón que hoy) y rutas `/api/admin/*` con `assertSameOrigin`, límite de tasa y comprobación de superadmin **en el servidor** en cada petición (nunca solo en la UI).
 - Nunca se muestran tokens de jugadores, claves ni contenido de `idempotency_keys`; los correos solo al superadmin.
 - Cada acción mutante escribe en `admin_audit` dentro de la misma transacción.
-- En modo demo el superadmin es el anfitrión de demo (para poder desarrollar y probar sin Supabase).
+- En desarrollo local sin Supabase el anfitrión local es superadmin (solo para desarrollar y probar).
 
 ## 4. Diseño de datos (migraciones nuevas, una portable + una `_security_` por bloque)
 1. **`app_settings`** (clave/valor `jsonb`, una fila): `ai_enabled`, `ai_provider_override`, `quota_per_game`, `quota_per_day`, `game_ttl_hours`, `signups_open`. Lectura con caché corta; **la configuración en BD tiene prioridad sobre el env** (el env queda como valor por defecto/arranque).
@@ -34,7 +34,7 @@ Estado: **implementado en lo acordado** (fases 0–4: acceso, peso/resumen, part
 4. **Cuotas por usuario**: `ss_reserve_image_quota` pasa a leer los límites efectivos (usuario → global → env) y la columna `host_id` de `image_usage` (nueva) para agregar por usuario.
 5. **Funciones de lectura** `ss_admin_overview`, `ss_admin_users`, `ss_admin_games`, `ss_admin_ai_usage(range)`, `ss_admin_storage_usage`:
    - Tamaños de BD: `pg_database_size`, `pg_total_relation_size` por tabla; por partida = suma de `image_versions.bytes` + estimación de filas (`pg_column_size`) — ver §5.
-   - Bucket: función `security definer` que suma `storage.objects.metadata->>'size'` agrupando por el prefijo `games/<id>/` (el esquema `storage` no está expuesto por PostgREST, por eso va en una función propia). En PGlite/demo se sustituye por `image_versions.bytes` y el tamaño del directorio local.
+   - Bucket: función `security definer` que suma `storage.objects.metadata->>'size'` agrupando por el prefijo `games/<id>/` (el esquema `storage` no está expuesto por PostgREST, por eso va en una función propia). En PGlite (tests y desarrollo) se sustituye por `image_versions.bytes` y el tamaño del directorio local.
    - Usuarios: `auth.users` solo es accesible vía la API de administración (`supabase.auth.admin.listUsers`, paginada) o una función `security definer` de solo lectura; se prefiere la API oficial para bloquear (`updateUserById({ ban_duration })`).
 6. Ajuste a `ss_delete_game`/purga para registrar bytes liberados (útil para el panel y la auditoría).
 
@@ -73,7 +73,7 @@ Cada fase incluye: migraciones (+`_security_`), funciones `ss_admin_*`, rutas `/
 - Bloquear a un usuario le impide crear partidas/pujar-gestionar y no borra sus datos; desbloquear lo restaura.
 - La cuota efectiva respeta el orden usuario → global → env, y apagar la IA en caliente detiene nuevos trabajos sin perder los encolados.
 - Borrar partida/usuario libera Storage (comprobable con `storage_usage`) y deja entrada de auditoría.
-- Las vistas de peso no cuentan dos veces archivos compartidos (imagen base) y no fallan en modo demo.
+- Las vistas de peso no cuentan dos veces archivos compartidos (imagen base) y no fallan en PGlite (tests y desarrollo).
 
 ## 10. Decisiones que necesito de ti antes de empezar
 1. ¿Superadmin solo tú (env) o varios administradores gestionables desde el panel?

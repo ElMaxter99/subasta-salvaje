@@ -40,7 +40,7 @@ Tamaños y formato de §3: **aprobados**. Imágenes de partidas en **Supabase** 
 - `sharp` hoy solo va en 3 rutas (`outputFileTracingIncludes` en `next.config.ts`); habría que añadirlo a las rutas de subida/importación (+≈ 20 MB cada una en el despliegue). Alternativa: concentrar las subidas en 1–2 rutas.
 - Normalizar la salida de IA **ahorra almacenamiento** en Supabase (hoy JPEG/PNG sin recomprimir).
 - Las imágenes ya guardadas no se tocan; opcional: script de migración «reencode» con ensayo en seco (no urgente).
-- Los SVG de pegatinas/galería del modo demo no pasan por aquí (son vectoriales locales).
+- Los SVG de pegatinas/galería no pasan por aquí (son vectoriales locales).
 
 ## 4. Plantillas del sistema (fases 2 y 3)
 **Datos** (migración nueva + `_security`, RLS cerrada): tabla `system_templates` (`id`, `slug`, `title`, `description`, `cover_url`, `data jsonb` en formato `@1`, `status` `draft|published`, `sort_order`, `created_by`, marcas de tiempo). Funciones `ss_*`:
