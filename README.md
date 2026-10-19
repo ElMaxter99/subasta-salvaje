@@ -102,6 +102,11 @@ Todas las capturas son **reales**, generadas con la app en **modo demo (pegatina
 <td width="25%" align="center"><img src="docs/img/admin-observabilidad.webp" alt="Panel de observabilidad del superadmin con errores agrupados y métricas de uso"><br><sub>Observabilidad (superadmin)</sub></td>
 </tr>
 <tr>
+<td width="50%" align="center"><img src="docs/img/tv-desconectado.webp" alt="TV con la casa de un jugador desconectado en grises y la insignia Desconectado"><br><sub>TV: un jugador desconectado se ve en su foto</sub></td>
+<td width="25%" align="center"><img src="docs/img/anfitrion-quien-puja.webp" alt="Panel del anfitrión con la tarjeta ¿Quién puja? para abrir la partida a móviles"><br><sub>Anfitrión: «¿Quién puja?»</sub></td>
+<td width="25%" align="center"><img src="docs/img/anfitrion-jugadores-presencia.webp" alt="Panel de jugadores con su estado de conexión y el botón Sacar de la TV"><br><sub>Anfitrión: presencia y «Sacar de la TV»</sub></td>
+</tr>
+<tr>
 <td colspan="3" align="center"><img src="docs/img/admin-biblioteca.webp" alt="Biblioteca de medios del superadmin con roles, categorías y panel de cobertura" width="520"><br><sub>Biblioteca de medios: roles, categorías y cobertura</sub></td>
 </tr>
 <tr>

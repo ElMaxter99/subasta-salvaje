@@ -286,6 +286,40 @@ async function main() {
         await shot(pp, 'jugador-movil-pujando', { width: 780, ms: 1500 });
       }
 
+      // Tarjeta «¿Quién puja?» (Resumen) y jugadores con su estado de conexión (Jugadores) en el panel del anfitrión
+      if (wanted('anfitrion')) {
+        const hq = await hostCtx.newPage();
+        await hq.goto(`/game/${code}/host`);
+        await hq.waitForLoadState('domcontentloaded');
+        await hq.getByRole('tab', { name: /Resumen/ }).click({ timeout: 60_000 });
+        await hq.getByTestId('access-card').scrollIntoViewIfNeeded({ timeout: 60_000 });
+        await shot(hq, 'anfitrion-quien-puja', { width: 1440, ms: 1500 });
+        await hq.close();
+      }
+
+      // Un móvil se desconecta: Pablo deja de dar señales (>40 s) mientras los demás siguen latiendo
+      if (wanted('desconectado') || wanted('anfitrion')) {
+        const beat = () => Promise.all(names.map((n) => (n === 'Pablo' && beatCount > 0 ? null : post(phones[n], `/api/play/${code}/ping`, {}))));
+        let beatCount = 0;
+        await beat(); // primer latido de todos
+        beatCount = 1;
+        for (let t = 0; t < 46; t += 10) { await sleep(10_000); await beat(); } // ~46 s: Pablo ya no late
+        await tv.reload();
+        await tv.waitForTimeout(3000);
+        await shot(tv, 'tv-desconectado', { width: 1600, ms: 1500 });
+        if (wanted('anfitrion')) {
+          const hj = await hostCtx.newPage();
+          await hj.goto(`/game/${code}/host`);
+          await hj.waitForLoadState('domcontentloaded');
+          await hj.getByRole('tab', { name: /Jugadores/ }).click({ timeout: 60_000 });
+          await hj.getByText(/Desconectado/).first().waitFor({ timeout: 60_000 });
+          await hj.getByText(/Desconectado/).first().scrollIntoViewIfNeeded();
+          await hj.evaluate(() => window.scrollBy(0, -140)); // un poco de aire por encima de su tarjeta
+          await shot(hj, 'anfitrion-jugadores-presencia', { width: 1440, ms: 1500 });
+          await hj.close();
+        }
+      }
+
       // Cerrar la subasta y terminar la partida; votar para llegar al podio
       if (wanted('podio') || wanted('resultados')) {
         await act({ type: 'auction.award', auction_id: aid, expected_winner_id: ids['Marcos'], expected_price_cents: 500, idempotency_key: uid() });
